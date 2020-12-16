@@ -1,0 +1,43 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Okta API",
+    "description": "Allows customers to easily access the Okta API",
+    "termsOfService": "http://developer.okta.com/terms/",
+    "contact": {
+      "name": "Okta Developer Team",
+      "email": "devex-public@okta.com",
+      "url": "http://developer.okta.com/"
+    },
+    "license": {
+      "name": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "externalDocs": {
+    "description": "Find more info here",
+    "url": "http://developer.okta.com/docs/api/getting_started/design_principles.html"
+  },
+  "host": "your-subdomain.okta.com",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+      "api_token": {
+          "description": "SSWS {API Token}",
+          "in": "header",
+          "name": "Authorization",
+          "type": "apiKey"
+      }
+  },
+  "paths": {},
+  "definitions": {}
+}

@@ -1,0 +1,280 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0-SNAPSHOT"
+  title: "Okta API"
+host: "your-subdomain.okta.com"
+basePath: "/"
+schemes:
+- "https"
+paths:
+  /api/v1/groups/{id}/users:
+    get:
+      operationId: "listGroupUsers"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "after"
+          in: "query"
+          required: false
+          type: "string"
+        - name: "limit"
+          in: "query"
+          required: false
+          type: "integer"
+          default: -1
+          format: "int32"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+  /api/v1/users/{userId}/factors/{userFactorId}/qr/{oneTimeSessionToken}:
+    get:
+      operationId: "generateQRCodeImage"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "userFactorId"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "oneTimeSessionToken"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        default:
+          description: "successful operation"
+      deprecated: true
+  /api/v1/users:
+    get:
+      operationId: "getUsers"
+      parameters:
+        - name: "q"
+          in: "query"
+          required: false
+          type: "string"
+        - name: "after"
+          in: "query"
+          required: false
+          type: "string"
+        - name: "limit"
+          in: "query"
+          required: false
+          type: "integer"
+          default: -1
+          format: "int32"
+        - name: "filter"
+          in: "query"
+          required: false
+          type: "string"
+        - name: "format"
+          in: "query"
+          required: false
+          type: "string"
+        - name: "search"
+          in: "query"
+          required: false
+          type: "string"
+        - name: "expand"
+          in: "query"
+          required: false
+          type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+    post:
+      operationId: "createUser"
+      parameters:
+        - name: "activate"
+          in: "query"
+          required: false
+          type: "boolean"
+          default: true
+        - name: "provider"
+          in: "query"
+          required: false
+          type: "boolean"
+          default: false
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+      deprecated: true
+  /api/v1/users/{userId}/factors/authn:
+    get:
+      operationId: "preAuth"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "factorAuthenticationContext"
+          required: false
+          schema:
+            type: object
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+  /api/v1/users/{id}:
+    put:
+      operationId: "updateUser"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+  /api/v1/apps/{id}/users/{userId}:
+    delete:
+      operationId: "deleteAppUser"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        default:
+          description: "successful operation"
+  /api/v1/apps/{id}/groups/{groupId}:
+    delete:
+      operationId: "deleteGroupAppAssignment"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "groupId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        default:
+          description: "successful operation"
+definitions:
+
+  UserProfile:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      mobilePhone:
+        type: string
+      login:
+        type: string
+      email:
+        type: string
+      secondEmail:
+        type: string
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      created:
+        type: "string"
+      activated:
+        type: "string"
+      statusChanged:
+        type: "string"
+      lastLogin:
+        type: "string"
+      lastUpdated:
+        type: "string"
+      passwordChanged:
+        type: "string"
+      profile:
+        $ref: "#/definitions/UserProfile"
+      credentials:
+        $ref: "#/definitions/Credentials"
+      dummy:
+        $ref: "#/definitions/Dummy2"
+      _links:
+        type: "object"
+        additionalProperties:
+          $ref: "#/definitions/FrameworkLink"
+      _embedded:
+        type: "object"
+        additionalProperties:
+          type: "object"
+  Credentials:
+    type: "object"
+    properties:
+      password:
+        $ref: "#/definitions/PasswordCredential"
+      recovery_question:
+        $ref: "#/definitions/RecoveryQuestionCredential"
+      provider:
+        $ref: "#/definitions/AuthProvider"
+  AuthProvider:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        enum:
+          - "orn:okta:authn:provider:directory:activedirectory"
+          - "orn:okta:authn:provider:federation"
+          - "orn:okta:authn:provider:directory:ldap"
+          - "orn:okta:authn:provider:okta"
+          - "orn:okta:authn:provider:social"
+          - "orn:okta:authn:provider:okta:import"
+      name:
+        type: "string"
+  PasswordCredential:
+    type: "object"
+    properties:
+      hash:
+        $ref: "#/definitions/HashedPassword"
+
+  HashedPassword:
+    type: "object"
+    properties: {}
+    x-openapi-v3-discriminator:
+      mapping:
+        BCRYPT: "BcryptHashedPassword"
+        STORMPATH1: "StormpathHashedPassword"
+        SHA-256: "SHA256HashedPassword"
+        SHA-512: "SHA512HashedPassword"
+        SHA-1: "SHA1HashedPassword"
+        MD5: "MD5HashedPassword"
+  RecoveryQuestionCredential:
+    type: "object"
+    properties:
+      question:
+        type: "string"
+  Dummy2:
+    type: "object"
+    properties:
+      shouldBeReadOnly:
+        type: string
+        readOnly: true
