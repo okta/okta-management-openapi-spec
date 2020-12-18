@@ -1,0 +1,45 @@
+{
+  "paths": {
+    "/api/v1/apps/{appId}/groups/{groupId}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "groupId",
+            "required": true,
+            "type": "string"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "x-okta-tags": [
+        "User"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "STAGED",
+            "PROVISIONED",
+            "ACTIVE",
+            "RECOVERY",
+            "PASSWORD_EXPIRED",
+            "LOCKED_OUT",
+            "DEPROVISIONED",
+            "SUSPENDED",
+            "EXTRA_ENUM"
+          ],
+          "type": "string"
+        }
+      }
+    }
+  }
+}

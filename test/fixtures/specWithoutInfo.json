@@ -1,0 +1,547 @@
+{
+  "info": {
+    "version": "$$VERSION$$"
+  },
+  "paths": {
+    "/api/v1/apps/{appId}/groups/{groupId}": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Success",
+        "operationId": "deleteGroupAppAssignment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "groupId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/v1/apps/{appId}/users/{userId}": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Success",
+        "operationId": "deleteAppUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/v1/groups/{id}/users": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Enumerates all [users](#users.html) that are a member of a group.",
+        "operationId": "listGroupUsers",
+        "parameters": [
+          {
+            "description": "id of the group",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Specifies the pagination cursor for the next page of users",
+            "in": "query",
+            "name": "after",
+            "type": "string"
+          },
+          {
+            "default": -1,
+            "description": "Specifies the number of user results in a page",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/User"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "List Group Members",
+        "tags": [
+          "Group"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Lists users in your organization with pagination in most cases.  A subset of users can be returned that match a supported filter expression or search criteria.",
+        "operationId": "listUsers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "type": "string"
+          },
+          {
+            "default": -1,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "expand",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/User"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Success",
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "default": true,
+            "in": "query",
+            "name": "activate",
+            "type": "boolean"
+          },
+          {
+            "default": false,
+            "in": "query",
+            "name": "provider",
+            "type": "boolean"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Success",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/v1/users/{userId}/factors/authn": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Success",
+        "operationId": "preAuth",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "factorAuthenticationContext",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/v1/users/{userId}/factors/{userFactorId}/qr/{oneTimeSessionToken}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Success",
+        "operationId": "generateQRCodeImage",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "userFactorId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "oneTimeSessionToken",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AuthProvider": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "orn:okta:authn:provider:directory:activedirectory",
+            "orn:okta:authn:provider:federation",
+            "orn:okta:authn:provider:directory:ldap",
+            "orn:okta:authn:provider:okta",
+            "orn:okta:authn:provider:social",
+            "orn:okta:authn:provider:okta:import"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Credentials": {
+      "properties": {
+        "password": {
+          "$ref": "#/definitions/PasswordCredential"
+        },
+        "provider": {
+          "$ref": "#/definitions/AuthProvider"
+        },
+        "recovery_question": {
+          "$ref": "#/definitions/RecoveryQuestionCredential"
+        }
+      },
+      "type": "object"
+    },
+    "Dummy2": {
+      "properties": {
+        "shouldBeReadOnly": {
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "HashedPassword": {
+      "properties": {},
+      "type": "object",
+      "x-openapi-v3-discriminator": {
+        "mapping": {
+          "BCRYPT": "BcryptHashedPassword",
+          "MD5": "MD5HashedPassword",
+          "SHA-1": "SHA1HashedPassword",
+          "SHA-256": "SHA256HashedPassword",
+          "SHA-512": "SHA512HashedPassword",
+          "STORMPATH1": "StormpathHashedPassword"
+        }
+      }
+    },
+    "PasswordCredential": {
+      "properties": {
+        "hash": {
+          "$ref": "#/definitions/HashedPassword"
+        }
+      },
+      "type": "object"
+    },
+    "RecoveryQuestionCredential": {
+      "properties": {
+        "question": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "User": {
+      "properties": {
+        "_embedded": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "activated": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
+        },
+        "credentials": {
+          "$ref": "#/definitions/Credentials"
+        },
+        "dummy": {
+          "$ref": "#/definitions/Dummy2"
+        },
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "lastLogin": {
+          "type": "string"
+        },
+        "lastUpdated": {
+          "type": "string"
+        },
+        "passwordChanged": {
+          "type": "string"
+        },
+        "profile": {
+          "$ref": "#/definitions/UserProfile"
+        },
+        "status": {
+          "enum": [
+            "STAGED",
+            "PROVISIONED",
+            "ACTIVE",
+            "RECOVERY",
+            "PASSWORD_EXPIRED",
+            "LOCKED_OUT",
+            "DEPROVISIONED",
+            "SUSPENDED",
+            "EXTRA_ENUM"
+          ],
+          "type": "string"
+        },
+        "statusChanged": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "User"
+      ]
+    },
+    "UserProfile": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "mobilePhone": {
+          "type": "string"
+        },
+        "secondEmail": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  }
+}
