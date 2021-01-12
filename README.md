@@ -37,7 +37,7 @@ This artifact contains the final spec (`dist/spec.json`) and the code generator 
 To build `dist/spec.json`, do the following:
 
 ```
-$ git clone git@github.com:okta/openapi.git
+$ git clone git@github.com:okta/okta-management-openapi-spec.git
 $ cd openapi
 $ npm install
 $ npm run build // a spec will be built to dist/spec.json
@@ -86,7 +86,7 @@ The important parts are:
 * Declaring which files are templates, and where they should be output as generated source code
 * Providing helpers for handlebars, that you can use in your templates
 * Using handlebars for the template files themselves
-* The generator also provides some template helpers, see here: https://github.com/okta/openapi/blob/master/lib/generator.js#L233-L284
+* The generator also provides some template helpers, see here: https://github.com/okta/okta-management-openapi-spec/blob/master/lib/generator.js#L233-L284
 
 ### Template Models
 
