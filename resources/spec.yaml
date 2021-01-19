@@ -8982,6 +8982,8 @@ definitions:
         type: array
       uri:
         type: string
+      method:
+        type: string
     type: object
     x-okta-tags:
       - InlineHook
@@ -11208,6 +11210,8 @@ definitions:
         type: boolean
       signatureAlgorithm:
         type: string
+      slo:
+        $ref: '#/definitions/SingleLogout'
       spIssuer:
         type: string
       ssoAcsUrl:
@@ -11217,6 +11221,16 @@ definitions:
       subjectNameIdFormat:
         type: string
       subjectNameIdTemplate:
+        type: string
+    x-okta-tags:
+      - Application
+  SingleLogout:
+    properties:
+      enabled:
+        type: boolean
+      issuer:
+        type: string
+      logoutUrl:
         type: string
     x-okta-tags:
       - Application
