@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.2.2"
+    "version": "2.2.3"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -14212,6 +14212,9 @@
           },
           "type": "array"
         },
+        "method": {
+          "type": "string"
+        },
         "uri": {
           "type": "string"
         }
@@ -17533,6 +17536,9 @@
         "signatureAlgorithm": {
           "type": "string"
         },
+        "slo": {
+          "$ref": "#/definitions/SingleLogout"
+        },
         "spIssuer": {
           "type": "string"
         },
@@ -17910,6 +17916,22 @@
       "type": "string",
       "x-okta-tags": [
         "Session"
+      ]
+    },
+    "SingleLogout": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "issuer": {
+          "type": "string"
+        },
+        "logoutUrl": {
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Application"
       ]
     },
     "SmsTemplate": {
