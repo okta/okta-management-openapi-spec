@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.2.3
+  version: 2.2.2
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -9019,8 +9019,6 @@ definitions:
         items:
           $ref: '#/definitions/InlineHookChannelConfigHeaders'
         type: array
-      method:
-        type: string
       uri:
         type: string
     type: object
@@ -9205,7 +9203,7 @@ definitions:
       x5t:
         readOnly: true
         type: string
-      x5t#S256:
+      'x5t#S256':
         readOnly: true
         type: string
       x5u:
@@ -11250,8 +11248,6 @@ definitions:
         type: boolean
       signatureAlgorithm:
         type: string
-      slo:
-        $ref: '#/definitions/SingleLogout'
       spIssuer:
         type: string
       ssoAcsUrl:
@@ -11506,16 +11502,6 @@ definitions:
     type: string
     x-okta-tags:
       - Session
-  SingleLogout:
-    properties:
-      enabled:
-        type: boolean
-      issuer:
-        type: string
-      logoutUrl:
-        type: string
-    x-okta-tags:
-      - Application
   SmsTemplate:
     properties:
       created:
