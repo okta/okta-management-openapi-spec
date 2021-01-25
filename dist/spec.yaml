@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.2.1
+  version: 2.3.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -9362,6 +9362,7 @@ definitions:
   LogCredentialProvider:
     enum:
       - OKTA_AUTHENTICATION_PROVIDER
+      - OKTA_CREDENTIAL_PROVIDER
       - RSA
       - SYMANTEC
       - GOOGLE
