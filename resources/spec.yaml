@@ -11218,10 +11218,21 @@ definitions:
         type: string
       ssoAcsUrlOverride:
         type: string
+      spCertificate:
+        $ref: '#/definitions/SpCertificate'
       subjectNameIdFormat:
         type: string
       subjectNameIdTemplate:
         type: string
+    x-okta-tags:
+      - Application
+  SpCertificate:
+    properties:
+      x5c:
+        items:
+          type: string
+        readOnly: false
+        type: array
     x-okta-tags:
       - Application
   SingleLogout:
