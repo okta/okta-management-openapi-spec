@@ -10036,6 +10036,17 @@ definitions:
     type: string
     x-okta-tags:
       - Application
+  OpenIdConnectApplicationIdpInitiatedLogin:
+    properties:
+      default_scope:
+        items:
+          type: string
+        type: array
+      mode:
+        type: string
+    type: object
+    x-okta-tags:
+      - Application
   OpenIdConnectApplicationIssuerMode:
     enum:
       - CUSTOM_URL
@@ -10061,6 +10072,8 @@ definitions:
         items:
           $ref: '#/definitions/OAuthGrantType'
         type: array
+      idp_initiated_login:
+        $ref: '#/definitions/OpenIdConnectApplicationIdpInitiatedLogin'
       initiate_login_uri:
         type: string
       issuer_mode:
