@@ -11252,6 +11252,8 @@ definitions:
         type: string
       slo:
         $ref: '#/definitions/SingleLogout'
+      spCertificate:
+        $ref: '#/definitions/SpCertificate'
       spIssuer:
         type: string
       ssoAcsUrl:
@@ -11618,6 +11620,15 @@ definitions:
     type: object
     x-okta-tags:
       - IdentityProvider
+  SpCertificate:
+    properties:
+      x5c:
+        items:
+          type: string
+        readOnly: false
+        type: array
+    x-okta-tags:
+      - Application
   SwaApplication:
     properties:
       name:
