@@ -10026,6 +10026,8 @@ definitions:
         type: string
       issuer_mode:
         $ref: '#/definitions/OpenIdConnectApplicationIssuerMode'
+      idp_initiated_login:
+        $ref: '#/definitions/OpenIdConnectApplicationIdpInitiatedLogin'
       logo_uri:
         type: string
       policy_uri:
@@ -10048,6 +10050,17 @@ definitions:
         type: string
       jwks:
         $ref: '#/definitions/OpenIdConnectApplicationSettingsClientKeys'
+    x-okta-tags:
+      - Application
+  OpenIdConnectApplicationIdpInitiatedLogin:
+    properties:
+      mode:
+        type: string
+      default_scope:
+        items:
+          type: string
+        type: array
+    type: object
     x-okta-tags:
       - Application
   OpenIdConnectApplicationSettingsClientKeys:
