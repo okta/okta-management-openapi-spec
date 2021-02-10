@@ -8048,6 +8048,7 @@ definitions:
     enum:
       - OKTA
       - RSA
+      - FIDO
       - GOOGLE
       - SYMANTEC
       - DUO
