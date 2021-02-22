@@ -1,6 +1,12 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## v2.2.5
+## Bug Fixes
+- Fixed typo in README (https://github.com/okta/okta-management-openapi-spec/pull/9)
+- Add private_key_jwt to OAuthEndpointAuthenticationMethod (https://github.com/okta/okta-management-openapi-spec/issues/8)
+- Added FIDO FactorProvider Type (https://github.com/okta/okta-management-openapi-spec/issues/11)
+
 ## v2.2.4
 ### Bug Fixes
 - Adds missing `spCertificate` from custom SAML application settings (#6)
