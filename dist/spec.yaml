@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.2.1
+  version: 2.3.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -3984,6 +3984,59 @@ paths:
       summary: Fetch a list of events from your Okta organization system log.
       tags:
         - Log
+  '/api/v1/meta/schemas/apps/{appInstanceId}/default':
+    get:
+      consumes:
+        - application/json
+      description: Fetches the Schema for an App User
+      operationId: getApplicationUserSchema
+      parameters:
+        - in: path
+          name: appInstanceId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/UserSchema'
+      security:
+        - api_token: []
+      summary: Fetches the Schema for an App User
+      tags:
+        - UserSchema
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Partial updates on the User Profile properties of the Application User
+        Schema.
+      operationId: updateApplicationUserProfile
+      parameters:
+        - in: path
+          name: appInstanceId
+          required: true
+          type: string
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/UserSchema'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/UserSchema'
+      security:
+        - api_token: []
+      summary: >-
+        Partial updates on the User Profile properties of the Application User
+        Schema.
+      tags:
+        - UserSchema
   /api/v1/meta/schemas/user/linkedObjects:
     get:
       consumes:
@@ -4067,6 +4120,55 @@ paths:
         - api_token: []
       tags:
         - LinkedObject
+  '/api/v1/meta/schemas/user/{schemaId}':
+    get:
+      consumes:
+        - application/json
+      description: Fetches the schema for a Schema Id.
+      operationId: getUserSchema
+      parameters:
+        - in: path
+          name: schemaId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/UserSchema'
+      security:
+        - api_token: []
+      summary: Fetches the schema for a Schema Id.
+      tags:
+        - UserSchema
+    post:
+      consumes:
+        - application/json
+      description: Partial updates on the User Profile properties of the user schema.
+      operationId: updateUserProfile
+      parameters:
+        - in: path
+          name: schemaId
+          required: true
+          type: string
+        - in: body
+          name: userSchema
+          required: true
+          schema:
+            $ref: '#/definitions/UserSchema'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/UserSchema'
+      security:
+        - api_token: []
+      tags:
+        - UserSchema
   /api/v1/meta/types/user:
     get:
       consumes:
@@ -7802,6 +7904,89 @@ definitions:
         type: string
     x-okta-tags:
       - Application
+  BaseUserSchema:
+    properties:
+      id:
+        readOnly: true
+        type: string
+      properties:
+        $ref: '#/definitions/BaseUserSchemaProperties'
+      required:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
+  BaseUserSchemaProperties:
+    properties:
+      city:
+        $ref: '#/definitions/UserSchemaAttribute'
+      costCenter:
+        $ref: '#/definitions/UserSchemaAttribute'
+      countryCode:
+        $ref: '#/definitions/UserSchemaAttribute'
+      department:
+        $ref: '#/definitions/UserSchemaAttribute'
+      displayName:
+        $ref: '#/definitions/UserSchemaAttribute'
+      division:
+        $ref: '#/definitions/UserSchemaAttribute'
+      email:
+        $ref: '#/definitions/UserSchemaAttribute'
+      employeeNumber:
+        $ref: '#/definitions/UserSchemaAttribute'
+      firstName:
+        $ref: '#/definitions/UserSchemaAttribute'
+      honorificPrefix:
+        $ref: '#/definitions/UserSchemaAttribute'
+      honorificSuffix:
+        $ref: '#/definitions/UserSchemaAttribute'
+      lastName:
+        $ref: '#/definitions/UserSchemaAttribute'
+      locale:
+        $ref: '#/definitions/UserSchemaAttribute'
+      login:
+        $ref: '#/definitions/UserSchemaAttribute'
+      manager:
+        $ref: '#/definitions/UserSchemaAttribute'
+      managerId:
+        $ref: '#/definitions/UserSchemaAttribute'
+      middleName:
+        $ref: '#/definitions/UserSchemaAttribute'
+      mobilePhone:
+        $ref: '#/definitions/UserSchemaAttribute'
+      nickName:
+        $ref: '#/definitions/UserSchemaAttribute'
+      organization:
+        $ref: '#/definitions/UserSchemaAttribute'
+      postalAddress:
+        $ref: '#/definitions/UserSchemaAttribute'
+      preferredLanguage:
+        $ref: '#/definitions/UserSchemaAttribute'
+      primaryPhone:
+        $ref: '#/definitions/UserSchemaAttribute'
+      profileUrl:
+        $ref: '#/definitions/UserSchemaAttribute'
+      secondEmail:
+        $ref: '#/definitions/UserSchemaAttribute'
+      state:
+        $ref: '#/definitions/UserSchemaAttribute'
+      streetAddress:
+        $ref: '#/definitions/UserSchemaAttribute'
+      timezone:
+        $ref: '#/definitions/UserSchemaAttribute'
+      title:
+        $ref: '#/definitions/UserSchemaAttribute'
+      userType:
+        $ref: '#/definitions/UserSchemaAttribute'
+      zipCode:
+        $ref: '#/definitions/UserSchemaAttribute'
+    type: object
+    x-okta-tags:
+      - UserSchema
   BasicApplicationSettings:
     properties:
       app:
@@ -9203,7 +9388,7 @@ definitions:
       x5t:
         readOnly: true
         type: string
-      'x5t#S256':
+      x5t#S256:
         readOnly: true
         type: string
       x5u:
@@ -11014,6 +11199,24 @@ definitions:
     type: object
     x-okta-tags:
       - IdentityProvider
+  PublicSchema:
+    properties:
+      id:
+        readOnly: true
+        type: string
+      properties:
+        additionalProperties:
+          type: object
+        type: object
+      required:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
   PushUserFactor:
     properties:
       expiresAt:
@@ -12336,6 +12539,91 @@ definitions:
     x-okta-extensible: true
     x-okta-tags:
       - User
+  UserSchema:
+    properties:
+      $schema:
+        type: string
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      created:
+        type: string
+      definitions:
+        $ref: '#/definitions/UserSchemaDefinitions'
+      description:
+        type: string
+      id:
+        readOnly: true
+        type: string
+      lastUpdated:
+        type: string
+      name:
+        type: string
+      properties:
+        additionalProperties:
+          type: object
+        type: object
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttribute:
+    properties:
+      description:
+        type: string
+      master:
+        $ref: '#/definitions/UserSchemaAttributeMaster'
+      maxLength:
+        type: integer
+      minLength:
+        type: integer
+      mutability:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/UserSchemaAttributePermission'
+        type: array
+      required:
+        type: boolean
+      scope:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeMaster:
+    properties:
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributePermission:
+    properties:
+      action:
+        type: string
+      principal:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaDefinitions:
+    properties:
+      base:
+        $ref: '#/definitions/BaseUserSchema'
+      custom:
+        $ref: '#/definitions/PublicSchema'
+    type: object
+    x-okta-tags:
+      - UserSchema
   UserStatus:
     enum:
       - ACTIVE
