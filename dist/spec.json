@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.2.1"
+    "version": "2.3.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -17451,6 +17451,9 @@
     },
     "SamlApplication": {
       "properties": {
+        "name": {
+          "readOnly": false
+        },
         "settings": {
           "$ref": "#/definitions/SamlApplicationSettings"
         }
@@ -17462,11 +17465,34 @@
     },
     "SamlApplicationSettings": {
       "properties": {
+        "app": {
+          "$ref": "#/definitions/SamlApplicationSettingsApplication"
+        },
         "signOn": {
           "$ref": "#/definitions/SamlApplicationSettingsSignOn"
         }
       },
       "x-okta-parent": "#/definitions/ApplicationSettings",
+      "x-okta-tags": [
+        "Application"
+      ]
+    },
+    "SamlApplicationSettingsApplication": {
+      "properties": {
+        "acsUrl": {
+          "description": "The Assertion Consumer Service (ACS) URL of the source org",
+          "type": "string"
+        },
+        "audRestriction": {
+          "description": "Audience URI",
+          "type": "string"
+        },
+        "baseUrl": {
+          "description": "The login URL of the target Okta org",
+          "type": "string"
+        }
+      },
+      "x-okta-parent": "#/definitions/ApplicationSettingsApplication",
       "x-okta-tags": [
         "Application"
       ]

@@ -11154,6 +11154,8 @@ definitions:
       - Role
   SamlApplication:
     properties:
+      name:
+        readOnly: false
       settings:
         $ref: '#/definitions/SamlApplicationSettings'
     x-okta-parent: '#/definitions/Application'
@@ -11161,11 +11163,27 @@ definitions:
       - Application
   SamlApplicationSettings:
     properties:
+      app:
+        $ref: '#/definitions/SamlApplicationSettingsApplication'
       signOn:
         $ref: '#/definitions/SamlApplicationSettingsSignOn'
     x-okta-parent: '#/definitions/ApplicationSettings'
     x-okta-tags:
       - Application
+  SamlApplicationSettingsApplication:
+      properties:
+          acsUrl:
+              description: The Assertion Consumer Service (ACS) URL of the source org
+              type: string
+          audRestriction:
+              description: Audience URI
+              type: string
+          baseUrl:
+              description: The login URL of the target Okta org
+              type: string
+      x-okta-parent: '#/definitions/ApplicationSettingsApplication'
+      x-okta-tags:
+          - Application
   SamlApplicationSettingsSignOn:
     properties:
       allowMultipleAcsEndpoints:
