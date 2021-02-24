@@ -11221,6 +11221,10 @@ definitions:
       baseUrl:
         description: The login URL of the target Okta org
         type: string
+      orgName:
+        type: string
+      url:
+        type: string
     x-okta-parent: '#/definitions/ApplicationSettingsApplication'
     x-okta-tags:
       - Application

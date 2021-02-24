@@ -11173,14 +11173,18 @@ definitions:
   SamlApplicationSettingsApplication:
       properties:
           acsUrl:
-              description: The Assertion Consumer Service (ACS) URL of the source org
-              type: string
+            description: The Assertion Consumer Service (ACS) URL of the source org
+            type: string
           audRestriction:
-              description: Audience URI
-              type: string
+            description: Audience URI
+            type: string
           baseUrl:
-              description: The login URL of the target Okta org
-              type: string
+            description: The login URL of the target Okta org
+            type: string
+          orgName:
+            type: string
+          url:
+            type: string
       x-okta-parent: '#/definitions/ApplicationSettingsApplication'
       x-okta-tags:
           - Application
