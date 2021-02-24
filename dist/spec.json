@@ -17452,7 +17452,8 @@
     "SamlApplication": {
       "properties": {
         "name": {
-          "readOnly": false
+          "readOnly": false,
+          "type": "string"
         },
         "settings": {
           "$ref": "#/definitions/SamlApplicationSettings"

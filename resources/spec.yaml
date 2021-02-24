@@ -11156,7 +11156,7 @@ definitions:
     properties:
       name:
         readOnly: false
-        type: name
+        type: string
       settings:
         $ref: '#/definitions/SamlApplicationSettings'
     x-okta-parent: '#/definitions/Application'
