@@ -10,7 +10,6 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 1.12.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -8139,6 +8138,7 @@ definitions:
     enum:
       - OKTA
       - RSA
+      - FIDO
       - GOOGLE
       - SYMANTEC
       - DUO
@@ -9072,6 +9072,8 @@ definitions:
           $ref: '#/definitions/InlineHookChannelConfigHeaders'
         type: array
       uri:
+        type: string
+      method:
         type: string
     type: object
     x-okta-tags:
@@ -10147,6 +10149,7 @@ definitions:
       - client_secret_post
       - client_secret_basic
       - client_secret_jwt
+      - private_key_jwt
     type: string
     x-okta-tags:
       - Application
@@ -10298,6 +10301,8 @@ definitions:
         type: string
       issuer_mode:
         $ref: '#/definitions/OpenIdConnectApplicationIssuerMode'
+      idp_initiated_login:
+        $ref: '#/definitions/OpenIdConnectApplicationIdpInitiatedLogin'
       logo_uri:
         type: string
       policy_uri:
@@ -10320,6 +10325,17 @@ definitions:
         type: string
       jwks:
         $ref: '#/definitions/OpenIdConnectApplicationSettingsClientKeys'
+    x-okta-tags:
+      - Application
+  OpenIdConnectApplicationIdpInitiatedLogin:
+    properties:
+      mode:
+        type: string
+      default_scope:
+        items:
+          type: string
+        type: array
+    type: object
     x-okta-tags:
       - Application
   OpenIdConnectApplicationSettingsClientKeys:
@@ -11482,15 +11498,38 @@ definitions:
         type: boolean
       signatureAlgorithm:
         type: string
+      slo:
+        $ref: '#/definitions/SingleLogout'
       spIssuer:
         type: string
       ssoAcsUrl:
         type: string
       ssoAcsUrlOverride:
         type: string
+      spCertificate:
+        $ref: '#/definitions/SpCertificate'
       subjectNameIdFormat:
         type: string
       subjectNameIdTemplate:
+        type: string
+    x-okta-tags:
+      - Application
+  SpCertificate:
+    properties:
+      x5c:
+        items:
+          type: string
+        readOnly: false
+        type: array
+    x-okta-tags:
+      - Application
+  SingleLogout:
+    properties:
+      enabled:
+        type: boolean
+      issuer:
+        type: string
+      logoutUrl:
         type: string
     x-okta-tags:
       - Application
