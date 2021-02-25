@@ -25,7 +25,7 @@ describe('generator', () => {
       '--output', 'random_output',
       '--templateDir', 'random_template'
     ]);
-    expect(generator).to.throw(`An index.js file must exist in ${path.join(__dirname, "../..")}/openapi/random_template`);
+    expect(generator).to.throw(`An index.js file must exist in ${path.join(__dirname, "../..")}/okta-management-openapi-spec/random_template`);
   });
 
   it('throws an error if the language template does not contain a process() method', () => {
