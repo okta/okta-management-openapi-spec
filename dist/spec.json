@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.2.1"
+    "version": "2.2.5"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -13014,6 +13014,7 @@
       "enum": [
         "OKTA",
         "RSA",
+        "FIDO",
         "GOOGLE",
         "SYMANTEC",
         "DUO",
@@ -14211,6 +14212,9 @@
             "$ref": "#/definitions/InlineHookChannelConfigHeaders"
           },
           "type": "array"
+        },
+        "method": {
+          "type": "string"
         },
         "uri": {
           "type": "string"
@@ -15493,7 +15497,8 @@
         "none",
         "client_secret_post",
         "client_secret_basic",
-        "client_secret_jwt"
+        "client_secret_jwt",
+        "private_key_jwt"
       ],
       "type": "string",
       "x-okta-tags": [
@@ -15676,6 +15681,23 @@
         "Application"
       ]
     },
+    "OpenIdConnectApplicationIdpInitiatedLogin": {
+      "properties": {
+        "default_scope": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "mode": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Application"
+      ]
+    },
     "OpenIdConnectApplicationIssuerMode": {
       "enum": [
         "CUSTOM_URL",
@@ -15712,6 +15734,9 @@
             "$ref": "#/definitions/OAuthGrantType"
           },
           "type": "array"
+        },
+        "idp_initiated_login": {
+          "$ref": "#/definitions/OpenIdConnectApplicationIdpInitiatedLogin"
         },
         "initiate_login_uri": {
           "type": "string"
@@ -17533,6 +17558,12 @@
         "signatureAlgorithm": {
           "type": "string"
         },
+        "slo": {
+          "$ref": "#/definitions/SingleLogout"
+        },
+        "spCertificate": {
+          "$ref": "#/definitions/SpCertificate"
+        },
         "spIssuer": {
           "type": "string"
         },
@@ -17912,6 +17943,22 @@
         "Session"
       ]
     },
+    "SingleLogout": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "issuer": {
+          "type": "string"
+        },
+        "logoutUrl": {
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Application"
+      ]
+    },
     "SmsTemplate": {
       "properties": {
         "created": {
@@ -18074,6 +18121,20 @@
       "type": "object",
       "x-okta-tags": [
         "IdentityProvider"
+      ]
+    },
+    "SpCertificate": {
+      "properties": {
+        "x5c": {
+          "items": {
+            "type": "string"
+          },
+          "readOnly": false,
+          "type": "array"
+        }
+      },
+      "x-okta-tags": [
+        "Application"
       ]
     },
     "SwaApplication": {
