@@ -14721,6 +14721,7 @@
     "LogCredentialProvider": {
       "enum": [
         "OKTA_AUTHENTICATION_PROVIDER",
+        "OKTA_CREDENTIAL_PROVIDER",
         "RSA",
         "SYMANTEC",
         "GOOGLE",
