@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.2.1
+  version: 2.3.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -9158,42 +9158,42 @@ definitions:
         readOnly: true
         type: object
       alg:
-        readOnly: true
+        readOnly: false
         type: string
       created:
         format: date-time
-        readOnly: true
+        readOnly: false
         type: string
       e:
-        readOnly: true
+        readOnly: false
         type: string
       expiresAt:
         format: date-time
-        readOnly: true
+        readOnly: false
         type: string
       key_ops:
         items:
           type: string
-        readOnly: true
+        readOnly: false
         type: array
       kid:
-        readOnly: true
+        readOnly: false
         type: string
       kty:
-        readOnly: true
+        readOnly: false
         type: string
       lastUpdated:
         format: date-time
-        readOnly: true
+        readOnly: false
         type: string
       'n':
-        readOnly: true
+        readOnly: false
         type: string
       status:
-        readOnly: true
+        readOnly: false
         type: string
       use:
-        readOnly: true
+        readOnly: false
         type: string
       x5c:
         items:
@@ -9201,13 +9201,13 @@ definitions:
         readOnly: false
         type: array
       x5t:
-        readOnly: true
+        readOnly: false
         type: string
-      'x5t#S256':
-        readOnly: true
+      x5t#S256:
+        readOnly: false
         type: string
       x5u:
-        readOnly: true
+        readOnly: false
         type: string
     type: object
     x-okta-tags:
