@@ -38,7 +38,7 @@ To build `dist/spec.json`, do the following:
 
 ```
 $ git clone git@github.com:okta/okta-management-openapi-spec.git
-$ cd openapi
+$ cd okta-management-openapi-spec
 $ npm install
 $ npm run build // a spec will be built to dist/spec.json
 ```
