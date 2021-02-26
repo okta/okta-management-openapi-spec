@@ -9290,25 +9290,30 @@ definitions:
     properties:
       id:
         type: "string"
+        readOnly: true
       $schema:
         type: "string"
+        readOnly: true
       name:
         type: "string"
+        readOnly: true
       title:
-        type: "string"
-      description:
         type: "string"
       lastUpdated:
         type: "string"
+        readOnly: true
       created:
         type: "string"
+        readOnly: true
       definitions:  
         $ref: "#/definitions/UserSchemaDefinitions"
       type:
         type: "string"
+        readOnly: true
       properties:
         additionalProperties:
           type: object
+        readOnly: true
         type: object
       _links:
         additionalProperties:
@@ -9321,9 +9326,9 @@ definitions:
     type: object
     properties:
       base:
-        $ref: '#/definitions/BaseUserSchema'
+        $ref: '#/definitions/UserSchemaBase'
       custom:
-        $ref: '#/definitions/PublicSchema'
+        $ref: '#/definitions/UserSchemaPublic'
     x-okta-tags:
       - UserSchema
   UserSchemaAttribute:
@@ -9369,7 +9374,7 @@ definitions:
         type: "string"
     x-okta-tags:
         - UserSchema
-  BaseUserSchema:
+  UserSchemaBase:
     type: "object"
     properties:
       id:
@@ -9377,14 +9382,14 @@ definitions:
       type:
         type: "string"
       properties:
-        $ref: "#/definitions/BaseUserSchemaProperties"
+        $ref: "#/definitions/UserSchemaBaseProperties"
       required:
         type: "array"
         items:
           type: "string"
     x-okta-tags:
       - UserSchema
-  BaseUserSchemaProperties:
+  UserSchemaBaseProperties:
     type: "object"
     properties:
       login:
@@ -9451,7 +9456,7 @@ definitions:
         $ref: "#/definitions/UserSchemaAttribute"
     x-okta-tags:
       - UserSchema
-  PublicSchema:
+  UserSchemaPublic:
     type: "object"
     properties:
       id:

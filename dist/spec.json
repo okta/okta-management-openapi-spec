@@ -12452,131 +12452,6 @@
         "Application"
       ]
     },
-    "BaseUserSchema": {
-      "properties": {
-        "id": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "properties": {
-          "$ref": "#/definitions/BaseUserSchemaProperties"
-        },
-        "required": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "type": {
-          "type": "string"
-        }
-      },
-      "type": "object",
-      "x-okta-tags": [
-        "UserSchema"
-      ]
-    },
-    "BaseUserSchemaProperties": {
-      "properties": {
-        "city": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "costCenter": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "countryCode": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "department": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "displayName": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "division": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "email": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "employeeNumber": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "firstName": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "honorificPrefix": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "honorificSuffix": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "lastName": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "locale": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "login": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "manager": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "managerId": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "middleName": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "mobilePhone": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "nickName": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "organization": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "postalAddress": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "preferredLanguage": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "primaryPhone": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "profileUrl": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "secondEmail": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "state": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "streetAddress": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "timezone": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "title": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "userType": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        },
-        "zipCode": {
-          "$ref": "#/definitions/UserSchemaAttribute"
-        }
-      },
-      "type": "object",
-      "x-okta-tags": [
-        "UserSchema"
-      ]
-    },
     "BasicApplicationSettings": {
       "properties": {
         "app": {
@@ -17477,33 +17352,6 @@
         "IdentityProvider"
       ]
     },
-    "PublicSchema": {
-      "properties": {
-        "id": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "properties": {
-          "additionalProperties": {
-            "type": "object"
-          },
-          "type": "object"
-        },
-        "required": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "type": {
-          "type": "string"
-        }
-      },
-      "type": "object",
-      "x-okta-tags": [
-        "UserSchema"
-      ]
-    },
     "PushUserFactor": {
       "properties": {
         "expiresAt": {
@@ -19679,6 +19527,7 @@
     "UserSchema": {
       "properties": {
         "$schema": {
+          "readOnly": true,
           "type": "string"
         },
         "_links": {
@@ -19689,34 +19538,36 @@
           "type": "object"
         },
         "created": {
+          "readOnly": true,
           "type": "string"
         },
         "definitions": {
           "$ref": "#/definitions/UserSchemaDefinitions"
-        },
-        "description": {
-          "type": "string"
         },
         "id": {
           "readOnly": true,
           "type": "string"
         },
         "lastUpdated": {
+          "readOnly": true,
           "type": "string"
         },
         "name": {
+          "readOnly": true,
           "type": "string"
         },
         "properties": {
           "additionalProperties": {
             "type": "object"
           },
+          "readOnly": true,
           "type": "object"
         },
         "title": {
           "type": "string"
         },
         "type": {
+          "readOnly": true,
           "type": "string"
         }
       },
@@ -19791,13 +19642,165 @@
         "UserSchema"
       ]
     },
+    "UserSchemaBase": {
+      "properties": {
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "properties": {
+          "$ref": "#/definitions/UserSchemaBaseProperties"
+        },
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaBaseProperties": {
+      "properties": {
+        "city": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "costCenter": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "countryCode": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "department": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "displayName": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "division": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "email": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "employeeNumber": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "firstName": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "honorificPrefix": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "honorificSuffix": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "lastName": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "locale": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "login": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "manager": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "managerId": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "middleName": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "mobilePhone": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "nickName": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "organization": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "postalAddress": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "preferredLanguage": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "primaryPhone": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "profileUrl": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "secondEmail": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "state": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "streetAddress": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "timezone": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "title": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "userType": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        },
+        "zipCode": {
+          "$ref": "#/definitions/UserSchemaAttribute"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
     "UserSchemaDefinitions": {
       "properties": {
         "base": {
-          "$ref": "#/definitions/BaseUserSchema"
+          "$ref": "#/definitions/UserSchemaBase"
         },
         "custom": {
-          "$ref": "#/definitions/PublicSchema"
+          "$ref": "#/definitions/UserSchemaPublic"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaPublic": {
+      "properties": {
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "properties": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "type": "object"
+        },
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "type": "string"
         }
       },
       "type": "object",
