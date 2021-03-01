@@ -6701,6 +6701,46 @@ paths:
         - api_token: []
       tags:
         - User
+  '/api/v1/threats/configuration':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Updates ThreatInsight configuration
+      operationId: updateThreatInsightConfiguration
+      parameters:
+        - in: body
+          required: true
+          name: ThreatInsightConfiguration
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightInformation'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
+    get:
+      consumes:
+        - application/json
+      description: >-
+        Gets current ThreatInsight configuration
+      operationId: getThreatInsightConfiguration
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightInformation'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
 definitions:
   ActivateFactorRequest:
     properties:
@@ -12565,3 +12605,37 @@ definitions:
     x-okta-parent: '#/definitions/ApplicationSettingsApplication'
     x-okta-tags:
       - Application
+  ThreatInsightConfiguration:
+    properties:
+      action:
+        type: string
+      excludeZones:
+        items:
+          type: string
+        type: array
+    x-okta-tags:
+      - ThreatInsight
+  ThreatInsightInformation:
+    properties:
+      action: 
+        type: string
+      excludeZones:
+        items:
+          type: string
+        type: array
+      created: 
+        format: date-time
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - ThreatInsight
+

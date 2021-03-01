@@ -4794,6 +4794,46 @@ paths:
       summary: Update SMS Template
       tags:
         - Template
+  /api/v1/threats/configuration:
+    get:
+      consumes:
+        - application/json
+      description: Gets current ThreatInsight configuration
+      operationId: getThreatInsightConfiguration
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightInformation'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
+    post:
+      consumes:
+        - application/json
+      description: Updates ThreatInsight configuration
+      operationId: updateThreatInsightConfiguration
+      parameters:
+        - in: body
+          name: ThreatInsightConfiguration
+          required: true
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightInformation'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
   /api/v1/trustedOrigins:
     get:
       consumes:
@@ -6851,6 +6891,7 @@ definitions:
         readOnly: true
         type: string
       id:
+        readOnly: true
         type: string
       lastSync:
         format: date-time
@@ -11722,6 +11763,39 @@ definitions:
         type: string
     x-okta-tags:
       - User
+  ThreatInsightConfiguration:
+    properties:
+      action:
+        type: string
+      excludeZones:
+        items:
+          type: string
+        type: array
+    x-okta-tags:
+      - ThreatInsight
+  ThreatInsightInformation:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      action:
+        type: string
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      excludeZones:
+        items:
+          type: string
+        type: array
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+    x-okta-tags:
+      - ThreatInsight
   TokenAuthorizationServerPolicyRuleAction:
     properties:
       accessTokenLifetimeMinutes:
@@ -12428,6 +12502,7 @@ definitions:
       displayName:
         type: string
       id:
+        readOnly: true
         type: string
       lastUpdated:
         format: date-time

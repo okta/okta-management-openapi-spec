@@ -7564,6 +7564,71 @@
         ]
       }
     },
+    "/api/v1/threats/configuration": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Gets current ThreatInsight configuration",
+        "operationId": "getThreatInsightConfiguration",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ThreatInsightInformation"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "ThreatInsight"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Updates ThreatInsight configuration",
+        "operationId": "updateThreatInsightConfiguration",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "ThreatInsightConfiguration",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ThreatInsightConfiguration"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ThreatInsightInformation"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "ThreatInsight"
+        ]
+      }
+    },
     "/api/v1/trustedOrigins": {
       "get": {
         "consumes": [
@@ -10690,6 +10755,7 @@
           "type": "string"
         },
         "id": {
+          "readOnly": true,
           "type": "string"
         },
         "lastSync": {
@@ -18257,6 +18323,55 @@
         "User"
       ]
     },
+    "ThreatInsightConfiguration": {
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "excludeZones": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "x-okta-tags": [
+        "ThreatInsight"
+      ]
+    },
+    "ThreatInsightInformation": {
+      "properties": {
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "action": {
+          "type": "string"
+        },
+        "created": {
+          "format": "date-time",
+          "readOnly": true,
+          "type": "string"
+        },
+        "excludeZones": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "lastUpdated": {
+          "format": "date-time",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "ThreatInsight"
+      ]
+    },
     "TokenAuthorizationServerPolicyRuleAction": {
       "properties": {
         "accessTokenLifetimeMinutes": {
@@ -19433,6 +19548,7 @@
           "type": "string"
         },
         "id": {
+          "readOnly": true,
           "type": "string"
         },
         "lastUpdated": {
