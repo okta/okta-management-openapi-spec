@@ -6718,7 +6718,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/ThreatInsightInformation'
+            $ref: '#/definitions/ThreatInsightConfiguration'
       security:
         - api_token: []
       tags:
@@ -6736,7 +6736,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/ThreatInsightInformation'
+            $ref: '#/definitions/ThreatInsightConfiguration'
       security:
         - api_token: []
       tags:
@@ -12607,16 +12607,6 @@ definitions:
       - Application
   ThreatInsightConfiguration:
     properties:
-      action:
-        type: string
-      excludeZones:
-        items:
-          type: string
-        type: array
-    x-okta-tags:
-      - ThreatInsight
-  ThreatInsightInformation:
-    properties:
       action: 
         type: string
       excludeZones:
@@ -12636,6 +12626,15 @@ definitions:
           type: object
         readOnly: true
         type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getThreatInsightConfiguration
+      - alias: update
+        arguments:
+          - dest: threatInsightConfiguration
+            self: true
+        operationId: updateThreatInsightConfiguration
     x-okta-tags:
       - ThreatInsight
 

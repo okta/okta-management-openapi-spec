@@ -7579,7 +7579,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/ThreatInsightInformation"
+              "$ref": "#/definitions/ThreatInsightConfiguration"
             }
           }
         },
@@ -7615,7 +7615,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/ThreatInsightInformation"
+              "$ref": "#/definitions/ThreatInsightConfiguration"
             }
           }
         },
@@ -10755,7 +10755,6 @@
           "type": "string"
         },
         "id": {
-          "readOnly": true,
           "type": "string"
         },
         "lastSync": {
@@ -18325,22 +18324,6 @@
     },
     "ThreatInsightConfiguration": {
       "properties": {
-        "action": {
-          "type": "string"
-        },
-        "excludeZones": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        }
-      },
-      "x-okta-tags": [
-        "ThreatInsight"
-      ]
-    },
-    "ThreatInsightInformation": {
-      "properties": {
         "_links": {
           "additionalProperties": {
             "type": "object"
@@ -18368,6 +18351,23 @@
           "type": "string"
         }
       },
+      "x-okta-crud": [
+        {
+          "alias": "read",
+          "arguments": [],
+          "operationId": "getThreatInsightConfiguration"
+        },
+        {
+          "alias": "update",
+          "arguments": [
+            {
+              "dest": "threatInsightConfiguration",
+              "self": true
+            }
+          ],
+          "operationId": "updateThreatInsightConfiguration"
+        }
+      ],
       "x-okta-tags": [
         "ThreatInsight"
       ]
@@ -19548,7 +19548,6 @@
           "type": "string"
         },
         "id": {
-          "readOnly": true,
           "type": "string"
         },
         "lastUpdated": {
