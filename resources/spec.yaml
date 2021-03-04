@@ -6707,7 +6707,7 @@ paths:
         - application/json
       description: >-
         Updates ThreatInsight configuration
-      operationId: updateThreatInsightConfiguration
+      operationId: updateConfiguration
       parameters:
         - in: body
           required: true
@@ -6728,7 +6728,7 @@ paths:
         - application/json
       description: >-
         Gets current ThreatInsight configuration
-      operationId: getThreatInsightConfiguration
+      operationId: getCurrentConfiguration
       parameters: []
       produces:
         - application/json
@@ -12629,12 +12629,12 @@ definitions:
     x-okta-crud:
       - alias: read
         arguments: []
-        operationId: getThreatInsightConfiguration
+        operationId: getCurrentConfiguration
       - alias: update
         arguments:
           - dest: threatInsightConfiguration
             self: true
-        operationId: updateThreatInsightConfiguration
+        operationId: updateConfiguration
     x-okta-tags:
       - ThreatInsight
 

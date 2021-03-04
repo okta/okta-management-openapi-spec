@@ -7570,7 +7570,7 @@
           "application/json"
         ],
         "description": "Gets current ThreatInsight configuration",
-        "operationId": "getThreatInsightConfiguration",
+        "operationId": "getCurrentConfiguration",
         "parameters": [],
         "produces": [
           "application/json"
@@ -7597,7 +7597,7 @@
           "application/json"
         ],
         "description": "Updates ThreatInsight configuration",
-        "operationId": "updateThreatInsightConfiguration",
+        "operationId": "updateConfiguration",
         "parameters": [
           {
             "in": "body",
@@ -18355,7 +18355,7 @@
         {
           "alias": "read",
           "arguments": [],
-          "operationId": "getThreatInsightConfiguration"
+          "operationId": "getCurrentConfiguration"
         },
         {
           "alias": "update",
@@ -18365,7 +18365,7 @@
               "self": true
             }
           ],
-          "operationId": "updateThreatInsightConfiguration"
+          "operationId": "updateConfiguration"
         }
       ],
       "x-okta-tags": [
