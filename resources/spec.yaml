@@ -4184,6 +4184,53 @@ paths:
         - api_token: []
       tags:
         - UserType
+  '/api/v1/meta/schemas/apps/{appId}/default':
+    get:
+      description: >-
+        Fetches the Schema for an App User.
+      operationId: getAppUserSchema
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/AppUserSchema'
+      security:
+        - api_token: []
+      tags:
+        - AppUserSchema
+    post:
+      consumes:
+        - application/json
+      description: Adds, updates or removes one or more custom App User Profile properties to the App User schema
+      operationId: changeAppUserSchema
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: body
+          name: userType
+          required: true
+          schema:
+            $ref: '#/definitions/AppUserSchema'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/AppUserSchema'
+      security:
+        - api_token: []
+      tags:
+        - AppUserSchema
   /api/v1/policies:
     get:
       consumes:
@@ -6880,6 +6927,174 @@ definitions:
         type: string
     x-okta-tags:
       - Application
+  AppUserSchema:
+    properties:
+      id:
+        readOnly: true
+        type: string
+      "$schema":
+        readOnly: true
+        type: string
+      name:
+        type: string
+      title:
+        type: string
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      definitions:
+        $ref: '#/definitions/AppUserSchemaDefinitions'
+      type:
+        type: string
+        readOnly: true
+      properties:
+        $ref: '#/definitions/AppUserSchemaProperties'
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+    x-okta-operations:
+      - alias: getAppUserSchema
+        arguments:
+          - dest: appId
+            src: id
+        operationId: getAppUserSchema
+      - alias: changeAppUserSchema
+        arguments:
+          - dest: appId
+            src: id
+        operationId: changeAppUserSchema
+  AppUserSchemaProperties:
+    properties:
+      profile:
+        $ref: '#/definitions/AppUserSchemaPropertiesProfile'
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaPropertiesProfile:
+    properties:
+      allOf:
+        items:
+          $ref: '#/definitions/AppUserSchemaPropertiesProfileAllOfItem'
+        type: array
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaPropertiesProfileAllOfItem:
+    properties:
+      "$ref":
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitions:
+    properties:
+      custom:
+        $ref: '#/definitions/AppUserSchemaDefinitionsObject'
+      base:
+        $ref: '#/definitions/AppUserSchemaDefinitionsObject'
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObject:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      type:
+        type: string
+        readOnly: true
+      properties:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/AppUserSchemaDefinitionsObjectProperties'
+      required:
+        items:
+          type: string
+        type: array
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectProperties:
+    properties:
+      title:
+        type: string
+      type:
+        enum:
+          - string
+          - boolean
+          - number
+          - integer
+          - array
+        type: string
+      description:
+        type: string
+      scope:
+        enum:
+          - SELF
+          - NONE
+        type: string
+      required:
+        type: boolean
+      enum:
+        items:
+          type: string
+        type: array
+      oneOf:
+        items:
+          $ref: '#/definitions/AppUserSchemaDefinitionsObjectPropertiesEnum'
+        type: array
+      minLength:
+        type: integer
+      maxLength:
+        type: integer
+      master:
+        $ref: '#/definitions/AppUserSchemaDefinitionsObjectPropertiesMaster'
+      union:
+        enum:
+          - DISABLE
+          - ENABLE
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectPropertiesEnum:
+    properties:
+      const:
+        type: string
+      title:
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectPropertiesMaster:
+    properties:
+      type:
+        enum:
+          - PROFILE_MASTER
+          - OKTA
+          - OVERRIDE
+        type: string
+      priority:
+        items:
+          $ref: '#/definitions/AppUserSchemaDefinitionsObjectPropertiesMasterPriority'
+        type: array
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectPropertiesMasterPriority:
+    properties:
+      type:
+        type: string
+      valuse:
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
   Application:
     properties:
       _embedded:
@@ -8743,8 +8958,8 @@ definitions:
     x-okta-operations:
       - alias: listPolicyRules
         arguments:
-        - dest: policyId
-          src: id
+          - dest: policyId
+            src: id
         operationId: listAuthorizationServerPolicyRules
       - alias: createPolicyRule
         arguments:
@@ -8835,18 +9050,18 @@ definitions:
   AuthorizationServerPolicyRuleActions:
     properties:
       token:
-         $ref: '#/definitions/TokenAuthorizationServerPolicyRuleAction'
+        $ref: '#/definitions/TokenAuthorizationServerPolicyRuleAction'
     type: object
     x-okta-tags:
       - AuthorizationServerPolicy
   TokenAuthorizationServerPolicyRuleAction:
     properties:
-        accessTokenLifetimeMinutes:
-          type: integer
-        refreshTokenLifetimeMinutes:
-          type: integer
-        refreshTokenWindowMinutes:
-          type: integer
+      accessTokenLifetimeMinutes:
+        type: integer
+      refreshTokenLifetimeMinutes:
+        type: integer
+      refreshTokenWindowMinutes:
+        type: integer
     type: object
     x-okta-tags:
       - AuthorizationServerPolicy
@@ -11036,7 +11251,7 @@ definitions:
     x-okta-tags:
       - User
   ResponseLinks:
-    properties: {}
+    properties: { }
     type: object
     x-okta-tags:
       - User

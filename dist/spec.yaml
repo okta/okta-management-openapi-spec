@@ -3984,6 +3984,56 @@ paths:
       summary: Fetch a list of events from your Okta organization system log.
       tags:
         - Log
+  '/api/v1/meta/schemas/apps/{appId}/default':
+    get:
+      consumes:
+        - application/json
+      description: Fetches the Schema for an App User.
+      operationId: getAppUserSchema
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/AppUserSchema'
+      security:
+        - api_token: []
+      tags:
+        - AppUserSchema
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Adds, updates or removes one or more custom App User Profile properties
+        to the App User schema
+      operationId: changeAppUserSchema
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: body
+          name: userType
+          required: true
+          schema:
+            $ref: '#/definitions/AppUserSchema'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/AppUserSchema'
+      security:
+        - api_token: []
+      tags:
+        - AppUserSchema
   /api/v1/meta/schemas/user/linkedObjects:
     get:
       consumes:
@@ -6916,6 +6966,174 @@ definitions:
         type: string
     x-okta-tags:
       - Application
+  AppUserSchema:
+    properties:
+      $schema:
+        readOnly: true
+        type: string
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      definitions:
+        $ref: '#/definitions/AppUserSchemaDefinitions'
+      id:
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      name:
+        type: string
+      properties:
+        $ref: '#/definitions/AppUserSchemaProperties'
+      title:
+        type: string
+      type:
+        readOnly: true
+        type: string
+    type: object
+    x-okta-operations:
+      - alias: getAppUserSchema
+        arguments:
+          - dest: appId
+            src: id
+        operationId: getAppUserSchema
+      - alias: changeAppUserSchema
+        arguments:
+          - dest: appId
+            src: id
+        operationId: changeAppUserSchema
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitions:
+    properties:
+      base:
+        $ref: '#/definitions/AppUserSchemaDefinitionsObject'
+      custom:
+        $ref: '#/definitions/AppUserSchemaDefinitionsObject'
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObject:
+    properties:
+      id:
+        readOnly: true
+        type: string
+      properties:
+        additionalProperties:
+          $ref: '#/definitions/AppUserSchemaDefinitionsObjectProperties'
+        type: object
+      required:
+        items:
+          type: string
+        type: array
+      type:
+        readOnly: true
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectProperties:
+    properties:
+      description:
+        type: string
+      enum:
+        items:
+          type: string
+        type: array
+      master:
+        $ref: '#/definitions/AppUserSchemaDefinitionsObjectPropertiesMaster'
+      maxLength:
+        type: integer
+      minLength:
+        type: integer
+      oneOf:
+        items:
+          $ref: '#/definitions/AppUserSchemaDefinitionsObjectPropertiesEnum'
+        type: array
+      required:
+        type: boolean
+      scope:
+        enum:
+          - SELF
+          - NONE
+        type: string
+      title:
+        type: string
+      type:
+        enum:
+          - string
+          - boolean
+          - number
+          - integer
+          - array
+        type: string
+      union:
+        enum:
+          - DISABLE
+          - ENABLE
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectPropertiesEnum:
+    properties:
+      const:
+        type: string
+      title:
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectPropertiesMaster:
+    properties:
+      priority:
+        items:
+          $ref: '#/definitions/AppUserSchemaDefinitionsObjectPropertiesMasterPriority'
+        type: array
+      type:
+        enum:
+          - PROFILE_MASTER
+          - OKTA
+          - OVERRIDE
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaDefinitionsObjectPropertiesMasterPriority:
+    properties:
+      type:
+        type: string
+      valuse:
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaProperties:
+    properties:
+      profile:
+        $ref: '#/definitions/AppUserSchemaPropertiesProfile'
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaPropertiesProfile:
+    properties:
+      allOf:
+        items:
+          $ref: '#/definitions/AppUserSchemaPropertiesProfileAllOfItem'
+        type: array
+    type: object
+    x-okta-tags:
+      - AppUserSchema
+  AppUserSchemaPropertiesProfileAllOfItem:
+    properties:
+      $ref:
+        type: string
+    type: object
+    x-okta-tags:
+      - AppUserSchema
   Application:
     properties:
       _embedded:
