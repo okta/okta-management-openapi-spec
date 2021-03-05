@@ -19616,31 +19616,16 @@
           "type": "boolean"
         },
         "scope": {
-          "enum": [
-            "SELF",
-            "NONE"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/UserSchemaAttributeScope"
         },
         "title": {
           "type": "string"
         },
         "type": {
-          "enum": [
-            "string",
-            "boolean",
-            "number",
-            "integer",
-            "array"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/UserSchemaAttributeType"
         },
         "union": {
-          "enum": [
-            "DISABLE",
-            "ENABLE"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/UserSchemaAttributeUnion"
         }
       },
       "type": "object",
@@ -19671,12 +19656,7 @@
           "type": "array"
         },
         "type": {
-          "enum": [
-            "PROFILE_MASTER",
-            "OKTA",
-            "OVERRIDE"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/UserSchemaAttributeMasterType"
         }
       },
       "type": "object",
@@ -19698,6 +19678,17 @@
         "UserSchema"
       ]
     },
+    "UserSchemaAttributeMasterType": {
+      "enum": [
+        "PROFILE_MASTER",
+        "OKTA",
+        "OVERRIDE"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
     "UserSchemaAttributePermission": {
       "properties": {
         "action": {
@@ -19707,6 +19698,39 @@
           "type": "string"
         }
       },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaAttributeScope": {
+      "enum": [
+        "SELF",
+        "NONE"
+      ],
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaAttributeType": {
+      "enum": [
+        "string",
+        "boolean",
+        "number",
+        "integer",
+        "array"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaAttributeUnion": {
+      "enum": [
+        "DISABLE",
+        "ENABLE"
+      ],
       "type": "object",
       "x-okta-tags": [
         "UserSchema"
