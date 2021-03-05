@@ -9402,17 +9402,21 @@ definitions:
     type: object
     properties:
       type:
-        type: "string"
-        enum:
-          - PROFILE_MASTER
-          - OKTA
-          - OVERRIDE
+        $ref: '#/definitions/UserSchemaAttributeMasterType'
       priority:
         items:
           $ref: '#/definitions/UserSchemaAttributeMasterPriority'
         type: array
     x-okta-tags:
         - UserSchema
+  UserSchemaAttributeMasterType:
+    enum:
+      - PROFILE_MASTER
+        - OKTA
+        - OVERRIDE
+    type: string
+    x-okta-tags:
+      - UserSchema
   UserSchemaAttributeMasterPriority:
     properties:
       type:
