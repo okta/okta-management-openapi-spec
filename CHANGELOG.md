@@ -2,6 +2,33 @@
 Running changelog of releases since `2.2.3`
 Running changelog of releases since `2.2.4`
 
+## 2.3.0
+
+## Additions
+
+- Added missing operations and models for [Schemas API](https://developer.okta.com/docs/reference/api/schemas/).
+
+### New Models
+
+- UserSchema (Contains a property with special character called `$schema`)
+- UserSchemaAttribute
+- UserSchemaAttributeMaster
+- UserSchemaAttributePermission
+- UserSchemaBase
+- UserSchemaBaseProperties
+- UserSchemaPublic
+
+### New Operations
+
+- getApplicationUserSchema
+- updateApplicationUserProfile
+- getUserSchema
+- updateUserProfile
+
+## Bug Fixes
+
+- Made `JsonWebKey` editable.
+
 ## v2.2.5
 ## Bug Fixes
 - Fixed typo in README (https://github.com/okta/okta-management-openapi-spec/pull/9)
