@@ -19582,6 +19582,12 @@
         "description": {
           "type": "string"
         },
+        "enum": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "master": {
           "$ref": "#/definitions/UserSchemaAttributeMaster"
         },
@@ -19594,6 +19600,12 @@
         "mutability": {
           "type": "string"
         },
+        "oneOf": {
+          "items": {
+            "$ref": "#/definitions/UserSchemaAttributeEnum"
+          },
+          "type": "array"
+        },
         "permissions": {
           "items": {
             "$ref": "#/definitions/UserSchemaAttributePermission"
@@ -19604,12 +19616,44 @@
           "type": "boolean"
         },
         "scope": {
+          "enum": [
+            "SELF",
+            "NONE"
+          ],
           "type": "string"
         },
         "title": {
           "type": "string"
         },
         "type": {
+          "enum": [
+            "string",
+            "boolean",
+            "number",
+            "integer",
+            "array"
+          ],
+          "type": "string"
+        },
+        "union": {
+          "enum": [
+            "DISABLE",
+            "ENABLE"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaAttributeEnum": {
+      "properties": {
+        "const": {
+          "type": "string"
+        },
+        "title": {
           "type": "string"
         }
       },
@@ -19620,7 +19664,32 @@
     },
     "UserSchemaAttributeMaster": {
       "properties": {
+        "priority": {
+          "items": {
+            "$ref": "#/definitions/UserSchemaAttributeMasterPriority"
+          },
+          "type": "array"
+        },
         "type": {
+          "enum": [
+            "PROFILE_MASTER",
+            "OKTA",
+            "OVERRIDE"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaAttributeMasterPriority": {
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "valuse": {
           "type": "string"
         }
       },

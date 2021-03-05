@@ -9338,12 +9338,29 @@ definitions:
         type: "string"
       type:
         type: "string"
+        enum:
+          - string
+          - boolean
+          - number
+          - integer
+          - array
       required:
         type: "boolean"
       mutability:
         type: "string"
       scope:
         type: "string"
+        enum:
+          - SELF
+          - NONE
+      enum:
+        items:
+          type: string
+        type: array
+      oneOf:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeEnum'
+        type: array
       minLength:
         type: "integer"
       maxLength:
@@ -9356,8 +9373,22 @@ definitions:
           $ref: "#/definitions/UserSchemaAttributePermission"
       master:
         $ref: "#/definitions/UserSchemaAttributeMaster"
+      union:
+        enum:
+          - DISABLE
+          - ENABLE
+        type: string
     x-okta-tags:
         - UserSchema
+  UserSchemaAttributeEnum:
+    properties:
+      const:
+        type: string
+      title:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
   UserSchemaAttributePermission:
     type: object
     properties:
@@ -9372,8 +9403,25 @@ definitions:
     properties:
       type:
         type: "string"
+        enum:
+          - PROFILE_MASTER
+          - OKTA
+          - OVERRIDE
+      priority:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeMasterPriority'
+        type: array
     x-okta-tags:
         - UserSchema
+  UserSchemaAttributeMasterPriority:
+    properties:
+      type:
+        type: string
+      valuse:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
   UserSchemaBase:
     type: "object"
     properties:
