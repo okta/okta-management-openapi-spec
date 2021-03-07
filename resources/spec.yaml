@@ -9311,15 +9311,36 @@ definitions:
         type: "string"
         readOnly: true
       properties:
-        additionalProperties:
-          type: object
+        $ref: '#/definitions/UserSchemaProperties'
         readOnly: true
-        type: object
       _links:
         additionalProperties:
           type: object
         readOnly: true
         type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaProperties:
+    properties:
+      profile:
+        $ref: '#/definitions/UserSchemaPropertiesProfile'
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaPropertiesProfile:
+    properties:
+      allOf:
+        items:
+          $ref: '#/definitions/UserSchemaPropertiesProfileItem'
+        type: array
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaPropertiesProfileItem:
+    properties:
+      "$ref":
+        type: string
+    type: object
     x-okta-tags:
       - UserSchema
   UserSchemaDefinitions:
@@ -9366,6 +9387,31 @@ definitions:
         $ref: "#/definitions/UserSchemaAttributeMaster"
       union:
         $ref: "#/definitions/UserSchemaAttributeUnion"
+      items:
+        $ref: "#/definitions/UserSchemaAttributeItems"
+      pattern:
+        type: "string"
+      unique:
+        type: "string"
+      externalName:
+        type: "string"
+      externalNamespace:
+        type: "string"
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeItems:
+    properties:
+      enum:
+        items:
+          type: string
+        type: array
+      oneOf:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeEnum'
+        type: array
+      type:
+        type: string
+    type: object
     x-okta-tags:
       - UserSchema
   UserSchemaAttributeType:
@@ -9528,15 +9574,17 @@ definitions:
       type:
         type: "string"
       properties:
-        additionalProperties:
-          type: object
         type: object
+        additionalProperties:
+          $ref: '#/definitions/UserSchemaAttribute'
       required:
         type: "array"
         items:
           type: "string"
     x-okta-tags:
       - UserSchema
+  UserSchemaPublicProperties:
+
   LinkedObject:
     properties:
       _links:
