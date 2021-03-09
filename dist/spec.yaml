@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.3.0
+  version: 2.4.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -737,6 +737,33 @@ paths:
       security:
         - api_token: []
       summary: Deactivate Application
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/sso/saml/metadata':
+    get:
+      consumes:
+        - application/json
+      description: Previews SAML metadata for an application
+      operationId: appSamlMetadata
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: query
+          name: kid
+          type: string
+      produces:
+        - text/xml
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              type: integer
+            type: array
+      security:
+        - api_token: []
       tags:
         - Application
   '/api/v1/apps/{appId}/tokens':
@@ -3605,6 +3632,30 @@ paths:
       security:
         - api_token: []
       summary: Deactivate Identity Provider
+      tags:
+        - IdentityProvider
+  '/api/v1/idps/{idpId}/metadata.xml':
+    get:
+      consumes:
+        - application/json
+      description: Federation metadata document for the IdP
+      operationId: identityProviderMetadata
+      parameters:
+        - in: path
+          name: idpId
+          required: true
+          type: string
+      produces:
+        - application/octet-stream
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              type: integer
+            type: array
+      security:
+        - api_token: []
       tags:
         - IdentityProvider
   '/api/v1/idps/{idpId}/users':
