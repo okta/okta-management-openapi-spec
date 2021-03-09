@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.3.0
+  version: 2.4.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -1633,6 +1633,54 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/AuthorizationServerPolicy'
+      security:
+        - api_token: []
+      tags:
+        - AuthorizationServer
+  '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/lifecycle/activate':
+    post:
+      consumes:
+        - application/json
+      description: Activate Authorization Server Policy
+      operationId: activateAuthorizationServerPolicy
+      parameters:
+        - in: path
+          name: authServerId
+          required: true
+          type: string
+        - in: path
+          name: policyId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      tags:
+        - AuthorizationServer
+  '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/lifecycle/deactivate':
+    post:
+      consumes:
+        - application/json
+      description: Deactivate Authorization Server Policy
+      operationId: deactivateAuthorizationServerPolicy
+      parameters:
+        - in: path
+          name: authServerId
+          required: true
+          type: string
+        - in: path
+          name: policyId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
       security:
         - api_token: []
       tags:
@@ -7789,6 +7837,16 @@ definitions:
           - dest: policyId
             src: id
         operationId: deleteAuthorizationServerPolicyRule
+      - alias: activate
+        arguments:
+          - dest: policyId
+            src: id
+        operationId: activateAuthorizationServerPolicy
+      - alias: deactivate
+        arguments:
+          - dest: policyId
+            src: id
+        operationId: deactivateAuthorizationServerPolicy
     x-okta-tags:
       - AuthorizationServer
   AuthorizationServerPolicyRule:
