@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.3.0
+  version: 2.4.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -10820,6 +10820,10 @@ definitions:
       - Policy
   PolicyRule:
     properties:
+      actions:
+        $ref: '#/definitions/PolicyRuleActions'
+      conditions:
+        $ref: '#/definitions/PolicyRuleConditions'
       created:
         format: date-time
         readOnly: true
@@ -10830,6 +10834,8 @@ definitions:
       lastUpdated:
         format: date-time
         readOnly: true
+        type: string
+      name:
         type: string
       priority:
         type: integer
@@ -10887,6 +10893,36 @@ definitions:
         PASSWORD: '#/definitions/PasswordPolicyRule'
         SIGN_ON: '#/definitions/OktaSignOnPolicyRule'
       propertyName: type
+  PolicyRuleActions:
+    properties:
+      enroll:
+        $ref: '#/definitions/PolicyRuleActionsEnroll'
+      passwordChange:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      selfServicePasswordReset:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      selfServiceUnlock:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      signon:
+        $ref: '#/definitions/OktaSignOnPolicyRuleSignonActions'
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyRuleActionsEnroll:
+    properties:
+      self:
+        $ref: '#/definitions/PolicyRuleActionsEnrollSelf'
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyRuleActionsEnrollSelf:
+    enum:
+      - CHALLENGE
+      - LOGIN
+      - NEVER
+    type: string
+    x-okta-tags:
+      - Policy
   PolicyRuleAuthContextCondition:
     properties:
       authType:
