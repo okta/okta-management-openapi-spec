@@ -7,3 +7,16 @@ scripts:
   - npm run validate-swagger
   - npm run validate-custom
   - npm test
+
+after_success:
+  - npm run build-redoc
+
+deploy:
+  - provider: pages
+    skip_cleanup: true
+    github_token: "$GITHUB_TOKEN"
+    local_dir: ./build/gh-pages
+    email: deploy-openapi-spec@okta.com
+    name: Okta OpenAPI Spec Deployment Bot
+    on:
+      branch: master
