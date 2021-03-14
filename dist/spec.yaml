@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.3.0
+  version: 2.4.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -4896,6 +4896,46 @@ paths:
       summary: Update SMS Template
       tags:
         - Template
+  /api/v1/threats/configuration:
+    get:
+      consumes:
+        - application/json
+      description: Gets current ThreatInsight configuration
+      operationId: getCurrentConfiguration
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
+    post:
+      consumes:
+        - application/json
+      description: Updates ThreatInsight configuration
+      operationId: updateConfiguration
+      parameters:
+        - in: body
+          name: ThreatInsightConfiguration
+          required: true
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
   /api/v1/trustedOrigins:
     get:
       consumes:
@@ -10781,6 +10821,10 @@ definitions:
       - Policy
   PolicyRule:
     properties:
+      actions:
+        $ref: '#/definitions/PolicyRuleActions'
+      conditions:
+        $ref: '#/definitions/PolicyRuleConditions'
       created:
         format: date-time
         readOnly: true
@@ -10791,6 +10835,8 @@ definitions:
       lastUpdated:
         format: date-time
         readOnly: true
+        type: string
+      name:
         type: string
       priority:
         type: integer
@@ -10848,6 +10894,36 @@ definitions:
         PASSWORD: '#/definitions/PasswordPolicyRule'
         SIGN_ON: '#/definitions/OktaSignOnPolicyRule'
       propertyName: type
+  PolicyRuleActions:
+    properties:
+      enroll:
+        $ref: '#/definitions/PolicyRuleActionsEnroll'
+      passwordChange:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      selfServicePasswordReset:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      selfServiceUnlock:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      signon:
+        $ref: '#/definitions/OktaSignOnPolicyRuleSignonActions'
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyRuleActionsEnroll:
+    properties:
+      self:
+        $ref: '#/definitions/PolicyRuleActionsEnrollSelf'
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyRuleActionsEnrollSelf:
+    enum:
+      - CHALLENGE
+      - LOGIN
+      - NEVER
+    type: string
+    x-okta-tags:
+      - Policy
   PolicyRuleAuthContextCondition:
     properties:
       authType:
@@ -11825,6 +11901,38 @@ definitions:
         type: string
     x-okta-tags:
       - User
+  ThreatInsightConfiguration:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      action:
+        type: string
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      excludeZones:
+        items:
+          type: string
+        type: array
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getCurrentConfiguration
+      - alias: update
+        arguments:
+          - dest: threatInsightConfiguration
+            self: true
+        operationId: updateConfiguration
+    x-okta-tags:
+      - ThreatInsight
   TokenAuthorizationServerPolicyRuleAction:
     properties:
       accessTokenLifetimeMinutes:
