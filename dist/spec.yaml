@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.4.0
+  version: 2.3.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -12612,10 +12612,8 @@ definitions:
         readOnly: true
         type: string
       properties:
-        additionalProperties:
-          type: object
+        $ref: '#/definitions/UserSchemaProperties'
         readOnly: true
-        type: object
       title:
         type: string
       type:
@@ -12632,6 +12630,12 @@ definitions:
         items:
           type: string
         type: array
+      externalName:
+        type: string
+      externalNamespace:
+        type: string
+      items:
+        $ref: '#/definitions/UserSchemaAttributeItems'
       master:
         $ref: '#/definitions/UserSchemaAttributeMaster'
       maxLength:
@@ -12644,6 +12648,8 @@ definitions:
         items:
           $ref: '#/definitions/UserSchemaAttributeEnum'
         type: array
+      pattern:
+        type: string
       permissions:
         items:
           $ref: '#/definitions/UserSchemaAttributePermission'
@@ -12658,6 +12664,8 @@ definitions:
         $ref: '#/definitions/UserSchemaAttributeType'
       union:
         $ref: '#/definitions/UserSchemaAttributeUnion'
+      unique:
+        type: string
     type: object
     x-okta-tags:
       - UserSchema
@@ -12666,6 +12674,21 @@ definitions:
       const:
         type: string
       title:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeItems:
+    properties:
+      enum:
+        items:
+          type: string
+        type: array
+      oneOf:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeEnum'
+        type: array
+      type:
         type: string
     type: object
     x-okta-tags:
@@ -12823,6 +12846,29 @@ definitions:
     type: object
     x-okta-tags:
       - UserSchema
+  UserSchemaProperties:
+    properties:
+      profile:
+        $ref: '#/definitions/UserSchemaPropertiesProfile'
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaPropertiesProfile:
+    properties:
+      allOf:
+        items:
+          $ref: '#/definitions/UserSchemaPropertiesProfileItem'
+        type: array
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaPropertiesProfileItem:
+    properties:
+      $ref:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
   UserSchemaPublic:
     properties:
       id:
@@ -12830,7 +12876,7 @@ definitions:
         type: string
       properties:
         additionalProperties:
-          type: object
+          $ref: '#/definitions/UserSchemaAttribute'
         type: object
       required:
         items:

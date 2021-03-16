@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.4.0"
+    "version": "2.3.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -19727,11 +19727,8 @@
           "type": "string"
         },
         "properties": {
-          "additionalProperties": {
-            "type": "object"
-          },
-          "readOnly": true,
-          "type": "object"
+          "$ref": "#/definitions/UserSchemaProperties",
+          "readOnly": true
         },
         "title": {
           "type": "string"
@@ -19757,6 +19754,15 @@
           },
           "type": "array"
         },
+        "externalName": {
+          "type": "string"
+        },
+        "externalNamespace": {
+          "type": "string"
+        },
+        "items": {
+          "$ref": "#/definitions/UserSchemaAttributeItems"
+        },
         "master": {
           "$ref": "#/definitions/UserSchemaAttributeMaster"
         },
@@ -19774,6 +19780,9 @@
             "$ref": "#/definitions/UserSchemaAttributeEnum"
           },
           "type": "array"
+        },
+        "pattern": {
+          "type": "string"
         },
         "permissions": {
           "items": {
@@ -19795,6 +19804,9 @@
         },
         "union": {
           "$ref": "#/definitions/UserSchemaAttributeUnion"
+        },
+        "unique": {
+          "type": "string"
         }
       },
       "type": "object",
@@ -19808,6 +19820,29 @@
           "type": "string"
         },
         "title": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaAttributeItems": {
+      "properties": {
+        "enum": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "oneOf": {
+          "items": {
+            "$ref": "#/definitions/UserSchemaAttributeEnum"
+          },
+          "type": "array"
+        },
+        "type": {
           "type": "string"
         }
       },
@@ -20044,6 +20079,42 @@
         "UserSchema"
       ]
     },
+    "UserSchemaProperties": {
+      "properties": {
+        "profile": {
+          "$ref": "#/definitions/UserSchemaPropertiesProfile"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaPropertiesProfile": {
+      "properties": {
+        "allOf": {
+          "items": {
+            "$ref": "#/definitions/UserSchemaPropertiesProfileItem"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
+    "UserSchemaPropertiesProfileItem": {
+      "properties": {
+        "$ref": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "UserSchema"
+      ]
+    },
     "UserSchemaPublic": {
       "properties": {
         "id": {
@@ -20052,7 +20123,7 @@
         },
         "properties": {
           "additionalProperties": {
-            "type": "object"
+            "$ref": "#/definitions/UserSchemaAttribute"
           },
           "type": "object"
         },
