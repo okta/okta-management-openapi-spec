@@ -6873,6 +6873,46 @@ paths:
         - api_token: []
       tags:
         - User
+  '/api/v1/threats/configuration':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Updates ThreatInsight configuration
+      operationId: updateConfiguration
+      parameters:
+        - in: body
+          required: true
+          name: ThreatInsightConfiguration
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
+    get:
+      consumes:
+        - application/json
+      description: >-
+        Gets current ThreatInsight configuration
+      operationId: getCurrentConfiguration
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ThreatInsightConfiguration'
+      security:
+        - api_token: []
+      tags:
+        - ThreatInsight
 definitions:
   ActivateFactorRequest:
     properties:
@@ -11024,6 +11064,12 @@ definitions:
           - SIGN_ON
           - PASSWORD
         type: string
+      name:
+        type: string
+      conditions:
+        $ref: '#/definitions/PolicyRuleConditions'
+      actions:
+        $ref: '#/definitions/PolicyRuleActions'
     type: object
     x-okta-crud:
       - alias: update
@@ -11119,6 +11165,36 @@ definitions:
       users:
         $ref: '#/definitions/UserPolicyRuleCondition'
     type: object
+    x-okta-tags:
+      - Policy
+  PolicyRuleActions:
+    properties:
+      enroll:
+        $ref: '#/definitions/PolicyRuleActionsEnroll'
+      signon:
+        $ref: '#/definitions/OktaSignOnPolicyRuleSignonActions'
+      passwordChange:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      selfServicePasswordReset:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+      selfServiceUnlock:
+        $ref: '#/definitions/PasswordPolicyRuleAction'
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyRuleActionsEnroll:
+    properties:
+      self:
+        $ref: '#/definitions/PolicyRuleActionsEnrollSelf'
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyRuleActionsEnrollSelf:
+    enum:
+      - CHALLENGE
+      - LOGIN
+      - NEVER
+    type: string
     x-okta-tags:
       - Policy
   PolicySubject:
@@ -12993,3 +13069,36 @@ definitions:
     x-okta-parent: '#/definitions/ApplicationSettingsApplication'
     x-okta-tags:
       - Application
+  ThreatInsightConfiguration:
+    properties:
+      action: 
+        type: string
+      excludeZones:
+        items:
+          type: string
+        type: array
+      created: 
+        format: date-time
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getCurrentConfiguration
+      - alias: update
+        arguments:
+          - dest: threatInsightConfiguration
+            self: true
+        operationId: updateConfiguration
+    x-okta-tags:
+      - ThreatInsight
+

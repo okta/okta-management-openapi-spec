@@ -7858,6 +7858,71 @@
         ]
       }
     },
+    "/api/v1/threats/configuration": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Gets current ThreatInsight configuration",
+        "operationId": "getCurrentConfiguration",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ThreatInsightConfiguration"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "ThreatInsight"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Updates ThreatInsight configuration",
+        "operationId": "updateConfiguration",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "ThreatInsightConfiguration",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ThreatInsightConfiguration"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ThreatInsightConfiguration"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "ThreatInsight"
+        ]
+      }
+    },
     "/api/v1/trustedOrigins": {
       "get": {
         "consumes": [
@@ -16949,6 +17014,12 @@
     },
     "PolicyRule": {
       "properties": {
+        "actions": {
+          "$ref": "#/definitions/PolicyRuleActions"
+        },
+        "conditions": {
+          "$ref": "#/definitions/PolicyRuleConditions"
+        },
         "created": {
           "format": "date-time",
           "readOnly": true,
@@ -16961,6 +17032,9 @@
         "lastUpdated": {
           "format": "date-time",
           "readOnly": true,
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         },
         "priority": {
@@ -17061,6 +17135,51 @@
         },
         "propertyName": "type"
       }
+    },
+    "PolicyRuleActions": {
+      "properties": {
+        "enroll": {
+          "$ref": "#/definitions/PolicyRuleActionsEnroll"
+        },
+        "passwordChange": {
+          "$ref": "#/definitions/PasswordPolicyRuleAction"
+        },
+        "selfServicePasswordReset": {
+          "$ref": "#/definitions/PasswordPolicyRuleAction"
+        },
+        "selfServiceUnlock": {
+          "$ref": "#/definitions/PasswordPolicyRuleAction"
+        },
+        "signon": {
+          "$ref": "#/definitions/OktaSignOnPolicyRuleSignonActions"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "PolicyRuleActionsEnroll": {
+      "properties": {
+        "self": {
+          "$ref": "#/definitions/PolicyRuleActionsEnrollSelf"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "PolicyRuleActionsEnrollSelf": {
+      "enum": [
+        "CHALLENGE",
+        "LOGIN",
+        "NEVER"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Policy"
+      ]
     },
     "PolicyRuleAuthContextCondition": {
       "properties": {
@@ -18654,6 +18773,56 @@
       },
       "x-okta-tags": [
         "User"
+      ]
+    },
+    "ThreatInsightConfiguration": {
+      "properties": {
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "action": {
+          "type": "string"
+        },
+        "created": {
+          "format": "date-time",
+          "readOnly": true,
+          "type": "string"
+        },
+        "excludeZones": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "lastUpdated": {
+          "format": "date-time",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "x-okta-crud": [
+        {
+          "alias": "read",
+          "arguments": [],
+          "operationId": "getCurrentConfiguration"
+        },
+        {
+          "alias": "update",
+          "arguments": [
+            {
+              "dest": "threatInsightConfiguration",
+              "self": true
+            }
+          ],
+          "operationId": "updateConfiguration"
+        }
+      ],
+      "x-okta-tags": [
+        "ThreatInsight"
       ]
     },
     "TokenAuthorizationServerPolicyRuleAction": {
