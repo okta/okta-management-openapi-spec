@@ -15408,24 +15408,16 @@
           "type": "string"
         },
         "status": {
-          "enum": [
-            "ACTIVE",
-            "INACTIVE"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/NetworkZoneStatus"
         },
         "system": {
           "type": "boolean"
         },
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/NetworkZoneType"
         },
         "usage": {
-          "enum": [
-            "POLICY",
-            "BLOCKLIST"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/NetworkZoneUsage"
         }
       },
       "type": "object",
@@ -15438,7 +15430,7 @@
               "src": "id"
             }
           ],
-          "operationId": "NetworkZone"
+          "operationId": "getNetworkZone"
         },
         {
           "alias": "update",
@@ -15494,17 +15486,23 @@
     "NetworkZoneAddress": {
       "properties": {
         "type": {
-          "enum": [
-            "CIDR",
-            "RANGE"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/NetworkZoneAddressType"
         },
         "value": {
           "type": "string"
         }
       },
       "type": "object",
+      "x-okta-tags": [
+        "NetworkZone"
+      ]
+    },
+    "NetworkZoneAddressType": {
+      "enum": [
+        "CIDR",
+        "RANGE"
+      ],
+      "type": "string",
       "x-okta-tags": [
         "NetworkZone"
       ]
@@ -15519,6 +15517,36 @@
         }
       },
       "type": "object",
+      "x-okta-tags": [
+        "NetworkZone"
+      ]
+    },
+    "NetworkZoneStatus": {
+      "enum": [
+        "ACTIVE",
+        "INACTIVE"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "NetworkZone"
+      ]
+    },
+    "NetworkZoneType": {
+      "enum": [
+        "IP",
+        "DYNAMIC"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "NetworkZone"
+      ]
+    },
+    "NetworkZoneUsage": {
+      "enum": [
+        "POLICY",
+        "BLOCKLIST"
+      ],
+      "type": "string",
       "x-okta-tags": [
         "NetworkZone"
       ]
