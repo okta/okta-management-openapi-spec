@@ -15771,6 +15771,7 @@
           "$ref": "#/definitions/PolicyPeopleCondition"
         }
       },
+      "x-okta-parent": "#/definition/PolicyRuleConditions",
       "x-okta-tags": [
         "Policy"
       ]
@@ -16204,6 +16205,7 @@
           "$ref": "#/definitions/PolicyPeopleCondition"
         }
       },
+      "x-okta-parent": "#/definition/PolicyRuleConditions",
       "x-okta-tags": [
         "Policy"
       ]
