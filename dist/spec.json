@@ -6436,6 +6436,142 @@
         ]
       }
     },
+    "/api/v1/mappings": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Enumerates Profile Mappings in your organization with pagination.",
+        "operationId": "listProfileMappings",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "after",
+            "type": "string"
+          },
+          {
+            "default": -1,
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "sourceId",
+            "type": "string"
+          },
+          {
+            "default": "",
+            "in": "query",
+            "name": "targetId",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/ProfileMapping"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "ProfileMapping"
+        ]
+      }
+    },
+    "/api/v1/mappings/{mappingId}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Fetches a single Profile Mapping referenced by its ID.",
+        "operationId": "getProfileMapping",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "mappingId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ProfileMapping"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get Profile Mapping",
+        "tags": [
+          "ProfileMapping"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Updates an existing Profile Mapping by adding, updating, or removing one or many Property Mappings.",
+        "operationId": "updateProfileMapping",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "mappingId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "profileMapping",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProfileMapping"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ProfileMapping"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Update Profile Mapping",
+        "tags": [
+          "ProfileMapping"
+        ]
+      }
+    },
     "/api/v1/meta/schemas/apps/{appInstanceId}/default": {
       "get": {
         "consumes": [
@@ -17371,6 +17507,111 @@
       "type": "object",
       "x-okta-tags": [
         "Policy"
+      ]
+    },
+    "ProfileMapping": {
+      "properties": {
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "properties": {
+          "additionalProperties": {
+            "$ref": "#/definitions/ProfileMappingProperty"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "source": {
+          "$ref": "#/definitions/ProfileMappingSource"
+        },
+        "target": {
+          "$ref": "#/definitions/ProfileMappingSource"
+        }
+      },
+      "type": "object",
+      "x-okta-crud": [
+        {
+          "alias": "read",
+          "arguments": [
+            {
+              "dest": "mappingId",
+              "src": "id"
+            }
+          ],
+          "operationId": "getProfileMapping"
+        },
+        {
+          "alias": "update",
+          "arguments": [
+            {
+              "dest": "mappingId",
+              "src": "id"
+            }
+          ],
+          "operationId": "updateProfileMapping"
+        }
+      ],
+      "x-okta-tags": [
+        "ProfileMapping"
+      ]
+    },
+    "ProfileMappingProperty": {
+      "properties": {
+        "expression": {
+          "type": "string"
+        },
+        "pushStatus": {
+          "$ref": "#/definitions/ProfileMappingPropertyPushStatus"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "ProfileMapping"
+      ]
+    },
+    "ProfileMappingPropertyPushStatus": {
+      "enum": [
+        "PUSH",
+        "DONT_PUSH"
+      ],
+      "type": "object",
+      "x-okta-tags": [
+        "ProfileMapping"
+      ]
+    },
+    "ProfileMappingSource": {
+      "properties": {
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "ProfileMapping"
       ]
     },
     "Protocol": {
