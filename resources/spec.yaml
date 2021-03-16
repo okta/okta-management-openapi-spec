@@ -1634,6 +1634,50 @@ paths:
         - api_token: []
       tags:
         - AuthorizationServer
+  '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/lifecycle/activate':
+    post:
+      description: Activate Authorization Server Policy
+      operationId: activateAuthorizationServerPolicy
+      parameters:
+        - in: path
+          name: authServerId
+          required: true
+          type: string
+        - in: path
+          name: policyId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: [ ]
+      tags:
+        - AuthorizationServer
+  '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/lifecycle/deactivate':
+    post:
+      description: Deactivate Authorization Server Policy
+      operationId: deactivateAuthorizationServerPolicy
+      parameters:
+        - in: path
+          name: authServerId
+          required: true
+          type: string
+        - in: path
+          name: policyId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: [ ]
+      tags:
+        - AuthorizationServer
   '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/rules':
     get:
       consumes:
@@ -8973,6 +9017,16 @@ definitions:
           - dest: policyId
             src: id
         operationId: deleteAuthorizationServerPolicyRule
+      - alias: activate
+        arguments:
+          - dest: policyId
+            src: id
+        operationId: activateAuthorizationServerPolicy
+      - alias: deactivate
+        arguments:
+          - dest: policyId
+            src: id
+        operationId: deactivateAuthorizationServerPolicy
     x-okta-tags:
       - AuthorizationServer
   AuthorizationServerPolicyRule:
