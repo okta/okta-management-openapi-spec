@@ -16624,6 +16624,7 @@
         "CUSTOM_URL",
         "ORG_URL"
       ],
+      "type": "string",
       "x-okta-tags": [
         "Application"
       ]
