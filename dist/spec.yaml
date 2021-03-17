@@ -759,7 +759,9 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/RawString'
+            items:
+              type: integer
+            type: array
       security:
         - api_token: []
       tags:
@@ -3697,7 +3699,9 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/RawString'
+            items:
+              type: integer
+            type: array
       security:
         - api_token: []
       tags:
@@ -11794,11 +11798,6 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
-  RawString:
-    type: string
-    x-okta-tags:
-      - Application
-      - IdentityProvider
   RecoveryQuestionCredential:
     properties:
       answer:
