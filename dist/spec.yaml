@@ -8765,6 +8765,7 @@ definitions:
     enum:
       - call
       - email
+      - hotp
       - push
       - question
       - sms
@@ -12943,6 +12944,7 @@ definitions:
       mapping:
         call: '#/definitions/CallUserFactor'
         email: '#/definitions/EmailUserFactor'
+        hotp: '#/definitions/CustomHotpUserFactor'
         push: '#/definitions/PushUserFactor'
         question: '#/definitions/SecurityQuestionUserFactor'
         sms: '#/definitions/SmsUserFactor'
