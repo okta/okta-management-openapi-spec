@@ -10581,6 +10581,7 @@ definitions:
     properties:
       people:
         $ref: '#/definitions/PolicyPeopleCondition'
+    x-okta-parent: '#/definitions/PolicyRuleConditions'
     x-okta-tags:
       - Policy
   OktaSignOnPolicyRule:
@@ -10685,6 +10686,7 @@ definitions:
     enum:
       - CUSTOM_URL
       - ORG_URL
+    type: string
     x-okta-tags:
       - Application
   OpenIdConnectApplicationSettings:
@@ -10869,6 +10871,7 @@ definitions:
         $ref: '#/definitions/PasswordPolicyAuthenticationProviderCondition'
       people:
         $ref: '#/definitions/PolicyPeopleCondition'
+    x-okta-parent: '#/definitions/PolicyRuleConditions'
     x-okta-tags:
       - Policy
   PasswordPolicyDelegationSettings:
@@ -13419,6 +13422,12 @@ definitions:
           - dest: typeId
             src: id
         operationId: deleteUserType
+    x-okta-operations:
+      - alias: replaceUserType
+        arguments:
+          - dest: roleId
+            src: id
+        operationId: replaceUserType
     x-okta-tags:
       - UserType
   VerifyFactorRequest:

@@ -16551,6 +16551,7 @@
           "$ref": "#/definitions/PolicyPeopleCondition"
         }
       },
+      "x-okta-parent": "#/definitions/PolicyRuleConditions",
       "x-okta-tags": [
         "Policy"
       ]
@@ -16707,6 +16708,7 @@
         "CUSTOM_URL",
         "ORG_URL"
       ],
+      "type": "string",
       "x-okta-tags": [
         "Application"
       ]
@@ -16984,6 +16986,7 @@
           "$ref": "#/definitions/PolicyPeopleCondition"
         }
       },
+      "x-okta-parent": "#/definitions/PolicyRuleConditions",
       "x-okta-tags": [
         "Policy"
       ]
@@ -20989,6 +20992,18 @@
             }
           ],
           "operationId": "deleteUserType"
+        }
+      ],
+      "x-okta-operations": [
+        {
+          "alias": "replaceUserType",
+          "arguments": [
+            {
+              "dest": "roleId",
+              "src": "id"
+            }
+          ],
+          "operationId": "replaceUserType"
         }
       ],
       "x-okta-tags": [
