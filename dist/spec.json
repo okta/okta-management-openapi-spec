@@ -20272,12 +20272,12 @@
         "mapping": {
           "call": "#/definitions/CallUserFactor",
           "email": "#/definitions/EmailUserFactor",
-          "hotp": "#/definitions/CustomHotpUserFactor",
           "push": "#/definitions/PushUserFactor",
           "question": "#/definitions/SecurityQuestionUserFactor",
           "sms": "#/definitions/SmsUserFactor",
           "token": "#/definitions/TokenUserFactor",
           "token:hardware": "#/definitions/HardwareUserFactor",
+          "token:hotp": "#/definitions/CustomHotpUserFactor",
           "token:software:totp": "#/definitions/TotpUserFactor",
           "u2f": "#/definitions/U2fUserFactor",
           "web": "#/definitions/WebUserFactor",

@@ -13044,7 +13044,7 @@ definitions:
         u2f: '#/definitions/U2fUserFactor'
         web: '#/definitions/WebUserFactor'
         webauthn: '#/definitions/WebAuthnUserFactor'
-        hotp: '#/definitions/CustomHotpUserFactor'
+        'token:hotp': '#/definitions/CustomHotpUserFactor'
       propertyName: factorType
   UserIdentifierConditionEvaluatorPattern:
     properties:
@@ -13413,13 +13413,13 @@ definitions:
       - Application
   ThreatInsightConfiguration:
     properties:
-      action: 
+      action:
         type: string
       excludeZones:
         items:
           type: string
         type: array
-      created: 
+      created:
         format: date-time
         readOnly: true
         type: string
