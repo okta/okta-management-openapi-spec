@@ -13371,6 +13371,12 @@ definitions:
           - dest: typeId
             src: id
         operationId: deleteUserType
+    x-okta-operations:
+      - alias: replaceUserType
+        arguments:
+          - dest: roleId
+            src: id
+        operationId: replaceUserType
     x-okta-tags:
       - UserType
   VerifyFactorRequest:
