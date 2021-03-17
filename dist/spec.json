@@ -1190,10 +1190,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "items": {
-                "type": "integer"
-              },
-              "type": "array"
+              "$ref": "#/definitions/RawString"
             }
           }
         },
@@ -5832,10 +5829,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "items": {
-                "type": "integer"
-              },
-              "type": "array"
+              "$ref": "#/definitions/RawString"
             }
           }
         },
@@ -18401,6 +18395,13 @@
       },
       "x-okta-tags": [
         "UserFactor"
+      ]
+    },
+    "RawString": {
+      "type": "string",
+      "x-okta-tags": [
+        "Application",
+        "IdentityProvider"
       ]
     },
     "RecoveryQuestionCredential": {
