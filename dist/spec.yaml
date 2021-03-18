@@ -7042,6 +7042,8 @@ paths:
             type: array
       security:
         - api_token: []
+      tags:
+        - NetworkZone
     post:
       consumes:
         - application/json
