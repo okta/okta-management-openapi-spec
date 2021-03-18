@@ -6948,6 +6948,8 @@ paths:
             items:
               $ref: '#/definitions/NetworkZone'
             type: array
+      tags:
+        - NetworkZone
     post:
       consumes:
         - application/json

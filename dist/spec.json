@@ -10998,6 +10998,9 @@
           {
             "api_token": []
           }
+        ],
+        "tags": [
+          "NetworkZone"
         ]
       },
       "post": {
