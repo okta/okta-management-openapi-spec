@@ -10999,6 +10999,7 @@
             "api_token": []
           }
         ],
+        "summary": "List Network Zones",
         "tags": [
           "NetworkZone"
         ]
@@ -11158,7 +11159,7 @@
         "consumes": [
           "application/json"
         ],
-        "description": "Success",
+        "description": "Activate Network Zone",
         "operationId": "activateNetworkZone",
         "parameters": [
           {
@@ -11181,6 +11182,7 @@
             "api_token": []
           }
         ],
+        "summary": "Activate Network Zone",
         "tags": [
           "NetworkZone"
         ]
