@@ -7042,6 +7042,9 @@ paths:
             type: array
       security:
         - api_token: []
+      summary: List Network Zones
+      tags:
+        - NetworkZone
     post:
       consumes:
         - application/json
@@ -7139,7 +7142,7 @@ paths:
     post:
       consumes:
         - application/json
-      description: Success
+      description: Activate Network Zone
       operationId: activateNetworkZone
       parameters:
         - in: path
@@ -7153,6 +7156,7 @@ paths:
           description: Success
       security:
         - api_token: []
+      summary: Activate Network Zone
       tags:
         - NetworkZone
   '/api/v1/zones/{zoneId}/lifecycle/deactivate':
