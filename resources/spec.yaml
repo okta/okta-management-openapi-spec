@@ -8504,6 +8504,7 @@ definitions:
     enum:
       - call
       - email
+      - hotp
       - push
       - question
       - sms
@@ -13046,6 +13047,7 @@ definitions:
         sms: '#/definitions/SmsUserFactor'
         token: '#/definitions/TokenUserFactor'
         'token:hardware': '#/definitions/HardwareUserFactor'
+        'token:hotp': '#/definitions/CustomHotpUserFactor'
         'token:software:totp': '#/definitions/TotpUserFactor'
         u2f: '#/definitions/U2fUserFactor'
         web: '#/definitions/WebUserFactor'
@@ -13419,13 +13421,13 @@ definitions:
       - Application
   ThreatInsightConfiguration:
     properties:
-      action: 
+      action:
         type: string
       excludeZones:
         items:
           type: string
         type: array
-      created: 
+      created:
         format: date-time
         readOnly: true
         type: string

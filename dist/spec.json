@@ -13791,6 +13791,7 @@
       "enum": [
         "call",
         "email",
+        "hotp",
         "push",
         "question",
         "sms",
@@ -20283,6 +20284,7 @@
           "sms": "#/definitions/SmsUserFactor",
           "token": "#/definitions/TokenUserFactor",
           "token:hardware": "#/definitions/HardwareUserFactor",
+          "token:hotp": "#/definitions/CustomHotpUserFactor",
           "token:software:totp": "#/definitions/TotpUserFactor",
           "u2f": "#/definitions/U2fUserFactor",
           "web": "#/definitions/WebUserFactor",
