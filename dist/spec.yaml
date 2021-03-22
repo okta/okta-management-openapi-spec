@@ -2486,6 +2486,12 @@ paths:
           name: ruleId
           required: true
           type: string
+        - description: >-
+            Indicates whether to keep or remove users from groups assigned by
+            this rule.
+          in: query
+          name: removeUsers
+          type: boolean
       produces:
         - application/json
       responses:
@@ -9723,7 +9729,7 @@ definitions:
       x5t:
         readOnly: false
         type: string
-      'x5t#S256':
+      x5t#S256:
         readOnly: false
         type: string
       x5u:
