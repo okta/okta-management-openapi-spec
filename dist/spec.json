@@ -11264,7 +11264,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/NetworkZone"
+            }
           }
         },
         "security": [
@@ -11298,7 +11301,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/NetworkZone"
+            }
           }
         },
         "security": [
