@@ -16592,6 +16592,7 @@
           "$ref": "#/definitions/OktaSignOnPolicyRuleSignonActions"
         }
       },
+      "x-okta-parent": "#/definitions/PolicyRuleActions",
       "x-okta-tags": [
         "Policy"
       ]
@@ -16608,6 +16609,7 @@
           "$ref": "#/definitions/PolicyPeopleCondition"
         }
       },
+      "x-okta-parent": "#/definitions/PolicyRuleConditions",
       "x-okta-tags": [
         "Policy"
       ]
@@ -17313,6 +17315,7 @@
           "$ref": "#/definitions/PasswordPolicyRuleAction"
         }
       },
+      "x-okta-parent": "#/definitions/PolicyRuleActions",
       "x-okta-tags": [
         "Policy"
       ]
@@ -17326,6 +17329,7 @@
           "$ref": "#/definitions/PolicyPeopleCondition"
         }
       },
+      "x-okta-parent": "#/definitions/PolicyRuleConditions",
       "x-okta-tags": [
         "Policy"
       ]
