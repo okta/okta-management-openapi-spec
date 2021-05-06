@@ -1,12 +1,15 @@
 {
   "name": "@okta/openapi",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Utilities to generate OpenAPI specifications for the Okta API",
   "main": "./dist/spec.json",
   "bin": {
     "okta-sdk-generator": "lib/generator.js"
   },
-  "files": ["dist", "lib"],
+  "files": [
+    "dist",
+    "lib"
+  ],
   "engines": {
     "node": ">=8.11"
   },
