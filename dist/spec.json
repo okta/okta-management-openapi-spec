@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.4.0"
+    "version": "2.5.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -441,6 +441,7 @@
         "consumes": [
           "application/json"
         ],
+        "operationId": "publishCsrForApplication",
         "parameters": [
           {
             "in": "path",

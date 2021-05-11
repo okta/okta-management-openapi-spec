@@ -287,6 +287,7 @@ paths:
         - Application
   '/api/v1/apps/{appId}/credentials/csrs/{csrId}/lifecycle/publish':
     post:
+      operationId: publishCsrForApplication
       parameters:
         - in: path
           name: appId
