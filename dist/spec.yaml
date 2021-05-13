@@ -10748,6 +10748,8 @@ definitions:
         type: array
       tos_uri:
         type: string
+      wildcard_redirect:
+        type: string
     x-okta-tags:
       - Application
   OpenIdConnectApplicationSettingsClientKeys:

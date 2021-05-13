@@ -16797,6 +16797,9 @@
         },
         "tos_uri": {
           "type": "string"
+        },
+        "wildcard_redirect": {
+          "type": "string"
         }
       },
       "x-okta-tags": [
