@@ -10842,6 +10842,8 @@ definitions:
         items:
           type: string
         type: array
+      wildcard_redirect:
+        type: string
       response_types:
         items:
           $ref: '#/definitions/OAuthResponseType'
