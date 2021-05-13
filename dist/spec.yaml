@@ -9723,7 +9723,7 @@ definitions:
       x5t:
         readOnly: false
         type: string
-      'x5t#S256':
+      x5t#S256:
         readOnly: false
         type: string
       x5u:
@@ -10747,6 +10747,8 @@ definitions:
           $ref: '#/definitions/OAuthResponseType'
         type: array
       tos_uri:
+        type: string
+      wildcard_redirect:
         type: string
     x-okta-tags:
       - Application
