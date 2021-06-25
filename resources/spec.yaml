@@ -7174,6 +7174,128 @@ paths:
         - api_token: []
       tags:
         - ThreatInsight
+  '/api/v1/domains':
+    get:
+      consumes:
+        - application/json
+      description: List all verified custom Domains for the org.
+      operationId: listDomains
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/DomainListResponse'
+      security:
+        - api_token: []
+      summary: List Domains
+      tags:
+        - Domain
+    post:
+      consumes:
+        - application/json
+      description: Creates your domain.
+      operationId: createDomain
+      parameters:
+        - in: body
+          name: domain
+          required: true
+          schema:
+            $ref: '#/definitions/Domain'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/DomainResponse'
+      security:
+        - api_token: []
+      summary: Create Domain
+      tags:
+        - Domain
+  '/api/v1/domains/{domainId}/verify':
+    post:
+      consumes:
+        - application/json
+      description: Verifies the Domain by `id`.
+      operationId: verifyDomain
+      parameters:
+        - in: path
+          name: domainId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/DomainResponse'
+      security:
+        - api_token: []
+      summary: Verify Domain
+      tags:
+        - Domain
+  '/api/v1/domains/{domainId}/certificate':
+    put:
+      consumes:
+        - application/json
+      description: Creates the Certificate for the Domain.
+      operationId: createCertificate
+      parameters:
+        - in: path
+          name: domainId
+          required: true
+          type: string
+        - in: body
+          name: certificate
+          required: true
+          schema:
+            $ref: '#/definitions/DomainCertificate'
+      responses:
+        '204':
+          description: No Content
+      security:
+        - api_token: []
+      summary: Create Certificate
+      tags:
+        - Domain
+  '/api/v1/domains/{domainId}':
+    delete:
+      consumes:
+        - application/json
+      description: Deletes a Domain by `id`.
+      operationId: deleteDomain
+      parameters:
+        - in: path
+          name: domainId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+      security:
+        - api_token: []
+      summary: Delete Domain
+      tags:
+        - Domain
+    get:
+      consumes:
+        - application/json
+      description: Fetches a Domain by `id`.
+      operationId: getDomain
+      parameters:
+        - in: path
+          name: domainId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/DomainResponse'
+      security:
+        - api_token: []
+      summary: Get Domain
+      tags:
+        - Domain
 definitions:
   ActivateFactorRequest:
     properties:
@@ -8340,6 +8462,121 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  DNSRecord:
+    properties:
+      fqdn:
+        type: string
+      recordType:
+        enum:
+          - TXT
+          - CNAME
+        type: string
+      values:
+        items:
+          type: string
+        type: array
+    x-okta-tags:
+      - Domain
+  Domain:
+    properties:
+      certificateSourcetype:
+        enum:
+          - MANUAL
+        type: string
+      domain:
+        type: string
+    type: object
+    x-okta-crud:
+      - alias: delete
+        arguments:
+          - dest: domainId
+            src: id
+        operationId: deleteDomain
+      - alias: read
+        arguments:
+          - dest: domainId
+            src: id
+        operationId: getDomain
+    x-okta-operations:
+      - alias: verify
+        arguments:
+          - dest: domainId
+            src: id
+        operationId: verifyDomain
+    x-okta-tags:
+      - Domain
+  DomainCertificate:
+    properties:
+      certificate:
+        type:
+          string
+      certificateChain:
+        type:
+          string
+      privateKey:
+        type:
+          string
+      type:
+        enum:
+          - PEM
+        type:
+          string
+    x-okta-tags:
+      - Domain
+  DomainCertificateMetadata:
+    properties:
+      expiration:
+        type: string
+      fingerprint:
+        type: string
+      subject:
+        type: string
+    x-okta-tags:
+      - Domain
+  DomainLinks:
+    properties:
+      certificate:
+        type: object
+      self:
+        type: object
+      verify:
+        type: object
+    x-okta-tags:
+      - Domain
+  DomainListResponse:
+    properties:
+      domains:
+        items:
+          $ref: '#/definitions/DomainResponse'
+        type: array
+    x-okta-tags:
+      - Domain
+  DomainResponse:
+    properties:
+      dnsRecords:
+        items:
+          $ref: '#/definitions/DNSRecord'
+        type: array
+      domain:
+        type:
+          string
+      id:
+        type:
+          string
+      _links:
+        $ref: '#/definitions/DomainLinks'
+      publicCertificate:
+        $ref: '#/definitions/DomainCertificateMetadata'
+      validationStatus:
+        enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - VERIFIED
+          - COMPLETED
+        type:
+          string
+    x-okta-tags:
+      - Domain
   Duration:
     properties:
       number:
