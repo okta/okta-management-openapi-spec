@@ -4141,10 +4141,10 @@ paths:
       operationId: "getApplicationUserSchema"
       description: "Fetches the Schema for an App User"
       parameters:
-      - name: "appInstanceId"
-        in: "path"
-        required: true
-        type: "string"
+        - name: "appInstanceId"
+          in: "path"
+          required: true
+          type: "string"
       produces:
         - application/json
       responses:
@@ -4154,22 +4154,22 @@ paths:
             $ref: "#/definitions/UserSchema"
       security:
         - api_token: []
-      summary:  "Fetches the Schema for an App User"
+      summary: "Fetches the Schema for an App User"
       tags:
         - UserSchema
     post:
       operationId: "updateApplicationUserProfile"
       description: Partial updates on the User Profile properties of the Application User Schema.
       parameters:
-      - name: "appInstanceId"
-        in: "path"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        required: false
-        schema:
-          $ref: "#/definitions/UserSchema"
+        - name: "appInstanceId"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          required: false
+          schema:
+            $ref: "#/definitions/UserSchema"
       responses:
         "200":
           description: "successful operation"
@@ -4177,7 +4177,7 @@ paths:
             $ref: "#/definitions/UserSchema"
       security:
         - api_token: []
-      summary:  "Partial updates on the User Profile properties of the Application User Schema."
+      summary: "Partial updates on the User Profile properties of the Application User Schema."
       tags:
         - UserSchema
   /api/v1/meta/schemas/user/{schemaId}:
@@ -9454,8 +9454,8 @@ definitions:
     x-okta-operations:
       - alias: listPolicyRules
         arguments:
-        - dest: policyId
-          src: id
+          - dest: policyId
+            src: id
         operationId: listAuthorizationServerPolicyRules
       - alias: createPolicyRule
         arguments:
@@ -9556,18 +9556,18 @@ definitions:
   AuthorizationServerPolicyRuleActions:
     properties:
       token:
-         $ref: '#/definitions/TokenAuthorizationServerPolicyRuleAction'
+        $ref: '#/definitions/TokenAuthorizationServerPolicyRuleAction'
     type: object
     x-okta-tags:
       - AuthorizationServerPolicy
   TokenAuthorizationServerPolicyRuleAction:
     properties:
-        accessTokenLifetimeMinutes:
-          type: integer
-        refreshTokenLifetimeMinutes:
-          type: integer
-        refreshTokenWindowMinutes:
-          type: integer
+      accessTokenLifetimeMinutes:
+        type: integer
+      refreshTokenLifetimeMinutes:
+        type: integer
+      refreshTokenWindowMinutes:
+        type: integer
     type: object
     x-okta-tags:
       - AuthorizationServerPolicy
@@ -9941,17 +9941,38 @@ definitions:
         type: "string"
         readOnly: true
       properties:
-        additionalProperties:
-          type: object
+        $ref: '#/definitions/UserSchemaProperties'
         readOnly: true
-        type: object
       _links:
         additionalProperties:
           type: object
         readOnly: true
         type: object
     x-okta-tags:
-        - UserSchema
+      - UserSchema
+  UserSchemaProperties:
+    properties:
+      profile:
+        $ref: '#/definitions/UserSchemaPropertiesProfile'
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaPropertiesProfile:
+    properties:
+      allOf:
+        items:
+          $ref: '#/definitions/UserSchemaPropertiesProfileItem'
+        type: array
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaPropertiesProfileItem:
+    properties:
+      "$ref":
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
   UserSchemaDefinitions:
     type: object
     properties:
@@ -9967,13 +9988,21 @@ definitions:
       title:
         type: "string"
       type:
-        type: "string"
+        $ref: '#/definitions/UserSchemaAttributeType'
       required:
         type: "boolean"
       mutability:
         type: "string"
       scope:
-        type: "string"
+        $ref: "#/definitions/UserSchemaAttributeScope"
+      enum:
+        items:
+          type: string
+        type: array
+      oneOf:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeEnum'
+        type: array
       minLength:
         type: "integer"
       maxLength:
@@ -9986,8 +10015,68 @@ definitions:
           $ref: "#/definitions/UserSchemaAttributePermission"
       master:
         $ref: "#/definitions/UserSchemaAttributeMaster"
+      union:
+        $ref: "#/definitions/UserSchemaAttributeUnion"
+      items:
+        $ref: "#/definitions/UserSchemaAttributeItems"
+      pattern:
+        type: "string"
+      unique:
+        type: "string"
+      externalName:
+        type: "string"
+      externalNamespace:
+        type: "string"
     x-okta-tags:
-        - UserSchema
+      - UserSchema
+  UserSchemaAttributeItems:
+    properties:
+      enum:
+        items:
+          type: string
+        type: array
+      oneOf:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeEnum'
+        type: array
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeType:
+    enum:
+      - string
+      - boolean
+      - number
+      - integer
+      - array
+    type: string
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeScope:
+    enum:
+      - SELF
+      - NONE
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeUnion:
+    enum:
+      - DISABLE
+      - ENABLE
+    type: object
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeEnum:
+    properties:
+      const:
+        type: string
+      title:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
   UserSchemaAttributePermission:
     type: object
     properties:
@@ -9996,14 +10085,35 @@ definitions:
       action:
         type: string
     x-okta-tags:
-        - UserSchema
+      - UserSchema
   UserSchemaAttributeMaster:
     type: object
     properties:
       type:
-        type: "string"
+        $ref: '#/definitions/UserSchemaAttributeMasterType'
+      priority:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeMasterPriority'
+        type: array
     x-okta-tags:
-        - UserSchema
+      - UserSchema
+  UserSchemaAttributeMasterType:
+    enum:
+      - PROFILE_MASTER
+      - OKTA
+      - OVERRIDE
+    type: string
+    x-okta-tags:
+      - UserSchema
+  UserSchemaAttributeMasterPriority:
+    properties:
+      type:
+        type: string
+      valuse:
+        type: string
+    type: object
+    x-okta-tags:
+      - UserSchema
   UserSchemaBase:
     type: "object"
     properties:
@@ -10094,15 +10204,17 @@ definitions:
       type:
         type: "string"
       properties:
-        additionalProperties:
-          type: object
         type: object
+        additionalProperties:
+          $ref: '#/definitions/UserSchemaAttribute'
       required:
         type: "array"
         items:
           type: "string"
     x-okta-tags:
       - UserSchema
+  UserSchemaPublicProperties:
+
   LinkedObject:
     properties:
       _links:
