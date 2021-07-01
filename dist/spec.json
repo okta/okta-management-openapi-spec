@@ -4143,6 +4143,12 @@
             "name": "ruleId",
             "required": true,
             "type": "string"
+          },
+          {
+            "description": "Indicates whether to keep or remove users from groups assigned by this rule.",
+            "in": "query",
+            "name": "removeUsers",
+            "type": "boolean"
           }
         ],
         "produces": [
