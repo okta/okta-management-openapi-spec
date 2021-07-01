@@ -8707,6 +8707,8 @@ definitions:
       - UserFactor
   DNSRecord:
     properties:
+      expiration:
+        type: string
       fqdn:
         type: string
       recordType:
@@ -8832,6 +8834,10 @@ definitions:
     properties:
       _links:
         $ref: '#/definitions/DomainLinks'
+      certificateSourcetype:
+        enum:
+          - MANUAL
+        type: string
       dnsRecords:
         items:
           $ref: '#/definitions/DNSRecord'

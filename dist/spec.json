@@ -13717,6 +13717,9 @@
     },
     "DNSRecord": {
       "properties": {
+        "expiration": {
+          "type": "string"
+        },
         "fqdn": {
           "type": "string"
         },
@@ -13915,6 +13918,12 @@
       "properties": {
         "_links": {
           "$ref": "#/definitions/DomainLinks"
+        },
+        "certificateSourcetype": {
+          "enum": [
+            "MANUAL"
+          ],
+          "type": "string"
         },
         "dnsRecords": {
           "items": {
