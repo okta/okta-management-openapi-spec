@@ -3946,7 +3946,7 @@
           {
             "description": "Filter expression for groups",
             "in": "query",
-            "name": "filter",
+            "name": "search",
             "type": "string"
           },
           {
