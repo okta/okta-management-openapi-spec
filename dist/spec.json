@@ -3946,7 +3946,7 @@
           {
             "description": "Filter expression for groups",
             "in": "query",
-            "name": "filter",
+            "name": "search",
             "type": "string"
           },
           {
@@ -13815,40 +13815,6 @@
         }
       },
       "type": "object",
-      "x-okta-crud": [
-        {
-          "alias": "delete",
-          "arguments": [
-            {
-              "dest": "domainId",
-              "src": "id"
-            }
-          ],
-          "operationId": "deleteDomain"
-        },
-        {
-          "alias": "read",
-          "arguments": [
-            {
-              "dest": "domainId",
-              "src": "id"
-            }
-          ],
-          "operationId": "getDomain"
-        }
-      ],
-      "x-okta-operations": [
-        {
-          "alias": "verify",
-          "arguments": [
-            {
-              "dest": "domainId",
-              "src": "id"
-            }
-          ],
-          "operationId": "verifyDomain"
-        }
-      ],
       "x-okta-tags": [
         "Domain"
       ]
@@ -13871,6 +13837,18 @@
           "type": "string"
         }
       },
+      "x-okta-operations": [
+        {
+          "alias": "createCertificate",
+          "arguments": [
+            {
+              "dest": "certificate",
+              "self": true
+            }
+          ],
+          "operationId": "createCertificate"
+        }
+      ],
       "x-okta-tags": [
         "Domain"
       ]
