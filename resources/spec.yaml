@@ -8468,6 +8468,8 @@ definitions:
       - Policy
   DNSRecord:
     properties:
+      expiration:
+        type: string
       fqdn:
         type: string
       recordType:
@@ -8546,6 +8548,11 @@ definitions:
       - Domain
   DomainResponse:
     properties:
+      certificateSourcetype:
+        enum:
+          - MANUAL
+        type:
+          string
       dnsRecords:
         items:
           $ref: '#/definitions/DNSRecord'
