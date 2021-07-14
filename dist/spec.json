@@ -1190,7 +1190,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/RawString"
+              "$ref": "#/definitions/Metadata"
             }
           }
         },
@@ -6140,7 +6140,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/RawString"
+              "$ref": "#/definitions/Metadata"
             }
           }
         },
@@ -16375,6 +16375,18 @@
         "Policy"
       ]
     },
+    "Metadata": {
+      "properties": {
+        "raw": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Application",
+        "IdentityProvider"
+      ]
+    },
     "NetworkZone": {
       "properties": {
         "_links": {
@@ -18888,13 +18900,6 @@
       },
       "x-okta-tags": [
         "UserFactor"
-      ]
-    },
-    "RawString": {
-      "type": "string",
-      "x-okta-tags": [
-        "Application",
-        "IdentityProvider"
       ]
     },
     "RecoveryQuestionCredential": {

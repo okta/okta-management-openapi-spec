@@ -754,7 +754,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/RawString'
+            $ref: '#/definitions/Metadata'
       security:
         - api_token: [ ]
       tags:
@@ -3724,7 +3724,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/RawString'
+            $ref: '#/definitions/Metadata'
       security:
         - api_token: [ ]
       tags:
@@ -12320,8 +12320,11 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
-  RawString:
-    type: string
+  Metadata:
+    properties:
+      raw:
+        type: string
+    type: object
     x-okta-tags:
       - Application
       - IdentityProvider
