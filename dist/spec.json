@@ -12926,6 +12926,90 @@
     }
   },
   "definitions": {
+    "AccessPolicy": {
+      "x-okta-parent": "#/definitions/Policy",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "AccessPolicyConstraint": {
+      "properties": {
+        "methods": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reauthenticateIn": {
+          "type": "string"
+        },
+        "types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "AccessPolicyConstraints": {
+      "properties": {
+        "knowledge": {
+          "$ref": "#/definitions/KnowledgeConstraint"
+        },
+        "possesion": {
+          "$ref": "#/definitions/PossessionConstraint"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "AccessPolicyRule": {
+      "properties": {
+        "actions": {
+          "$ref": "#/definitions/AccessPolicyRuleActions"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-parent": "#/definitions/PolicyRule",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "AccessPolicyRuleActions": {
+      "properties": {
+        "appSignOn": {
+          "$ref": "#/definitions/AccessPolicyRuleApplicationSignOn"
+        }
+      },
+      "type": "object",
+      "x-okta-parent": "#/definitions/PolicyRuleActions",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "AccessPolicyRuleApplicationSignOn": {
+      "properties": {
+        "access": {
+          "type": "string"
+        },
+        "verificationMethod": {
+          "$ref": "#/definitions/VerificationMethod"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
     "AcsEndpoint": {
       "properties": {
         "index": {
@@ -17656,6 +17740,12 @@
         "Application"
       ]
     },
+    "KnowledgeConstraint": {
+      "x-okta-parent": "#/definitions/AccessPolicyConstraint",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
     "LifecycleExpirationPolicyRuleCondition": {
       "properties": {
         "lifecycleStatus": {
@@ -20219,10 +20309,12 @@
       ],
       "x-openapi-v3-discriminator": {
         "mapping": {
+          "ACCESS_POLICY": "#/definitions/AccessPolicy",
           "IDP_DISCOVERY": "#/definitions/IdentityProviderPolicy",
           "OAUTH_AUTHORIZATION_POLICY": "#/definitions/OAuthAuthorizationPolicy",
           "OKTA_SIGN_ON": "#/definitions/OktaSignOnPolicy",
-          "PASSWORD": "#/definitions/PasswordPolicy"
+          "PASSWORD": "#/definitions/PasswordPolicy",
+          "PROFILE_ENROLLMENT": "#/definitions/ProfileEnrollmentPolicy"
         },
         "propertyName": "type"
       }
@@ -20429,7 +20521,9 @@
       ],
       "x-openapi-v3-discriminator": {
         "mapping": {
+          "ACCESS_POLICY": "#/definitions/AccessPolicyRule",
           "PASSWORD": "#/definitions/PasswordPolicyRule",
+          "PROFILE_ENROLLMENT": "#/definitions/ProfileEnrollmentPolicyRule",
           "SIGN_ON": "#/definitions/OktaSignOnPolicyRule"
         },
         "propertyName": "type"
@@ -20609,7 +20703,9 @@
         "OAUTH_AUTHORIZATION_POLICY",
         "OKTA_SIGN_ON",
         "PASSWORD",
-        "IDP_DISCOVERY"
+        "IDP_DISCOVERY",
+        "PROFILE_ENROLLMENT",
+        "ACCESS_POLICY"
       ],
       "type": "string",
       "x-okta-tags": [
@@ -20620,6 +20716,122 @@
       "properties": {
         "template": {
           "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "PossessionConstraint": {
+      "properties": {
+        "deviceBound": {
+          "type": "string"
+        },
+        "hardwareProtection": {
+          "type": "string"
+        },
+        "phishingResistant": {
+          "type": "string"
+        },
+        "userPresence": {
+          "type": "string"
+        }
+      },
+      "x-okta-parent": "#/definitions/AccessPolicyConstraint",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "ProfileEnrollmentPolicy": {
+      "x-okta-parent": "#/definitions/Policy",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "ProfileEnrollmentPolicyRule": {
+      "properties": {
+        "actions": {
+          "$ref": "#/definitions/ProfileEnrollmentPolicyRuleActions"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-parent": "#/definitions/PolicyRule",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "ProfileEnrollmentPolicyRuleAction": {
+      "properties": {
+        "access": {
+          "type": "string"
+        },
+        "activationRequirements": {
+          "$ref": "#/definitions/ProfileEnrollmentPolicyRuleActivationRequirement"
+        },
+        "preRegistrationInlineHooks": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "profileAttributes": {
+          "items": {
+            "$ref": "#/definitions/ProfileEnrollmentPolicyRuleProfileAttribute"
+          },
+          "type": "array"
+        },
+        "targetGroupIds": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "unknownUserAction": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "ProfileEnrollmentPolicyRuleActions": {
+      "properties": {
+        "profileEnrollment": {
+          "$ref": "#/definitions/ProfileEnrollmentPolicyRuleAction"
+        }
+      },
+      "type": "object",
+      "x-okta-parent": "#/definitions/PolicyRuleActions",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "ProfileEnrollmentPolicyRuleActivationRequirement": {
+      "properties": {
+        "emailVerification": {
+          "type": "boolean"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "ProfileEnrollmentPolicyRuleProfileAttribute": {
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
         }
       },
       "type": "object",
@@ -24048,6 +24260,32 @@
       "type": "string",
       "x-okta-tags": [
         "Authenticator"
+      ]
+    },
+    "VerificationMethod": {
+      "properties": {
+        "constraints": {
+          "items": {
+            "$ref": "#/definitions/AccessPolicyConstraints"
+          },
+          "type": "array"
+        },
+        "factorMode": {
+          "type": "string"
+        },
+        "inactivityPeriod": {
+          "type": "string"
+        },
+        "reauthenticateIn": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
       ]
     },
     "VerifyFactorRequest": {
