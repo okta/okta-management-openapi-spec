@@ -9598,6 +9598,25 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  UserTypeCondition:
+    properties:
+      exclude:
+        items:
+          type: string
+        type: array
+      include:
+        items:
+          type: string
+        type: array
+    x-okta-tags:
+      - Policy
+  AccessPolicyRuleConditions:
+    properties:
+       userType:
+         $ref: '#/definitions/UserTypeCondition'
+    x-okta-parent: '#/definitions/PolicyRuleConditions'
+    x-okta-tags:
+      - Policy
   AccessPolicyRuleActions:
     properties:
       appSignOn:
