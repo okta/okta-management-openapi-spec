@@ -3251,7 +3251,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainListResponse"
+              "$ref": "#/definitions/Domain"
             }
           }
         },
@@ -3288,7 +3288,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainResponse"
+              "$ref": "#/definitions/Domain"
             }
           }
         },
@@ -3357,7 +3357,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainResponse"
+              "$ref": "#/definitions/Domain"
             }
           }
         },
@@ -3436,7 +3436,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainResponse"
+              "$ref": "#/definitions/Domain"
             }
           }
         },
@@ -13810,7 +13810,29 @@
           ],
           "type": "string"
         },
+        "dnsRecords": {
+          "items": {
+            "$ref": "#/definitions/DNSRecord"
+          },
+          "type": "array"
+        },
         "domain": {
+          "type": "string"
+        },
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "publicCertificate": {
+          "$ref": "#/definitions/DomainCertificateMetadata"
+        },
+        "validationStatus": {
+          "enum": [
+            "NOT_STARTED",
+            "IN_PROGRESS",
+            "VERIFIED",
+            "COMPLETED"
+          ],
           "type": "string"
         }
       },
@@ -13862,76 +13884,6 @@
           "type": "string"
         },
         "subject": {
-          "type": "string"
-        }
-      },
-      "x-okta-tags": [
-        "Domain"
-      ]
-    },
-    "DomainLinks": {
-      "properties": {
-        "certificate": {
-          "type": "object"
-        },
-        "self": {
-          "type": "object"
-        },
-        "verify": {
-          "type": "object"
-        }
-      },
-      "x-okta-tags": [
-        "Domain"
-      ]
-    },
-    "DomainListResponse": {
-      "properties": {
-        "domains": {
-          "items": {
-            "$ref": "#/definitions/DomainResponse"
-          },
-          "type": "array"
-        }
-      },
-      "x-okta-tags": [
-        "Domain"
-      ]
-    },
-    "DomainResponse": {
-      "properties": {
-        "_links": {
-          "$ref": "#/definitions/DomainLinks"
-        },
-        "certificateSourcetype": {
-          "enum": [
-            "MANUAL"
-          ],
-          "type": "string"
-        },
-        "dnsRecords": {
-          "items": {
-            "$ref": "#/definitions/DNSRecord"
-          },
-          "type": "array"
-        },
-        "domain": {
-          "type": "string"
-        },
-        "id": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "publicCertificate": {
-          "$ref": "#/definitions/DomainCertificateMetadata"
-        },
-        "validationStatus": {
-          "enum": [
-            "NOT_STARTED",
-            "IN_PROGRESS",
-            "VERIFIED",
-            "COMPLETED"
-          ],
           "type": "string"
         }
       },

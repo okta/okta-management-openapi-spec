@@ -2058,7 +2058,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/DomainListResponse'
+            $ref: '#/definitions/Domain'
       security:
         - api_token: []
       summary: List Domains
@@ -2081,7 +2081,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/DomainResponse'
+            $ref: '#/definitions/Domain'
       security:
         - api_token: []
       summary: Create Domain
@@ -2124,7 +2124,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/DomainResponse'
+            $ref: '#/definitions/Domain'
       security:
         - api_token: []
       summary: Get Domain
@@ -2173,7 +2173,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/DomainResponse'
+            $ref: '#/definitions/Domain'
       security:
         - api_token: []
       summary: Verify Domain
@@ -8772,7 +8772,23 @@ definitions:
         enum:
           - MANUAL
         type: string
+      dnsRecords:
+        items:
+          $ref: '#/definitions/DNSRecord'
+        type: array
       domain:
+        type: string
+      id:
+        readOnly: true
+        type: string
+      publicCertificate:
+        $ref: '#/definitions/DomainCertificateMetadata'
+      validationStatus:
+        enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - VERIFIED
+          - COMPLETED
         type: string
     type: object
     x-okta-tags:
@@ -8804,52 +8820,6 @@ definitions:
       fingerprint:
         type: string
       subject:
-        type: string
-    x-okta-tags:
-      - Domain
-  DomainLinks:
-    properties:
-      certificate:
-        type: object
-      self:
-        type: object
-      verify:
-        type: object
-    x-okta-tags:
-      - Domain
-  DomainListResponse:
-    properties:
-      domains:
-        items:
-          $ref: '#/definitions/DomainResponse'
-        type: array
-    x-okta-tags:
-      - Domain
-  DomainResponse:
-    properties:
-      _links:
-        $ref: '#/definitions/DomainLinks'
-      certificateSourcetype:
-        enum:
-          - MANUAL
-        type: string
-      dnsRecords:
-        items:
-          $ref: '#/definitions/DNSRecord'
-        type: array
-      domain:
-        type: string
-      id:
-        readOnly: true
-        type: string
-      publicCertificate:
-        $ref: '#/definitions/DomainCertificateMetadata'
-      validationStatus:
-        enum:
-          - NOT_STARTED
-          - IN_PROGRESS
-          - VERIFIED
-          - COMPLETED
         type: string
     x-okta-tags:
       - Domain
