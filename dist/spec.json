@@ -3251,7 +3251,10 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Domain"
+              "items": {
+                "$ref": "#/definitions/Domain"
+              },
+              "type": "array"
             }
           }
         },
