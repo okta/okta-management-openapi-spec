@@ -3288,7 +3288,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainResponse"
+              "$ref": "#/definitions/Domain"
             }
           }
         },
@@ -3357,7 +3357,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainResponse"
+              "$ref": "#/definitions/Domain"
             }
           }
         },
@@ -3436,7 +3436,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainResponse"
+              "$ref": "#/definitions/Domain"
             }
           }
         },
@@ -13730,11 +13730,7 @@
           "type": "string"
         },
         "recordType": {
-          "enum": [
-            "TXT",
-            "CNAME"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/DNSRecordType"
         },
         "values": {
           "items": {
@@ -13743,6 +13739,16 @@
           "type": "array"
         }
       },
+      "x-okta-tags": [
+        "Domain"
+      ]
+    },
+    "DNSRecordType": {
+      "enum": [
+        "TXT",
+        "CNAME"
+      ],
+      "type": "string",
       "x-okta-tags": [
         "Domain"
       ]
@@ -13805,13 +13811,26 @@
     "Domain": {
       "properties": {
         "certificateSourcetype": {
-          "enum": [
-            "MANUAL"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/DomainCertificateSourceType"
+        },
+        "dnsRecords": {
+          "items": {
+            "$ref": "#/definitions/DNSRecord"
+          },
+          "type": "array"
         },
         "domain": {
           "type": "string"
+        },
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "publicCertificate": {
+          "$ref": "#/definitions/DomainCertificateMetadata"
+        },
+        "validationStatus": {
+          "$ref": "#/definitions/DomainValidationStatus"
         }
       },
       "type": "object",
@@ -13831,10 +13850,7 @@
           "type": "string"
         },
         "type": {
-          "enum": [
-            "PEM"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/DomainCertificateType"
         }
       },
       "x-okta-operations": [
@@ -13869,18 +13885,20 @@
         "Domain"
       ]
     },
-    "DomainLinks": {
-      "properties": {
-        "certificate": {
-          "type": "object"
-        },
-        "self": {
-          "type": "object"
-        },
-        "verify": {
-          "type": "object"
-        }
-      },
+    "DomainCertificateSourceType": {
+      "enum": [
+        "MANUAL"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Domain"
+      ]
+    },
+    "DomainCertificateType": {
+      "enum": [
+        "PEM"
+      ],
+      "type": "string",
       "x-okta-tags": [
         "Domain"
       ]
@@ -13889,7 +13907,7 @@
       "properties": {
         "domains": {
           "items": {
-            "$ref": "#/definitions/DomainResponse"
+            "$ref": "#/definitions/Domain"
           },
           "type": "array"
         }
@@ -13898,43 +13916,14 @@
         "Domain"
       ]
     },
-    "DomainResponse": {
-      "properties": {
-        "_links": {
-          "$ref": "#/definitions/DomainLinks"
-        },
-        "certificateSourcetype": {
-          "enum": [
-            "MANUAL"
-          ],
-          "type": "string"
-        },
-        "dnsRecords": {
-          "items": {
-            "$ref": "#/definitions/DNSRecord"
-          },
-          "type": "array"
-        },
-        "domain": {
-          "type": "string"
-        },
-        "id": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "publicCertificate": {
-          "$ref": "#/definitions/DomainCertificateMetadata"
-        },
-        "validationStatus": {
-          "enum": [
-            "NOT_STARTED",
-            "IN_PROGRESS",
-            "VERIFIED",
-            "COMPLETED"
-          ],
-          "type": "string"
-        }
-      },
+    "DomainValidationStatus": {
+      "enum": [
+        "NOT_STARTED",
+        "IN_PROGRESS",
+        "VERIFIED",
+        "COMPLETED"
+      ],
+      "type": "string",
       "x-okta-tags": [
         "Domain"
       ]
