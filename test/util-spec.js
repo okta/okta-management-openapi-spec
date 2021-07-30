@@ -228,34 +228,77 @@ describe('util', () => {
               "200": {
                 "description": "Success",
                 "schema": {
-                  "$ref": "#/definitions/Bar"
+                  "$ref": "#/components/schemas/Bar"
                 }
               }
             },
           }
         },
-        definitions: {
-          Foo: {
-            properties: {
+        components: {
+          schemas: {
+            Foo: {
+              properties: {
 
-            }
-          },
-          Bar: {
-            properties: {
-              foo: {
-                "$ref": "#/definitions/Foo"
               }
-            }
-          },
-          Baz: {
+            },
+            Bar: {
+              properties: {
+                foo: {
+                  "$ref": "#/components/schemas/Foo"
+                }
+              }
+            },
+            Baz: {
 
+            }
           }
         }
       }
       const expectedOutput = _.cloneDeep(input);
-      delete expectedOutput.definitions.Baz
+      delete expectedOutput.components.schemas.Baz
       util.removeUnusedModels(input)
       expect(input).to.deep.equal(expectedOutput);
     });
   })
+
+  describe('getInputMediaTypes', () => {
+    it('should return an empty list if requestBody.content is missing', () => {
+      expect(util.getInputMediaTypes({})).to.be.empty;
+      expect(util.getInputMediaTypes({requestBody: {}})).to.be.empty;
+    });
+
+    it('should return media types defined in requestBody.', () => {
+      const input = {
+        requestBody: {
+          content: {
+            'application/json': {},
+            'text/xml': {},
+          }
+        }
+      };
+      const expectedOutput = Object.keys(input.requestBody.content);
+      expect(util.getInputMediaTypes(input)).to.deep.equal(expectedOutput);
+    });
+  });
+
+  describe('getOutputMediaTypes', () => {
+    it('should return an empty list if method.responses is missing', () => {
+      expect(util.getOutputMediaTypes({})).to.be.empty;
+    });
+
+    it('should return media types defined in method.responses', () => {
+      const input = {
+        responses: {
+          '200': {
+            content: {
+              'application/json': {},
+              'text/html': {},
+            }
+          }
+        }
+      };
+      const expectedOutput = Object.keys(input.responses['200'].content);
+      expect(util.getOutputMediaTypes(input)).to.deep.equal(expectedOutput);
+    });
+  });
 });
