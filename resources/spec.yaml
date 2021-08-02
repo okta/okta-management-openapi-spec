@@ -12434,12 +12434,12 @@ definitions:
       - Application
   SamlApplicationSettingsSignOn:
     properties:
-      allowMultipleAcsEndpoints:
-        type: boolean
       acsEndpoints:
         items:
           $ref: '#/definitions/AcsEndpoint'
         type: array
+      allowMultipleAcsEndpoints:
+        type: boolean
       assertionSigned:
         type: boolean
       attributeStatements:
@@ -12464,6 +12464,10 @@ definitions:
         type: boolean
       idpIssuer:
         type: string
+      inlineHooks:
+        items:
+          $ref: '#/definitions/SignOnInlineHook'
+        type: array
       recipient:
         type: string
       recipientOverride:
@@ -12478,16 +12482,23 @@ definitions:
         $ref: '#/definitions/SingleLogout'
       spIssuer:
         type: string
+      spCertificate:
+        $ref: '#/definitions/SpCertificate'
       ssoAcsUrl:
         type: string
       ssoAcsUrlOverride:
         type: string
-      spCertificate:
-        $ref: '#/definitions/SpCertificate'
       subjectNameIdFormat:
         type: string
       subjectNameIdTemplate:
         type: string
+    x-okta-tags:
+      - Application
+  SignOnInlineHook:
+    properties:
+      id:
+        type: string
+        readOnly: false
     x-okta-tags:
       - Application
   SpCertificate:
