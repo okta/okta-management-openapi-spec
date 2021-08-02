@@ -19108,6 +19108,12 @@
         "idpIssuer": {
           "type": "string"
         },
+        "inlineHooks": {
+          "items": {
+            "$ref": "#/definitions/SignOnInlineHook"
+          },
+          "type": "array"
+        },
         "recipient": {
           "type": "string"
         },
@@ -19506,6 +19512,16 @@
       "type": "string",
       "x-okta-tags": [
         "Session"
+      ]
+    },
+    "SignOnInlineHook": {
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Application"
       ]
     },
     "SingleLogout": {
