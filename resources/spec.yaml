@@ -8492,7 +8492,7 @@ definitions:
       id:
         type:
           string
-      certificateSourcetype:
+      certificateSourceType:
         $ref: '#/definitions/DomainCertificateSourceType'
       domain:
         type: string

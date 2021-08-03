@@ -8787,7 +8787,7 @@ definitions:
       - Policy
   Domain:
     properties:
-      certificateSourcetype:
+      certificateSourceType:
         $ref: '#/definitions/DomainCertificateSourceType'
       dnsRecords:
         items:
