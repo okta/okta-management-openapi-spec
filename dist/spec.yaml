@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.5.0
+  version: 2.6.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -9974,7 +9974,7 @@ definitions:
       x5t:
         readOnly: false
         type: string
-      'x5t#S256':
+      x5t#S256:
         readOnly: false
         type: string
       x5u:
@@ -12773,10 +12773,19 @@ definitions:
     properties:
       accessTokenLifetimeMinutes:
         type: integer
+      inlineHook:
+        $ref: '#/definitions/TokenAuthorizationServerPolicyRuleActionInlineHook'
       refreshTokenLifetimeMinutes:
         type: integer
       refreshTokenWindowMinutes:
         type: integer
+    type: object
+    x-okta-tags:
+      - AuthorizationServerPolicy
+  TokenAuthorizationServerPolicyRuleActionInlineHook:
+    properties:
+      id:
+        type: string
     type: object
     x-okta-tags:
       - AuthorizationServerPolicy

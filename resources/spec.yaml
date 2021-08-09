@@ -9553,6 +9553,16 @@ definitions:
         type: integer
       refreshTokenWindowMinutes:
         type: integer
+      inlineHook:
+        $ref: '#/definitions/TokenAuthorizationServerPolicyRuleActionInlineHook'
+    type: object
+    x-okta-tags:
+      - AuthorizationServerPolicy
+  TokenAuthorizationServerPolicyRuleActionInlineHook:
+    properties:
+      id:
+        type: string
+        readOnly: false
     type: object
     x-okta-tags:
       - AuthorizationServerPolicy
