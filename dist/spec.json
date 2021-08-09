@@ -13813,7 +13813,7 @@
     },
     "Domain": {
       "properties": {
-        "certificateSourcetype": {
+        "certificateSourceType": {
           "$ref": "#/definitions/DomainCertificateSourceType"
         },
         "dnsRecords": {
