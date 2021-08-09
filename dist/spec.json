@@ -19882,11 +19882,25 @@
         "accessTokenLifetimeMinutes": {
           "type": "integer"
         },
+        "inlineHook": {
+          "$ref": "#/definitions/TokenAuthorizationServerPolicyRuleActionInlineHook"
+        },
         "refreshTokenLifetimeMinutes": {
           "type": "integer"
         },
         "refreshTokenWindowMinutes": {
           "type": "integer"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "AuthorizationServerPolicy"
+      ]
+    },
+    "TokenAuthorizationServerPolicyRuleActionInlineHook": {
+      "properties": {
+        "id": {
+          "type": "string"
         }
       },
       "type": "object",
