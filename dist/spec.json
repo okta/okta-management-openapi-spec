@@ -3251,7 +3251,10 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/DomainListResponse"
+              "items": {
+                "$ref": "#/definitions/Domain"
+              },
+              "type": "array"
             }
           }
         },
@@ -13899,19 +13902,6 @@
         "PEM"
       ],
       "type": "string",
-      "x-okta-tags": [
-        "Domain"
-      ]
-    },
-    "DomainListResponse": {
-      "properties": {
-        "domains": {
-          "items": {
-            "$ref": "#/definitions/Domain"
-          },
-          "type": "array"
-        }
-      },
       "x-okta-tags": [
         "Domain"
       ]
