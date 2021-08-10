@@ -13555,7 +13555,7 @@ definitions:
     properties:
       type:
         type: string
-      valuse:
+      value:
         type: string
     type: object
     x-okta-tags:
