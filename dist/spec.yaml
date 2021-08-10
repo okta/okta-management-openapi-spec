@@ -1772,11 +1772,11 @@ paths:
       operationId: deleteAuthorizationServerPolicyRule
       parameters:
         - in: path
-          name: policyId
+          name: authServerId
           required: true
           type: string
         - in: path
-          name: authServerId
+          name: policyId
           required: true
           type: string
         - in: path
@@ -1801,11 +1801,11 @@ paths:
       operationId: getAuthorizationServerPolicyRule
       parameters:
         - in: path
-          name: policyId
+          name: authServerId
           required: true
           type: string
         - in: path
-          name: authServerId
+          name: policyId
           required: true
           type: string
         - in: path
@@ -1832,11 +1832,11 @@ paths:
       operationId: updateAuthorizationServerPolicyRule
       parameters:
         - in: path
-          name: policyId
+          name: authServerId
           required: true
           type: string
         - in: path
-          name: authServerId
+          name: policyId
           required: true
           type: string
         - in: path
