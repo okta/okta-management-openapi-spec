@@ -3251,10 +3251,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "items": {
-                "$ref": "#/definitions/Domain"
-              },
-              "type": "array"
+              "$ref": "#/definitions/DomainListResponse"
             }
           }
         },
@@ -7349,7 +7346,7 @@
             "description": "Success",
             "schema": {
               "items": {
-                "$ref": "#/definitions/AuthorizationServerPolicy"
+                "$ref": "#/definitions/Policy"
               },
               "type": "array"
             }
@@ -13902,6 +13899,19 @@
         "PEM"
       ],
       "type": "string",
+      "x-okta-tags": [
+        "Domain"
+      ]
+    },
+    "DomainListResponse": {
+      "properties": {
+        "domains": {
+          "items": {
+            "$ref": "#/definitions/Domain"
+          },
+          "type": "array"
+        }
+      },
       "x-okta-tags": [
         "Domain"
       ]
