@@ -2073,9 +2073,7 @@ paths:
         '200':
           description: Success
           schema:
-            items:
-              $ref: '#/definitions/Domain'
-            type: array
+            $ref: '#/definitions/DomainListResponse'
       security:
         - api_token: []
       summary: List Domains
@@ -4684,7 +4682,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/AuthorizationServerPolicy'
+              $ref: '#/definitions/Policy'
             type: array
       security:
         - api_token: []
@@ -8845,6 +8843,14 @@ definitions:
     enum:
       - PEM
     type: string
+    x-okta-tags:
+      - Domain
+  DomainListResponse:
+    properties:
+      domains:
+        items:
+          $ref: '#/definitions/Domain'
+        type: array
     x-okta-tags:
       - Domain
   DomainValidationStatus:
