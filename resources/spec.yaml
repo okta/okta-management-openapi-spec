@@ -2594,7 +2594,7 @@ paths:
     get:
       consumes:
         - application/json
-      description: Fetches a group from your Okta organization.
+      description: Fetches a group from your organization.
       operationId: getGroup
       parameters:
         - in: path

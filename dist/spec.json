@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.6.1"
+    "version": "2.6.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -4357,7 +4357,7 @@
         "consumes": [
           "application/json"
         ],
-        "description": "Fetches a group from your Okta organization.",
+        "description": "Fetches a group from your organization.",
         "operationId": "getGroup",
         "parameters": [
           {
