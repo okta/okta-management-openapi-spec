@@ -7844,6 +7844,8 @@ definitions:
         type: string
       notifications:
         $ref: '#/definitions/ApplicationSettingsNotifications'
+      notes:
+        $ref: '#/definitions/ApplicationSettingsNotes'
     type: object
     x-okta-tags:
       - Application
@@ -7880,6 +7882,15 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+    x-okta-tags:
+      - Application
+  ApplicationSettingsNotes:
+    properties:
+      admin:
+        type: string
+      enduser:
+        type: string
     type: object
     x-okta-tags:
       - Application
