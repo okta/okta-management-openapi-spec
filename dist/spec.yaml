@@ -7944,12 +7944,23 @@ definitions:
         type: boolean
       inlineHookId:
         type: string
+      notes:
+        $ref: '#/definitions/ApplicationSettingsNotes'
       notifications:
         $ref: '#/definitions/ApplicationSettingsNotifications'
     type: object
     x-okta-tags:
       - Application
   ApplicationSettingsApplication:
+    x-okta-tags:
+      - Application
+  ApplicationSettingsNotes:
+    properties:
+      admin:
+        type: string
+      enduser:
+        type: string
+    type: object
     x-okta-tags:
       - Application
   ApplicationSettingsNotifications:
