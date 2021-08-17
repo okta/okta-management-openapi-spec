@@ -12437,6 +12437,9 @@
         "inlineHookId": {
           "type": "string"
         },
+        "notes": {
+          "$ref": "#/definitions/ApplicationSettingsNotes"
+        },
         "notifications": {
           "$ref": "#/definitions/ApplicationSettingsNotifications"
         }
@@ -12447,6 +12450,20 @@
       ]
     },
     "ApplicationSettingsApplication": {
+      "x-okta-tags": [
+        "Application"
+      ]
+    },
+    "ApplicationSettingsNotes": {
+      "properties": {
+        "admin": {
+          "type": "string"
+        },
+        "enduser": {
+          "type": "string"
+        }
+      },
+      "type": "object",
       "x-okta-tags": [
         "Application"
       ]
