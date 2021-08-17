@@ -2768,7 +2768,7 @@ paths:
     get:
       consumes:
         - application/json
-      description: Lists all group rules for your organization.
+      description: Fetches a group from your organization.
       operationId: getGroup
       parameters:
         - in: path
