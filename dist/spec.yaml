@@ -8016,6 +8016,8 @@ definitions:
         additionalProperties:
           type: boolean
         type: object
+      autoLaunch:
+        type: boolean
       autoSubmitToolbar:
         type: boolean
       hide:
