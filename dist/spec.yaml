@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.6.0
+  version: 2.7.0
 externalDocs:
   description: Find more info here
   url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -4657,6 +4657,359 @@ paths:
         - api_token: []
       tags:
         - UserType
+  /api/v1/org:
+    get:
+      consumes:
+        - application/json
+      description: Gets settings of your organization.
+      operationId: getOrgSettings
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      security:
+        - api_token: []
+      summary: Get org settings
+      tags:
+        - Org
+    post:
+      consumes:
+        - application/json
+      description: Partial update settings of your organization.
+      operationId: partialSettingUpdate
+      parameters:
+        - in: body
+          name: orgSetting
+          required: true
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      security:
+        - api_token: []
+      summary: Partial settings update
+      tags:
+        - Org
+    put:
+      consumes:
+        - application/json
+      description: Update settings of your organization.
+      operationId: settingUpdate
+      parameters:
+        - in: body
+          name: orgSetting
+          required: true
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      security:
+        - api_token: []
+      summary: Settings update
+      tags:
+        - Org
+  /api/v1/org/contacts:
+    get:
+      consumes:
+        - application/json
+      description: Gets Contact Types of your organization.
+      operationId: getOrgContactTypes
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/OrgContactTypeObj'
+            type: array
+      security:
+        - api_token: []
+      summary: Get org contact types
+      tags:
+        - Org
+  '/api/v1/org/contacts/{contactType}':
+    get:
+      consumes:
+        - application/json
+      description: >-
+        Retrieves the URL of the User associated with the specified Contact
+        Type.
+      operationId: getOrgContactUser
+      parameters:
+        - in: path
+          name: contactType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgContactUser'
+      security:
+        - api_token: []
+      summary: Get org contact user
+      tags:
+        - Org
+    put:
+      consumes:
+        - application/json
+      description: Updates the User associated with the specified Contact Type.
+      operationId: updateOrgContactUser
+      parameters:
+        - in: path
+          name: contactType
+          required: true
+          type: string
+        - in: body
+          name: userId
+          required: true
+          schema:
+            $ref: '#/definitions/UserIdString'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgContactUser'
+      security:
+        - api_token: []
+      summary: Update org contact user
+      tags:
+        - Org
+  /api/v1/org/logo:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Updates the logo for your organization.
+      operationId: updateOrgLogo
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Created
+      security:
+        - api_token: []
+      summary: Update org logo
+      tags:
+        - Org
+  /api/v1/org/preferences:
+    get:
+      consumes:
+        - application/json
+      description: Gets preferences of your organization.
+      operationId: getOrgPreferences
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgPreferences'
+      security:
+        - api_token: []
+      summary: Get org preferences
+      tags:
+        - Org
+  /api/v1/org/preferences/hideEndUserFooter:
+    post:
+      consumes:
+        - application/json
+      description: Hide the Okta UI footer for all end users of your organization.
+      operationId: hideOktaUIFooter
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgPreferences'
+      security:
+        - api_token: []
+      summary: Show Okta UI Footer
+      tags:
+        - Org
+  /api/v1/org/preferences/showEndUserFooter:
+    post:
+      consumes:
+        - application/json
+      description: Makes the Okta UI footer visible for all end users of your organization.
+      operationId: showOktaUIFooter
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgPreferences'
+      security:
+        - api_token: []
+      summary: Show Okta UI Footer
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaCommunication:
+    get:
+      consumes:
+        - application/json
+      description: Gets Okta Communication Settings of your organization.
+      operationId: getOktaCommunicationSettings
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaCommunicationSetting'
+      security:
+        - api_token: []
+      summary: Get Okta Communication Settings
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaCommunication/optIn:
+    post:
+      consumes:
+        - application/json
+      description: Opts in all users of this org to Okta Communication emails.
+      operationId: optInUsersToOktaCommunicationEmails
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaCommunicationSetting'
+      security:
+        - api_token: []
+      summary: Opt in all users to Okta Communication emails
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaCommunication/optOut:
+    post:
+      consumes:
+        - application/json
+      description: Opts out all users of this org from Okta Communication emails.
+      operationId: optOutUsersFromOktaCommunicationEmails
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaCommunicationSetting'
+      security:
+        - api_token: []
+      summary: Opt out all users from Okta Communication emails
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport:
+    get:
+      consumes:
+        - application/json
+      description: Gets Okta Support Settings of your organization.
+      operationId: getOrgOktaSupportSettings
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Get Okta Support settings
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport/extend:
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Extends the length of time that Okta Support can access your org by 24
+        hours. This means that 24 hours are added to the remaining access time.
+      operationId: extendOktaSupport
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Extend Okta Support
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport/grant:
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Enables you to temporarily allow Okta Support to access your org as an
+        administrator for eight hours.
+      operationId: grantOktaSupport
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Grant Okta Support
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport/revoke:
+    post:
+      consumes:
+        - application/json
+      description: Revokes Okta Support access to your organization.
+      operationId: revokeOktaSupport
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Extend Okta Support
+      tags:
+        - Org
   /api/v1/policies:
     get:
       consumes:
@@ -9991,7 +10344,7 @@ definitions:
       x5t:
         readOnly: false
         type: string
-      x5t#S256:
+      'x5t#S256':
         readOnly: false
         type: string
       x5u:
@@ -11053,6 +11406,141 @@ definitions:
     type: string
     x-okta-tags:
       - Application
+  OrgContactType:
+    enum:
+      - BILLING
+      - TECHNICAL
+    type: string
+    x-okta-tags:
+      - Org
+  OrgContactTypeObj:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      contactType:
+        $ref: '#/definitions/OrgContactType'
+    type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOrgContactTypes
+    x-okta-tags:
+      - Org
+  OrgContactUser:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      userId:
+        type: string
+    type: object
+    x-okta-operations:
+      - alias: getContactUser
+        arguments: []
+        operationId: getOrgContactUser
+      - alias: updateContactUser
+        arguments:
+          - dest: userId
+            src: userId
+        operationId: updateOrgContactUser
+    x-okta-tags:
+      - Org
+  OrgOktaCommunicationSetting:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      optOutEmailUsers:
+        type: boolean
+    type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOktaCommunicationSettings
+    x-okta-tags:
+      - Org
+  OrgOktaSupportSetting:
+    enum:
+      - DISABLED
+      - ENABLED
+    type: string
+    x-okta-tags:
+      - Org
+  OrgOktaSupportSettingsObj:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      expiration:
+        format: date-time
+        type: string
+      support:
+        $ref: '#/definitions/OrgOktaSupportSetting'
+    type: object
+    x-okta-tags:
+      - Org
+  OrgPreferences:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      showEndUserFooter:
+        type: boolean
+    type: object
+    x-okta-tags:
+      - Org
+  OrgSetting:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      address1:
+        type: string
+      address2:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      endUserSupportHelpURL:
+        type: string
+      expiresAt:
+        format: date-time
+        readOnly: true
+        type: string
+      id:
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        type: string
+      postalCode:
+        type: string
+      state:
+        type: string
+      status:
+        readOnly: true
+        type: string
+      subdomain:
+        readOnly: true
+        type: string
+      supportPhoneNumber:
+        type: string
+      website:
+        type: string
+    type: object
+    x-okta-tags:
+      - Org
   PasswordCredential:
     properties:
       hash:
@@ -13309,6 +13797,12 @@ definitions:
         web: '#/definitions/WebUserFactor'
         webauthn: '#/definitions/WebAuthnUserFactor'
       propertyName: factorType
+  UserIdString:
+    properties:
+      userId:
+        type: string
+    x-okta-tags:
+      - Org
   UserIdentifierConditionEvaluatorPattern:
     properties:
       matchType:
