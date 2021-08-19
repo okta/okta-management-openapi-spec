@@ -8227,6 +8227,8 @@ definitions:
       - Application
   ApplicationVisibility:
     properties:
+      autoLaunch:
+        type: boolean
       appLinks:
         additionalProperties:
           type: boolean
