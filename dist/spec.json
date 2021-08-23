@@ -13095,6 +13095,9 @@
           },
           "type": "object"
         },
+        "autoLaunch": {
+          "type": "boolean"
+        },
         "autoSubmitToolbar": {
           "type": "boolean"
         },
