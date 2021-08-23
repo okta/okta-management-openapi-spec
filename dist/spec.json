@@ -17953,6 +17953,9 @@
         "city": {
           "type": "string"
         },
+        "companyName": {
+          "type": "string"
+        },
         "country": {
           "type": "string"
         },
@@ -17976,9 +17979,6 @@
         "lastUpdated": {
           "format": "date-time",
           "readOnly": true,
-          "type": "string"
-        },
-        "name": {
           "type": "string"
         },
         "phoneNumber": {

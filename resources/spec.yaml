@@ -10309,6 +10309,8 @@ definitions:
         type: string
       city:
         type: string
+      companyName:
+        type: string
       country:
         type: string
       created:
@@ -10327,8 +10329,6 @@ definitions:
       lastUpdated:
         format: date-time
         readOnly: true
-        type: string
-      name:
         type: string
       phoneNumber:
         type: string
