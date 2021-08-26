@@ -18009,6 +18009,40 @@
         }
       },
       "type": "object",
+      "x-okta-crud": [
+        {
+          "alias": "update",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "settingUpdate"
+        },
+        {
+          "alias": "partialUpdate",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "partialSettingUpdate"
+        }
+      ],
+      "x-okta-operations": [
+        {
+          "alias": "updateLogo",
+          "arguments": [
+            {
+              "dest": "file",
+              "src": "file"
+            }
+          ],
+          "operationId": "updateOrgLogo"
+        }
+      ],
       "x-okta-tags": [
         "Org"
       ]
