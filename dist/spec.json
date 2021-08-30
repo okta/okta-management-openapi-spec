@@ -10857,6 +10857,46 @@
         "tags": [
           "User"
         ]
+      },
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Gets role that is assigne to user.",
+        "operationId": "getUserRole",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "roleId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Role"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "User"
+        ]
       }
     },
     "/api/v1/users/{userId}/roles/{roleId}/targets/catalog/apps": {
