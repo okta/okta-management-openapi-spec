@@ -4706,7 +4706,7 @@ paths:
     get:
       consumes:
         - application/json
-      description: Gets settings of your organization.
+      description: Get settings of your organization.
       operationId: getOrgSettings
       parameters: []
       produces:
@@ -4725,7 +4725,7 @@ paths:
       consumes:
         - application/json
       description: Partial update settings of your organization.
-      operationId: partialSettingUpdate
+      operationId: partialUpdateOrgSetting
       parameters:
         - in: body
           name: orgSetting
@@ -4741,14 +4741,14 @@ paths:
             $ref: '#/definitions/OrgSetting'
       security:
         - api_token: []
-      summary: Partial settings update
+      summary: Partial update Org setting
       tags:
         - Org
     put:
       consumes:
         - application/json
       description: Update settings of your organization.
-      operationId: settingUpdate
+      operationId: updateOrgSetting
       parameters:
         - in: body
           name: orgSetting
@@ -4764,7 +4764,7 @@ paths:
             $ref: '#/definitions/OrgSetting'
       security:
         - api_token: []
-      summary: Settings update
+      summary: Update Org setting
       tags:
         - Org
   /api/v1/org/contacts:
@@ -4838,27 +4838,6 @@ paths:
       security:
         - api_token: []
       summary: Update org contact user
-      tags:
-        - Org
-  /api/v1/org/logo:
-    post:
-      consumes:
-        - multipart/form-data
-      description: Updates the logo for your organization.
-      operationId: updateOrgLogo
-      parameters:
-        - in: formData
-          name: file
-          required: true
-          type: file
-      produces:
-        - application/json
-      responses:
-        '201':
-          description: Created
-      security:
-        - api_token: []
-      summary: Update org logo
       tags:
         - Org
   /api/v1/org/preferences:
@@ -11752,18 +11731,12 @@ definitions:
         arguments:
           - dest: orgSetting
             self: true
-        operationId: settingUpdate
+        operationId: updateOrgSetting
       - alias: partialUpdate
         arguments:
           - dest: orgSetting
             self: true
-        operationId: partialSettingUpdate
-    x-okta-operations:
-      - alias: updateLogo
-        arguments:
-          - dest: file
-            src: file
-        operationId: updateOrgLogo
+        operationId: partialUpdateOrgSetting
     x-okta-tags:
       - Org
   PasswordCredential:
