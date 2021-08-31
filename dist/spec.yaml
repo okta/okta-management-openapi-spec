@@ -8217,8 +8217,8 @@ definitions:
     properties:
       _links:
         additionalProperties:
-          readOnly: true
           type: object
+        readOnly: true
         type: object
       created:
         format: date-time
