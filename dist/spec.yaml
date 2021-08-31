@@ -11434,6 +11434,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       userId:
         type: string
     type: object
@@ -13820,6 +13822,7 @@ definitions:
     properties:
       userId:
         type: string
+    type: object
     x-okta-tags:
       - Org
   UserIdentifierConditionEvaluatorPattern:

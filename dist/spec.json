@@ -17843,7 +17843,9 @@
         "_links": {
           "additionalProperties": {
             "type": "object"
-          }
+          },
+          "readOnly": true,
+          "type": "object"
         },
         "userId": {
           "type": "string"
@@ -21618,6 +21620,7 @@
           "type": "string"
         }
       },
+      "type": "object",
       "x-okta-tags": [
         "Org"
       ]
