@@ -11816,6 +11816,18 @@
         "UserFactor"
       ]
     },
+    "AllowedForEnum": {
+      "enum": [
+        "recovery",
+        "sso",
+        "any",
+        "none"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "AppAndInstanceConditionEvaluatorAppOrInstance": {
       "properties": {
         "id": {
@@ -12921,13 +12933,7 @@
     "AuthenticatorSettings": {
       "properties": {
         "allowedFor": {
-          "enum": [
-            "recovery",
-            "sso",
-            "any",
-            "none"
-          ],
-          "type": "string"
+          "$ref": "#/definitions/AllowedForEnum"
         },
         "tokenLifetimeInMinutes": {
           "type": "integer"

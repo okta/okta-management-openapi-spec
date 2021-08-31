@@ -7456,6 +7456,15 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
+  AllowedForEnum:
+    enum:
+      - recovery
+      - sso
+      - any
+      - none
+    type: string
+    x-okta-tags:
+      - Authenticator
   AppAndInstanceConditionEvaluatorAppOrInstance:
     properties:
       id:
@@ -8145,12 +8154,7 @@ definitions:
   AuthenticatorSettings:
     properties:
       allowedFor:
-        enum:
-          - recovery
-          - sso
-          - any
-          - none
-        type: string
+        $ref: '#/definitions/AllowedForEnum'
       tokenLifetimeInMinutes:
         type: integer
     type: object
