@@ -10584,11 +10584,13 @@ definitions:
           type: object
       optOutEmailUsers:
         type: boolean
+        readOnly: true
     type: object
-    x-okta-crud:
-      - alias: read
-        arguments: []
-        operationId: getOktaCommunicationSettings
+    x-okta-operations:
+      - alias: optInUsersToOktaCommunicationEmails
+        operationId: optInUsersToOktaCommunicationEmails
+      - alias: optOutUsersFromOktaCommunicationEmails
+        operationId: optOutUsersFromOktaCommunicationEmails
     x-okta-tags:
       - Org
   OrgContactTypeObj:
@@ -10623,9 +10625,6 @@ definitions:
         type: string
     type: object
     x-okta-operations:
-      - alias: getContactUser
-        arguments: []
-        operationId: getOrgContactUser
       - alias: updateContactUser
         arguments:
           - dest: userId
@@ -10710,9 +10709,18 @@ definitions:
       expiration:
         format: date-time
         type: string
+        readOnly: true
       support:
         $ref: '#/definitions/OrgOktaSupportSetting'
+        readOnly: true
     type: object
+    x-okta-operations:
+      - alias: extendOktaSupport
+        operationId: extendOktaSupport
+      - alias: grantOktaSupport
+        operationId: grantOktaSupport
+      - alias: revokeOktaSupport
+        operationId: revokeOktaSupport
     x-okta-tags:
       - Org
   OrgPreferences:
@@ -10722,7 +10730,13 @@ definitions:
           type: object
       showEndUserFooter:
         type: boolean
+        readOnly: true
     type: object
+    x-okta-operations:
+      - alias: hideEndUserFooter
+        operationId: hideOktaUIFooter
+      - alias: showEndUserFooter
+        operationId: showOktaUIFooter
     x-okta-tags:
       - Org
   UserIdString:

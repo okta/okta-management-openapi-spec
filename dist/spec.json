@@ -18374,11 +18374,6 @@
       "type": "object",
       "x-okta-operations": [
         {
-          "alias": "getContactUser",
-          "arguments": [],
-          "operationId": "getOrgContactUser"
-        },
-        {
           "alias": "updateContactUser",
           "arguments": [
             {
@@ -18401,15 +18396,19 @@
           }
         },
         "optOutEmailUsers": {
+          "readOnly": true,
           "type": "boolean"
         }
       },
       "type": "object",
-      "x-okta-crud": [
+      "x-okta-operations": [
         {
-          "alias": "read",
-          "arguments": [],
-          "operationId": "getOktaCommunicationSettings"
+          "alias": "optInUsersToOktaCommunicationEmails",
+          "operationId": "optInUsersToOktaCommunicationEmails"
+        },
+        {
+          "alias": "optOutUsersFromOktaCommunicationEmails",
+          "operationId": "optOutUsersFromOktaCommunicationEmails"
         }
       ],
       "x-okta-tags": [
@@ -18435,13 +18434,29 @@
         },
         "expiration": {
           "format": "date-time",
+          "readOnly": true,
           "type": "string"
         },
         "support": {
-          "$ref": "#/definitions/OrgOktaSupportSetting"
+          "$ref": "#/definitions/OrgOktaSupportSetting",
+          "readOnly": true
         }
       },
       "type": "object",
+      "x-okta-operations": [
+        {
+          "alias": "extendOktaSupport",
+          "operationId": "extendOktaSupport"
+        },
+        {
+          "alias": "grantOktaSupport",
+          "operationId": "grantOktaSupport"
+        },
+        {
+          "alias": "revokeOktaSupport",
+          "operationId": "revokeOktaSupport"
+        }
+      ],
       "x-okta-tags": [
         "Org"
       ]
@@ -18454,10 +18469,21 @@
           }
         },
         "showEndUserFooter": {
+          "readOnly": true,
           "type": "boolean"
         }
       },
       "type": "object",
+      "x-okta-operations": [
+        {
+          "alias": "hideEndUserFooter",
+          "operationId": "hideOktaUIFooter"
+        },
+        {
+          "alias": "showEndUserFooter",
+          "operationId": "showOktaUIFooter"
+        }
+      ],
       "x-okta-tags": [
         "Org"
       ]
