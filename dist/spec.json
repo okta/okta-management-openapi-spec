@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.7.0"
+    "version": "2.8.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -20381,7 +20381,8 @@
         "READ_ONLY_ADMIN",
         "MOBILE_ADMIN",
         "API_ACCESS_MANAGEMENT_ADMIN",
-        "REPORT_ADMIN"
+        "REPORT_ADMIN",
+        "GROUP_MEMBERSHIP_ADMIN"
       ],
       "type": "string",
       "x-okta-tags": [
