@@ -287,6 +287,7 @@ paths:
         - Application
   '/api/v1/apps/{appId}/credentials/csrs/{csrId}/lifecycle/publish':
     post:
+      description: Updates the CSR with a signed X.509 certificate and adds it into the application key credentials
       parameters:
         - in: path
           name: appId
@@ -8160,6 +8161,7 @@ definitions:
         SAML_1_1: '#/definitions/SamlApplication'
         SECURE_PASSWORD_STORE: '#/definitions/SecurePasswordStoreApplication'
         WS_FEDERATION: '#/definitions/WsFederationApplication'
+        RADIUS_FOR_GENERIC_APP: '#/definitions/RadiusApplication'
       propertyName: signOnMode
   ApplicationAccessibility:
     properties:
@@ -8353,6 +8355,7 @@ definitions:
       - SAML_2_0
       - OPENID_CONNECT
       - SAML_1_1
+      - RADIUS_FOR_GENERIC_APP
     type: string
     x-okta-tags:
       - Application
@@ -10582,6 +10585,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       optOutEmailUsers:
         type: boolean
         readOnly: true
@@ -10598,6 +10603,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       contactType:
         $ref: '#/definitions/OrgContactType'
     type: object
@@ -10637,6 +10644,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       address1:
         type: string
       address2:
@@ -10706,6 +10715,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       expiration:
         format: date-time
         type: string
@@ -10728,6 +10739,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       showEndUserFooter:
         type: boolean
         readOnly: true
@@ -14666,6 +14679,31 @@ definitions:
       wReplyOverride:
         type: boolean
       wReplyURL:
+        type: string
+    x-okta-parent: '#/definitions/ApplicationSettingsApplication'
+    x-okta-tags:
+      - Application
+  RadiusApplication:
+    properties:
+      name:
+        default: radius_generic_app
+      settings:
+        $ref: '#/definitions/RadiusApplicationSettings'
+    x-okta-defined-as:
+      name: radius_generic_app
+    x-okta-parent: '#/definitions/Application'
+    x-okta-tags:
+      - Application
+  RadiusApplicationSettings:
+    properties:
+      app:
+        $ref: '#/definitions/RadiusApplicationSettingsApplication'
+    x-okta-parent: '#/definitions/ApplicationSettings'
+    x-okta-tags:
+      - Application
+  RadiusApplicationSettingsApplication:
+    properties:
+      radiusAppInstanceId:
         type: string
     x-okta-parent: '#/definitions/ApplicationSettingsApplication'
     x-okta-tags:

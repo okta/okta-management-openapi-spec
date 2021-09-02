@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.7.0"
+    "version": "2.8.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -441,6 +441,7 @@
         "consumes": [
           "application/json"
         ],
+        "description": "Updates the CSR with a signed X.509 certificate and adds it into the application key credentials",
         "parameters": [
           {
             "in": "path",
@@ -13004,6 +13005,7 @@
           "BOOKMARK": "#/definitions/BookmarkApplication",
           "BROWSER_PLUGIN": "#/definitions/BrowserPluginApplication",
           "OPENID_CONNECT": "#/definitions/OpenIdConnectApplication",
+          "RADIUS_FOR_GENERIC_APP": "#/definitions/RadiusApplication",
           "SAML_1_1": "#/definitions/SamlApplication",
           "SAML_2_0": "#/definitions/SamlApplication",
           "SECURE_PASSWORD_STORE": "#/definitions/SecurePasswordStoreApplication",
@@ -13298,7 +13300,8 @@
         "WS_FEDERATION",
         "SAML_2_0",
         "OPENID_CONNECT",
-        "SAML_1_1"
+        "SAML_1_1",
+        "RADIUS_FOR_GENERIC_APP"
       ],
       "type": "string",
       "x-okta-tags": [
@@ -18340,7 +18343,9 @@
         "_links": {
           "additionalProperties": {
             "type": "object"
-          }
+          },
+          "readOnly": true,
+          "type": "object"
         },
         "contactType": {
           "$ref": "#/definitions/OrgContactType"
@@ -18393,7 +18398,9 @@
         "_links": {
           "additionalProperties": {
             "type": "object"
-          }
+          },
+          "readOnly": true,
+          "type": "object"
         },
         "optOutEmailUsers": {
           "readOnly": true,
@@ -18430,7 +18437,9 @@
         "_links": {
           "additionalProperties": {
             "type": "object"
-          }
+          },
+          "readOnly": true,
+          "type": "object"
         },
         "expiration": {
           "format": "date-time",
@@ -18466,7 +18475,9 @@
         "_links": {
           "additionalProperties": {
             "type": "object"
-          }
+          },
+          "readOnly": true,
+          "type": "object"
         },
         "showEndUserFooter": {
           "readOnly": true,
@@ -18493,7 +18504,9 @@
         "_links": {
           "additionalProperties": {
             "type": "object"
-          }
+          },
+          "readOnly": true,
+          "type": "object"
         },
         "address1": {
           "type": "string"
@@ -20149,6 +20162,45 @@
       },
       "x-okta-tags": [
         "UserFactor"
+      ]
+    },
+    "RadiusApplication": {
+      "properties": {
+        "name": {
+          "default": "radius_generic_app"
+        },
+        "settings": {
+          "$ref": "#/definitions/RadiusApplicationSettings"
+        }
+      },
+      "x-okta-defined-as": {
+        "name": "radius_generic_app"
+      },
+      "x-okta-parent": "#/definitions/Application",
+      "x-okta-tags": [
+        "Application"
+      ]
+    },
+    "RadiusApplicationSettings": {
+      "properties": {
+        "app": {
+          "$ref": "#/definitions/RadiusApplicationSettingsApplication"
+        }
+      },
+      "x-okta-parent": "#/definitions/ApplicationSettings",
+      "x-okta-tags": [
+        "Application"
+      ]
+    },
+    "RadiusApplicationSettingsApplication": {
+      "properties": {
+        "radiusAppInstanceId": {
+          "type": "string"
+        }
+      },
+      "x-okta-parent": "#/definitions/ApplicationSettingsApplication",
+      "x-okta-tags": [
+        "Application"
       ]
     },
     "RecoveryQuestionCredential": {

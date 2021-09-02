@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.7.0
+  version: 2.8.0
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -305,6 +305,9 @@ paths:
     post:
       consumes:
         - application/json
+      description: >-
+        Updates the CSR with a signed X.509 certificate and adds it into the
+        application key credentials
       parameters:
         - in: path
           name: appId
@@ -8303,6 +8306,7 @@ definitions:
         BOOKMARK: '#/definitions/BookmarkApplication'
         BROWSER_PLUGIN: '#/definitions/BrowserPluginApplication'
         OPENID_CONNECT: '#/definitions/OpenIdConnectApplication'
+        RADIUS_FOR_GENERIC_APP: '#/definitions/RadiusApplication'
         SAML_1_1: '#/definitions/SamlApplication'
         SAML_2_0: '#/definitions/SamlApplication'
         SECURE_PASSWORD_STORE: '#/definitions/SecurePasswordStoreApplication'
@@ -8500,6 +8504,7 @@ definitions:
       - SAML_2_0
       - OPENID_CONNECT
       - SAML_1_1
+      - RADIUS_FOR_GENERIC_APP
     type: string
     x-okta-tags:
       - Application
@@ -10688,7 +10693,7 @@ definitions:
       x5t:
         readOnly: false
         type: string
-      'x5t#S256':
+      x5t#S256:
         readOnly: false
         type: string
       x5u:
@@ -11762,6 +11767,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       contactType:
         $ref: '#/definitions/OrgContactType'
     type: object
@@ -11794,6 +11801,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       optOutEmailUsers:
         readOnly: true
         type: boolean
@@ -11817,6 +11826,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       expiration:
         format: date-time
         readOnly: true
@@ -11839,6 +11850,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       showEndUserFooter:
         readOnly: true
         type: boolean
@@ -11855,6 +11868,8 @@ definitions:
       _links:
         additionalProperties:
           type: object
+        readOnly: true
+        type: object
       address1:
         type: string
       address2:
@@ -12941,6 +12956,31 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
+  RadiusApplication:
+    properties:
+      name:
+        default: radius_generic_app
+      settings:
+        $ref: '#/definitions/RadiusApplicationSettings'
+    x-okta-defined-as:
+      name: radius_generic_app
+    x-okta-parent: '#/definitions/Application'
+    x-okta-tags:
+      - Application
+  RadiusApplicationSettings:
+    properties:
+      app:
+        $ref: '#/definitions/RadiusApplicationSettingsApplication'
+    x-okta-parent: '#/definitions/ApplicationSettings'
+    x-okta-tags:
+      - Application
+  RadiusApplicationSettingsApplication:
+    properties:
+      radiusAppInstanceId:
+        type: string
+    x-okta-parent: '#/definitions/ApplicationSettingsApplication'
+    x-okta-tags:
+      - Application
   RecoveryQuestionCredential:
     properties:
       answer:
