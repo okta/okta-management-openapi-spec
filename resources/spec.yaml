@@ -13266,6 +13266,7 @@ definitions:
       - MOBILE_ADMIN
       - API_ACCESS_MANAGEMENT_ADMIN
       - REPORT_ADMIN
+      - GROUP_MEMBERSHIP_ADMIN
     type: string
     x-okta-tags:
       - Role
