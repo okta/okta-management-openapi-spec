@@ -10688,7 +10688,7 @@ definitions:
       x5t:
         readOnly: false
         type: string
-      'x5t#S256':
+      x5t#S256:
         readOnly: false
         type: string
       x5u:
@@ -13521,9 +13521,6 @@ definitions:
       tokenAuthScheme:
         type: string
       tokenType:
-        enum:
-          - ACCESS
-          - REFRESH
         type: string
     type: object
     x-okta-tags:
