@@ -2,17 +2,17 @@ swagger: '2.0'
 info:
   title: Okta API
   description: Allows customers to easily access the Okta API
-  termsOfService: 'http://developer.okta.com/terms/'
+  termsOfService: 'https://developer.okta.com/terms/'
   contact:
     name: Okta Developer Team
     email: devex-public@okta.com
-    url: 'http://developer.okta.com/'
+    url: 'https://developer.okta.com/'
   license:
     name: Apache-2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
 externalDocs:
   description: Find more info here
-  url: 'http://developer.okta.com/docs/api/getting_started/design_principles.html'
+  url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
 host: your-subdomain.okta.com
 basePath: /
 schemes:
@@ -1036,6 +1036,88 @@ paths:
       summary: Update Application Profile for Assigned User
       tags:
         - Application
+  /api/v1/authenticators:
+    get:
+      consumes:
+        - application/json
+      description: Success
+      operationId: listAuthenticators
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Authenticator'
+            type: array
+      security:
+        - api_token: []
+      tags:
+        - Authenticator
+  '/api/v1/authenticators/{authenticatorId}':
+    get:
+      consumes:
+        - application/json
+      description: Success
+      operationId: getAuthenticator
+      parameters:
+        - in: path
+          name: authenticatorId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Authenticator'
+      security:
+        - api_token: []
+      tags:
+        - Authenticator
+  '/api/v1/authenticators/{authenticatorId}/lifecycle/activate':
+    post:
+      consumes:
+        - application/json
+      description: Success
+      operationId: activateAuthenticator
+      parameters:
+        - in: path
+          name: authenticatorId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      tags:
+        - Authenticator
+  '/api/v1/authenticators/{authenticatorId}/lifecycle/deactivate':
+    post:
+      consumes:
+        - application/json
+      description: Success
+      operationId: deactivateAuthenticator
+      parameters:
+        - in: path
+          name: authenticatorId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      tags:
+        - Authenticator
   /api/v1/authorizationServers:
     get:
       consumes:
@@ -1676,7 +1758,7 @@ paths:
         '200':
           description: Success
       security:
-        - api_token: [ ]
+        - api_token: []
       tags:
         - AuthorizationServer
   '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/lifecycle/deactivate':
@@ -1698,7 +1780,7 @@ paths:
         '200':
           description: Success
       security:
-        - api_token: [ ]
+        - api_token: []
       tags:
         - AuthorizationServer
   '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/rules':
@@ -1873,7 +1955,7 @@ paths:
         '200':
           description: Success
       security:
-        - api_token: [ ]
+        - api_token: []
       tags:
         - AuthorizationServer
   '/api/v1/authorizationServers/{authServerId}/policies/{policyId}/rules/{ruleId}/lifecycle/deactivate':
@@ -1899,7 +1981,7 @@ paths:
         '200':
           description: Success
       security:
-        - api_token: [ ]
+        - api_token: []
       tags:
         - AuthorizationServer
   '/api/v1/authorizationServers/{authServerId}/scopes':
@@ -2617,7 +2699,7 @@ paths:
     get:
       consumes:
         - application/json
-      description: Lists all group rules for your organization.
+      description: Fetches a group from your organization.
       operationId: getGroup
       parameters:
         - in: path
@@ -4227,6 +4309,42 @@ paths:
       summary: "Partial updates on the User Profile properties of the Application User Schema."
       tags:
         - UserSchema
+  /api/v1/meta/schemas/group/default:
+    get:
+      operationId: "getGroupSchema"
+      description: "Fetches the group schema"
+      parameters: []
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GroupSchema"
+      security:
+        - api_token: []
+      summary: "Fetches the group schema"
+      tags:
+        - GroupSchema
+    post:
+      operationId: "updateGroupSchema"
+      description: "Updates, adds ore removes one or more custom Group Profile properties in the schema"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: false
+          schema:
+            $ref: "#/definitions/GroupSchema"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GroupSchema"
+      security:
+        - api_token: []
+      summary: "Updates, adds ore removes one or more custom Group Profile properties in the schema"
+      tags:
+        - GroupSchema
   /api/v1/meta/schemas/user/{schemaId}:
     get:
       description: Fetches the schema for a Schema Id.
@@ -4499,6 +4617,304 @@ paths:
         - api_token: []
       tags:
         - UserType
+  /api/v1/org:
+    get:
+      consumes:
+        - application/json
+      description: Get settings of your organization.
+      operationId: getOrgSettings
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      security:
+        - api_token: []
+      summary: Get org settings
+      tags:
+        - Org
+    post:
+      consumes:
+        - application/json
+      description: Partial update settings of your organization.
+      operationId: partialUpdateOrgSetting
+      parameters:
+        - in: body
+          name: orgSetting
+          required: true
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      security:
+        - api_token: []
+      summary: Partial update Org setting
+      tags:
+        - Org
+    put:
+      consumes:
+        - application/json
+      description: Update settings of your organization.
+      operationId: updateOrgSetting
+      parameters:
+        - in: body
+          name: orgSetting
+          required: true
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgSetting'
+      security:
+        - api_token: []
+      summary: Update Org setting
+      tags:
+        - Org
+  /api/v1/org/contacts:
+    get:
+      consumes:
+        - application/json
+      description: Gets Contact Types of your organization.
+      operationId: getOrgContactTypes
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/OrgContactTypeObj'
+            type: array
+      security:
+        - api_token: []
+      summary: Get org contact types
+      tags:
+        - Org
+  '/api/v1/org/contacts/{contactType}':
+    get:
+      consumes:
+        - application/json
+      description: Retrieves the URL of the User associated with the specified Contact Type.
+      operationId: getOrgContactUser
+      parameters:
+        - in: path
+          name: contactType
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgContactUser'
+      security:
+        - api_token: []
+      summary: Get org contact user
+      tags:
+        - Org
+    put:
+      consumes:
+        - application/json
+      description: Updates the User associated with the specified Contact Type.
+      operationId: updateOrgContactUser
+      parameters:
+        - in: path
+          name: contactType
+          required: true
+          type: string
+        - in: body
+          name: userId
+          required: true
+          schema:
+            $ref: '#/definitions/UserIdString'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgContactUser'
+      security:
+        - api_token: []
+      summary: Update org contact user
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport:
+    get:
+      consumes:
+        - application/json
+      description: Gets Okta Support Settings of your organization.
+      operationId: getOrgOktaSupportSettings
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Get Okta Support settings
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport/grant:
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Enables you to temporarily allow Okta Support to access your org as an
+        administrator for eight hours.
+      operationId: grantOktaSupport
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Grant Okta Support
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport/extend:
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Extends the length of time that Okta Support can access your org by 24
+        hours. This means that 24 hours are added to the remaining access time.
+      operationId: extendOktaSupport
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Extend Okta Support
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaSupport/revoke:
+    post:
+      consumes:
+        - application/json
+      description: Revokes Okta Support access to your organization.
+      operationId: revokeOktaSupport
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaSupportSettingsObj'
+      security:
+        - api_token: []
+      summary: Extend Okta Support
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaCommunication:
+    get:
+      consumes:
+        - application/json
+      description: Gets Okta Communication Settings of your organization.
+      operationId: getOktaCommunicationSettings
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaCommunicationSetting'
+      security:
+        - api_token: []
+      summary: Get Okta Communication Settings
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaCommunication/optOut:
+    post:
+      consumes:
+        - application/json
+      description: Opts out all users of this org from Okta Communication emails.
+      operationId: optOutUsersFromOktaCommunicationEmails
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaCommunicationSetting'
+      security:
+        - api_token: []
+      summary: Opt out all users from Okta Communication emails
+      tags:
+        - Org
+  /api/v1/org/privacy/oktaCommunication/optIn:
+    post:
+      consumes:
+        - application/json
+      description: Opts in all users of this org to Okta Communication emails.
+      operationId: optInUsersToOktaCommunicationEmails
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgOktaCommunicationSetting'
+      security:
+        - api_token: []
+      summary: Opt in all users to Okta Communication emails
+      tags:
+        - Org
+  /api/v1/org/preferences:
+    get:
+      consumes:
+        - application/json
+      description: Gets preferences of your organization.
+      operationId: getOrgPreferences
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgPreferences'
+      security:
+        - api_token: []
+      summary: Get org preferences
+      tags:
+        - Org
+  /api/v1/org/preferences/showEndUserFooter:
+    post:
+      consumes:
+        - application/json
+      description: Makes the Okta UI footer visible for all end users of your organization.
+      operationId: showOktaUIFooter
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgPreferences'
+      security:
+        - api_token: []
+      summary: Show Okta UI Footer
+      tags:
+        - Org
+  /api/v1/org/preferences/hideEndUserFooter:
+    post:
+      consumes:
+        - application/json
+      description: Hide the Okta UI footer for all end users of your organization.
+      operationId: hideOktaUIFooter
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/OrgPreferences'
+      security:
+        - api_token: []
+      summary: Show Okta UI Footer
+      tags:
+        - Org
   /api/v1/policies:
     get:
       consumes:
@@ -4524,7 +4940,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/AuthorizationServerPolicy'
+              $ref: '#/definitions/Policy'
             type: array
       security:
         - api_token: []
@@ -6714,6 +7130,29 @@ paths:
         - api_token: []
       tags:
         - User
+    get:
+      description: Gets role that is assigne to user.
+      operationId: getUserRole
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+        - in: path
+          name: roleId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Role'
+      security:
+        - api_token: []
+      tags:
+        - User
   '/api/v1/users/{userId}/roles/{roleId}/targets/catalog/apps':
     get:
       consumes:
@@ -7048,7 +7487,7 @@ paths:
               $ref: '#/definitions/NetworkZone'
             type: array
       security:
-        - api_token: [ ]
+        - api_token: []
       summary: List Network Zones
       tags:
         - NetworkZone
@@ -7071,7 +7510,7 @@ paths:
           schema:
             $ref: '#/definitions/NetworkZone'
       security:
-        - api_token: [ ]
+        - api_token: []
       summary: Add Network Zone
       tags:
         - NetworkZone
@@ -7088,7 +7527,7 @@ paths:
         '200':
           description: Success
       security:
-        - api_token: [ ]
+        - api_token: []
       summary: Delete Network Zone
       tags:
         - NetworkZone
@@ -7108,7 +7547,7 @@ paths:
           schema:
             $ref: '#/definitions/NetworkZone'
       security:
-        - api_token: [ ]
+        - api_token: []
       summary: Get Network Zone
       tags:
         - NetworkZone
@@ -7135,7 +7574,7 @@ paths:
           schema:
             $ref: '#/definitions/NetworkZone'
       security:
-        - api_token: [ ]
+        - api_token: []
       summary: Update Network Zone
       tags:
         - NetworkZone
@@ -7156,7 +7595,7 @@ paths:
           schema:
             $ref: '#/definitions/NetworkZone'
       security:
-        - api_token: [ ]
+        - api_token: []
       summary: Deactivate Network Zone
       tags:
         - NetworkZone
@@ -7177,7 +7616,7 @@ paths:
           schema:
             $ref: '#/definitions/NetworkZone'
       security:
-        - api_token: [ ]
+        - api_token: []
       summary: Activate Network Zone
       tags:
         - NetworkZone
@@ -7253,7 +7692,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/DomainResponse'
+            $ref: '#/definitions/Domain'
       security:
         - api_token: []
       summary: Create Domain
@@ -7274,7 +7713,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/DomainResponse'
+            $ref: '#/definitions/Domain'
       security:
         - api_token: []
       summary: Verify Domain
@@ -7337,7 +7776,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/DomainResponse'
+            $ref: '#/definitions/Domain'
       security:
         - api_token: []
       summary: Get Domain
@@ -7358,6 +7797,15 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
+  AllowedForEnum:
+    enum:
+      - recovery
+      - sso
+      - any
+      - none
+    type: string
+    x-okta-tags:
+      - Authenticator
   AppAndInstanceConditionEvaluatorAppOrInstance:
     properties:
       id:
@@ -7887,6 +8335,8 @@ definitions:
         type: string
       notifications:
         $ref: '#/definitions/ApplicationSettingsNotifications'
+      notes:
+        $ref: '#/definitions/ApplicationSettingsNotes'
     type: object
     x-okta-tags:
       - Application
@@ -7926,6 +8376,15 @@ definitions:
     type: object
     x-okta-tags:
       - Application
+  ApplicationSettingsNotes:
+    properties:
+      admin:
+        type: string
+      enduser:
+        type: string
+    type: object
+    x-okta-tags:
+      - Application
   ApplicationSignOnMode:
     enum:
       - BOOKMARK
@@ -7942,6 +8401,8 @@ definitions:
       - Application
   ApplicationVisibility:
     properties:
+      autoLaunch:
+        type: boolean
       appLinks:
         additionalProperties:
           type: boolean
@@ -7989,6 +8450,74 @@ definitions:
     type: string
     x-okta-tags:
       - User
+  Authenticator:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      id:
+        readOnly: true
+        type: string
+      key:
+        type: string
+      status:
+        $ref: '#/definitions/AuthenticatorStatus'
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/AuthenticatorType'
+      settings:
+        $ref: '#/definitions/AuthenticatorSettings'
+    type: object
+    x-okta-operations:
+      - alias: activate
+        arguments:
+          - dest: authenticatorId
+            src: id
+        operationId: activateAuthenticator
+      - alias: deactivate
+        arguments:
+          - dest: authenticatorId
+            src: id
+        operationId: deactivateAuthenticator
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorSettings:
+    properties:
+      allowedFor:
+        $ref: '#/definitions/AllowedForEnum'
+      tokenLifetimeInMinutes:
+        type: integer
+    type: object
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorStatus:
+    enum:
+      - ACTIVE
+      - INACTIVE
+    type: string
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorType:
+    enum:
+      - password
+      - security_question
+      - phone
+      - email
+      - security_key
+    type: string
+    x-okta-tags:
+      - Authenticator
   AuthorizationServer:
     properties:
       _links:
@@ -8516,24 +9045,37 @@ definitions:
       fqdn:
         type: string
       recordType:
-        enum:
-          - TXT
-          - CNAME
-        type: string
+        $ref: '#/definitions/DNSRecordType'
       values:
         items:
           type: string
         type: array
     x-okta-tags:
       - Domain
+  DNSRecordType:
+    enum:
+      - TXT
+      - CNAME
+    type: string
+    x-okta-tags:
+      - Domain
   Domain:
     properties:
-      certificateSourcetype:
-        enum:
-          - MANUAL
-        type: string
+      id:
+        type:
+          string
+      certificateSourceType:
+        $ref: '#/definitions/DomainCertificateSourceType'
       domain:
         type: string
+      dnsRecords:
+        items:
+          $ref: '#/definitions/DNSRecord'
+        type: array
+      publicCertificate:
+        $ref: '#/definitions/DomainCertificateMetadata'
+      validationStatus:
+        $ref: '#/definitions/DomainValidationStatus'
     type: object
     x-okta-tags:
       - Domain
@@ -8549,16 +9091,21 @@ definitions:
         type:
           string
       type:
-        enum:
-          - PEM
-        type:
-          string
+        $ref: '#/definitions/DomainCertificateType'
     x-okta-operations:
       - alias: createCertificate
         arguments:
           - dest: certificate
             self: true
         operationId: createCertificate
+    x-okta-tags:
+      - Domain
+  DomainListResponse:
+    properties:
+      domains:
+        items:
+          $ref: '#/definitions/Domain'
+        type: array
     x-okta-tags:
       - Domain
   DomainCertificateMetadata:
@@ -8571,53 +9118,26 @@ definitions:
         type: string
     x-okta-tags:
       - Domain
-  DomainLinks:
-    properties:
-      certificate:
-        type: object
-      self:
-        type: object
-      verify:
-        type: object
+  DomainCertificateSourceType:
+    enum:
+      - MANUAL
+    type: string
     x-okta-tags:
       - Domain
-  DomainListResponse:
-    properties:
-      domains:
-        items:
-          $ref: '#/definitions/DomainResponse'
-        type: array
+  DomainCertificateType:
+    enum:
+      - PEM
+    type: string
     x-okta-tags:
       - Domain
-  DomainResponse:
-    properties:
-      certificateSourcetype:
-        enum:
-          - MANUAL
-        type:
-          string
-      dnsRecords:
-        items:
-          $ref: '#/definitions/DNSRecord'
-        type: array
-      domain:
-        type:
-          string
-      id:
-        type:
-          string
-      _links:
-        $ref: '#/definitions/DomainLinks'
-      publicCertificate:
-        $ref: '#/definitions/DomainCertificateMetadata'
-      validationStatus:
-        enum:
-          - NOT_STARTED
-          - IN_PROGRESS
-          - VERIFIED
-          - COMPLETED
-        type:
-          string
+  DomainValidationStatus:
+    enum:
+      - NOT_STARTED
+      - IN_PROGRESS
+      - VERIFIED
+      - COMPLETED
+    type:
+      string
     x-okta-tags:
       - Domain
   Duration:
@@ -9179,6 +9699,138 @@ definitions:
     type: object
     x-okta-tags:
       - GroupRule
+  GroupSchema:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        readOnly: true
+      $schema:
+        type: "string"
+        readOnly: true
+      name:
+        type: "string"
+        readOnly: true
+      title:
+        type: "string"
+      lastUpdated:
+        type: "string"
+        readOnly: true
+      description:
+        type: "string"
+      created:
+        type: "string"
+        readOnly: true
+      definitions:
+        $ref: "#/definitions/GroupSchemaDefinitions"
+      type:
+        type: "string"
+        readOnly: true
+      properties:
+        $ref: '#/definitions/UserSchemaProperties'
+        readOnly: true
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - GroupSchema
+  GroupSchemaDefinitions:
+    type: object
+    properties:
+      base:
+        $ref: '#/definitions/GroupSchemaBase'
+      custom:
+        $ref: '#/definitions/GroupSchemaCustom'
+    x-okta-tags:
+      - GroupSchema
+  GroupSchemaBase:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      type:
+        type: "string"
+      properties:
+        $ref: "#/definitions/GroupSchemaBaseProperties"
+      required:
+        type: "array"
+        items:
+          type: "string"
+    x-okta-tags:
+      - GroupSchema
+  GroupSchemaCustom:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      type:
+        type: "string"
+      properties:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/GroupSchemaAttribute'
+      required:
+        type: "array"
+        items:
+          type: "string"
+    x-okta-tags:
+      - GroupSchema
+  GroupSchemaBaseProperties:
+    type: "object"
+    properties:
+      name:
+        $ref: "#/definitions/GroupSchemaAttribute"
+      description:
+        $ref: "#/definitions/GroupSchemaAttribute"
+    x-okta-tags:
+      - GroupSchema
+  GroupSchemaAttribute:
+    type: "object"
+    properties:
+      title:
+        type: "string"
+      type:
+        $ref: '#/definitions/UserSchemaAttributeType'
+      required:
+        type: "boolean"
+      mutability:
+        type: "string"
+      scope:
+        $ref: "#/definitions/UserSchemaAttributeScope"
+      enum:
+        items:
+          type: string
+        type: array
+      oneOf:
+        items:
+          $ref: '#/definitions/UserSchemaAttributeEnum'
+        type: array
+      minLength:
+        type: "integer"
+      maxLength:
+        type: "integer"
+      description:
+        type: "string"
+      permissions:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserSchemaAttributePermission"
+      master:
+        $ref: "#/definitions/UserSchemaAttributeMaster"
+      union:
+        $ref: "#/definitions/UserSchemaAttributeUnion"
+      items:
+        $ref: "#/definitions/UserSchemaAttributeItems"
+      unique:
+        type: "string"
+      externalName:
+        type: "string"
+      externalNamespace:
+        type: "string"
+    x-okta-tags:
+      - GroupSchema
   GroupType:
     enum:
       - OKTA_GROUP
@@ -9611,6 +10263,16 @@ definitions:
         type: integer
       refreshTokenWindowMinutes:
         type: integer
+      inlineHook:
+        $ref: '#/definitions/TokenAuthorizationServerPolicyRuleActionInlineHook'
+    type: object
+    x-okta-tags:
+      - AuthorizationServerPolicy
+  TokenAuthorizationServerPolicyRuleActionInlineHook:
+    properties:
+      id:
+        type: string
+        readOnly: false
     type: object
     x-okta-tags:
       - AuthorizationServerPolicy
@@ -9958,6 +10620,175 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  OrgOktaCommunicationSetting:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      optOutEmailUsers:
+        type: boolean
+        readOnly: true
+    type: object
+    x-okta-operations:
+      - alias: optInUsersToOktaCommunicationEmails
+        operationId: optInUsersToOktaCommunicationEmails
+      - alias: optOutUsersFromOktaCommunicationEmails
+        operationId: optOutUsersFromOktaCommunicationEmails
+    x-okta-tags:
+      - Org
+  OrgContactTypeObj:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      contactType:
+        $ref: '#/definitions/OrgContactType'
+    type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOrgContactTypes
+    x-okta-tags:
+      - Org
+  OrgContactType:
+    enum:
+      - BILLING
+      - TECHNICAL
+    type: string
+    x-okta-tags:
+      - Org
+  OrgContactUser:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      userId:
+        type: string
+    type: object
+    x-okta-operations:
+      - alias: updateContactUser
+        arguments:
+          - dest: userId
+            src: userId
+        operationId: updateOrgContactUser
+    x-okta-tags:
+      - Org
+  OrgSetting:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      address1:
+        type: string
+      address2:
+        type: string
+      city:
+        type: string
+      companyName:
+        type: string
+      country:
+        type: string
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      endUserSupportHelpURL:
+        type: string
+      expiresAt:
+        format: date-time
+        readOnly: true
+        type: string
+      id:
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      phoneNumber:
+        type: string
+      postalCode:
+        type: string
+      state:
+        type: string
+      status:
+        readOnly: true
+        type: string
+      subdomain:
+        readOnly: true
+        type: string
+      supportPhoneNumber:
+        type: string
+      website:
+        type: string
+    type: object
+    x-okta-crud:
+      - alias: update
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: updateOrgSetting
+      - alias: partialUpdate
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: partialUpdateOrgSetting
+    x-okta-tags:
+      - Org
+  OrgOktaSupportSetting:
+    enum:
+      - DISABLED
+      - ENABLED
+    type: string
+    x-okta-tags:
+      - Org
+  OrgOktaSupportSettingsObj:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      expiration:
+        format: date-time
+        type: string
+        readOnly: true
+      support:
+        $ref: '#/definitions/OrgOktaSupportSetting'
+        readOnly: true
+    type: object
+    x-okta-operations:
+      - alias: extendOktaSupport
+        operationId: extendOktaSupport
+      - alias: grantOktaSupport
+        operationId: grantOktaSupport
+      - alias: revokeOktaSupport
+        operationId: revokeOktaSupport
+    x-okta-tags:
+      - Org
+  OrgPreferences:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+      showEndUserFooter:
+        type: boolean
+        readOnly: true
+    type: object
+    x-okta-operations:
+      - alias: hideEndUserFooter
+        operationId: hideOktaUIFooter
+      - alias: showEndUserFooter
+        operationId: showOktaUIFooter
+    x-okta-tags:
+      - Org
+  UserIdString:
+    properties:
+      userId:
+        type: string
+    type: object
+    x-okta-tags:
+      - Org
   UserSchema:
     type: "object"
     properties:
@@ -10152,7 +10983,7 @@ definitions:
     properties:
       type:
         type: string
-      valuse:
+      value:
         type: string
     type: object
     x-okta-tags:
@@ -10256,8 +11087,6 @@ definitions:
           type: "string"
     x-okta-tags:
       - UserSchema
-  UserSchemaPublicProperties:
-
   LinkedObject:
     properties:
       _links:
@@ -12346,7 +13175,7 @@ definitions:
     x-okta-tags:
       - User
   ResponseLinks:
-    properties: {}
+    properties: { }
     type: object
     x-okta-tags:
       - User
@@ -12475,6 +13304,7 @@ definitions:
       - MOBILE_ADMIN
       - API_ACCESS_MANAGEMENT_ADMIN
       - REPORT_ADMIN
+      - GROUP_MEMBERSHIP_ADMIN
     type: string
     x-okta-tags:
       - Role
@@ -12494,12 +13324,12 @@ definitions:
       - Application
   SamlApplicationSettingsSignOn:
     properties:
-      allowMultipleAcsEndpoints:
-        type: boolean
       acsEndpoints:
         items:
           $ref: '#/definitions/AcsEndpoint'
         type: array
+      allowMultipleAcsEndpoints:
+        type: boolean
       assertionSigned:
         type: boolean
       attributeStatements:
@@ -12524,6 +13354,10 @@ definitions:
         type: boolean
       idpIssuer:
         type: string
+      inlineHooks:
+        items:
+          $ref: '#/definitions/SignOnInlineHook'
+        type: array
       recipient:
         type: string
       recipientOverride:
@@ -12538,16 +13372,23 @@ definitions:
         $ref: '#/definitions/SingleLogout'
       spIssuer:
         type: string
+      spCertificate:
+        $ref: '#/definitions/SpCertificate'
       ssoAcsUrl:
         type: string
       ssoAcsUrlOverride:
         type: string
-      spCertificate:
-        $ref: '#/definitions/SpCertificate'
       subjectNameIdFormat:
         type: string
       subjectNameIdTemplate:
         type: string
+    x-okta-tags:
+      - Application
+  SignOnInlineHook:
+    properties:
+      id:
+        type: string
+        readOnly: false
     x-okta-tags:
       - Application
   SpCertificate:
