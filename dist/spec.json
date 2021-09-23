@@ -1681,7 +1681,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
           }
         },
         "security": [
@@ -1714,7 +1717,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
           }
         },
         "security": [
