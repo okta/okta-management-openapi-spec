@@ -8467,6 +8467,7 @@ definitions:
       - Authenticator
   AuthenticatorType:
     enum:
+      - app
       - password
       - security_question
       - phone
