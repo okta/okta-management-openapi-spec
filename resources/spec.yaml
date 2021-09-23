@@ -13720,9 +13720,6 @@ definitions:
       tokenAuthScheme:
         type: string
       tokenType:
-        enum:
-          - ACCESS
-          - REFRESH
         type: string
     type: object
     x-okta-tags:

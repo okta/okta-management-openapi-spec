@@ -21043,10 +21043,6 @@
           "type": "string"
         },
         "tokenType": {
-          "enum": [
-            "ACCESS",
-            "REFRESH"
-          ],
           "type": "string"
         }
       },
