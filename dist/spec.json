@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.8.0"
+    "version": "2.7.1"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -13473,6 +13473,7 @@
     },
     "AuthenticatorType": {
       "enum": [
+        "app",
         "password",
         "security_question",
         "phone",
@@ -21042,10 +21043,6 @@
           "type": "string"
         },
         "tokenType": {
-          "enum": [
-            "ACCESS",
-            "REFRESH"
-          ],
           "type": "string"
         }
       },

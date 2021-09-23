@@ -8467,6 +8467,7 @@ definitions:
       - Authenticator
   AuthenticatorType:
     enum:
+      - app
       - password
       - security_question
       - phone
@@ -13719,9 +13720,6 @@ definitions:
       tokenAuthScheme:
         type: string
       tokenType:
-        enum:
-          - ACCESS
-          - REFRESH
         type: string
     type: object
     x-okta-tags:
