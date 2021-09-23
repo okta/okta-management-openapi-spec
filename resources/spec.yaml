@@ -9831,7 +9831,7 @@ definitions:
       issuerMode:
         enum:
           - ORG_URL
-          - CUSTOM_URL_DOMAIN
+          - CUSTOM_URL
         type: string
       lastUpdated:
         format: date-time
