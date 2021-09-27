@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.7.1
+  version: 2.8.0
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -4924,6 +4924,27 @@ paths:
       security:
         - api_token: []
       summary: Update org contact user
+      tags:
+        - Org
+  /api/v1/org/logo:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Updates the logo for your organization.
+      operationId: updateOrgLogo
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Created
+      security:
+        - api_token: []
+      summary: Update org logo
       tags:
         - Org
   /api/v1/org/preferences:

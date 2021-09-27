@@ -4656,6 +4656,25 @@ paths:
       summary: Get org contact types
       tags:
         - Org
+  /api/v1/org/logo:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Updates the logo for your organization.
+      operationId: updateOrgLogo
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+      responses:
+        '201':
+          description: Created
+      security:
+        - api_token: []
+      summary: Update org logo
+      tags:
+        - Org
   '/api/v1/org/contacts/{contactType}':
     get:
       consumes:
