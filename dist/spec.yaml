@@ -10693,7 +10693,7 @@ definitions:
       x5t:
         readOnly: false
         type: string
-      'x5t#S256':
+      x5t#S256:
         readOnly: false
         type: string
       x5u:
@@ -11901,6 +11901,9 @@ definitions:
         type: string
     type: object
     x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOrgSettings
       - alias: update
         arguments:
           - dest: orgSetting

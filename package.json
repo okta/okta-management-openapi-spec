@@ -1,6 +1,6 @@
 {
   "name": "@okta/openapi",
-  "version": "2.8.0",
+  "version": "2.7.2",
   "description": "Utilities to generate OpenAPI specifications for the Okta API",
   "main": "./dist/spec.json",
   "bin": {
