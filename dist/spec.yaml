@@ -11810,6 +11810,16 @@ definitions:
         readOnly: true
         type: boolean
     type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOktaCommunicationSettings
+      - alias: optin
+        arguments: []
+        operationId: optInUsersToOktaCommunicationEmails
+      - alias: optout
+        arguments: []
+        operationId: optOutUsersFromOktaCommunicationEmails
     x-okta-operations:
       - alias: optInUsersToOktaCommunicationEmails
         operationId: optInUsersToOktaCommunicationEmails

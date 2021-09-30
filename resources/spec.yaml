@@ -10598,6 +10598,16 @@ definitions:
         operationId: optOutUsersFromOktaCommunicationEmails
     x-okta-tags:
       - Org
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOktaCommunicationSettings
+      - alias: optin
+        arguments: []
+        operationId: optInUsersToOktaCommunicationEmails
+      - alias: optout
+        arguments: []
+        operationId: optOutUsersFromOktaCommunicationEmails
   OrgContactTypeObj:
     properties:
       _links:
