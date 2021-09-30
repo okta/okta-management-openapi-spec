@@ -11837,6 +11837,19 @@ definitions:
         $ref: '#/definitions/OrgOktaSupportSetting'
         readOnly: true
     type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOrgOktaSupportSettings
+      - alias: grant
+        arguments: []
+        operationId: grantOktaSupport
+      - alias: extend
+        arguments: []
+        operationId: extendOktaSupport
+      - alias: revoke
+        arguments: []
+        operationId: revokeOktaSupport
     x-okta-operations:
       - alias: extendOktaSupport
         operationId: extendOktaSupport

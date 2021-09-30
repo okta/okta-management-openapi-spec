@@ -10738,6 +10738,19 @@ definitions:
         operationId: revokeOktaSupport
     x-okta-tags:
       - Org
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOrgOktaSupportSettings
+      - alias: grant
+        arguments: []
+        operationId: grantOktaSupport
+      - alias: extend
+        arguments: []
+        operationId: extendOktaSupport
+      - alias: revoke
+        arguments: []
+        operationId: revokeOktaSupport
   OrgPreferences:
     properties:
       _links:
