@@ -8477,6 +8477,7 @@ definitions:
       - phone
       - email
       - security_key
+      - federated
     type: string
     x-okta-tags:
       - Authenticator
