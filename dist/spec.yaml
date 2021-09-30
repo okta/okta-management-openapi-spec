@@ -11878,6 +11878,16 @@ definitions:
         readOnly: true
         type: boolean
     type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOrgPreferences
+      - alias: showfooter
+        arguments: []
+        operationId: showOktaUIFooter
+      - alias: hidefooter
+        arguments: []
+        operationId: hideOktaUIFooter
     x-okta-operations:
       - alias: hideEndUserFooter
         operationId: hideOktaUIFooter

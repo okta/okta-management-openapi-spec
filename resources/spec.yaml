@@ -10777,6 +10777,16 @@ definitions:
         operationId: showOktaUIFooter
     x-okta-tags:
       - Org
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getOrgPreferences
+      - alias: showfooter
+        arguments: []
+        operationId: showOktaUIFooter
+      - alias: hidefooter
+        arguments: []
+        operationId: hideOktaUIFooter
   UserIdString:
     properties:
       userId:
