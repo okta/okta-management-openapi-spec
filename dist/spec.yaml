@@ -11782,6 +11782,17 @@ definitions:
       userId:
         type: string
     type: object
+    x-okta-crud:
+      - alias: read
+        arguments:
+          - dest: contactType
+            src: id
+        operationId: getOrgContactUser
+      - alias: update
+        arguments:
+          - dest: orgContactUser
+            self: true
+        operationId: updateOrgContactUser
     x-okta-operations:
       - alias: updateContactUser
         arguments:
