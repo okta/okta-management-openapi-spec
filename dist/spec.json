@@ -7651,7 +7651,7 @@
         ],
         "summary": "Get org contact types",
         "tags": [
-          "Org"
+          "OrgContactTypeObj"
         ]
       }
     },
@@ -7688,7 +7688,7 @@
         ],
         "summary": "Get org contact user",
         "tags": [
-          "Org"
+          "OrgContactUser"
         ]
       },
       "put": {
@@ -7731,7 +7731,7 @@
         ],
         "summary": "Update org contact user",
         "tags": [
-          "Org"
+          "OrgContactUser"
         ]
       }
     },
@@ -7761,7 +7761,7 @@
         ],
         "summary": "Get org preferences",
         "tags": [
-          "Org"
+          "OrgPreferences"
         ]
       }
     },
@@ -7791,7 +7791,7 @@
         ],
         "summary": "Show Okta UI Footer",
         "tags": [
-          "Org"
+          "OrgPreferences"
         ]
       }
     },
@@ -7821,7 +7821,7 @@
         ],
         "summary": "Show Okta UI Footer",
         "tags": [
-          "Org"
+          "OrgPreferences"
         ]
       }
     },
@@ -7851,7 +7851,7 @@
         ],
         "summary": "Get Okta Communication Settings",
         "tags": [
-          "Org"
+          "OrgOktaCommunicationSetting"
         ]
       }
     },
@@ -7881,7 +7881,7 @@
         ],
         "summary": "Opt in all users to Okta Communication emails",
         "tags": [
-          "Org"
+          "OrgOktaCommunicationSetting"
         ]
       }
     },
@@ -7911,7 +7911,7 @@
         ],
         "summary": "Opt out all users from Okta Communication emails",
         "tags": [
-          "Org"
+          "OrgOktaCommunicationSetting"
         ]
       }
     },
@@ -7941,7 +7941,7 @@
         ],
         "summary": "Get Okta Support settings",
         "tags": [
-          "Org"
+          "OrgOktaSupportSettingsObj"
         ]
       }
     },
@@ -7971,7 +7971,7 @@
         ],
         "summary": "Extend Okta Support",
         "tags": [
-          "Org"
+          "OrgOktaSupportSettingsObj"
         ]
       }
     },
@@ -8001,7 +8001,7 @@
         ],
         "summary": "Grant Okta Support",
         "tags": [
-          "Org"
+          "OrgOktaSupportSettingsObj"
         ]
       }
     },
@@ -8031,7 +8031,7 @@
         ],
         "summary": "Extend Okta Support",
         "tags": [
-          "Org"
+          "OrgOktaSupportSettingsObj"
         ]
       }
     },

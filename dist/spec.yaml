@@ -4873,7 +4873,7 @@ paths:
         - api_token: []
       summary: Get org contact types
       tags:
-        - Org
+        - OrgContactTypeObj
   '/api/v1/org/contacts/{contactType}':
     get:
       consumes:
@@ -4898,7 +4898,7 @@ paths:
         - api_token: []
       summary: Get org contact user
       tags:
-        - Org
+        - OrgContactUser
     put:
       consumes:
         - application/json
@@ -4925,7 +4925,7 @@ paths:
         - api_token: []
       summary: Update org contact user
       tags:
-        - Org
+        - OrgContactUser
   /api/v1/org/preferences:
     get:
       consumes:
@@ -4944,7 +4944,7 @@ paths:
         - api_token: []
       summary: Get org preferences
       tags:
-        - Org
+        - OrgPreferences
   /api/v1/org/preferences/hideEndUserFooter:
     post:
       consumes:
@@ -4963,7 +4963,7 @@ paths:
         - api_token: []
       summary: Show Okta UI Footer
       tags:
-        - Org
+        - OrgPreferences
   /api/v1/org/preferences/showEndUserFooter:
     post:
       consumes:
@@ -4982,7 +4982,7 @@ paths:
         - api_token: []
       summary: Show Okta UI Footer
       tags:
-        - Org
+        - OrgPreferences
   /api/v1/org/privacy/oktaCommunication:
     get:
       consumes:
@@ -5001,7 +5001,7 @@ paths:
         - api_token: []
       summary: Get Okta Communication Settings
       tags:
-        - Org
+        - OrgOktaCommunicationSetting
   /api/v1/org/privacy/oktaCommunication/optIn:
     post:
       consumes:
@@ -5020,7 +5020,7 @@ paths:
         - api_token: []
       summary: Opt in all users to Okta Communication emails
       tags:
-        - Org
+        - OrgOktaCommunicationSetting
   /api/v1/org/privacy/oktaCommunication/optOut:
     post:
       consumes:
@@ -5039,7 +5039,7 @@ paths:
         - api_token: []
       summary: Opt out all users from Okta Communication emails
       tags:
-        - Org
+        - OrgOktaCommunicationSetting
   /api/v1/org/privacy/oktaSupport:
     get:
       consumes:
@@ -5058,7 +5058,7 @@ paths:
         - api_token: []
       summary: Get Okta Support settings
       tags:
-        - Org
+        - OrgOktaSupportSettingsObj
   /api/v1/org/privacy/oktaSupport/extend:
     post:
       consumes:
@@ -5079,7 +5079,7 @@ paths:
         - api_token: []
       summary: Extend Okta Support
       tags:
-        - Org
+        - OrgOktaSupportSettingsObj
   /api/v1/org/privacy/oktaSupport/grant:
     post:
       consumes:
@@ -5100,7 +5100,7 @@ paths:
         - api_token: []
       summary: Grant Okta Support
       tags:
-        - Org
+        - OrgOktaSupportSettingsObj
   /api/v1/org/privacy/oktaSupport/revoke:
     post:
       consumes:
@@ -5119,7 +5119,7 @@ paths:
         - api_token: []
       summary: Extend Okta Support
       tags:
-        - Org
+        - OrgOktaSupportSettingsObj
   /api/v1/policies:
     get:
       consumes:
