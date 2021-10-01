@@ -10625,10 +10625,6 @@ definitions:
       contactType:
         $ref: '#/definitions/OrgContactType'
     type: object
-    x-okta-crud:
-      - alias: read
-        arguments: []
-        operationId: getOrgContactTypes
     x-okta-tags:
       - Org
   OrgContactType:
@@ -14025,6 +14021,11 @@ definitions:
           - dest: userId
             src: id
         operationId: assignRoleToUser
+      - alias: getRole
+        arguments:
+          - dest: userId
+            src: id
+        operationId: getUserRole
       - alias: removeRole
         arguments:
           - dest: userId

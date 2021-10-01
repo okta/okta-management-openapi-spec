@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.8.0"
+    "version": "2.7.2"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -18388,13 +18388,6 @@
         }
       },
       "type": "object",
-      "x-okta-crud": [
-        {
-          "alias": "read",
-          "arguments": [],
-          "operationId": "getOrgContactTypes"
-        }
-      ],
       "x-okta-tags": [
         "Org"
       ]
@@ -21633,6 +21626,16 @@
             }
           ],
           "operationId": "assignRoleToUser"
+        },
+        {
+          "alias": "getRole",
+          "arguments": [
+            {
+              "dest": "userId",
+              "src": "id"
+            }
+          ],
+          "operationId": "getUserRole"
         },
         {
           "alias": "removeRole",
