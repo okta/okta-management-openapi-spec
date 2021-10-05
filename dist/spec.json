@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.7.2"
+    "version": "2.8.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -13484,7 +13484,8 @@
         "security_question",
         "phone",
         "email",
-        "security_key"
+        "security_key",
+        "federated"
       ],
       "type": "string",
       "x-okta-tags": [
