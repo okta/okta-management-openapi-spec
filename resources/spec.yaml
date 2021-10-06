@@ -9532,6 +9532,7 @@ definitions:
       name:
         type: string
     type: object
+    x-okta-extensible: true
     x-okta-tags:
       - Group
   GroupRule:
