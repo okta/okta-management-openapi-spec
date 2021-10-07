@@ -15491,6 +15491,7 @@
         }
       },
       "type": "object",
+      "x-okta-extensible": true,
       "x-okta-tags": [
         "Group"
       ]
