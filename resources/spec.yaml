@@ -11440,6 +11440,54 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  MFAEnrollPolicy:
+    properties:
+      settings:
+        $ref: '#/definitions/MFAEnrollPolicySettings'
+    type: object
+    x-okta-parent: '#/definitions/Policy'
+    x-okta-tags:
+      - Policy
+  MFAEnrollPolicySettings:
+    properties:
+      factors:
+        $ref: '#/definitions/MFAEnrollPolicyFactorsSettings'
+    type: object
+    x-okta-tags:
+      - Policy
+  MFAEnrollPolicyFactorsSettings:
+    properties:
+      duo:
+        $ref: '#/definitions/PolicyMFAFactor'
+      fido_u2f:
+        $ref: '#/definitions/PolicyMFAFactor'
+      fido_webauthn:
+        $ref: '#/definitions/PolicyMFAFactor'
+      google_otp:
+        $ref: '#/definitions/PolicyMFAFactor'
+      okta_call:
+        $ref: '#/definitions/PolicyMFAFactor'
+      okta_email:
+        $ref: '#/definitions/PolicyMFAFactor'
+      okta_otp:
+        $ref: '#/definitions/PolicyMFAFactor'
+      okta_password:
+        $ref: '#/definitions/PolicyMFAFactor'
+      okta_push:
+        $ref: '#/definitions/PolicyMFAFactor'
+      okta_question:
+        $ref: '#/definitions/PolicyMFAFactor'
+      okta_sms:
+        $ref: '#/definitions/PolicyMFAFactor'
+      rsa_token:
+        $ref: '#/definitions/PolicyMFAFactor'
+      symantec_vip:
+        $ref: '#/definitions/PolicyMFAFactor'
+      yubikey_token:
+        $ref: '#/definitions/PolicyMFAFactor'
+    type: object
+    x-okta-tags:
+      - Policy
   NetworkZone:
     properties:
       type:
@@ -12594,6 +12642,54 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  PolicyFactorConsent:
+    properties:
+      terms:
+        $ref: '#/definitions/PolicyFactorConsentTerms'
+      type:
+        default: NONE
+        enum:
+          - NONE
+          - TERMS_OF_SERVICE
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyFactorConsentTerms:
+    properties:
+      format:
+        enum:
+          - TEXT
+          - RTF
+          - MARKDOWN
+          - URL
+        type: string
+      value:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyFactorEnroll:
+    properties:
+      self:
+        default: NOT_ALLOWED
+        enum:
+          - NOT_ALLOWED
+          - OPTIONAL
+          - REQUIRED
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
+  PolicyMFAFactor:
+    properties:
+      consent:
+        $ref: '#/definitions/PolicyFactorConsent'
+      enroll:
+        $ref: '#/definitions/PolicyFactorEnroll'
+    type: object
+    x-okta-tags:
+      - Policy
   PolicyNetworkCondition:
     properties:
       connection:
@@ -12814,6 +12910,7 @@ definitions:
       - OKTA_SIGN_ON
       - PASSWORD
       - IDP_DISCOVERY
+      - MFA_ENROLL
     type: string
     x-okta-tags:
       - Policy
