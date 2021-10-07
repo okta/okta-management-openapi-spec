@@ -11465,6 +11465,8 @@ definitions:
         $ref: '#/definitions/PolicyMFAFactor'
       google_otp:
         $ref: '#/definitions/PolicyMFAFactor'
+      hotp:
+        $ref: '#/definitions/PolicyMFAFactor'
       okta_call:
         $ref: '#/definitions/PolicyMFAFactor'
       okta_email:
