@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.7.2"
+    "version": "2.8.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -13518,7 +13518,8 @@
         "security_question",
         "phone",
         "email",
-        "security_key"
+        "security_key",
+        "federated"
       ],
       "type": "string",
       "x-okta-tags": [
@@ -15524,6 +15525,7 @@
         }
       },
       "type": "object",
+      "x-okta-extensible": true,
       "x-okta-tags": [
         "Group"
       ]
@@ -18593,6 +18595,16 @@
       "type": "object",
       "x-okta-crud": [
         {
+          "alias": "read",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "getOrgSettings"
+        },
+        {
           "alias": "update",
           "arguments": [
             {
@@ -18611,6 +18623,136 @@
             }
           ],
           "operationId": "partialUpdateOrgSetting"
+        },
+        {
+          "alias": "contactTypes",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "getOrgContactTypes"
+        },
+        {
+          "alias": "contactUser",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "getOrgContactUser"
+        },
+        {
+          "alias": "updateContactUser",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "updateOrgContactUser"
+        },
+        {
+          "alias": "supportSettings",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "getOrgOktaSupportSettings"
+        },
+        {
+          "alias": "grantSupport",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "grantOktaSupport"
+        },
+        {
+          "alias": "extendSupport",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "extendOktaSupport"
+        },
+        {
+          "alias": "revokeSupport",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "revokeOktaSupport"
+        },
+        {
+          "alias": "communicationSettings",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "getOktaCommunicationSettings"
+        },
+        {
+          "alias": "optOutCommunications",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "optOutUsersFromOktaCommunicationEmails"
+        },
+        {
+          "alias": "optInCommunications",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "optInUsersToOktaCommunicationEmails"
+        },
+        {
+          "alias": "orgPreferences",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "getOrgPreferences"
+        },
+        {
+          "alias": "showFooter",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "showOktaUIFooter"
+        },
+        {
+          "alias": "hideFooter",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "hideOktaUIFooter"
         }
       ],
       "x-okta-tags": [
