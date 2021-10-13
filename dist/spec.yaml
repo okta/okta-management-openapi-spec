@@ -8307,6 +8307,8 @@ definitions:
     properties:
       actions:
         $ref: '#/definitions/AccessPolicyRuleActions'
+      conditions:
+        $ref: '#/definitions/AccessPolicyRuleConditions'
       name:
         type: string
     type: object
@@ -8328,6 +8330,21 @@ definitions:
       verificationMethod:
         $ref: '#/definitions/VerificationMethod'
     type: object
+    x-okta-tags:
+      - Policy
+  AccessPolicyRuleConditions:
+    properties:
+      elCondition:
+        $ref: '#/definitions/AccessPolicyRuleCustomCondition'
+      userType:
+        $ref: '#/definitions/UserTypeCondition'
+    x-okta-parent: '#/definitions/PolicyRuleConditions'
+    x-okta-tags:
+      - Policy
+  AccessPolicyRuleCustomCondition:
+    properties:
+      condition:
+        type: string
     x-okta-tags:
       - Policy
   AcsEndpoint:
@@ -15519,6 +15536,18 @@ definitions:
         operationId: replaceUserType
     x-okta-tags:
       - UserType
+  UserTypeCondition:
+    properties:
+      exclude:
+        items:
+          type: string
+        type: array
+      include:
+        items:
+          type: string
+        type: array
+    x-okta-tags:
+      - Policy
   UserVerificationEnum:
     enum:
       - REQUIRED

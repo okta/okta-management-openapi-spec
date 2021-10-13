@@ -10749,6 +10749,8 @@ definitions:
     properties:
       actions:
         $ref: '#/definitions/AccessPolicyRuleActions'
+      conditions:
+        $ref: '#/definitions/AccessPolicyRuleConditions'
       name:
         type: string
     x-okta-parent: '#/definitions/PolicyRule'
@@ -10767,10 +10769,18 @@ definitions:
         type: array
     x-okta-tags:
       - Policy
+  AccessPolicyRuleCustomCondition:
+    properties:
+      condition:
+        type: string
+    x-okta-tags:
+      - Policy
   AccessPolicyRuleConditions:
     properties:
        userType:
          $ref: '#/definitions/UserTypeCondition'
+       elCondition:
+         $ref: '#/definitions/AccessPolicyRuleCustomCondition'
     x-okta-parent: '#/definitions/PolicyRuleConditions'
     x-okta-tags:
       - Policy
