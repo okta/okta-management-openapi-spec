@@ -9862,7 +9862,7 @@ definitions:
           - IWA
           - AgentlessDSSO
           - X509
-        x-okta-known-values:
+        x-okta-known-values: # https://github.com/okta/okta-management-openapi-spec/pull/89
           - SAML2
           - GOOGLE
           - FACEBOOK
