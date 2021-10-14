@@ -1,6 +1,11 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.8.0
+
+### Additions
+- Adds `x-okta-known-values` to `IdentityProvider.Type`
+
 ## 2.3.0
 
 ## Additions
