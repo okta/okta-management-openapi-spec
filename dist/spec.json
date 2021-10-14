@@ -12960,7 +12960,7 @@
         "knowledge": {
           "$ref": "#/definitions/KnowledgeConstraint"
         },
-        "possesion": {
+        "possession": {
           "$ref": "#/definitions/PossessionConstraint"
         }
       },

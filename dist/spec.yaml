@@ -8298,7 +8298,7 @@ definitions:
     properties:
       knowledge:
         $ref: '#/definitions/KnowledgeConstraint'
-      possesion:
+      possession:
         $ref: '#/definitions/PossessionConstraint'
     type: object
     x-okta-tags:
