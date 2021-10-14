@@ -8334,6 +8334,8 @@ definitions:
       - Policy
   AccessPolicyRuleConditions:
     properties:
+      device:
+        $ref: '#/definitions/DeviceAccessPolicyRuleCondition'
       elCondition:
         $ref: '#/definitions/AccessPolicyRuleCustomCondition'
       userType:
@@ -9887,6 +9889,14 @@ definitions:
     type: string
     x-okta-tags:
       - Domain
+  DeviceAccessPolicyRuleCondition:
+    properties:
+      managed:
+        type: boolean
+      registered:
+        type: boolean
+    x-okta-tags:
+      - Policy
   DevicePolicyRuleCondition:
     properties:
       migrated:

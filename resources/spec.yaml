@@ -10777,11 +10777,21 @@ definitions:
       - Policy
   AccessPolicyRuleConditions:
     properties:
-       userType:
-         $ref: '#/definitions/UserTypeCondition'
-       elCondition:
-         $ref: '#/definitions/AccessPolicyRuleCustomCondition'
+      userType:
+        $ref: '#/definitions/UserTypeCondition'
+      elCondition:
+        $ref: '#/definitions/AccessPolicyRuleCustomCondition'
+      device:
+        $ref: '#/definitions/DeviceAccessPolicyRuleCondition'
     x-okta-parent: '#/definitions/PolicyRuleConditions'
+    x-okta-tags:
+      - Policy
+  DeviceAccessPolicyRuleCondition:
+    properties:
+      registered:
+        type: boolean
+      managed:
+        type: boolean
     x-okta-tags:
       - Policy
   AccessPolicyRuleActions:
@@ -10794,7 +10804,7 @@ definitions:
       - Policy
   AccessPolicyRuleApplicationSignOn:
     properties:
-      access: 
+      access:
         type: string
       verificationMethod:
         $ref: '#/definitions/VerificationMethod'
@@ -10816,7 +10826,7 @@ definitions:
       constraints:
         items:
           $ref: '#/definitions/AccessPolicyConstraints'
-        type: array 
+        type: array
     type: object
     x-okta-tags:
       - Policy
@@ -10833,11 +10843,11 @@ definitions:
     properties:
       types:
         type: array
-        items: 
+        items:
           type: string
       methods:
         type: array
-        items: 
+        items:
           type: string
       reauthenticateIn:
         type: string
@@ -10851,7 +10861,7 @@ definitions:
       - Policy
   PossessionConstraint:
     properties:
-      hardwareProtection: 
+      hardwareProtection:
         type: string
       deviceBound:
         type: string
@@ -10907,14 +10917,14 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
-  ProfileEnrollmentPolicyRuleProfileAttribute:  
+  ProfileEnrollmentPolicyRuleProfileAttribute:
     properties:
       label:
         type: string
       name:
         type: string
       required:
-        type: boolean 
+        type: boolean
     type: object
     x-okta-tags:
       - Policy
@@ -10924,7 +10934,7 @@ definitions:
         type: boolean
     type: object
     x-okta-tags:
-      - Policy    
+      - Policy
   IdentityProviderPolicyRuleCondition:
     properties:
       idpIds:
