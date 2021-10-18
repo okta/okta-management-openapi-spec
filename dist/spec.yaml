@@ -11930,12 +11930,12 @@ definitions:
             self: true
         operationId: partialUpdateOrgSetting
     x-okta-operations:
-      - alias: contactTypes
+      - alias: getContactTypes
         arguments:
           - dest: orgSetting
             self: true
         operationId: getOrgContactTypes
-      - alias: contactUser
+      - alias: getContactUser
         arguments:
           - dest: orgSetting
             self: true
@@ -11945,7 +11945,7 @@ definitions:
           - dest: orgSetting
             self: true
         operationId: updateOrgContactUser
-      - alias: supportSettings
+      - alias: getSupportSettings
         arguments:
           - dest: orgSetting
             self: true
@@ -11965,7 +11965,7 @@ definitions:
           - dest: orgSetting
             self: true
         operationId: revokeOktaSupport
-      - alias: communicationSettings
+      - alias: getCommunicationSettings
         arguments:
           - dest: orgSetting
             self: true

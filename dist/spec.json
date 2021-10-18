@@ -18605,7 +18605,7 @@
       ],
       "x-okta-operations": [
         {
-          "alias": "contactTypes",
+          "alias": "getContactTypes",
           "arguments": [
             {
               "dest": "orgSetting",
@@ -18615,7 +18615,7 @@
           "operationId": "getOrgContactTypes"
         },
         {
-          "alias": "contactUser",
+          "alias": "getContactUser",
           "arguments": [
             {
               "dest": "orgSetting",
@@ -18635,7 +18635,7 @@
           "operationId": "updateOrgContactUser"
         },
         {
-          "alias": "supportSettings",
+          "alias": "getSupportSettings",
           "arguments": [
             {
               "dest": "orgSetting",
@@ -18675,7 +18675,7 @@
           "operationId": "revokeOktaSupport"
         },
         {
-          "alias": "communicationSettings",
+          "alias": "getCommunicationSettings",
           "arguments": [
             {
               "dest": "orgSetting",
