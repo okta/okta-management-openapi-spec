@@ -18601,9 +18601,7 @@
             }
           ],
           "operationId": "partialUpdateOrgSetting"
-        }
-      ],
-      "x-okta-operations": [
+        },
         {
           "alias": "getContactTypes",
           "arguments": [

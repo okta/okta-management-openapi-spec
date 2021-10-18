@@ -10695,7 +10695,22 @@ definitions:
       website:
         type: string
     type: object
-    x-okta-operations:
+    x-okta-crud:
+      - alias: read
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: getOrgSettings
+      - alias: update
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: updateOrgSetting
+      - alias: partialUpdate
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: partialUpdateOrgSetting
       - alias: getContactTypes
         arguments:
           - dest: orgSetting
@@ -10761,22 +10776,6 @@ definitions:
           - dest: orgSetting
             self: true
         operationId: hideOktaUIFooter
-    x-okta-crud:
-      - alias: read
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: getOrgSettings
-      - alias: update
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: updateOrgSetting
-      - alias: partialUpdate
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: partialUpdateOrgSetting
     x-okta-tags:
       - Org
   OrgOktaSupportSetting:

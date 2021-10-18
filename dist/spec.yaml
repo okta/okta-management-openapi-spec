@@ -11929,7 +11929,6 @@ definitions:
           - dest: orgSetting
             self: true
         operationId: partialUpdateOrgSetting
-    x-okta-operations:
       - alias: getContactTypes
         arguments:
           - dest: orgSetting
