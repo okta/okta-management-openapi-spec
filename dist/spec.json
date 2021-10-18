@@ -16024,7 +16024,19 @@
             "AgentlessDSSO",
             "X509"
           ],
-          "type": "string"
+          "type": "string",
+          "x-okta-known-values": [
+            "SAML2",
+            "GOOGLE",
+            "FACEBOOK",
+            "LINKEDIN",
+            "MICROSOFT",
+            "OIDC",
+            "OKTA",
+            "IWA",
+            "AgentlessDSSO",
+            "X509"
+          ]
         }
       },
       "type": "object",
