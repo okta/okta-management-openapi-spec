@@ -11795,12 +11795,6 @@ definitions:
       userId:
         type: string
     type: object
-    x-okta-operations:
-      - alias: updateContactUser
-        arguments:
-          - dest: userId
-            src: userId
-        operationId: updateOrgContactUser
     x-okta-tags:
       - Org
   OrgOktaCommunicationSetting:
@@ -11812,11 +11806,6 @@ definitions:
         readOnly: true
         type: boolean
     type: object
-    x-okta-operations:
-      - alias: optInUsersToOktaCommunicationEmails
-        operationId: optInUsersToOktaCommunicationEmails
-      - alias: optOutUsersFromOktaCommunicationEmails
-        operationId: optOutUsersFromOktaCommunicationEmails
     x-okta-tags:
       - Org
   OrgOktaSupportSetting:
@@ -11839,13 +11828,6 @@ definitions:
         $ref: '#/definitions/OrgOktaSupportSetting'
         readOnly: true
     type: object
-    x-okta-operations:
-      - alias: extendOktaSupport
-        operationId: extendOktaSupport
-      - alias: grantOktaSupport
-        operationId: grantOktaSupport
-      - alias: revokeOktaSupport
-        operationId: revokeOktaSupport
     x-okta-tags:
       - Org
   OrgPreferences:
@@ -11857,11 +11839,6 @@ definitions:
         readOnly: true
         type: boolean
     type: object
-    x-okta-operations:
-      - alias: hideEndUserFooter
-        operationId: hideOktaUIFooter
-      - alias: showEndUserFooter
-        operationId: showOktaUIFooter
     x-okta-tags:
       - Org
   OrgSetting:
@@ -11927,22 +11904,16 @@ definitions:
     x-okta-operations:
       - alias: partialUpdate
         arguments:
-          - dest: authenticatorId
-            src: id
+          - dest: orgSetting
+            self: true
         operationId: partialUpdateOrgSetting
-      - alias: contactTypes
+      - alias: getContactTypes
         operationId: getOrgContactTypes
-      - alias: contactUser
-        arguments:
-          - dest: contactType
-            src: type
+      - alias: getOrgContactUser
         operationId: getOrgContactUser
       - alias: updateContactUser
-        arguments:
-          - dest: userId
-            src: id
         operationId: updateOrgContactUser
-      - alias: supportSettings
+      - alias: getSupportSettings
         operationId: getOrgOktaSupportSettings
       - alias: grantSupport
         operationId: grantOktaSupport
@@ -11950,13 +11921,13 @@ definitions:
         operationId: extendOktaSupport
       - alias: revokeSupport
         operationId: revokeOktaSupport
-      - alias: communicationSettings
+      - alias: getCommunicationSettings
         operationId: getOktaCommunicationSettings
       - alias: optOutCommunications
         operationId: optOutUsersFromOktaCommunicationEmails
       - alias: optInCommunications
         operationId: optInUsersToOktaCommunicationEmails
-      - alias: orgPreferences
+      - alias: getOrgPreferences
         operationId: getOrgPreferences
       - alias: showFooter
         operationId: showOktaUIFooter
@@ -14228,6 +14199,7 @@ definitions:
       userId:
         type: string
     type: object
+    x-okta-parent: '#/definitions/OrgContactUser'
     x-okta-tags:
       - Org
   UserIdentifierConditionEvaluatorPattern:
