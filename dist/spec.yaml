@@ -11945,65 +11945,21 @@ definitions:
           - dest: orgSetting
             self: true
         operationId: updateOrgSetting
+    x-okta-operations:
       - alias: partialUpdate
         arguments:
           - dest: orgSetting
             self: true
         operationId: partialUpdateOrgSetting
-      - alias: contactTypes
-        arguments:
-          - dest: orgSetting
-            self: true
+      - alias: getContactTypes
         operationId: getOrgContactTypes
-      - alias: contactUser
-        arguments:
-          - dest: orgSetting
-            self: true
+      - alias: getOrgContactUser
         operationId: getOrgContactUser
-      - alias: updateContactUser
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: updateOrgContactUser
-      - alias: supportSettings
-        arguments:
-          - dest: orgSetting
-            self: true
+      - alias: getSupportSettings
         operationId: getOrgOktaSupportSettings
-      - alias: grantSupport
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: grantOktaSupport
-      - alias: extendSupport
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: extendOktaSupport
-      - alias: revokeSupport
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: revokeOktaSupport
       - alias: communicationSettings
-        arguments:
-          - dest: orgSetting
-            self: true
         operationId: getOktaCommunicationSettings
-      - alias: optOutCommunications
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: optOutUsersFromOktaCommunicationEmails
-      - alias: optInCommunications
-        arguments:
-          - dest: orgSetting
-            self: true
-        operationId: optInUsersToOktaCommunicationEmails
       - alias: orgPreferences
-        arguments:
-          - dest: orgSetting
-            self: true
         operationId: getOrgPreferences
       - alias: showFooter
         arguments:
@@ -14283,6 +14239,7 @@ definitions:
       userId:
         type: string
     type: object
+    x-okta-parent: '#/definitions/OrgContactUser'
     x-okta-tags:
       - Org
   UserIdentifierConditionEvaluatorPattern:
