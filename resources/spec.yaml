@@ -10819,10 +10819,6 @@ definitions:
         type: string
       reauthenticateIn:
         type: string
-        #format: date-time
-      inactivityPeriod:
-        type: string
-        #format: date-time
       constraints:
         items:
           $ref: '#/definitions/AccessPolicyConstraints'

@@ -24346,9 +24346,6 @@
         "factorMode": {
           "type": "string"
         },
-        "inactivityPeriod": {
-          "type": "string"
-        },
         "reauthenticateIn": {
           "type": "string"
         },
