@@ -7743,6 +7743,83 @@ paths:
       summary: Get Domain
       tags:
         - Domain
+  '/api/v1/brands':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: List all the brands in your org.
+      operationId: getBrands
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Brand'
+      security:
+        - api_token: []
+      summary: List Brands
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Fetches a brand by `brandId`
+      operationId: getBrand
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Brand'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Get Brand
+      tags:
+        - Brand
+    put:
+  '/api/v1/brands/{brandId}/themes':
+    get:
+  '/api/v1/brands/{brandId}/themes/{themeId}':
+    get:
+    put:
+  '/api/v1/brands/{brandId}/themes/{themeId}/logo':
+    post:
+    delete:
+  '/api/v1/brands/{brandId}/themes/{themeId}/favicon':
+    post:
+    delete:
+  '/api/v1/brands/{brandId}/themes/{themeId}/background-image':
+    post:
+    delete:
+    # delete:
+    #   consumes:
+    #     - application/json
+    #   description: Deletes a Domain by `id`.
+    #   operationId: deleteDomain
+    #   parameters:
+    #     - in: path
+    #       name: domainId
+    #       required: true
+    #       type: string
+    #   responses:
+    #     '204':
+    #       description: No Content
+    #   security:
+    #     - api_token: []
+    #   summary: Delete Domain
+    #   tags:
+    #     - Domain
 definitions:
   ActivateFactorRequest:
     properties:
@@ -14736,4 +14813,96 @@ definitions:
         operationId: updateConfiguration
     x-okta-tags:
       - ThreatInsight
-
+  Brand:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      agreeToCustomPrivacyPolicy:
+        type: boolean
+      customPrivacyPolicyUrl:
+        type: string
+      removePoweredByOkta:
+        type: boolean
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - Brand
+  Theme:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      logo:
+        type: string
+        readOnly: true
+      favicon:
+        type: string
+        readOnly: true
+      backgroundImage:
+        type: string
+        readOnly: true
+      primaryColorHex:
+        type: string
+      primaryColorContrastHex:
+        type: string
+      secondaryColorHex:
+        type: string
+      secondaryColorContrastHex:
+        type: string
+      signInPageTouchPointVariant:
+        $ref: '#/definitions/SignInPageTouchPointVariant'
+      endUserDashboardTouchPointVariant:
+        $ref: '#/definitions/EndUserDashboardTouchPointVariant'
+      errorPageTouchPointVariant:
+        $ref: '#/definitions/ErrorPageTouchPointVariant'
+      emailTemplateTouchPointVariant:
+        $ref: '#/definitions/EmailTemplateTouchPointVariant'
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - Brand
+  SignInPageTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - BACKGROUND_SECONDARY_COLOR
+      - BACKGROUND_IMAGE
+    type: string
+    x-okta-tags:
+      - Brand
+  EndUserDashboardTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - WHITE_LOGO_BACKGROUND
+      - FULL_THEME
+    type: string
+    x-okta-tags:
+      - Brand
+  ErrorPageTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - BACKGROUND_SECONDARY_COLOR
+      - BACKGROUND_IMAGE
+    type: string
+    x-okta-tags:
+      - Brand
+  EmailTemplateTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - FULL_THEME
+    type: string
+    x-okta-tags:
+      - Brand
+  ImageUploadResponse:
+    properties:
+      url:
+        type: string
+        readOnly: true
+    x-okta-tags:
+      - Brand
