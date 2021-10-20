@@ -1659,6 +1659,49 @@
         "tags": [
           "Authenticator"
         ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Updates an authenticator",
+        "operationId": "updateAuthenticator",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "authenticatorId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "authenticator",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Update Authenticator",
+        "tags": [
+          "Authenticator"
+        ]
       }
     },
     "/api/v1/authenticators/{authenticatorId}/lifecycle/activate": {
@@ -14006,6 +14049,27 @@
         }
       },
       "type": "object",
+      "x-okta-crud": [
+        {
+          "alias": "read",
+          "arguments": [],
+          "operationId": "getAuthenticator"
+        },
+        {
+          "alias": "update",
+          "arguments": [
+            {
+              "dest": "authenticatorId",
+              "src": "id"
+            },
+            {
+              "dest": "authenticator",
+              "self": true
+            }
+          ],
+          "operationId": "updateAuthenticator"
+        }
+      ],
       "x-okta-operations": [
         {
           "alias": "activate",
@@ -14030,15 +14094,40 @@
       ],
       "x-okta-tags": [
         "Authenticator"
-      ]
+      ],
+      "x-openapi-v3-discriminator": {
+        "mapping": {
+          "GOOGLE_OTP": "#/definitions/GoogleOtpAuthenticator",
+          "OKTA_EMAIL": "#/definitions/OktaEmailAuthenticator",
+          "OKTA_PASSWORD": "#/definitions/OktaPasswordAuthenticator",
+          "OKTA_VERIFY": "#/definitions/OktaVerifyAuthenticator",
+          "ONPREM_MFA": "#/definitions/OnpremMfaAuthenticator",
+          "PHONE_NUMBER": "#/definitions/PhoneNumberAuthenticator",
+          "RSA_TOKEN": "#/definitions/RsaTokenAuthenticator",
+          "SECURITY_QUESTION": "#/definitions/SecurityQuestionAuthenticator"
+        },
+        "propertyName": "type"
+      }
     },
     "AuthenticatorSettings": {
       "properties": {
         "allowedFor": {
           "$ref": "#/definitions/AllowedForEnum"
         },
+        "appInstanceId": {
+          "type": "string"
+        },
+        "channelBinding": {
+          "$ref": "#/definitions/ChannelBinding"
+        },
+        "compliance": {
+          "$ref": "#/definitions/Compliance"
+        },
         "tokenLifetimeInMinutes": {
           "type": "integer"
+        },
+        "userVerification": {
+          "$ref": "#/definitions/UserVerificationEnum"
         }
       },
       "type": "object",
@@ -15094,6 +15183,20 @@
         "User"
       ]
     },
+    "ChannelBinding": {
+      "properties": {
+        "required": {
+          "$ref": "#/definitions/RequiredEnum"
+        },
+        "style": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "ClientPolicyCondition": {
       "properties": {
         "include": {
@@ -15106,6 +15209,17 @@
       "type": "object",
       "x-okta-tags": [
         "Policy"
+      ]
+    },
+    "Compliance": {
+      "properties": {
+        "fips": {
+          "$ref": "#/definitions/FipsEnum"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "ContextPolicyRuleCondition": {
@@ -15957,6 +16071,16 @@
         "Feature"
       ]
     },
+    "FipsEnum": {
+      "enum": [
+        "REQUIRED",
+        "OPTIONAL"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "ForgotPasswordResponse": {
       "properties": {
         "resetPasswordUrl": {
@@ -15966,6 +16090,17 @@
       },
       "x-okta-tags": [
         "User"
+      ]
+    },
+    "GoogleOtpAuthenticator": {
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/AuthenticatorSettings"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "GrantTypePolicyRuleCondition": {
@@ -18712,6 +18847,23 @@
         "Application"
       ]
     },
+    "OktaEmailAuthenticator": {
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/AuthenticatorSettings"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
+    "OktaPasswordAuthenticator": {
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "OktaSignOnPolicy": {
       "properties": {
         "conditions": {
@@ -18835,6 +18987,23 @@
       "type": "object",
       "x-okta-tags": [
         "Policy"
+      ]
+    },
+    "OktaVerifyAuthenticator": {
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/AuthenticatorSettings"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
+    "OnpremMfaAuthenticator": {
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "OpenIdConnectApplication": {
@@ -19825,6 +19994,17 @@
       "type": "object",
       "x-okta-tags": [
         "Policy"
+      ]
+    },
+    "PhoneNumberAuthenticator": {
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/AuthenticatorSettings"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "PlatformConditionEvaluatorPlatform": {
@@ -20910,6 +21090,17 @@
         "User"
       ]
     },
+    "RequiredEnum": {
+      "enum": [
+        "ALWAYS",
+        "HIGH_RISK_ALWAYS",
+        "NEVER"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "ResetPasswordToken": {
       "properties": {
         "resetPasswordUrl": {
@@ -21132,6 +21323,12 @@
       "type": "string",
       "x-okta-tags": [
         "Role"
+      ]
+    },
+    "RsaTokenAuthenticator": {
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "SamlApplication": {
@@ -21426,6 +21623,17 @@
       },
       "x-okta-tags": [
         "UserFactor"
+      ]
+    },
+    "SecurityQuestionAuthenticator": {
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/AuthenticatorSettings"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "SecurityQuestionUserFactor": {
@@ -23868,6 +24076,16 @@
       ],
       "x-okta-tags": [
         "UserType"
+      ]
+    },
+    "UserVerificationEnum": {
+      "enum": [
+        "REQUIRED",
+        "PREFERRED"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "VerifyFactorRequest": {
