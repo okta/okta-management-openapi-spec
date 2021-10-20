@@ -13329,6 +13329,13 @@ definitions:
     x-okta-parent: '#/definitions/AccessPolicyConstraint'
     x-okta-tags:
       - Policy
+  PreRegistrationInlineHook:
+    properties:
+      inlineHookId:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
   ProfileEnrollmentPolicy:
     x-okta-parent: '#/definitions/Policy'
     x-okta-tags:
@@ -13351,7 +13358,7 @@ definitions:
         $ref: '#/definitions/ProfileEnrollmentPolicyRuleActivationRequirement'
       preRegistrationInlineHooks:
         items:
-          $ref: '#/definitions/SignOnInlineHook'
+          $ref: '#/definitions/PreRegistrationInlineHook'
         type: array
       profileAttributes:
         items:

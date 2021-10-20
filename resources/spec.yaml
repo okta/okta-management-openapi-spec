@@ -10900,7 +10900,7 @@ definitions:
         type: string
       preRegistrationInlineHooks:
         items:
-          $ref: '#/definitions/SignOnInlineHook'
+          $ref: '#/definitions/PreRegistrationInlineHook'
         type: array
       profileAttributes:
         items:
@@ -10913,6 +10913,13 @@ definitions:
           type: string
         type: array
       unknownUserAction:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
+  PreRegistrationInlineHook:
+    properties:
+      inlineHookId:
         type: string
     type: object
     x-okta-tags:
