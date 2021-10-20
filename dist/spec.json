@@ -18768,12 +18768,6 @@
         },
         {
           "alias": "updateOrgLogo",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
           "operationId": "updateOrgLogo"
         }
       ],

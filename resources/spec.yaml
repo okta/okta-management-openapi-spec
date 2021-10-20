@@ -10796,9 +10796,6 @@ definitions:
             self: true
         operationId: hideOktaUIFooter
       - alias: updateOrgLogo
-        arguments:
-          - dest: orgSetting
-            self: true
         operationId: updateOrgLogo
     x-okta-tags:
       - Org
