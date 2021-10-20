@@ -20817,7 +20817,7 @@
         },
         "preRegistrationInlineHooks": {
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/SignOnInlineHook"
           },
           "type": "array"
         },

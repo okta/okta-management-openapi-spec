@@ -10900,7 +10900,7 @@ definitions:
         type: string
       preRegistrationInlineHooks:
         items:
-          type: string
+          $ref: '#/definitions/SignOnInlineHook'
         type: array
       profileAttributes:
         items:

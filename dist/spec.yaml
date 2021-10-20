@@ -13351,7 +13351,7 @@ definitions:
         $ref: '#/definitions/ProfileEnrollmentPolicyRuleActivationRequirement'
       preRegistrationInlineHooks:
         items:
-          type: string
+          $ref: '#/definitions/SignOnInlineHook'
         type: array
       profileAttributes:
         items:
