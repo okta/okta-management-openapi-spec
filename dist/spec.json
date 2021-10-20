@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.8.0"
+    "version": "2.8.1"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -18591,7 +18591,9 @@
             }
           ],
           "operationId": "updateOrgSetting"
-        },
+        }
+      ],
+      "x-okta-operations": [
         {
           "alias": "partialUpdate",
           "arguments": [
@@ -18603,134 +18605,24 @@
           "operationId": "partialUpdateOrgSetting"
         },
         {
-          "alias": "contactTypes",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
+          "alias": "getContactTypes",
           "operationId": "getOrgContactTypes"
         },
         {
-          "alias": "contactUser",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
+          "alias": "getOrgContactUser",
           "operationId": "getOrgContactUser"
         },
         {
-          "alias": "updateContactUser",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "updateOrgContactUser"
-        },
-        {
-          "alias": "supportSettings",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
+          "alias": "getSupportSettings",
           "operationId": "getOrgOktaSupportSettings"
         },
         {
-          "alias": "grantSupport",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "grantOktaSupport"
-        },
-        {
-          "alias": "extendSupport",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "extendOktaSupport"
-        },
-        {
-          "alias": "revokeSupport",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "revokeOktaSupport"
-        },
-        {
           "alias": "communicationSettings",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
           "operationId": "getOktaCommunicationSettings"
         },
         {
-          "alias": "optOutCommunications",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "optOutUsersFromOktaCommunicationEmails"
-        },
-        {
-          "alias": "optInCommunications",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "optInUsersToOktaCommunicationEmails"
-        },
-        {
           "alias": "orgPreferences",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
           "operationId": "getOrgPreferences"
-        },
-        {
-          "alias": "showFooter",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "showOktaUIFooter"
-        },
-        {
-          "alias": "hideFooter",
-          "arguments": [
-            {
-              "dest": "orgSetting",
-              "self": true
-            }
-          ],
-          "operationId": "hideOktaUIFooter"
         }
       ],
       "x-okta-tags": [
@@ -22316,6 +22208,7 @@
         }
       },
       "type": "object",
+      "x-okta-parent": "#/definitions/OrgContactUser",
       "x-okta-tags": [
         "Org"
       ]
