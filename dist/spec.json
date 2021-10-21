@@ -5281,7 +5281,7 @@
           {
             "in": "query",
             "name": "disableNotifications",
-            "type": "string"
+            "type": "boolean"
           }
         ],
         "produces": [
@@ -12075,7 +12075,7 @@
           {
             "in": "query",
             "name": "disableNotifications",
-            "type": "string"
+            "type": "boolean"
           }
         ],
         "produces": [

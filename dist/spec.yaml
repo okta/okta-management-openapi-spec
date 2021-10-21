@@ -3353,7 +3353,7 @@ paths:
           type: string
         - in: query
           name: disableNotifications
-          type: string
+          type: boolean
       produces:
         - application/json
       responses:
@@ -7734,7 +7734,7 @@ paths:
           type: string
         - in: query
           name: disableNotifications
-          type: string
+          type: boolean
       produces:
         - application/json
       responses:
