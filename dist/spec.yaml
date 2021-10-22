@@ -5267,6 +5267,27 @@ paths:
       summary: Update org contact user
       tags:
         - Org
+  /api/v1/org/logo:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Updates the logo for your organization.
+      operationId: updateOrgLogo
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Created
+      security:
+        - api_token: []
+      summary: Update org logo
+      tags:
+        - Org
   /api/v1/org/preferences:
     get:
       consumes:
@@ -12352,6 +12373,18 @@ definitions:
         operationId: getOktaCommunicationSettings
       - alias: orgPreferences
         operationId: getOrgPreferences
+      - alias: showFooter
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: showOktaUIFooter
+      - alias: hideFooter
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: hideOktaUIFooter
+      - alias: updateOrgLogo
+        operationId: updateOrgLogo
     x-okta-tags:
       - Org
   PasswordCredential:
