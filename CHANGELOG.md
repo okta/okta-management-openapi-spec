@@ -4,30 +4,31 @@ Running changelog of releases since `2.2.3`
 ## 2.9.0
 ### Additions
  - New Paths:
-    - GET /api/v1/brands
-        - operation added: getBrands
-    - GET & PUT /api/v1/brands/{brandId}
-        - operations added: getBrand, updateBrand
-    - GET /api/v1/brands/{brandId}/themes
-        - operation added: getBrandThemes
-    - GET & PUT /api/v1/brands/{brandId}/themes/{themeId}
-        - operations added: getBrandTheme, updateBrandTheme
-    - POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/logo
-        - operations added: updateBrandThemeLogo, deleteBrandThemeLogo
-    - POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/favicon
-        - operations added: uploadBrandThemeFavicon, deleteBrandThemeFavicon
-    - POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/background-image
-        - operations added: uploadBrandThemeBackgroundImage, deleteBrandThemeBackgroundImage
+    - `GET /api/v1/brands`
+        - operation added: `getBrands`
+    - `GET & PUT /api/v1/brands/{brandId}`
+        - operations added: `getBrand`, `updateBrand`
+    - `GET /api/v1/brands/{brandId}/themes`
+        - operation added: `getBrandThemes`
+    - `GET & PUT /api/v1/brands/{brandId}/themes/{themeId}`
+        - operations added: `getBrandTheme`, `updateBrandTheme`
+    - `POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/logo`
+        - operations added: `updateBrandThemeLogo`, `deleteBrandThemeLogo`
+    - `POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/favicon`
+        - operations added: `uploadBrandThemeFavicon`, `deleteBrandThemeFavicon`
+    - `POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/background-image`
+        - operations added: `uploadBrandThemeBackgroundImage`, `deleteBrandThemeBackgroundImage`
  - Models Added:
-    - Brand
-    - Theme
-    - Favicon
-    - BackgroundImage
-    - SignInPageTouchPointVariant
-    - EndUserDashboardTouchPointVariant
-    - ErrorPageTouchPointVariant
-    - EmailTemplateTouchPointVariant
-    - ImageUploadResponse
+    - `Brand`
+    - `Theme`
+    - `Favicon`
+    - `BackgroundImage`
+    - `SignInPageTouchPointVariant`
+    - `EndUserDashboardTouchPointVariant`
+    - `ErrorPageTouchPointVariant`
+    - `EmailTemplateTouchPointVariant`
+    - `ImageUploadResponse`
+ - Added New Tag `Brand`
 
 ## 2.8.1
 ### Additions
