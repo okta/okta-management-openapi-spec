@@ -3391,7 +3391,10 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Brand"
+              "items": {
+                "$ref": "#/definitions/Brand"
+              },
+              "type": "array"
             }
           }
         },
@@ -3514,7 +3517,10 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Theme"
+              "items": {
+                "$ref": "#/definitions/Theme"
+              },
+              "type": "array"
             }
           }
         },
@@ -8269,6 +8275,40 @@
           }
         ],
         "summary": "Update org contact user",
+        "tags": [
+          "Org"
+        ]
+      }
+    },
+    "/api/v1/org/logo": {
+      "post": {
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "description": "Updates the logo for your organization.",
+        "operationId": "updateOrgLogo",
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Update org logo",
         "tags": [
           "Org"
         ]
@@ -19275,6 +19315,30 @@
         {
           "alias": "orgPreferences",
           "operationId": "getOrgPreferences"
+        },
+        {
+          "alias": "showFooter",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "showOktaUIFooter"
+        },
+        {
+          "alias": "hideFooter",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "hideOktaUIFooter"
+        },
+        {
+          "alias": "updateOrgLogo",
+          "operationId": "updateOrgLogo"
         }
       ],
       "x-okta-tags": [
@@ -21947,10 +22011,6 @@
           "alias": "read",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
@@ -21975,6 +22035,7 @@
       "x-okta-operations": [
         {
           "alias": "getBrandThemes",
+          "arguments": [],
           "operationId": "getBrandThemes"
         },
         {

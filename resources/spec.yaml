@@ -4656,6 +4656,25 @@ paths:
       summary: Get org contact types
       tags:
         - Org
+  /api/v1/org/logo:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Updates the logo for your organization.
+      operationId: updateOrgLogo
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+      responses:
+        '201':
+          description: Created
+      security:
+        - api_token: []
+      summary: Update org logo
+      tags:
+        - Org
   '/api/v1/org/contacts/{contactType}':
     get:
       consumes:
@@ -7756,7 +7775,9 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Brand'
+            items:
+              $ref: '#/definitions/Brand'
+            type: array
       security:
         - api_token: []
       summary: List Brands
@@ -7833,7 +7854,9 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Theme'
+            items:
+              $ref: '#/definitions/Theme'
+            type: array
       security:
         - api_token: []
       summary: Get Brand Themes
@@ -11063,6 +11086,18 @@ definitions:
         operationId: getOktaCommunicationSettings
       - alias: orgPreferences
         operationId: getOrgPreferences
+      - alias: showFooter
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: showOktaUIFooter
+      - alias: hideFooter
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: hideOktaUIFooter
+      - alias: updateOrgLogo
+        operationId: updateOrgLogo
     x-okta-tags:
       - Org
   OrgOktaSupportSetting:
@@ -15149,8 +15184,6 @@ definitions:
     x-okta-crud:
       - alias: read
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: getBrandTheme
@@ -15163,6 +15196,7 @@ definitions:
         operationId: updateBrandTheme
     x-okta-operations:
       - alias: getBrandThemes
+        arguments: []
         operationId: getBrandThemes
       - alias: updateBrandThemeLogo
         arguments:
