@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.8.0"
+    "version": "2.8.1"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -1682,7 +1682,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
           }
         },
         "security": [
@@ -1715,7 +1718,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
           }
         },
         "security": [
@@ -13476,11 +13482,13 @@
     },
     "AuthenticatorType": {
       "enum": [
+        "app",
         "password",
         "security_question",
         "phone",
         "email",
-        "security_key"
+        "security_key",
+        "federated"
       ],
       "type": "string",
       "x-okta-tags": [
@@ -15486,6 +15494,7 @@
         }
       },
       "type": "object",
+      "x-okta-extensible": true,
       "x-okta-tags": [
         "Group"
       ]
@@ -15946,7 +15955,7 @@
         "issuerMode": {
           "enum": [
             "ORG_URL",
-            "CUSTOM_URL_DOMAIN"
+            "CUSTOM_URL"
           ],
           "type": "string"
         },
@@ -15984,7 +15993,19 @@
             "AgentlessDSSO",
             "X509"
           ],
-          "type": "string"
+          "type": "string",
+          "x-okta-known-values": [
+            "SAML2",
+            "GOOGLE",
+            "FACEBOOK",
+            "LINKEDIN",
+            "MICROSOFT",
+            "OIDC",
+            "OKTA",
+            "IWA",
+            "AgentlessDSSO",
+            "X509"
+          ]
         }
       },
       "type": "object",
@@ -18352,13 +18373,6 @@
         }
       },
       "type": "object",
-      "x-okta-crud": [
-        {
-          "alias": "read",
-          "arguments": [],
-          "operationId": "getOrgContactTypes"
-        }
-      ],
       "x-okta-tags": [
         "Org"
       ]
@@ -18572,6 +18586,16 @@
       "type": "object",
       "x-okta-crud": [
         {
+          "alias": "read",
+          "arguments": [
+            {
+              "dest": "orgSetting",
+              "self": true
+            }
+          ],
+          "operationId": "getOrgSettings"
+        },
+        {
           "alias": "update",
           "arguments": [
             {
@@ -18580,7 +18604,9 @@
             }
           ],
           "operationId": "updateOrgSetting"
-        },
+        }
+      ],
+      "x-okta-operations": [
         {
           "alias": "partialUpdate",
           "arguments": [
@@ -18590,6 +18616,26 @@
             }
           ],
           "operationId": "partialUpdateOrgSetting"
+        },
+        {
+          "alias": "getContactTypes",
+          "operationId": "getOrgContactTypes"
+        },
+        {
+          "alias": "getOrgContactUser",
+          "operationId": "getOrgContactUser"
+        },
+        {
+          "alias": "getSupportSettings",
+          "operationId": "getOrgOktaSupportSettings"
+        },
+        {
+          "alias": "communicationSettings",
+          "operationId": "getOktaCommunicationSettings"
+        },
+        {
+          "alias": "orgPreferences",
+          "operationId": "getOrgPreferences"
         }
       ],
       "x-okta-tags": [
@@ -21094,10 +21140,6 @@
           "type": "string"
         },
         "tokenType": {
-          "enum": [
-            "ACCESS",
-            "REFRESH"
-          ],
           "type": "string"
         }
       },
@@ -21648,6 +21690,16 @@
             }
           ],
           "operationId": "assignRoleToUser"
+        },
+        {
+          "alias": "getRole",
+          "arguments": [
+            {
+              "dest": "userId",
+              "src": "id"
+            }
+          ],
+          "operationId": "getUserRole"
         },
         {
           "alias": "removeRole",
@@ -22208,6 +22260,7 @@
         }
       },
       "type": "object",
+      "x-okta-parent": "#/definitions/OrgContactUser",
       "x-okta-tags": [
         "Org"
       ]

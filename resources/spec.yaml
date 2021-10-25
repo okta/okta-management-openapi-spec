@@ -1072,6 +1072,8 @@ paths:
       responses:
         '200':
           description: Success
+          schema:
+            $ref: '#/definitions/Authenticator'
       security:
         - api_token: []
       tags:
@@ -1092,6 +1094,8 @@ paths:
       responses:
         '200':
           description: Success
+          schema:
+            $ref: '#/definitions/Authenticator'
       security:
         - api_token: []
       tags:
@@ -8470,11 +8474,13 @@ definitions:
       - Authenticator
   AuthenticatorType:
     enum:
+      - app
       - password
       - security_question
       - phone
       - email
       - security_key
+      - federated
     type: string
     x-okta-tags:
       - Authenticator
@@ -9529,6 +9535,7 @@ definitions:
       name:
         type: string
     type: object
+    x-okta-extensible: true
     x-okta-tags:
       - Group
   GroupRule:
@@ -9829,7 +9836,7 @@ definitions:
       issuerMode:
         enum:
           - ORG_URL
-          - CUSTOM_URL_DOMAIN
+          - CUSTOM_URL
         type: string
       lastUpdated:
         format: date-time
@@ -9848,6 +9855,17 @@ definitions:
         type: string
       type:
         enum:
+          - SAML2
+          - GOOGLE
+          - FACEBOOK
+          - LINKEDIN
+          - MICROSOFT
+          - OIDC
+          - OKTA
+          - IWA
+          - AgentlessDSSO
+          - X509
+        x-okta-known-values: # https://github.com/okta/okta-management-openapi-spec/pull/89
           - SAML2
           - GOOGLE
           - FACEBOOK
@@ -10608,10 +10626,6 @@ definitions:
       contactType:
         $ref: '#/definitions/OrgContactType'
     type: object
-    x-okta-crud:
-      - alias: read
-        arguments: []
-        operationId: getOrgContactTypes
     x-okta-tags:
       - Org
   OrgContactType:
@@ -10691,16 +10705,32 @@ definitions:
         type: string
     type: object
     x-okta-crud:
+      - alias: read
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: getOrgSettings
       - alias: update
         arguments:
           - dest: orgSetting
             self: true
         operationId: updateOrgSetting
+    x-okta-operations:
       - alias: partialUpdate
         arguments:
           - dest: orgSetting
             self: true
         operationId: partialUpdateOrgSetting
+      - alias: getContactTypes
+        operationId: getOrgContactTypes
+      - alias: getOrgContactUser
+        operationId: getOrgContactUser
+      - alias: getSupportSettings
+        operationId: getOrgOktaSupportSettings
+      - alias: communicationSettings
+        operationId: getOktaCommunicationSettings
+      - alias: orgPreferences
+        operationId: getOrgPreferences
     x-okta-tags:
       - Org
   OrgOktaSupportSetting:
@@ -10757,6 +10787,7 @@ definitions:
       userId:
         type: string
     type: object
+    x-okta-parent: '#/definitions/OrgContactUser'
     x-okta-tags:
       - Org
   UserSchema:
@@ -13732,9 +13763,6 @@ definitions:
       tokenAuthScheme:
         type: string
       tokenType:
-        enum:
-          - ACCESS
-          - REFRESH
         type: string
     type: object
     x-okta-tags:
@@ -14017,6 +14045,11 @@ definitions:
           - dest: userId
             src: id
         operationId: assignRoleToUser
+      - alias: getRole
+        arguments:
+          - dest: userId
+            src: id
+        operationId: getUserRole
       - alias: removeRole
         arguments:
           - dest: userId
