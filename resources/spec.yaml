@@ -7775,7 +7775,9 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Brand'
+            items:
+              $ref: '#/definitions/Brand'
+            type: array
       security:
         - api_token: []
       summary: List Brands
@@ -7852,7 +7854,9 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Theme'
+            items:
+              $ref: '#/definitions/Theme'
+            type: array
       security:
         - api_token: []
       summary: Get Brand Themes
@@ -15180,15 +15184,11 @@ definitions:
     x-okta-crud:
       - alias: read
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: getBrandTheme
       - alias: update
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
           - dest: theme
@@ -15197,48 +15197,34 @@ definitions:
     x-okta-operations:
       - alias: getBrandThemes
         arguments:
-          - dest: brandId
-            src: brandId
         operationId: getBrandThemes
       - alias: updateBrandThemeLogo
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: updateBrandThemeLogo
       - alias: deleteBrandThemeLogo
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: deleteBrandThemeLogo
       - alias: updateBrandThemeFavicon
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
-        operationId: updateBrandThemeFavicon
+        operationId: uploadBrandThemeFavicon
       - alias: deleteBrandThemeFavicon
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: deleteBrandThemeFavicon
       - alias: updateBrandThemeBackgroundImage
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
-        operationId: updateBrandThemeBackgroundImage
+        operationId: uploadBrandThemeBackgroundImage
       - alias: deleteBrandThemeBackgroundImage
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: deleteBrandThemeBackgroundImage

@@ -3391,7 +3391,10 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Brand"
+              "items": {
+                "$ref": "#/definitions/Brand"
+              },
+              "type": "array"
             }
           }
         },
@@ -3514,7 +3517,10 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Theme"
+              "items": {
+                "$ref": "#/definitions/Theme"
+              },
+              "type": "array"
             }
           }
         },
@@ -22005,10 +22011,6 @@
           "alias": "read",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
@@ -22018,10 +22020,6 @@
         {
           "alias": "update",
           "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            },
             {
               "dest": "themeId",
               "src": "id"
@@ -22037,21 +22035,11 @@
       "x-okta-operations": [
         {
           "alias": "getBrandThemes",
-          "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            }
-          ],
           "operationId": "getBrandThemes"
         },
         {
           "alias": "updateBrandThemeLogo",
           "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            },
             {
               "dest": "themeId",
               "src": "id"
@@ -22063,10 +22051,6 @@
           "alias": "deleteBrandThemeLogo",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
@@ -22077,23 +22061,15 @@
           "alias": "updateBrandThemeFavicon",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
           ],
-          "operationId": "updateBrandThemeFavicon"
+          "operationId": "uploadBrandThemeFavicon"
         },
         {
           "alias": "deleteBrandThemeFavicon",
           "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            },
             {
               "dest": "themeId",
               "src": "id"
@@ -22105,23 +22081,15 @@
           "alias": "updateBrandThemeBackgroundImage",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
           ],
-          "operationId": "updateBrandThemeBackgroundImage"
+          "operationId": "uploadBrandThemeBackgroundImage"
         },
         {
           "alias": "deleteBrandThemeBackgroundImage",
           "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            },
             {
               "dest": "themeId",
               "src": "id"
