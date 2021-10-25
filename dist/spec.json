@@ -3674,7 +3674,7 @@
           "multipart/form-data"
         ],
         "description": "Updates the background image for your Theme",
-        "operationId": "uploadBrandThemeBackgroundImage",
+        "operationId": "updateBrandThemeBackgroundImage",
         "parameters": [
           {
             "in": "path",
@@ -3770,7 +3770,7 @@
           "multipart/form-data"
         ],
         "description": "Updates the favicon for your theme",
-        "operationId": "uploadBrandThemeFavicon",
+        "operationId": "updateBrandThemeFavicon",
         "parameters": [
           {
             "in": "path",
@@ -21961,10 +21961,6 @@
           "alias": "update",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             },
@@ -21979,21 +21975,11 @@
       "x-okta-operations": [
         {
           "alias": "getBrandThemes",
-          "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            }
-          ],
           "operationId": "getBrandThemes"
         },
         {
           "alias": "updateBrandThemeLogo",
           "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            },
             {
               "dest": "themeId",
               "src": "id"
@@ -22005,10 +21991,6 @@
           "alias": "deleteBrandThemeLogo",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
@@ -22018,10 +22000,6 @@
         {
           "alias": "updateBrandThemeFavicon",
           "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            },
             {
               "dest": "themeId",
               "src": "id"
@@ -22033,10 +22011,6 @@
           "alias": "deleteBrandThemeFavicon",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
@@ -22047,10 +22021,6 @@
           "alias": "updateBrandThemeBackgroundImage",
           "arguments": [
             {
-              "dest": "brandId",
-              "src": "brandId"
-            },
-            {
               "dest": "themeId",
               "src": "id"
             }
@@ -22060,10 +22030,6 @@
         {
           "alias": "deleteBrandThemeBackgroundImage",
           "arguments": [
-            {
-              "dest": "brandId",
-              "src": "brandId"
-            },
             {
               "dest": "themeId",
               "src": "id"

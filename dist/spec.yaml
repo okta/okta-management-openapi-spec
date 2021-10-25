@@ -2335,7 +2335,7 @@ paths:
       consumes:
         - multipart/form-data
       description: Updates the background image for your Theme
-      operationId: uploadBrandThemeBackgroundImage
+      operationId: updateBrandThemeBackgroundImage
       parameters:
         - in: path
           name: brandId
@@ -2396,7 +2396,7 @@ paths:
       consumes:
         - multipart/form-data
       description: Updates the favicon for your theme
-      operationId: uploadBrandThemeFavicon
+      operationId: updateBrandThemeFavicon
       parameters:
         - in: path
           name: brandId
@@ -14106,8 +14106,6 @@ definitions:
         operationId: getBrandTheme
       - alias: update
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
           - dest: theme
@@ -14115,49 +14113,34 @@ definitions:
         operationId: updateBrandTheme
     x-okta-operations:
       - alias: getBrandThemes
-        arguments:
-          - dest: brandId
-            src: brandId
         operationId: getBrandThemes
       - alias: updateBrandThemeLogo
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: updateBrandThemeLogo
       - alias: deleteBrandThemeLogo
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: deleteBrandThemeLogo
       - alias: updateBrandThemeFavicon
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: updateBrandThemeFavicon
       - alias: deleteBrandThemeFavicon
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: deleteBrandThemeFavicon
       - alias: updateBrandThemeBackgroundImage
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: updateBrandThemeBackgroundImage
       - alias: deleteBrandThemeBackgroundImage
         arguments:
-          - dest: brandId
-            src: brandId
           - dest: themeId
             src: id
         operationId: deleteBrandThemeBackgroundImage
