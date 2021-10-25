@@ -2335,7 +2335,7 @@ paths:
       consumes:
         - multipart/form-data
       description: Updates the background image for your Theme
-      operationId: updateBrandThemeBackgroundImage
+      operationId: uploadBrandThemeBackgroundImage
       parameters:
         - in: path
           name: brandId
@@ -2396,7 +2396,7 @@ paths:
       consumes:
         - multipart/form-data
       description: Updates the favicon for your theme
-      operationId: updateBrandThemeFavicon
+      operationId: uploadBrandThemeFavicon
       parameters:
         - in: path
           name: brandId
@@ -14128,7 +14128,7 @@ definitions:
         arguments:
           - dest: themeId
             src: id
-        operationId: updateBrandThemeFavicon
+        operationId: uploadBrandThemeFavicon
       - alias: deleteBrandThemeFavicon
         arguments:
           - dest: themeId
@@ -14138,7 +14138,7 @@ definitions:
         arguments:
           - dest: themeId
             src: id
-        operationId: updateBrandThemeBackgroundImage
+        operationId: uploadBrandThemeBackgroundImage
       - alias: deleteBrandThemeBackgroundImage
         arguments:
           - dest: themeId

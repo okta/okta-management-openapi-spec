@@ -3674,7 +3674,7 @@
           "multipart/form-data"
         ],
         "description": "Updates the background image for your Theme",
-        "operationId": "updateBrandThemeBackgroundImage",
+        "operationId": "uploadBrandThemeBackgroundImage",
         "parameters": [
           {
             "in": "path",
@@ -3770,7 +3770,7 @@
           "multipart/form-data"
         ],
         "description": "Updates the favicon for your theme",
-        "operationId": "updateBrandThemeFavicon",
+        "operationId": "uploadBrandThemeFavicon",
         "parameters": [
           {
             "in": "path",
@@ -22005,7 +22005,7 @@
               "src": "id"
             }
           ],
-          "operationId": "updateBrandThemeFavicon"
+          "operationId": "uploadBrandThemeFavicon"
         },
         {
           "alias": "deleteBrandThemeFavicon",
@@ -22025,7 +22025,7 @@
               "src": "id"
             }
           ],
-          "operationId": "updateBrandThemeBackgroundImage"
+          "operationId": "uploadBrandThemeBackgroundImage"
         },
         {
           "alias": "deleteBrandThemeBackgroundImage",
