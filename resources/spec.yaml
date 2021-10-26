@@ -9314,7 +9314,6 @@ definitions:
       - INACTIVE
       - NOT_SETUP
       - ENROLLED
-      - DISABLED
       - EXPIRED
     type: string
     x-okta-tags:

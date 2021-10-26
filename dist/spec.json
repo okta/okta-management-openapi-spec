@@ -15148,7 +15148,6 @@
         "INACTIVE",
         "NOT_SETUP",
         "ENROLLED",
-        "DISABLED",
         "EXPIRED"
       ],
       "type": "string",
