@@ -3708,7 +3708,7 @@
           "201": {
             "description": "Created",
             "schema": {
-              "$ref": "#/definitions/BackgroundImage"
+              "$ref": "#/definitions/ImageUploadResponse"
             }
           },
           "400": {
@@ -3804,7 +3804,7 @@
           "201": {
             "description": "Created",
             "schema": {
-              "$ref": "#/definitions/Favicon"
+              "$ref": "#/definitions/ImageUploadResponse"
             }
           },
           "400": {
@@ -14818,17 +14818,6 @@
         "Application"
       ]
     },
-    "BackgroundImage": {
-      "properties": {
-        "url": {
-          "readOnly": true,
-          "type": "string"
-        }
-      },
-      "x-okta-tags": [
-        "Brand"
-      ]
-    },
     "BasicApplicationSettings": {
       "properties": {
         "app": {
@@ -15856,17 +15845,6 @@
       "type": "string",
       "x-okta-tags": [
         "UserFactor"
-      ]
-    },
-    "Favicon": {
-      "properties": {
-        "url": {
-          "readOnly": true,
-          "type": "string"
-        }
-      },
-      "x-okta-tags": [
-        "Brand"
       ]
     },
     "Feature": {
@@ -17047,6 +17025,17 @@
       "type": "object",
       "x-okta-tags": [
         "Policy"
+      ]
+    },
+    "ImageUploadResponse": {
+      "properties": {
+        "url": {
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Brand"
       ]
     },
     "InactivityPolicyRuleCondition": {

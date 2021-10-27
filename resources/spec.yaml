@@ -8010,7 +8010,7 @@ paths:
         '201':
           description: Created
           schema:
-            $ref: '#/definitions/Favicon'
+            $ref: '#/definitions/ImageUploadResponse'
         '400':
           description: Bad Request
         '404':
@@ -8071,7 +8071,7 @@ paths:
         '201':
           description: Created
           schema:
-            $ref: '#/definitions/BackgroundImage'
+            $ref: '#/definitions/ImageUploadResponse'
         '400':
           description: Bad Request
         '404':
@@ -15228,20 +15228,6 @@ definitions:
           - dest: themeId
             src: id
         operationId: deleteBrandThemeBackgroundImage
-    x-okta-tags:
-      - Brand
-  Favicon:
-    properties:
-      url:
-        type: string
-        readOnly: true
-    x-okta-tags:
-      - Brand
-  BackgroundImage:
-    properties:
-      url:
-        type: string
-        readOnly: true
     x-okta-tags:
       - Brand
   SignInPageTouchPointVariant:

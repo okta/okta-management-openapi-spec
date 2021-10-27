@@ -2359,7 +2359,7 @@ paths:
         '201':
           description: Created
           schema:
-            $ref: '#/definitions/BackgroundImage'
+            $ref: '#/definitions/ImageUploadResponse'
         '400':
           description: Bad Request
         '404':
@@ -2420,7 +2420,7 @@ paths:
         '201':
           description: Created
           schema:
-            $ref: '#/definitions/Favicon'
+            $ref: '#/definitions/ImageUploadResponse'
         '400':
           description: Bad Request
         '404':
@@ -9423,13 +9423,6 @@ definitions:
         type: string
     x-okta-tags:
       - Application
-  BackgroundImage:
-    properties:
-      url:
-        readOnly: true
-        type: string
-    x-okta-tags:
-      - Brand
   BasicApplicationSettings:
     properties:
       app:
@@ -10106,13 +10099,6 @@ definitions:
     type: string
     x-okta-tags:
       - UserFactor
-  Favicon:
-    properties:
-      url:
-        readOnly: true
-        type: string
-    x-okta-tags:
-      - Brand
   Feature:
     properties:
       _links:
@@ -10855,6 +10841,13 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  ImageUploadResponse:
+    properties:
+      url:
+        readOnly: true
+        type: string
+    x-okta-tags:
+      - Brand
   InactivityPolicyRuleCondition:
     properties:
       number:
