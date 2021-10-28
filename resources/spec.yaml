@@ -7769,7 +7769,7 @@ paths:
       produces:
         - application/json
       description: List all the brands in your org.
-      operationId: getBrands
+      operationId: listBrands
       parameters: []
       responses:
         '200':
@@ -7844,7 +7844,7 @@ paths:
       produces:
         - application/json
       description: List all the themes in your brand
-      operationId: getBrandThemes
+      operationId: listBrandThemes
       parameters:
         - in: path
           name: brandId
@@ -7931,7 +7931,7 @@ paths:
       produces:
         - application/json
       description: Updates the logo for your Theme
-      operationId: updateBrandThemeLogo
+      operationId: uploadBrandThemeLogo
       parameters:
         - in: path
           name: brandId
@@ -7949,7 +7949,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Theme'
+            $ref: '#/definitions/ImageUploadResponse'
         '400':
           description: Bad Request
         '404':
@@ -15141,9 +15141,6 @@ definitions:
           - dest: brand
             self: true
         operationId: updateBrand
-    x-okta-operations:
-      - alias: getBrands
-        operationId: getBrands
     x-okta-tags:
       - Brand
   Theme:
@@ -15195,14 +15192,11 @@ definitions:
             self: true
         operationId: updateBrandTheme
     x-okta-operations:
-      - alias: getBrandThemes
-        arguments:
-        operationId: getBrandThemes
-      - alias: updateBrandThemeLogo
+      - alias: uploadBrandThemeLogo
         arguments:
           - dest: themeId
             src: id
-        operationId: updateBrandThemeLogo
+        operationId: uploadBrandThemeLogo
       - alias: deleteBrandThemeLogo
         arguments:
           - dest: themeId

@@ -3382,7 +3382,7 @@
           "application/json"
         ],
         "description": "List all the brands in your org.",
-        "operationId": "getBrands",
+        "operationId": "listBrands",
         "parameters": [],
         "produces": [
           "application/json"
@@ -3501,7 +3501,7 @@
           "application/json"
         ],
         "description": "List all the themes in your brand",
-        "operationId": "getBrandThemes",
+        "operationId": "listBrandThemes",
         "parameters": [
           {
             "in": "path",
@@ -3872,7 +3872,7 @@
           "multipart/form-data"
         ],
         "description": "Updates the logo for your Theme",
-        "operationId": "updateBrandThemeLogo",
+        "operationId": "uploadBrandThemeLogo",
         "parameters": [
           {
             "in": "path",
@@ -3900,7 +3900,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/Theme"
+              "$ref": "#/definitions/ImageUploadResponse"
             }
           },
           "400": {
@@ -14968,12 +14968,6 @@
           "operationId": "updateBrand"
         }
       ],
-      "x-okta-operations": [
-        {
-          "alias": "getBrands",
-          "operationId": "getBrands"
-        }
-      ],
       "x-okta-tags": [
         "Brand"
       ]
@@ -22023,18 +22017,14 @@
       ],
       "x-okta-operations": [
         {
-          "alias": "getBrandThemes",
-          "operationId": "getBrandThemes"
-        },
-        {
-          "alias": "updateBrandThemeLogo",
+          "alias": "uploadBrandThemeLogo",
           "arguments": [
             {
               "dest": "themeId",
               "src": "id"
             }
           ],
-          "operationId": "updateBrandThemeLogo"
+          "operationId": "uploadBrandThemeLogo"
         },
         {
           "alias": "deleteBrandThemeLogo",
