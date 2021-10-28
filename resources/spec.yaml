@@ -4656,6 +4656,25 @@ paths:
       summary: Get org contact types
       tags:
         - Org
+  /api/v1/org/logo:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Updates the logo for your organization.
+      operationId: updateOrgLogo
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+      responses:
+        '201':
+          description: Created
+      security:
+        - api_token: []
+      summary: Update org logo
+      tags:
+        - Org
   '/api/v1/org/contacts/{contactType}':
     get:
       consumes:
@@ -7743,6 +7762,351 @@ paths:
       summary: Get Domain
       tags:
         - Domain
+  '/api/v1/brands':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: List all the brands in your org.
+      operationId: listBrands
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Brand'
+            type: array
+      security:
+        - api_token: []
+      summary: List Brands
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Fetches a brand by `brandId`
+      operationId: getBrand
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Brand'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Get Brand
+      tags:
+        - Brand
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Updates a brand by `brandId`
+      operationId: updateBrand
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: body
+          name: brand
+          required: true
+          schema:
+            $ref: '#/definitions/Brand'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Brand'
+        '400':
+          description: Bad Request
+      security:
+        - api_token: []
+      summary: Update Brand
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/themes':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: List all the themes in your brand
+      operationId: listBrandThemes
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Theme'
+            type: array
+      security:
+        - api_token: []
+      summary: Get Brand Themes
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/themes/{themeId}':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Fetches a theme for a brand
+      operationId: getBrandTheme
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Theme'
+      security:
+        - api_token: []
+      summary: Get a theme for a brand
+      tags:
+        - Brand
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Updates a theme for a brand
+      operationId: updateBrandTheme
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+        - in: body
+          name: theme
+          required: true
+          schema:
+            $ref: '#/definitions/Theme'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Theme'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Update a theme for a brand
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/themes/{themeId}/logo':
+    post:
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      description: Updates the logo for your Theme
+      operationId: uploadBrandThemeLogo
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+        - in: "formData"
+          name: "file"
+          required: true
+          type: "file"
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ImageUploadResponse'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Update a themes logo
+      tags:
+        - Brand
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Deletes a Theme logo. The org then uses the Okta default logo.
+      operationId: deleteBrandThemeLogo
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Deletes a Theme logo. The org then uses the Okta default logo.
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/themes/{themeId}/favicon':
+    post:
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      description: Updates the favicon for your theme
+      operationId: uploadBrandThemeFavicon
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+        - in: "formData"
+          name: "file"
+          required: true
+          type: "file"
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/ImageUploadResponse'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Updates the favicon for your theme
+      tags:
+        - Brand
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Deletes a Theme favicon. The org then uses the Okta default favicon.
+      operationId: deleteBrandThemeFavicon
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Deletes a Theme favicon. The org then uses the Okta default favicon.
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/themes/{themeId}/background-image':
+    post:
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      description: Updates the background image for your Theme
+      operationId: uploadBrandThemeBackgroundImage
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+        - in: "formData"
+          name: "file"
+          required: true
+          type: "file"
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/ImageUploadResponse'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Updates the background image for your Theme
+      tags:
+        - Brand
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Deletes a Theme background image
+      operationId: deleteBrandThemeBackgroundImage
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: themeId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Deletes a Theme background image
+      tags:
+        - Brand
 definitions:
   ActivateFactorRequest:
     properties:
@@ -10722,6 +11086,18 @@ definitions:
         operationId: getOktaCommunicationSettings
       - alias: orgPreferences
         operationId: getOrgPreferences
+      - alias: showFooter
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: showOktaUIFooter
+      - alias: hideFooter
+        arguments:
+          - dest: orgSetting
+            self: true
+        operationId: hideOktaUIFooter
+      - alias: updateOrgLogo
+        operationId: updateOrgLogo
     x-okta-tags:
       - Org
   OrgOktaSupportSetting:
@@ -14736,4 +15112,153 @@ definitions:
         operationId: updateConfiguration
     x-okta-tags:
       - ThreatInsight
-
+  Brand:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      agreeToCustomPrivacyPolicy:
+        type: boolean
+      customPrivacyPolicyUrl:
+        type: string
+      removePoweredByOkta:
+        type: boolean
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-crud:
+      - alias: read
+        arguments:
+          - dest: brandId
+            src: id
+        operationId: getBrand
+      - alias: update
+        arguments:
+          - dest: brandId
+            src: id
+          - dest: brand
+            self: true
+        operationId: updateBrand
+    x-okta-tags:
+      - Brand
+  Theme:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      logo:
+        type: string
+        readOnly: true
+      favicon:
+        type: string
+        readOnly: true
+      backgroundImage:
+        type: string
+        readOnly: true
+      primaryColorHex:
+        type: string
+      primaryColorContrastHex:
+        type: string
+      secondaryColorHex:
+        type: string
+      secondaryColorContrastHex:
+        type: string
+      signInPageTouchPointVariant:
+        $ref: '#/definitions/SignInPageTouchPointVariant'
+      endUserDashboardTouchPointVariant:
+        $ref: '#/definitions/EndUserDashboardTouchPointVariant'
+      errorPageTouchPointVariant:
+        $ref: '#/definitions/ErrorPageTouchPointVariant'
+      emailTemplateTouchPointVariant:
+        $ref: '#/definitions/EmailTemplateTouchPointVariant'
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-crud:
+      - alias: read
+        arguments:
+          - dest: themeId
+            src: id
+        operationId: getBrandTheme
+      - alias: update
+        arguments:
+          - dest: themeId
+            src: id
+          - dest: theme
+            self: true
+        operationId: updateBrandTheme
+    x-okta-operations:
+      - alias: uploadBrandThemeLogo
+        arguments:
+          - dest: themeId
+            src: id
+        operationId: uploadBrandThemeLogo
+      - alias: deleteBrandThemeLogo
+        arguments:
+          - dest: themeId
+            src: id
+        operationId: deleteBrandThemeLogo
+      - alias: updateBrandThemeFavicon
+        arguments:
+          - dest: themeId
+            src: id
+        operationId: uploadBrandThemeFavicon
+      - alias: deleteBrandThemeFavicon
+        arguments:
+          - dest: themeId
+            src: id
+        operationId: deleteBrandThemeFavicon
+      - alias: updateBrandThemeBackgroundImage
+        arguments:
+          - dest: themeId
+            src: id
+        operationId: uploadBrandThemeBackgroundImage
+      - alias: deleteBrandThemeBackgroundImage
+        arguments:
+          - dest: themeId
+            src: id
+        operationId: deleteBrandThemeBackgroundImage
+    x-okta-tags:
+      - Brand
+  SignInPageTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - BACKGROUND_SECONDARY_COLOR
+      - BACKGROUND_IMAGE
+    type: string
+    x-okta-tags:
+      - Brand
+  EndUserDashboardTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - WHITE_LOGO_BACKGROUND
+      - FULL_THEME
+    type: string
+    x-okta-tags:
+      - Brand
+  ErrorPageTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - BACKGROUND_SECONDARY_COLOR
+      - BACKGROUND_IMAGE
+    type: string
+    x-okta-tags:
+      - Brand
+  EmailTemplateTouchPointVariant:
+    enum:
+      - OKTA_DEFAULT
+      - FULL_THEME
+    type: string
+    x-okta-tags:
+      - Brand
+  ImageUploadResponse:
+    properties:
+      url:
+        type: string
+        readOnly: true
+    x-okta-tags:
+      - Brand
