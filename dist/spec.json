@@ -14038,6 +14038,9 @@
         "name": {
           "type": "string"
         },
+        "provider": {
+          "$ref": "#/definitions/OnpremMfaAuthenticatorProvider"
+        },
         "settings": {
           "$ref": "#/definitions/AuthenticatorSettings"
         },
@@ -19001,11 +19004,6 @@
       ]
     },
     "OnpremMfaAuthenticator": {
-      "properties": {
-        "provider": {
-          "$ref": "#/definitions/OnpremMfaAuthenticatorProvider"
-        }
-      },
       "x-okta-parent": "#/definitions/Authenticator",
       "x-okta-tags": [
         "Authenticator"
