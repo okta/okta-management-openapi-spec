@@ -12179,6 +12179,38 @@ definitions:
     x-okta-tags:
       - Authenticator
   OnpremMfaAuthenticator:
+    properties:
+      provider:
+        $ref: '#/definitions/OnpremMfaAuthenticatorProvider'
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  OnpremMfaAuthenticatorProvider:
+    properties:
+      configuration:
+        $ref: '#/definitions/OnpremMfaAuthenticatorProviderConfiguration'
+      type:
+        type: string
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  OnpremMfaAuthenticatorProviderConfiguration:
+    properties:
+      authPort:
+        type: integer
+      hostName:
+        type: string
+      instanceId:
+        type: string
+      userNameTemplate:
+        $ref: '#/definitions/OnpremMfaAuthenticatorProviderConfigurationUserNamePlate'
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  OnpremMfaAuthenticatorProviderConfigurationUserNamePlate:
+    properties:
+      template:
+        type: string
     x-okta-parent: '#/definitions/Authenticator'
     x-okta-tags:
       - Authenticator
