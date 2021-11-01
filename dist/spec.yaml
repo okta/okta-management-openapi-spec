@@ -8974,7 +8974,7 @@ definitions:
       name:
         type: string
       provider:
-        $ref: '#/definitions/OnpremMfaAuthenticatorProvider'
+        $ref: '#/definitions/AuthenticatorProvider'
       settings:
         $ref: '#/definitions/AuthenticatorSettings'
       status:
@@ -9006,17 +9006,35 @@ definitions:
         operationId: deactivateAuthenticator
     x-okta-tags:
       - Authenticator
-    x-openapi-v3-discriminator:
-      mapping:
-        GOOGLE_OTP: '#/definitions/GoogleOtpAuthenticator'
-        OKTA_EMAIL: '#/definitions/OktaEmailAuthenticator'
-        OKTA_PASSWORD: '#/definitions/OktaPasswordAuthenticator'
-        OKTA_VERIFY: '#/definitions/OktaVerifyAuthenticator'
-        ONPREM_MFA: '#/definitions/OnpremMfaAuthenticator'
-        PHONE_NUMBER: '#/definitions/PhoneNumberAuthenticator'
-        RSA_TOKEN: '#/definitions/RsaTokenAuthenticator'
-        SECURITY_QUESTION: '#/definitions/SecurityQuestionAuthenticator'
-      propertyName: type
+  AuthenticatorProvider:
+    properties:
+      configuration:
+        $ref: '#/definitions/AuthenticatorProviderConfiguration'
+      type:
+        type: string
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorProviderConfiguration:
+    properties:
+      authPort:
+        type: integer
+      hostName:
+        type: string
+      instanceId:
+        type: string
+      userNameTemplate:
+        $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorProviderConfigurationUserNamePlate:
+    properties:
+      template:
+        type: string
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
   AuthenticatorSettings:
     properties:
       allowedFor:
@@ -10257,13 +10275,6 @@ definitions:
         type: string
     x-okta-tags:
       - User
-  GoogleOtpAuthenticator:
-    properties:
-      settings:
-        $ref: '#/definitions/AuthenticatorSettings'
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
   GrantTypePolicyRuleCondition:
     properties:
       include:
@@ -12078,17 +12089,6 @@ definitions:
     type: string
     x-okta-tags:
       - Application
-  OktaEmailAuthenticator:
-    properties:
-      settings:
-        $ref: '#/definitions/AuthenticatorSettings'
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
-  OktaPasswordAuthenticator:
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
   OktaSignOnPolicy:
     properties:
       conditions:
@@ -12173,46 +12173,6 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
-  OktaVerifyAuthenticator:
-    properties:
-      settings:
-        $ref: '#/definitions/AuthenticatorSettings'
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
-  OnpremMfaAuthenticator:
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
-  OnpremMfaAuthenticatorProvider:
-    properties:
-      configuration:
-        $ref: '#/definitions/OnpremMfaAuthenticatorProviderConfiguration'
-      type:
-        type: string
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
-  OnpremMfaAuthenticatorProviderConfiguration:
-    properties:
-      authPort:
-        type: integer
-      hostName:
-        type: string
-      instanceId:
-        type: string
-      userNameTemplate:
-        $ref: '#/definitions/OnpremMfaAuthenticatorProviderConfigurationUserNamePlate'
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
-  OnpremMfaAuthenticatorProviderConfigurationUserNamePlate:
-    properties:
-      template:
-        type: string
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
   OpenIdConnectApplication:
     properties:
       credentials:
@@ -12856,13 +12816,6 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
-  PhoneNumberAuthenticator:
-    properties:
-      settings:
-        $ref: '#/definitions/AuthenticatorSettings'
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
   PlatformConditionEvaluatorPlatform:
     properties:
       os:
@@ -13716,10 +13669,6 @@ definitions:
     type: string
     x-okta-tags:
       - Role
-  RsaTokenAuthenticator:
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
   SamlApplication:
     properties:
       settings:
@@ -13914,13 +13863,6 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
-  SecurityQuestionAuthenticator:
-    properties:
-      settings:
-        $ref: '#/definitions/AuthenticatorSettings'
-    x-okta-parent: '#/definitions/Authenticator'
-    x-okta-tags:
-      - Authenticator
   SecurityQuestionUserFactor:
     properties:
       profile:
