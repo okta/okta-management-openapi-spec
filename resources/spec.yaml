@@ -14476,6 +14476,10 @@ definitions:
         type: string
       usernameField:
         type: string
+      redirectUrl:
+        type: string
+      checkbox:
+        type: string
     x-okta-parent: '#/definitions/ApplicationSettingsApplication'
     x-okta-tags:
       - Application

@@ -22289,10 +22289,16 @@
         "buttonField": {
           "type": "string"
         },
+        "checkbox": {
+          "type": "string"
+        },
         "loginUrlRegex": {
           "type": "string"
         },
         "passwordField": {
+          "type": "string"
+        },
+        "redirectUrl": {
           "type": "string"
         },
         "url": {
