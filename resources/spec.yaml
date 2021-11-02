@@ -8629,6 +8629,8 @@ definitions:
         type: string
       type:
         type: string
+      pushStatus:
+        type: string
     type: object
     x-okta-tags:
       - Application

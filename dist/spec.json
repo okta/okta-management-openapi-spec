@@ -13855,6 +13855,9 @@
     },
     "ApplicationCredentialsUsernameTemplate": {
       "properties": {
+        "pushStatus": {
+          "type": "string"
+        },
         "suffix": {
           "type": "string"
         },
