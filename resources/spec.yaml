@@ -7907,7 +7907,7 @@ paths:
           name: theme
           required: true
           schema:
-            $ref: '#/definitions/Theme'
+            $ref: '#/definitions/ThemeSettings'
       responses:
         '200':
           description: Success
@@ -15186,8 +15186,6 @@ definitions:
         arguments:
           - dest: themeId
             src: id
-          - dest: theme
-            self: true
         operationId: updateBrandTheme
     x-okta-operations:
       - alias: uploadBrandThemeLogo
@@ -15220,6 +15218,27 @@ definitions:
           - dest: themeId
             src: id
         operationId: deleteBrandThemeBackgroundImage
+    x-okta-tags:
+      - Brand
+  ThemeSettings:
+    properties:
+      emailTemplateTouchPointVariant:
+        $ref: '#/definitions/EmailTemplateTouchPointVariant'
+      endUserDashboardTouchPointVariant:
+        $ref: '#/definitions/EndUserDashboardTouchPointVariant'
+      errorPageTouchPointVariant:
+        $ref: '#/definitions/ErrorPageTouchPointVariant'
+      primaryColorContrastHex:
+        type: string
+      primaryColorHex:
+        type: string
+      secondaryColorContrastHex:
+        type: string
+      secondaryColorHex:
+        type: string
+      signInPageTouchPointVariant:
+        $ref: '#/definitions/SignInPageTouchPointVariant'
+    x-okta-parent: '#/definitions/Theme'
     x-okta-tags:
       - Brand
   SignInPageTouchPointVariant:
