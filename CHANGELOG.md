@@ -1,6 +1,8 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+### 2.10.0
+
 ## 2.9.0
 ### Additions
  - New Paths:
@@ -21,6 +23,7 @@ Running changelog of releases since `2.2.3`
  - Models Added:
     - `Brand`
     - `Theme`
+    - `ThemeResponse`
     - `Favicon`
     - `BackgroundImage`
     - `SignInPageTouchPointVariant`
@@ -28,8 +31,39 @@ Running changelog of releases since `2.2.3`
     - `ErrorPageTouchPointVariant`
     - `EmailTemplateTouchPointVariant`
     - `ImageUploadResponse`
+    - `AccessPolicy` child of `Policy`
+    - `AccessPolicyRule` child of `PolicyRule`
+    - `UserTypeCondition`
+    - `AccessPolicyRuleCustomCondition`
+    - `AccessPolicyRuleConditions` child of `PolicyRuleCondition`
+    - `DeviceAccessPolicyRuleCondition`
+    - `AccessPolicyRuleActions` child of `PolicyRuleActions`
+    - `AccessPolicyRuleApplicationSignOn`
+    - `VerificationMethod`
+    - `AccessPolicyConstraints`
+    - `AccessPolicyConstraint`
+    - `KnowledgeConstraint`
+    - `PossessionConstraint`
+    - `ProfileEnrollmentPolicy` child of `Policy`
+    - `ProfileEnrollmentPolicyRule` child of `PolicyRule`
+    - `ProfileEnrollmentPolicyRuleActions` child of `PolicyRuleActions`
+    - `ProfileEnrollmentPolicyRuleAction`
+    - `PreRegistrationInlineHook`
+    - `ProfileEnrollmentPolicyRuleProfileAttribute`
+    - `ProfileEnrollmentPolicyRuleActivationRequirement`
  - Added New Tag `Brand`
  - Adds `updateOrgLogo` operation
+ - Adds discriminator to `Policy` for `PROFILE_ENROLLMENT` and `ACCESS_POLICY`
+ - Adds discriminator to `PolicyRule` for `PROFILE_ENROLLMENT` and `ACCESS_POLICY`
+ - Adds new Enum `PROFILE_ENROLLMENT` and `ACCESS_POLICY` to `PolicyType` model
+
+
+### Bug Fixes
+ - `assignRoleToGroup` updates parameter `disableNotifications` from `string` to `boolean`
+ - `assignRoleToUser` updates parameter `disableNotifications` from `string` to `boolean`
+ - `ApplicationCredentialsUsernameTemplate` model adds `pushStatus` type `string`
+ - Includes `redirectUrl` type `string` to `SwaApplicationSettingsApplication`
+ - Includes `checkbox` type `string` to `SwaApplicationSettingsApplication`
 
 ## 2.8.1
 ### Additions
