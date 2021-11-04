@@ -1,6 +1,8 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+### 2.10.0
+
 ## 2.9.0
 ### Additions
  - New Paths:
@@ -18,9 +20,12 @@ Running changelog of releases since `2.2.3`
         - operations added: `uploadBrandThemeFavicon`, `deleteBrandThemeFavicon`
     - `POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/background-image`
         - operations added: `uploadBrandThemeBackgroundImage`, `deleteBrandThemeBackgroundImage`
+    - `PUT /api/v1/authenticators/{id}`
+        - operations added: `updateAuthenticator`
  - Models Added:
     - `Brand`
     - `Theme`
+    - `ThemeResponse`
     - `Favicon`
     - `BackgroundImage`
     - `SignInPageTouchPointVariant`
@@ -28,9 +33,57 @@ Running changelog of releases since `2.2.3`
     - `ErrorPageTouchPointVariant`
     - `EmailTemplateTouchPointVariant`
     - `ImageUploadResponse`
+    - `AccessPolicy` child of `Policy`
+    - `AccessPolicyRule` child of `PolicyRule`
+    - `UserTypeCondition`
+    - `AccessPolicyRuleCustomCondition`
+    - `AccessPolicyRuleConditions` child of `PolicyRuleCondition`
+    - `DeviceAccessPolicyRuleCondition`
+    - `AccessPolicyRuleActions` child of `PolicyRuleActions`
+    - `AccessPolicyRuleApplicationSignOn`
+    - `VerificationMethod`
+    - `AccessPolicyConstraints`
+    - `AccessPolicyConstraint`
+    - `KnowledgeConstraint`
+    - `PossessionConstraint`
+    - `ProfileEnrollmentPolicy` child of `Policy`
+    - `ProfileEnrollmentPolicyRule` child of `PolicyRule`
+    - `ProfileEnrollmentPolicyRuleActions` child of `PolicyRuleActions`
+    - `ProfileEnrollmentPolicyRuleAction`
+    - `PreRegistrationInlineHook`
+    - `ProfileEnrollmentPolicyRuleProfileAttribute`
+    - `ProfileEnrollmentPolicyRuleActivationRequirement`
+    - `AuthenticatorProvider` child of `Authenticator`
+    - `AuthenticatorProviderConfiguration` child of `Authenticator`
+    - `AuthenticatorProviderConfigurationUserNamePlate` child of `Authenticator`
+    - `Compliance`
+    - `ChannelBinding`
+    - `FipsEnum`
+    - `RequiredEnum`
+    - `UserVerificationEnum`
  - Added New Tag `Brand`
  - Adds `updateOrgLogo` operation
+ - Adds discriminator to `Policy` for `PROFILE_ENROLLMENT` and `ACCESS_POLICY`
+ - Adds discriminator to `PolicyRule` for `PROFILE_ENROLLMENT` and `ACCESS_POLICY`
+ - Adds new Enum `PROFILE_ENROLLMENT` and `ACCESS_POLICY` to `PolicyType` model
+ - Adds `provider` to `Authenticator` model
+ - Adds `read` and `update` crud methods to `Authenticator` model
+ - Adds following properties to `AuthenticatorSettings`
+    - `appInstanceId`
+    - `channelBinding`
+    - `compliance`
+    - `userVerification`
 
+
+### Bug Fixes
+ - `assignRoleToGroup` updates parameter `disableNotifications` from `string` to `boolean`
+ - `assignRoleToUser` updates parameter `disableNotifications` from `string` to `boolean`
+ - `ApplicationCredentialsUsernameTemplate` model adds `pushStatus` type `string`
+ - Includes `redirectUrl` type `string` to `SwaApplicationSettingsApplication`
+ - Includes `checkbox` type `string` to `SwaApplicationSettingsApplication`
+
+### Updates
+ - Updates description of `deactivateUser`
 ## 2.8.1
 ### Additions
 - Adds `x-okta-operations` to the `OrgSettings` model
