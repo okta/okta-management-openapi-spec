@@ -1055,6 +1055,33 @@ paths:
         - api_token: []
       tags:
         - Authenticator
+    put:
+      consumes:
+        - application/json
+      description: Updates an authenticator
+      operationId: updateAuthenticator
+      parameters:
+        - in: path
+          name: authenticatorId
+          required: true
+          type: string
+        - in: body
+          name: authenticator
+          required: true
+          schema:
+            $ref: '#/definitions/Authenticator'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Authenticator'
+      security:
+        - api_token: []
+      summary: Update Authenticator
+      tags:
+        - Authenticator
   '/api/v1/authenticators/{authenticatorId}/lifecycle/activate':
     post:
       consumes:
@@ -8801,7 +8828,20 @@ definitions:
         $ref: '#/definitions/AuthenticatorType'
       settings:
         $ref: '#/definitions/AuthenticatorSettings'
+      provider:
+        $ref: '#/definitions/AuthenticatorProvider'
     type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getAuthenticator
+      - alias: update
+        arguments:
+          - dest: authenticatorId
+            src: id
+          - dest: authenticator
+            self: true
+        operationId: updateAuthenticator
     x-okta-operations:
       - alias: activate
         arguments:
@@ -8821,6 +8861,59 @@ definitions:
         $ref: '#/definitions/AllowedForEnum'
       tokenLifetimeInMinutes:
         type: integer
+      appInstanceId:
+        type: string
+      channelBinding:
+        $ref: '#/definitions/ChannelBinding'
+      compliance:
+        $ref: '#/definitions/Compliance'
+      userVerification:
+        $ref: '#/definitions/UserVerificationEnum'
+    type: object
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorProvider:
+    properties:
+      type:
+        type: string
+      configuration:
+        $ref: '#/definitions/AuthenticatorProviderConfiguration'
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorProviderConfiguration:
+    properties:
+      hostName:
+        type: string
+      authPort:
+        type: integer
+      instanceId:
+        type: string
+      userNameTemplate:
+        $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorProviderConfigurationUserNamePlate:
+    properties:
+      template:
+        type: string
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  Compliance:
+    properties:
+      fips:
+        $ref: '#/definitions/FipsEnum'
+    type: object
+    x-okta-tags:
+      - Authenticator
+  ChannelBinding:
+    properties:
+      style:
+        type: string
+      required:
+        $ref: '#/definitions/RequiredEnum'
     type: object
     x-okta-tags:
       - Authenticator
@@ -8840,6 +8933,28 @@ definitions:
       - email
       - security_key
       - federated
+    type: string
+    x-okta-tags:
+      - Authenticator
+  FipsEnum:
+    enum:
+      - REQUIRED
+      - OPTIONAL
+    type: string
+    x-okta-tags:
+      - Authenticator
+  RequiredEnum:
+    enum:
+      - ALWAYS
+      - HIGH_RISK_ALWAYS
+      - NEVER
+    type: string
+    x-okta-tags:
+      - Authenticator
+  UserVerificationEnum:
+    enum:
+      - REQUIRED
+      - PREFERRED
     type: string
     x-okta-tags:
       - Authenticator
