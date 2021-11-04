@@ -7880,7 +7880,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/Theme'
+              $ref: '#/definitions/ThemeResponse'
             type: array
       security:
         - api_token: []
@@ -7908,7 +7908,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Theme'
+            $ref: '#/definitions/ThemeResponse'
       security:
         - api_token: []
       summary: Get a theme for a brand
@@ -7939,7 +7939,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Theme'
+            $ref: '#/definitions/ThemeResponse'
         '400':
           description: Bad Request
         '404':
@@ -15467,6 +15467,52 @@ definitions:
       - Brand
   Theme:
     properties:
+      backgroundImage:
+        type: string
+        readOnly: true
+      primaryColorHex:
+        type: string
+      primaryColorContrastHex:
+        type: string
+      secondaryColorHex:
+        type: string
+      secondaryColorContrastHex:
+        type: string
+      signInPageTouchPointVariant:
+        $ref: '#/definitions/SignInPageTouchPointVariant'
+      endUserDashboardTouchPointVariant:
+        $ref: '#/definitions/EndUserDashboardTouchPointVariant'
+      errorPageTouchPointVariant:
+        $ref: '#/definitions/ErrorPageTouchPointVariant'
+      emailTemplateTouchPointVariant:
+        $ref: '#/definitions/EmailTemplateTouchPointVariant'
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-crud:
+      - alias: read
+        operationId: getBrandTheme
+      - alias: update
+        operationId: updateBrandTheme
+    x-okta-operations:
+      - alias: uploadBrandThemeLogo
+        operationId: uploadBrandThemeLogo
+      - alias: deleteBrandThemeLogo
+        operationId: deleteBrandThemeLogo
+      - alias: updateBrandThemeFavicon
+        operationId: uploadBrandThemeFavicon
+      - alias: deleteBrandThemeFavicon
+        operationId: deleteBrandThemeFavicon
+      - alias: updateBrandThemeBackgroundImage
+        operationId: uploadBrandThemeBackgroundImage
+      - alias: deleteBrandThemeBackgroundImage
+        operationId: deleteBrandThemeBackgroundImage
+    x-okta-tags:
+      - Brand
+  ThemeResponse:
+    properties:
       id:
         type: string
         readOnly: true
@@ -15500,50 +15546,6 @@ definitions:
           type: object
         readOnly: true
         type: object
-    x-okta-crud:
-      - alias: read
-        arguments:
-          - dest: themeId
-            src: id
-        operationId: getBrandTheme
-      - alias: update
-        arguments:
-          - dest: themeId
-            src: id
-          - dest: theme
-            self: true
-        operationId: updateBrandTheme
-    x-okta-operations:
-      - alias: uploadBrandThemeLogo
-        arguments:
-          - dest: themeId
-            src: id
-        operationId: uploadBrandThemeLogo
-      - alias: deleteBrandThemeLogo
-        arguments:
-          - dest: themeId
-            src: id
-        operationId: deleteBrandThemeLogo
-      - alias: updateBrandThemeFavicon
-        arguments:
-          - dest: themeId
-            src: id
-        operationId: uploadBrandThemeFavicon
-      - alias: deleteBrandThemeFavicon
-        arguments:
-          - dest: themeId
-            src: id
-        operationId: deleteBrandThemeFavicon
-      - alias: updateBrandThemeBackgroundImage
-        arguments:
-          - dest: themeId
-            src: id
-        operationId: uploadBrandThemeBackgroundImage
-      - alias: deleteBrandThemeBackgroundImage
-        arguments:
-          - dest: themeId
-            src: id
-        operationId: deleteBrandThemeBackgroundImage
     x-okta-tags:
       - Brand
   SignInPageTouchPointVariant:
