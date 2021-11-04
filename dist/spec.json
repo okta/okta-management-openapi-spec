@@ -1659,6 +1659,49 @@
         "tags": [
           "Authenticator"
         ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Updates an authenticator",
+        "operationId": "updateAuthenticator",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "authenticatorId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "authenticator",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Update Authenticator",
+        "tags": [
+          "Authenticator"
+        ]
       }
     },
     "/api/v1/authenticators/{authenticatorId}/lifecycle/activate": {
@@ -13995,6 +14038,9 @@
         "name": {
           "type": "string"
         },
+        "provider": {
+          "$ref": "#/definitions/AuthenticatorProvider"
+        },
         "settings": {
           "$ref": "#/definitions/AuthenticatorSettings"
         },
@@ -14006,6 +14052,27 @@
         }
       },
       "type": "object",
+      "x-okta-crud": [
+        {
+          "alias": "read",
+          "arguments": [],
+          "operationId": "getAuthenticator"
+        },
+        {
+          "alias": "update",
+          "arguments": [
+            {
+              "dest": "authenticatorId",
+              "src": "id"
+            },
+            {
+              "dest": "authenticator",
+              "self": true
+            }
+          ],
+          "operationId": "updateAuthenticator"
+        }
+      ],
       "x-okta-operations": [
         {
           "alias": "activate",
@@ -14032,13 +14099,70 @@
         "Authenticator"
       ]
     },
+    "AuthenticatorProvider": {
+      "properties": {
+        "configuration": {
+          "$ref": "#/definitions/AuthenticatorProviderConfiguration"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
+    "AuthenticatorProviderConfiguration": {
+      "properties": {
+        "authPort": {
+          "type": "integer"
+        },
+        "hostName": {
+          "type": "string"
+        },
+        "instanceId": {
+          "type": "string"
+        },
+        "userNameTemplate": {
+          "$ref": "#/definitions/AuthenticatorProviderConfigurationUserNamePlate"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
+    "AuthenticatorProviderConfigurationUserNamePlate": {
+      "properties": {
+        "template": {
+          "type": "string"
+        }
+      },
+      "x-okta-parent": "#/definitions/Authenticator",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "AuthenticatorSettings": {
       "properties": {
         "allowedFor": {
           "$ref": "#/definitions/AllowedForEnum"
         },
+        "appInstanceId": {
+          "type": "string"
+        },
+        "channelBinding": {
+          "$ref": "#/definitions/ChannelBinding"
+        },
+        "compliance": {
+          "$ref": "#/definitions/Compliance"
+        },
         "tokenLifetimeInMinutes": {
           "type": "integer"
+        },
+        "userVerification": {
+          "$ref": "#/definitions/UserVerificationEnum"
         }
       },
       "type": "object",
@@ -15094,6 +15218,20 @@
         "User"
       ]
     },
+    "ChannelBinding": {
+      "properties": {
+        "required": {
+          "$ref": "#/definitions/RequiredEnum"
+        },
+        "style": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "ClientPolicyCondition": {
       "properties": {
         "include": {
@@ -15106,6 +15244,17 @@
       "type": "object",
       "x-okta-tags": [
         "Policy"
+      ]
+    },
+    "Compliance": {
+      "properties": {
+        "fips": {
+          "$ref": "#/definitions/FipsEnum"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "ContextPolicyRuleCondition": {
@@ -15956,6 +16105,16 @@
       "type": "string",
       "x-okta-tags": [
         "Feature"
+      ]
+    },
+    "FipsEnum": {
+      "enum": [
+        "REQUIRED",
+        "OPTIONAL"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "ForgotPasswordResponse": {
@@ -20911,6 +21070,17 @@
         "User"
       ]
     },
+    "RequiredEnum": {
+      "enum": [
+        "ALWAYS",
+        "HIGH_RISK_ALWAYS",
+        "NEVER"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Authenticator"
+      ]
+    },
     "ResetPasswordToken": {
       "properties": {
         "resetPasswordUrl": {
@@ -23869,6 +24039,16 @@
       ],
       "x-okta-tags": [
         "UserType"
+      ]
+    },
+    "UserVerificationEnum": {
+      "enum": [
+        "REQUIRED",
+        "PREFERRED"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Authenticator"
       ]
     },
     "VerifyFactorRequest": {

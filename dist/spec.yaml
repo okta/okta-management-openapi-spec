@@ -1073,6 +1073,33 @@ paths:
         - api_token: []
       tags:
         - Authenticator
+    put:
+      consumes:
+        - application/json
+      description: Updates an authenticator
+      operationId: updateAuthenticator
+      parameters:
+        - in: path
+          name: authenticatorId
+          required: true
+          type: string
+        - in: body
+          name: authenticator
+          required: true
+          schema:
+            $ref: '#/definitions/Authenticator'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Authenticator'
+      security:
+        - api_token: []
+      summary: Update Authenticator
+      tags:
+        - Authenticator
   '/api/v1/authenticators/{authenticatorId}/lifecycle/activate':
     post:
       consumes:
@@ -8944,6 +8971,8 @@ definitions:
         type: string
       name:
         type: string
+      provider:
+        $ref: '#/definitions/AuthenticatorProvider'
       settings:
         $ref: '#/definitions/AuthenticatorSettings'
       status:
@@ -8951,6 +8980,17 @@ definitions:
       type:
         $ref: '#/definitions/AuthenticatorType'
     type: object
+    x-okta-crud:
+      - alias: read
+        arguments: []
+        operationId: getAuthenticator
+      - alias: update
+        arguments:
+          - dest: authenticatorId
+            src: id
+          - dest: authenticator
+            self: true
+        operationId: updateAuthenticator
     x-okta-operations:
       - alias: activate
         arguments:
@@ -8964,12 +9004,49 @@ definitions:
         operationId: deactivateAuthenticator
     x-okta-tags:
       - Authenticator
+  AuthenticatorProvider:
+    properties:
+      configuration:
+        $ref: '#/definitions/AuthenticatorProviderConfiguration'
+      type:
+        type: string
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorProviderConfiguration:
+    properties:
+      authPort:
+        type: integer
+      hostName:
+        type: string
+      instanceId:
+        type: string
+      userNameTemplate:
+        $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
+  AuthenticatorProviderConfigurationUserNamePlate:
+    properties:
+      template:
+        type: string
+    x-okta-parent: '#/definitions/Authenticator'
+    x-okta-tags:
+      - Authenticator
   AuthenticatorSettings:
     properties:
       allowedFor:
         $ref: '#/definitions/AllowedForEnum'
+      appInstanceId:
+        type: string
+      channelBinding:
+        $ref: '#/definitions/ChannelBinding'
+      compliance:
+        $ref: '#/definitions/Compliance'
       tokenLifetimeInMinutes:
         type: integer
+      userVerification:
+        $ref: '#/definitions/UserVerificationEnum'
     type: object
     x-okta-tags:
       - Authenticator
@@ -9598,6 +9675,15 @@ definitions:
     type: object
     x-okta-tags:
       - User
+  ChannelBinding:
+    properties:
+      required:
+        $ref: '#/definitions/RequiredEnum'
+      style:
+        type: string
+    type: object
+    x-okta-tags:
+      - Authenticator
   ClientPolicyCondition:
     properties:
       include:
@@ -9607,6 +9693,13 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  Compliance:
+    properties:
+      fips:
+        $ref: '#/definitions/FipsEnum'
+    type: object
+    x-okta-tags:
+      - Authenticator
   ContextPolicyRuleCondition:
     properties:
       expression:
@@ -10167,6 +10260,13 @@ definitions:
     type: string
     x-okta-tags:
       - Feature
+  FipsEnum:
+    enum:
+      - REQUIRED
+      - OPTIONAL
+    type: string
+    x-okta-tags:
+      - Authenticator
   ForgotPasswordResponse:
     properties:
       resetPasswordUrl:
@@ -13418,6 +13518,14 @@ definitions:
     type: object
     x-okta-tags:
       - User
+  RequiredEnum:
+    enum:
+      - ALWAYS
+      - HIGH_RISK_ALWAYS
+      - NEVER
+    type: string
+    x-okta-tags:
+      - Authenticator
   ResetPasswordToken:
     properties:
       resetPasswordUrl:
@@ -15271,6 +15379,13 @@ definitions:
         operationId: replaceUserType
     x-okta-tags:
       - UserType
+  UserVerificationEnum:
+    enum:
+      - REQUIRED
+      - PREFERRED
+    type: string
+    x-okta-tags:
+      - Authenticator
   VerifyFactorRequest:
     properties:
       activationToken:
