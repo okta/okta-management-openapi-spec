@@ -3353,7 +3353,7 @@ paths:
           type: string
         - in: query
           name: disableNotifications
-          type: string
+          type: boolean
       produces:
         - application/json
       responses:
@@ -7734,7 +7734,7 @@ paths:
           type: string
         - in: query
           name: disableNotifications
-          type: string
+          type: boolean
       produces:
         - application/json
       responses:
@@ -8275,6 +8275,80 @@ paths:
       tags:
         - NetworkZone
 definitions:
+  AccessPolicy:
+    x-okta-parent: '#/definitions/Policy'
+    x-okta-tags:
+      - Policy
+  AccessPolicyConstraint:
+    properties:
+      methods:
+        items:
+          type: string
+        type: array
+      reauthenticateIn:
+        type: string
+      types:
+        items:
+          type: string
+        type: array
+    type: object
+    x-okta-tags:
+      - Policy
+  AccessPolicyConstraints:
+    properties:
+      knowledge:
+        $ref: '#/definitions/KnowledgeConstraint'
+      possession:
+        $ref: '#/definitions/PossessionConstraint'
+    type: object
+    x-okta-tags:
+      - Policy
+  AccessPolicyRule:
+    properties:
+      actions:
+        $ref: '#/definitions/AccessPolicyRuleActions'
+      conditions:
+        $ref: '#/definitions/AccessPolicyRuleConditions'
+      name:
+        type: string
+    type: object
+    x-okta-parent: '#/definitions/PolicyRule'
+    x-okta-tags:
+      - Policy
+  AccessPolicyRuleActions:
+    properties:
+      appSignOn:
+        $ref: '#/definitions/AccessPolicyRuleApplicationSignOn'
+    type: object
+    x-okta-parent: '#/definitions/PolicyRuleActions'
+    x-okta-tags:
+      - Policy
+  AccessPolicyRuleApplicationSignOn:
+    properties:
+      access:
+        type: string
+      verificationMethod:
+        $ref: '#/definitions/VerificationMethod'
+    type: object
+    x-okta-tags:
+      - Policy
+  AccessPolicyRuleConditions:
+    properties:
+      device:
+        $ref: '#/definitions/DeviceAccessPolicyRuleCondition'
+      elCondition:
+        $ref: '#/definitions/AccessPolicyRuleCustomCondition'
+      userType:
+        $ref: '#/definitions/UserTypeCondition'
+    x-okta-parent: '#/definitions/PolicyRuleConditions'
+    x-okta-tags:
+      - Policy
+  AccessPolicyRuleCustomCondition:
+    properties:
+      condition:
+        type: string
+    x-okta-tags:
+      - Policy
   AcsEndpoint:
     properties:
       index:
@@ -8772,6 +8846,8 @@ definitions:
       - AuthorizationServer
   ApplicationCredentialsUsernameTemplate:
     properties:
+      pushStatus:
+        type: string
       suffix:
         type: string
       template:
@@ -9815,6 +9891,14 @@ definitions:
     type: string
     x-okta-tags:
       - Domain
+  DeviceAccessPolicyRuleCondition:
+    properties:
+      managed:
+        type: boolean
+      registered:
+        type: boolean
+    x-okta-tags:
+      - Policy
   DevicePolicyRuleCondition:
     properties:
       migrated:
@@ -11249,6 +11333,10 @@ definitions:
         type: string
     x-okta-tags:
       - Application
+  KnowledgeConstraint:
+    x-okta-parent: '#/definitions/AccessPolicyConstraint'
+    x-okta-tags:
+      - Policy
   LifecycleExpirationPolicyRuleCondition:
     properties:
       lifecycleStatus:
@@ -12961,10 +13049,12 @@ definitions:
       - Policy
     x-openapi-v3-discriminator:
       mapping:
+        ACCESS_POLICY: '#/definitions/AccessPolicy'
         IDP_DISCOVERY: '#/definitions/IdentityProviderPolicy'
         OAUTH_AUTHORIZATION_POLICY: '#/definitions/OAuthAuthorizationPolicy'
         OKTA_SIGN_ON: '#/definitions/OktaSignOnPolicy'
         PASSWORD: '#/definitions/PasswordPolicy'
+        PROFILE_ENROLLMENT: '#/definitions/ProfileEnrollmentPolicy'
       propertyName: type
   PolicyAccountLink:
     properties:
@@ -13093,7 +13183,9 @@ definitions:
       - Policy
     x-openapi-v3-discriminator:
       mapping:
+        ACCESS_POLICY: '#/definitions/AccessPolicyRule'
         PASSWORD: '#/definitions/PasswordPolicyRule'
+        PROFILE_ENROLLMENT: '#/definitions/ProfileEnrollmentPolicyRule'
         SIGN_ON: '#/definitions/OktaSignOnPolicyRule'
       propertyName: type
   PolicyRuleActions:
@@ -13215,6 +13307,8 @@ definitions:
       - OKTA_SIGN_ON
       - PASSWORD
       - IDP_DISCOVERY
+      - PROFILE_ENROLLMENT
+      - ACCESS_POLICY
     type: string
     x-okta-tags:
       - Policy
@@ -13222,6 +13316,89 @@ definitions:
     properties:
       template:
         type: string
+    type: object
+    x-okta-tags:
+      - Policy
+  PossessionConstraint:
+    properties:
+      deviceBound:
+        type: string
+      hardwareProtection:
+        type: string
+      phishingResistant:
+        type: string
+      userPresence:
+        type: string
+    x-okta-parent: '#/definitions/AccessPolicyConstraint'
+    x-okta-tags:
+      - Policy
+  PreRegistrationInlineHook:
+    properties:
+      inlineHookId:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
+  ProfileEnrollmentPolicy:
+    x-okta-parent: '#/definitions/Policy'
+    x-okta-tags:
+      - Policy
+  ProfileEnrollmentPolicyRule:
+    properties:
+      actions:
+        $ref: '#/definitions/ProfileEnrollmentPolicyRuleActions'
+      name:
+        type: string
+    type: object
+    x-okta-parent: '#/definitions/PolicyRule'
+    x-okta-tags:
+      - Policy
+  ProfileEnrollmentPolicyRuleAction:
+    properties:
+      access:
+        type: string
+      activationRequirements:
+        $ref: '#/definitions/ProfileEnrollmentPolicyRuleActivationRequirement'
+      preRegistrationInlineHooks:
+        items:
+          $ref: '#/definitions/PreRegistrationInlineHook'
+        type: array
+      profileAttributes:
+        items:
+          $ref: '#/definitions/ProfileEnrollmentPolicyRuleProfileAttribute'
+        type: array
+      targetGroupIds:
+        items:
+          type: string
+        type: array
+      unknownUserAction:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
+  ProfileEnrollmentPolicyRuleActions:
+    properties:
+      profileEnrollment:
+        $ref: '#/definitions/ProfileEnrollmentPolicyRuleAction'
+    type: object
+    x-okta-parent: '#/definitions/PolicyRuleActions'
+    x-okta-tags:
+      - Policy
+  ProfileEnrollmentPolicyRuleActivationRequirement:
+    properties:
+      emailVerification:
+        type: boolean
+    type: object
+    x-okta-tags:
+      - Policy
+  ProfileEnrollmentPolicyRuleProfileAttribute:
+    properties:
+      label:
+        type: string
+      name:
+        type: string
+      required:
+        type: boolean
     type: object
     x-okta-tags:
       - Policy
@@ -14140,9 +14317,13 @@ definitions:
     properties:
       buttonField:
         type: string
+      checkbox:
+        type: string
       loginUrlRegex:
         type: string
       passwordField:
+        type: string
+      redirectUrl:
         type: string
       url:
         type: string
@@ -15381,6 +15562,18 @@ definitions:
         operationId: replaceUserType
     x-okta-tags:
       - UserType
+  UserTypeCondition:
+    properties:
+      exclude:
+        items:
+          type: string
+        type: array
+      include:
+        items:
+          type: string
+        type: array
+    x-okta-tags:
+      - Policy
   UserVerificationEnum:
     enum:
       - REQUIRED
@@ -15388,6 +15581,21 @@ definitions:
     type: string
     x-okta-tags:
       - Authenticator
+  VerificationMethod:
+    properties:
+      constraints:
+        items:
+          $ref: '#/definitions/AccessPolicyConstraints'
+        type: array
+      factorMode:
+        type: string
+      reauthenticateIn:
+        type: string
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
   VerifyFactorRequest:
     properties:
       activationToken:
