@@ -20,6 +20,8 @@ Running changelog of releases since `2.2.3`
         - operations added: `uploadBrandThemeFavicon`, `deleteBrandThemeFavicon`
     - `POST & DELETE /api/v1/brands/{brandId}/themes/{themeId}/background-image`
         - operations added: `uploadBrandThemeBackgroundImage`, `deleteBrandThemeBackgroundImage`
+    - `PUT /api/v1/authenticators/{id}`
+        - operations added: `updateAuthenticator`
  - Models Added:
     - `Brand`
     - `Theme`
@@ -51,11 +53,26 @@ Running changelog of releases since `2.2.3`
     - `PreRegistrationInlineHook`
     - `ProfileEnrollmentPolicyRuleProfileAttribute`
     - `ProfileEnrollmentPolicyRuleActivationRequirement`
+    - `AuthenticatorProvider` child of `Authenticator`
+    - `AuthenticatorProviderConfiguration` child of `Authenticator`
+    - `AuthenticatorProviderConfigurationUserNamePlate` child of `Authenticator`
+    - `Compliance`
+    - `ChannelBinding`
+    - `FipsEnum`
+    - `RequiredEnum`
+    - `UserVerificationEnum`
  - Added New Tag `Brand`
  - Adds `updateOrgLogo` operation
  - Adds discriminator to `Policy` for `PROFILE_ENROLLMENT` and `ACCESS_POLICY`
  - Adds discriminator to `PolicyRule` for `PROFILE_ENROLLMENT` and `ACCESS_POLICY`
  - Adds new Enum `PROFILE_ENROLLMENT` and `ACCESS_POLICY` to `PolicyType` model
+ - Adds `provider` to `Authenticator` model
+ - Adds `read` and `update` crud methods to `Authenticator` model
+ - Adds following properties to `AuthenticatorSettings`
+    - `appInstanceId`
+    - `channelBinding`
+    - `compliance`
+    - `userVerification`
 
 
 ### Bug Fixes
@@ -65,6 +82,8 @@ Running changelog of releases since `2.2.3`
  - Includes `redirectUrl` type `string` to `SwaApplicationSettingsApplication`
  - Includes `checkbox` type `string` to `SwaApplicationSettingsApplication`
 
+### Updates
+ - Updates description of `deactivateUser`
 ## 2.8.1
 ### Additions
 - Adds `x-okta-operations` to the `OrgSettings` model
