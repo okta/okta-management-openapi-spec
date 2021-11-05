@@ -3,6 +3,10 @@ Running changelog of releases since `2.2.3`
 
 ## 2.9.1
 
+### Bug fixes
+ - Added `sharedSecret` attribute to `AuthenticatorProviderConfiguration` 
+ - `Authenticator`'s properties should not inherit from `Authenticator`
+
 ### Bug Fixes:
 
 - [#102](https://github.com/okta/okta-management-openapi-spec/pull/102) `AuthenticatorProvider`, `AuthenticatorProviderConfiguration`, `AuthenticatorProviderConfigurationUserNamePlate` no longer inherit from `Authenticator`
