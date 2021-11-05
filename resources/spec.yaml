@@ -8890,6 +8890,8 @@ definitions:
         type: integer
       instanceId:
         type: string
+      sharedSecret:
+        type: string
       userNameTemplate:
         $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
     x-okta-tags:
