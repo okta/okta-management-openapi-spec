@@ -8880,7 +8880,6 @@ definitions:
         type: string
       configuration:
         $ref: '#/definitions/AuthenticatorProviderConfiguration'
-    x-okta-parent: '#/definitions/Authenticator'
     x-okta-tags:
       - Authenticator
   AuthenticatorProviderConfiguration:
@@ -8893,14 +8892,12 @@ definitions:
         type: string
       userNameTemplate:
         $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
-    x-okta-parent: '#/definitions/Authenticator'
     x-okta-tags:
       - Authenticator
   AuthenticatorProviderConfigurationUserNamePlate:
     properties:
       template:
         type: string
-    x-okta-parent: '#/definitions/Authenticator'
     x-okta-tags:
       - Authenticator
   Compliance:
