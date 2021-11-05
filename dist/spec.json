@@ -14225,7 +14225,6 @@
           "type": "string"
         }
       },
-      "x-okta-parent": "#/definitions/Authenticator",
       "x-okta-tags": [
         "Authenticator"
       ]
@@ -14245,7 +14244,6 @@
           "$ref": "#/definitions/AuthenticatorProviderConfigurationUserNamePlate"
         }
       },
-      "x-okta-parent": "#/definitions/Authenticator",
       "x-okta-tags": [
         "Authenticator"
       ]
@@ -14256,7 +14254,6 @@
           "type": "string"
         }
       },
-      "x-okta-parent": "#/definitions/Authenticator",
       "x-okta-tags": [
         "Authenticator"
       ]
