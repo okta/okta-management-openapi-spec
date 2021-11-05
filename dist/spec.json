@@ -14240,6 +14240,9 @@
         "instanceId": {
           "type": "string"
         },
+        "sharedSecret": {
+          "type": "string"
+        },
         "userNameTemplate": {
           "$ref": "#/definitions/AuthenticatorProviderConfigurationUserNamePlate"
         }
