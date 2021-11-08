@@ -13697,7 +13697,7 @@ definitions:
   RequiredEnum:
     enum:
       - ALWAYS
-      - HIGH_RISK_ALWAYS
+      - HIGH_RISK_ONLY
       - NEVER
     type: string
     x-okta-tags:
