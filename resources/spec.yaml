@@ -8880,7 +8880,6 @@ definitions:
         type: string
       configuration:
         $ref: '#/definitions/AuthenticatorProviderConfiguration'
-    x-okta-parent: '#/definitions/Authenticator'
     x-okta-tags:
       - Authenticator
   AuthenticatorProviderConfiguration:
@@ -8891,16 +8890,16 @@ definitions:
         type: integer
       instanceId:
         type: string
+      sharedSecret:
+        type: string
       userNameTemplate:
         $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
-    x-okta-parent: '#/definitions/Authenticator'
     x-okta-tags:
       - Authenticator
   AuthenticatorProviderConfigurationUserNamePlate:
     properties:
       template:
         type: string
-    x-okta-parent: '#/definitions/Authenticator'
     x-okta-tags:
       - Authenticator
   Compliance:
@@ -8948,7 +8947,7 @@ definitions:
   RequiredEnum:
     enum:
       - ALWAYS
-      - HIGH_RISK_ALWAYS
+      - HIGH_RISK_ONLY
       - NEVER
     type: string
     x-okta-tags:
