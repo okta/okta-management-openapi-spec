@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.9.1
+  version: 2.10.0
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -8772,6 +8772,7 @@ definitions:
         BOOKMARK: '#/definitions/BookmarkApplication'
         BROWSER_PLUGIN: '#/definitions/BrowserPluginApplication'
         OPENID_CONNECT: '#/definitions/OpenIdConnectApplication'
+        ORG2ORG: '#/definitions/Org2OrgApplication'
         SAML_1_1: '#/definitions/SamlApplication'
         SAML_2_0: '#/definitions/SamlApplication'
         SECURE_PASSWORD_STORE: '#/definitions/SecurePasswordStoreApplication'
@@ -12379,6 +12380,30 @@ definitions:
       - rotate
       - static
     type: string
+    x-okta-tags:
+      - Application
+  Org2OrgApplication:
+    properties:
+      settings:
+        $ref: '#/definitions/Org2OrgApplicationSettings'
+    x-okta-parent: '#/definitions/Application'
+    x-okta-tags:
+      - Application
+  Org2OrgApplicationSettings:
+    properties:
+      app:
+        $ref: '#/definitions/Org2OrgApplicationSettingsApp'
+    x-okta-parent: '#/definitions/ApplicationSettings'
+    x-okta-tags:
+      - Application
+  Org2OrgApplicationSettingsApp:
+    properties:
+      acsUrl:
+        type: string
+      audRestriction:
+        type: string
+      baseUrl:
+        type: string
     x-okta-tags:
       - Application
   OrgContactType:
