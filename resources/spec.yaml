@@ -736,6 +736,35 @@ paths:
       summary: Deactivate Application
       tags:
         - Application
+  '/api/v1/apps/{appId}/logo':
+    post:
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      description: Update the logo for an application.
+      operationId: uploadApplicationLogo
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: "formData"
+          name: "file"
+          required: true
+          type: "file"
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: The file must be in PNG, JPG, or GIF format, and less than 1 MB in size. For best results use landscape orientation, a transparent background, and a minimum size of 420px by 120px to prevent upscaling.
+      tags:
+        - Application
   '/api/v1/apps/{appId}/tokens':
     delete:
       consumes:
