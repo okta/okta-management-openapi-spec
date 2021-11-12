@@ -200,6 +200,62 @@ paths:
       summary: Update Application
       tags:
         - Application
+  '/api/v1/apps/{appId}/connections/default':
+    get:
+      consumes:
+        - application/json
+      description: Get default Provisioning Connection for application
+      operationId: getDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ProvisioningConnection'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Fetches the default Provisioning Connection for an application.
+      tags:
+        - Application
+    post:
+      consumes:
+        - application/json
+      description: Set default Provisioning Connection for application
+      operationId: setDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: body
+          name: profile
+          required: true
+          schema:
+            $ref: '#/definitions/ProvisioningConnectionProfile'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/ProvisioningConnection'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Sets the default Provisioning Connection for an application.
+      tags:
+        - Application
   '/api/v1/apps/{appId}/credentials/csrs':
     get:
       consumes:
@@ -13672,6 +13728,50 @@ definitions:
     type: object
     x-okta-tags:
       - IdentityProvider
+  ProvisioningConnection:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      authScheme:
+        $ref: '#/definitions/ProvisioningConnectionAuthScheme'
+      status:
+        $ref: '#/definitions/ProvisioningConnectionStatus'
+    type: object
+    x-okta-operations:
+      - alias: getDefaultProvisioningConnectionForApplication
+        operationId: getDefaultProvisioningConnectionForApplication
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionAuthScheme:
+    enum:
+      - TOKEN
+      - UNKNOWN
+    type: string
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionProfile:
+    properties:
+      authScheme:
+        $ref: '#/definitions/ProvisioningConnectionAuthScheme'
+      token:
+        type: string
+    type: object
+    x-okta-operations:
+      - alias: setDefaultProvisioningConnectionForApplication
+        operationId: setDefaultProvisioningConnectionForApplication
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionStatus:
+    enum:
+      - DISABLED
+      - ENABLED
+      - UNKNOWN
+    type: string
+    x-okta-tags:
+      - Application
   ProvisioningDeprovisionedCondition:
     properties:
       action:
