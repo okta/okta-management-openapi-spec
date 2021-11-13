@@ -520,6 +520,33 @@ paths:
       summary: Clone Application Key Credential
       tags:
         - Application
+  '/api/v1/apps/{appId}/features':
+    get:
+      consumes:
+        - application/json
+      description: List Features for application
+      operationId: listFeaturesForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/ApplicationFeature'
+            type: array
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Fetches the Feature objects for an application.
+      tags:
+        - Application
   '/api/v1/apps/{appId}/grants':
     get:
       consumes:
@@ -8403,6 +8430,100 @@ definitions:
       value:
         format: password
         type: string
+    x-okta-tags:
+      - Application
+  ApplicationFeature:
+    properties:
+      capabilities:
+        $ref: '#/definitions/CapabilitiesObject'
+      description:
+        type: string
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-operations:
+      - alias: listFeaturesForApplication
+        operationId: listFeaturesForApplication
+    x-okta-tags:
+      - Application
+  CapabilitiesObject:
+    properties:
+      create:
+        $ref: '#/definitions/CapabilitiesCreateObject'
+      update:
+        $ref: '#/definitions/CapabilitiesUpdateObject'
+    type: object
+    x-okta-tags:
+      - Application
+  CapabilitiesCreateObject:
+    properties:
+      lifecycleCreate:
+        $ref: '#/definitions/LifecycleCreateSettingObject'
+    type: object
+    x-okta-tags:
+      - Application
+  LifecycleCreateSettingObject:
+    properties:
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
+  LifecycleDeactivateSettingObject:
+    properties:
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
+  CapabilitiesUpdateObject:
+    properties:
+      lifecycleDeactivate:
+        $ref: '#/definitions/LifecycleDeactivateSettingObject'
+      password:
+        $ref: '#/definitions/PasswordSettingObject'
+      profile:
+        $ref: '#/definitions/ProfileSettingObject'
+    type: object
+    x-okta-tags:
+      - Application
+  PasswordSettingObject:
+    properties:
+      change:
+        $ref: '#/definitions/ChangeEnum'
+      seed:
+        $ref: '#/definitions/SeedEnum'
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
+  ProfileSettingObject:
+    properties:
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
+  ChangeEnum:
+    enum:
+      - KEEP_EXISTING
+      - CHANGE
+    type: string
+    x-okta-tags:
+      - Application
+  SeedEnum:
+    enum:
+      - OKTA
+      - RANDOM
+    type: string
     x-okta-tags:
       - Application
   Application:
