@@ -5973,6 +5973,33 @@ paths:
         - api_token: []
       tags:
         - Policy
+  '/api/v1/roles/${roleType}/subscriptions':
+    get:
+      consumes:
+        - application/json
+      description: >-
+        The subscriptions API provides operations to manage email subscription
+        settings for Okta administrator notifications.
+      operationId: getRoleSubscriptions
+      parameters:
+        - in: path
+          name: roleType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Subscription'
+            type: array
+      security:
+        - api_token: []
+      summary: List all subscriptions of a Role
+      tags:
+        - Role
   /api/v1/sessions:
     post:
       consumes:
@@ -12050,6 +12077,23 @@ definitions:
     type: string
     x-okta-tags:
       - NetworkZone
+  NotificationType:
+    enum:
+      - CONNECTOR_AGENT
+      - USER_LOCKED_OUT
+      - APP_IMPORT
+      - LDAP_AGENT
+      - AD_AGENT
+      - OKTA_ANNOUNCEMENT
+      - OKTA_ISSUE
+      - OKTA_UPDATE
+      - IWA_AGENT
+      - USER_DEPROVISION
+      - REPORT_SUSPICIOUS_ACTIVITY
+      - RATELIMIT_NOTIFICATION
+    type: string
+    x-okta-tags:
+      - Subscription
   OAuth2Actor:
     properties:
       id:
@@ -14572,6 +14616,34 @@ definitions:
         type: array
     x-okta-tags:
       - Application
+  Subscription:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      channels:
+        items:
+          type: string
+        type: array
+      notificationType:
+        $ref: '#/definitions/NotificationType'
+      status:
+        $ref: '#/definitions/SubscriptionStatus'
+    type: object
+    x-okta-operations:
+      - alias: getRoleSubscriptions
+        operationId: getRoleSubscriptions
+    x-okta-tags:
+      - Role
+  SubscriptionStatus:
+    enum:
+      - subscribed
+      - unsubscribed
+    type: string
+    x-okta-tags:
+      - Role
   SwaApplication:
     properties:
       name:
