@@ -9560,6 +9560,46 @@
         ]
       }
     },
+    "/api/v1/roles/${roleType}/subscriptions/${notificationType}/subscribe": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Subscribes a Role to a specific notification type. When you change the subscription status of a Role, it overrides the subscription of any individual user of that Role.",
+        "operationId": "subscribeRoleSubscriptionByNotificationType",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "roleType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "notificationType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Subscribe a Role to a specific notification type",
+        "tags": [
+          "Role"
+        ]
+      }
+    },
     "/api/v1/sessions": {
       "post": {
         "consumes": [
@@ -22915,6 +22955,14 @@
         {
           "alias": "getCustomRoleSubscriptionByNotificationType",
           "operationId": "getCustomRoleSubscriptionByNotificationType"
+        },
+        {
+          "alias": "subscribeRoleSubscriptionByNotificationType",
+          "operationId": "subscribeRoleSubscriptionByNotificationType"
+        },
+        {
+          "alias": "subscribeCustomRoleSubscriptionByNotificationType",
+          "operationId": "subscribeCustomRoleSubscriptionByNotificationType"
         }
       ],
       "x-okta-tags": [
