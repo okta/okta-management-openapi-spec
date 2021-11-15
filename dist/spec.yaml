@@ -5998,6 +5998,33 @@ paths:
       summary: List all subscriptions of a Custom Role
       tags:
         - Role
+  '/api/v1/roles/${roleId}/subscriptions/${notificationType}':
+    get:
+      consumes:
+        - application/json
+      description: Get subscription of a Custom Role with a specific notification type
+      operationId: getCustomRoleSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: roleId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Subscription'
+      security:
+        - api_token: []
+      summary: Get subscriptions of a Custom Role with a specific notification type
+      tags:
+        - Role
   '/api/v1/roles/${roleType}/subscriptions':
     get:
       consumes:
@@ -14687,10 +14714,12 @@ definitions:
     x-okta-operations:
       - alias: getRoleSubscriptionByNotificationType
         operationId: getRoleSubscriptionByNotificationType
-      - alias: getCustomRoleSubscriptions
-        operationId: getCustomRoleSubscriptions
       - alias: getRoleSubscriptions
         operationId: getRoleSubscriptions
+      - alias: getCustomRoleSubscriptions
+        operationId: getCustomRoleSubscriptions
+      - alias: getCustomRoleSubscriptionByNotificationType
+        operationId: getCustomRoleSubscriptionByNotificationType
     x-okta-tags:
       - Role
   SubscriptionStatus:
