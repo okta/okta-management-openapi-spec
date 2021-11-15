@@ -6025,6 +6025,34 @@ paths:
       summary: Get subscriptions of a Custom Role with a specific notification type
       tags:
         - Role
+  '/api/v1/roles/${roleId}/subscriptions/${notificationType}/subscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Subscribes a Custom Role to a specific notification type. When you
+        change the subscription status of a Custom Role, it overrides the
+        subscription of any individual user of that Custom Role.
+      operationId: subscribeCustomRoleSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: roleId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: Subscribe a Custom Role to a specific notification type
+      tags:
+        - Role
   '/api/v1/roles/${roleType}/subscriptions':
     get:
       consumes:
