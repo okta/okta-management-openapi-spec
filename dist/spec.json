@@ -9394,6 +9394,46 @@
         ]
       }
     },
+    "/api/v1/roles/${roleId}/subscriptions": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "List subscriptions of a Custom Role",
+        "operationId": "getCustomRoleSubscriptions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "roleId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Subscription"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "List all subscriptions of a Custom Role",
+        "tags": [
+          "Role"
+        ]
+      }
+    },
     "/api/v1/roles/${roleType}/subscriptions": {
       "get": {
         "consumes": [
@@ -22774,6 +22814,10 @@
       },
       "type": "object",
       "x-okta-operations": [
+        {
+          "alias": "getCustomRoleSubscriptions",
+          "operationId": "getCustomRoleSubscriptions"
+        },
         {
           "alias": "getRoleSubscriptions",
           "operationId": "getRoleSubscriptions"
