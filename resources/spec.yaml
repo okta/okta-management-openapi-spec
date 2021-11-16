@@ -5459,6 +5459,34 @@ paths:
       summary: Subscribe a Custom Role to a specific notification type
       tags:
         - Role
+  '/api/v1/roles/${roleId}/subscriptions/${notificationType}/unsubscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Unsubscribes a Custom Role from a specific notification type. When you
+        change the subscription status of a Custom Role, it overrides the
+        subscription of any individual user of that Custom Role.
+      operationId: unsubscribeCustomRoleSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: roleId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: Unsubscribe a Custom Role from a specific notification type
+      tags:
+        - Role
   '/api/v1/roles/${roleType}/subscriptions':
     get:
       consumes:
@@ -5539,6 +5567,34 @@ paths:
       security:
         - api_token: []
       summary: Subscribe a Role to a specific notification type
+      tags:
+        - Role
+  '/api/v1/roles/${roleType}/subscriptions/${notificationType}/unsubscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Unsubscribes a Role from a specific notification type. When you change
+        the subscription status of a Role, it overrides the subscription of any
+        individual user of that Role.
+      operationId: unsubscribeRoleSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: roleType
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: Unsubscribe a Role from a specific notification type
       tags:
         - Role
   /api/v1/sessions:
@@ -14932,6 +14988,10 @@ definitions:
         operationId: subscribeRoleSubscriptionByNotificationType
       - alias: subscribeCustomRoleSubscriptionByNotificationType
         operationId: subscribeCustomRoleSubscriptionByNotificationType
+      - alias: unsubscribeRoleSubscriptionByNotificationType
+        operationId: unsubscribeRoleSubscriptionByNotificationType
+      - alias: unsubscribeCustomRoleSubscriptionByNotificationType
+        operationId: unsubscribeCustomRoleSubscriptionByNotificationType
   SubscriptionStatus:
     enum:
       - subscribed
