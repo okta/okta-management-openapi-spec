@@ -13191,6 +13191,52 @@
         ]
       }
     },
+    "/api/v1/users/{userId}/subscriptions/{notificationType}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get the subscriptions of a User with a specific notification type. Only gets subscriptions for current user. An AccessDeniedException message is sent if requests are made from other users.",
+        "operationId": "getUserSubscriptionByNotificationType",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "notificationType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Subscription"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get the subscription of a User with a specific notification type",
+        "tags": [
+          "User"
+        ]
+      }
+    },
     "/api/v1/zones": {
       "get": {
         "consumes": [
@@ -23115,6 +23161,10 @@
         {
           "alias": "getCustomRoleSubscriptionByNotificationType",
           "operationId": "getCustomRoleSubscriptionByNotificationType"
+        },
+        {
+          "in": "getUserSubscriptionByNotificationType",
+          "operationId": "getUserSubscriptionByNotificationType"
         },
         {
           "alias": "listUserSubscriptions",
