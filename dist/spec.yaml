@@ -8430,6 +8430,34 @@ paths:
         - api_token: []
       tags:
         - User
+  '/api/v1/users/{userId}/subscriptions':
+    get:
+      consumes:
+        - application/json
+      description: >-
+        List subscriptions of a User. Only lists subscriptions for current user.
+        An AccessDeniedException message is sent if requests are made from other
+        users.
+      operationId: listUserSubscriptions
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Subscription'
+            type: array
+      security:
+        - api_token: []
+      summary: List subscriptions of a User
+      tags:
+        - User
   /api/v1/zones:
     get:
       consumes:
@@ -14832,6 +14860,8 @@ definitions:
         operationId: getCustomRoleSubscriptions
       - alias: getCustomRoleSubscriptionByNotificationType
         operationId: getCustomRoleSubscriptionByNotificationType
+      - alias: listUserSubscriptions
+        operationId: listUserSubscriptions
       - alias: subscribeRoleSubscriptionByNotificationType
         operationId: subscribeRoleSubscriptionByNotificationType
       - alias: subscribeCustomRoleSubscriptionByNotificationType
