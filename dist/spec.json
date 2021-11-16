@@ -9430,7 +9430,7 @@
         ],
         "summary": "List all subscriptions of a Custom Role",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9473,7 +9473,7 @@
         ],
         "summary": "Get subscriptions of a Custom Role with a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9513,7 +9513,7 @@
         ],
         "summary": "Subscribe a Custom Role to a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9553,7 +9553,7 @@
         ],
         "summary": "Unsubscribe a Custom Role from a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9593,7 +9593,7 @@
         ],
         "summary": "List all subscriptions of a Role",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9636,7 +9636,7 @@
         ],
         "summary": "Get subscriptions of a Role with a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9676,7 +9676,7 @@
         ],
         "summary": "Subscribe a Role to a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9716,7 +9716,7 @@
         ],
         "summary": "Unsubscribe a Role from a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9756,7 +9756,7 @@
         ],
         "summary": "Subscribe to a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },
@@ -9796,7 +9796,7 @@
         ],
         "summary": "Unsubscribe from a specific notification type",
         "tags": [
-          "Role"
+          "Subscription"
         ]
       }
     },

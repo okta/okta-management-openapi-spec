@@ -5403,7 +5403,7 @@ paths:
         - api_token: []
       summary: List all subscriptions of a Custom Role
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{roleId}/subscriptions/{notificationType}':
     get:
       consumes:
@@ -5430,7 +5430,7 @@ paths:
         - api_token: []
       summary: Get subscriptions of a Custom Role with a specific notification type
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{roleId}/subscriptions/{notificationType}/subscribe':
     post:
       consumes:
@@ -5458,7 +5458,7 @@ paths:
         - api_token: []
       summary: Subscribe a Custom Role to a specific notification type
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{roleId}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
@@ -5486,7 +5486,7 @@ paths:
         - api_token: []
       summary: Unsubscribe a Custom Role from a specific notification type
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{roleType}/subscriptions':
     get:
       consumes:
@@ -5513,7 +5513,7 @@ paths:
         - api_token: []
       summary: List all subscriptions of a Role
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{roleType}/subscriptions/{notificationType}':
     get:
       consumes:
@@ -5540,7 +5540,7 @@ paths:
         - api_token: []
       summary: Get subscriptions of a Role with a specific notification type
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{roleType}/subscriptions/{notificationType}/subscribe':
     post:
       consumes:
@@ -5568,7 +5568,7 @@ paths:
         - api_token: []
       summary: Subscribe a Role to a specific notification type
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{roleType}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
@@ -5596,7 +5596,7 @@ paths:
         - api_token: []
       summary: Unsubscribe a Role from a specific notification type
       tags:
-        - Role
+        - Subscription
   /api/v1/sessions:
     post:
       consumes:
@@ -7877,7 +7877,7 @@ paths:
         - api_token: []
       summary: Subscribe to a specific notification type 
       tags:
-        - Role
+        - Subscription
   '/api/v1/roles/{userId}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
@@ -7906,7 +7906,7 @@ paths:
         - api_token: []
       summary: Unsubscribe from a specific notification type
       tags:
-        - Role
+        - Subscription
   '/api/v1/zones':
     get:
       description: >-
