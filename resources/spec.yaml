@@ -5379,7 +5379,7 @@ paths:
         - api_token: []
       tags:
         - Policy
-  '/api/v1/roles/${roleId}/subscriptions':
+  '/api/v1/roles/{roleId}/subscriptions':
     get:
       consumes:
         - application/json
@@ -5404,7 +5404,7 @@ paths:
       summary: List all subscriptions of a Custom Role
       tags:
         - Role
-  '/api/v1/roles/${roleId}/subscriptions/${notificationType}':
+  '/api/v1/roles/{roleId}/subscriptions/{notificationType}':
     get:
       consumes:
         - application/json
@@ -5431,7 +5431,7 @@ paths:
       summary: Get subscriptions of a Custom Role with a specific notification type
       tags:
         - Role
-  '/api/v1/roles/${roleId}/subscriptions/${notificationType}/subscribe':
+  '/api/v1/roles/{roleId}/subscriptions/{notificationType}/subscribe':
     post:
       consumes:
         - application/json
@@ -5459,7 +5459,7 @@ paths:
       summary: Subscribe a Custom Role to a specific notification type
       tags:
         - Role
-  '/api/v1/roles/${roleId}/subscriptions/${notificationType}/unsubscribe':
+  '/api/v1/roles/{roleId}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
         - application/json
@@ -5487,7 +5487,7 @@ paths:
       summary: Unsubscribe a Custom Role from a specific notification type
       tags:
         - Role
-  '/api/v1/roles/${roleType}/subscriptions':
+  '/api/v1/roles/{roleType}/subscriptions':
     get:
       consumes:
         - application/json
@@ -5514,7 +5514,7 @@ paths:
       summary: List all subscriptions of a Role
       tags:
         - Role
-  '/api/v1/roles/${roleType}/subscriptions/${notificationType}':
+  '/api/v1/roles/{roleType}/subscriptions/{notificationType}':
     get:
       consumes:
         - application/json
@@ -5541,7 +5541,7 @@ paths:
       summary: Get subscriptions of a Role with a specific notification type
       tags:
         - Role
-  '/api/v1/roles/${roleType}/subscriptions/${notificationType}/subscribe':
+  '/api/v1/roles/{roleType}/subscriptions/{notificationType}/subscribe':
     post:
       consumes:
         - application/json
@@ -5569,7 +5569,7 @@ paths:
       summary: Subscribe a Role to a specific notification type
       tags:
         - Role
-  '/api/v1/roles/${roleType}/subscriptions/${notificationType}/unsubscribe':
+  '/api/v1/roles/{roleType}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
         - application/json
@@ -7850,7 +7850,7 @@ paths:
       summary: Get the subscription of a User with a specific notification type
       tags:
         - User
-  '/api/v1/roles/${userId}/subscriptions/${notificationType}/subscribe':
+  '/api/v1/roles/{userId}/subscriptions/{notificationType}/subscribe':
     post:
       consumes:
         - application/json
@@ -7878,7 +7878,7 @@ paths:
       summary: Subscribe to a specific notification type 
       tags:
         - Role
-  '/api/v1/roles/${userId}/subscriptions/${notificationType}/unsubscribe':
+  '/api/v1/roles/{userId}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
         - application/json

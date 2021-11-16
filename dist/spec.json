@@ -9394,7 +9394,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleId}/subscriptions": {
+    "/api/v1/roles/{roleId}/subscriptions": {
       "get": {
         "consumes": [
           "application/json"
@@ -9434,7 +9434,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleId}/subscriptions/${notificationType}": {
+    "/api/v1/roles/{roleId}/subscriptions/{notificationType}": {
       "get": {
         "consumes": [
           "application/json"
@@ -9477,7 +9477,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleId}/subscriptions/${notificationType}/subscribe": {
+    "/api/v1/roles/{roleId}/subscriptions/{notificationType}/subscribe": {
       "post": {
         "consumes": [
           "application/json"
@@ -9517,7 +9517,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleId}/subscriptions/${notificationType}/unsubscribe": {
+    "/api/v1/roles/{roleId}/subscriptions/{notificationType}/unsubscribe": {
       "post": {
         "consumes": [
           "application/json"
@@ -9557,7 +9557,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleType}/subscriptions": {
+    "/api/v1/roles/{roleType}/subscriptions": {
       "get": {
         "consumes": [
           "application/json"
@@ -9597,7 +9597,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleType}/subscriptions/${notificationType}": {
+    "/api/v1/roles/{roleType}/subscriptions/{notificationType}": {
       "get": {
         "consumes": [
           "application/json"
@@ -9640,7 +9640,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleType}/subscriptions/${notificationType}/subscribe": {
+    "/api/v1/roles/{roleType}/subscriptions/{notificationType}/subscribe": {
       "post": {
         "consumes": [
           "application/json"
@@ -9680,7 +9680,7 @@
         ]
       }
     },
-    "/api/v1/roles/${roleType}/subscriptions/${notificationType}/unsubscribe": {
+    "/api/v1/roles/{roleType}/subscriptions/{notificationType}/unsubscribe": {
       "post": {
         "consumes": [
           "application/json"
@@ -9720,7 +9720,7 @@
         ]
       }
     },
-    "/api/v1/roles/${userId}/subscriptions/${notificationType}/subscribe": {
+    "/api/v1/roles/{userId}/subscriptions/{notificationType}/subscribe": {
       "post": {
         "consumes": [
           "application/json"
@@ -9760,7 +9760,7 @@
         ]
       }
     },
-    "/api/v1/roles/${userId}/subscriptions/${notificationType}/unsubscribe": {
+    "/api/v1/roles/{userId}/subscriptions/{notificationType}/unsubscribe": {
       "post": {
         "consumes": [
           "application/json"
