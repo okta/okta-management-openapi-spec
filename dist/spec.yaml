@@ -6191,6 +6191,63 @@ paths:
       summary: Unsubscribe a Role from a specific notification type
       tags:
         - Role
+  '/api/v1/roles/${userId}/subscriptions/${notificationType}/subscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Subscribes a User to a specific notification type. Only the current User
+        can subscribe to a specific notification type. An AccessDeniedException
+        message is sent if requests are made from other users.
+      operationId: subscribeUserSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: Subscribe to a specific notification type
+      tags:
+        - Role
+  '/api/v1/roles/${userId}/subscriptions/${notificationType}/unsubscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Unsubscribes a User from a specific notification type. Only the current
+        User can unsubscribe from a specific notification type. An
+        AccessDeniedException message is sent if requests are made from other
+        users.
+      operationId: unsubscribeUserSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: Unsubscribe from a specific notification type
+      tags:
+        - Role
   /api/v1/sessions:
     post:
       consumes:
@@ -14900,10 +14957,14 @@ definitions:
         operationId: subscribeRoleSubscriptionByNotificationType
       - alias: subscribeCustomRoleSubscriptionByNotificationType
         operationId: subscribeCustomRoleSubscriptionByNotificationType
+      - alias: subscribeUserSubscriptionByNotificationType
+        operationId: subscribeUserSubscriptionByNotificationType
       - alias: unsubscribeRoleSubscriptionByNotificationType
         operationId: unsubscribeRoleSubscriptionByNotificationType
       - alias: unsubscribeCustomRoleSubscriptionByNotificationType
         operationId: unsubscribeCustomRoleSubscriptionByNotificationType
+      - alias: unsubscribeUserSubscriptionByNotificationType
+        operationId: unsubscribeUserSubscriptionByNotificationType
     x-okta-tags:
       - Role
   SubscriptionStatus:
