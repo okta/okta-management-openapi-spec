@@ -3561,7 +3561,7 @@
             "description": "Success",
             "schema": {
               "items": {
-                "$ref": "#/definitions/ThemeResponse"
+                "$ref": "#/definitions/Theme"
               },
               "type": "array"
             }
@@ -3606,7 +3606,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/ThemeResponse"
+              "$ref": "#/definitions/Theme"
             }
           }
         },
@@ -3655,7 +3655,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/ThemeResponse"
+              "$ref": "#/definitions/Theme"
             }
           },
           "400": {
@@ -22408,6 +22408,18 @@
         "errorPageTouchPointVariant": {
           "$ref": "#/definitions/ErrorPageTouchPointVariant"
         },
+        "favicon": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "logo": {
+          "readOnly": true,
+          "type": "string"
+        },
         "primaryColorContrastHex": {
           "type": "string"
         },
@@ -22460,60 +22472,6 @@
           "operationId": "deleteBrandThemeBackgroundImage"
         }
       ],
-      "x-okta-tags": [
-        "Brand"
-      ]
-    },
-    "ThemeResponse": {
-      "properties": {
-        "_links": {
-          "additionalProperties": {
-            "type": "object"
-          },
-          "readOnly": true,
-          "type": "object"
-        },
-        "backgroundImage": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "emailTemplateTouchPointVariant": {
-          "$ref": "#/definitions/EmailTemplateTouchPointVariant"
-        },
-        "endUserDashboardTouchPointVariant": {
-          "$ref": "#/definitions/EndUserDashboardTouchPointVariant"
-        },
-        "errorPageTouchPointVariant": {
-          "$ref": "#/definitions/ErrorPageTouchPointVariant"
-        },
-        "favicon": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "id": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "logo": {
-          "readOnly": true,
-          "type": "string"
-        },
-        "primaryColorContrastHex": {
-          "type": "string"
-        },
-        "primaryColorHex": {
-          "type": "string"
-        },
-        "secondaryColorContrastHex": {
-          "type": "string"
-        },
-        "secondaryColorHex": {
-          "type": "string"
-        },
-        "signInPageTouchPointVariant": {
-          "$ref": "#/definitions/SignInPageTouchPointVariant"
-        }
-      },
       "x-okta-tags": [
         "Brand"
       ]
