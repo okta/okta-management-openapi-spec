@@ -9421,6 +9421,9 @@
               },
               "type": "array"
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9464,6 +9467,9 @@
             "schema": {
               "$ref": "#/definitions/Subscription"
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9504,6 +9510,9 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9544,6 +9553,9 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9584,6 +9596,9 @@
               },
               "type": "array"
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9627,6 +9642,9 @@
             "schema": {
               "$ref": "#/definitions/Subscription"
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9667,6 +9685,9 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9707,6 +9728,9 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9747,6 +9771,9 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9787,6 +9814,9 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9826,6 +9856,9 @@
             "schema": {
               "$ref": "#/definitions/Session"
             }
+          },
+          "400": {
+            "description": "Bad Request"
           }
         },
         "security": [
@@ -9860,6 +9893,12 @@
         "responses": {
           "204": {
             "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -9931,6 +9970,9 @@
             "schema": {
               "$ref": "#/definitions/Session"
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -13258,6 +13300,9 @@
               },
               "type": "array"
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -13304,6 +13349,9 @@
               },
               "type": "array"
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [

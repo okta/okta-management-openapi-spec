@@ -5993,6 +5993,8 @@ paths:
             items:
               $ref: '#/definitions/Subscription'
             type: array
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: List all subscriptions of a Custom Role
@@ -6020,6 +6022,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Subscription'
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Get subscriptions of a Custom Role with a specific notification type
@@ -6048,6 +6052,8 @@ paths:
       responses:
         '200':
           description: Success
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Subscribe a Custom Role to a specific notification type
@@ -6076,6 +6082,8 @@ paths:
       responses:
         '200':
           description: Success
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Unsubscribe a Custom Role from a specific notification type
@@ -6103,6 +6111,8 @@ paths:
             items:
               $ref: '#/definitions/Subscription'
             type: array
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: List all subscriptions of a Role
@@ -6130,6 +6140,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Subscription'
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Get subscriptions of a Role with a specific notification type
@@ -6158,6 +6170,8 @@ paths:
       responses:
         '200':
           description: Success
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Subscribe a Role to a specific notification type
@@ -6186,6 +6200,8 @@ paths:
       responses:
         '200':
           description: Success
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Unsubscribe a Role from a specific notification type
@@ -6214,6 +6230,8 @@ paths:
       responses:
         '200':
           description: Success
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Subscribe to a specific notification type
@@ -6243,6 +6261,8 @@ paths:
       responses:
         '200':
           description: Success
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Unsubscribe from a specific notification type
@@ -6271,6 +6291,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Session'
+        '400':
+          description: Bad Request
       security:
         - api_token: []
       summary: Create Session with Session Token
@@ -6292,6 +6314,10 @@ paths:
       responses:
         '204':
           description: No Content
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Close Session
@@ -6336,6 +6362,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Session'
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Refresh Session
@@ -8510,6 +8538,8 @@ paths:
             items:
               $ref: '#/definitions/Subscription'
             type: array
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: List subscriptions of a User
@@ -8542,6 +8572,8 @@ paths:
             items:
               $ref: '#/definitions/Subscription'
             type: array
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Get the subscription of a User with a specific notification type
