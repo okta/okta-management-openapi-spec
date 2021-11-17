@@ -223,7 +223,7 @@ paths:
           name: profile
           required: true
           schema:
-            $ref: '#/definitions/ProvisioningConnectionProfile'
+            $ref: '#/definitions/ProvisioningConnectionRequest'
         - in: query
           name: activate
           type: boolean
@@ -11525,6 +11525,13 @@ definitions:
     x-okta-operations:
       - alias: setDefaultProvisioningConnectionForApplication
         operationId: setDefaultProvisioningConnectionForApplication
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionRequest:
+    properties:
+      profile:
+        $ref: '#/definitions/ProvisioningConnectionProfile'
+    type: object
     x-okta-tags:
       - Application
   ProvisioningConnectionStatus:

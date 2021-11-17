@@ -333,7 +333,7 @@
             "name": "profile",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ProvisioningConnectionProfile"
+              "$ref": "#/definitions/ProvisioningConnectionRequest"
             }
           },
           {
@@ -22190,6 +22190,17 @@
           "operationId": "setDefaultProvisioningConnectionForApplication"
         }
       ],
+      "x-okta-tags": [
+        "Application"
+      ]
+    },
+    "ProvisioningConnectionRequest": {
+      "properties": {
+        "profile": {
+          "$ref": "#/definitions/ProvisioningConnectionProfile"
+        }
+      },
+      "type": "object",
       "x-okta-tags": [
         "Application"
       ]
