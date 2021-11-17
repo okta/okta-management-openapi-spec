@@ -243,6 +243,52 @@ paths:
       summary: Sets the default Provisioning Connection for an application.
       tags:
         - Application
+  '/api/v1/apps/{appId}/connections/default/lifecycle/activate':
+    post:
+      consumes:
+        - application/json
+      summary: Activate default Provisioning Connection for application
+      description: Activates the default Provisioning Connection for an application.
+      operationId: activateDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/connections/default/lifecycle/deactivate':
+    post:
+      consumes:
+        - application/json
+      summary: Deactivate default Provisioning Connection for application
+      description: Deactivates the default Provisioning Connection for an application.
+      operationId: deactivateDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      tags:
+        - Application
   '/api/v1/apps/{appId}/credentials/csrs':
     get:
       consumes:
@@ -11506,6 +11552,10 @@ definitions:
     x-okta-operations:
       - alias: getDefaultProvisioningConnectionForApplication
         operationId: getDefaultProvisioningConnectionForApplication
+      - alias: activateDefaultProvisioningConnectionForApplication
+        operationId: activateDefaultProvisioningConnectionForApplication
+      - in: deactivateDefaultProvisioningConnectionForApplication
+        operationId: deactivateDefaultProvisioningConnectionForApplication
     x-okta-tags:
       - Application
   ProvisioningConnectionAuthScheme:
