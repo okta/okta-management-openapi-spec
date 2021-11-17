@@ -2266,7 +2266,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/Theme'
+              $ref: '#/definitions/ThemeResponse'
             type: array
       security:
         - api_token: []
@@ -2294,7 +2294,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Theme'
+            $ref: '#/definitions/ThemeResponse'
       security:
         - api_token: []
       summary: Get a theme for a brand
@@ -2325,7 +2325,7 @@ paths:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Theme'
+            $ref: '#/definitions/ThemeResponse'
         '400':
           description: Bad Request
         '404':
@@ -14392,15 +14392,6 @@ definitions:
         $ref: '#/definitions/EndUserDashboardTouchPointVariant'
       errorPageTouchPointVariant:
         $ref: '#/definitions/ErrorPageTouchPointVariant'
-      favicon:
-        readOnly: true
-        type: string
-      id:
-        readOnly: true
-        type: string
-      logo:
-        readOnly: true
-        type: string
       primaryColorContrastHex:
         type: string
       primaryColorHex:
@@ -14429,6 +14420,43 @@ definitions:
         operationId: uploadBrandThemeBackgroundImage
       - alias: deleteBrandThemeBackgroundImage
         operationId: deleteBrandThemeBackgroundImage
+    x-okta-tags:
+      - Brand
+  ThemeResponse:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      backgroundImage:
+        readOnly: true
+        type: string
+      emailTemplateTouchPointVariant:
+        $ref: '#/definitions/EmailTemplateTouchPointVariant'
+      endUserDashboardTouchPointVariant:
+        $ref: '#/definitions/EndUserDashboardTouchPointVariant'
+      errorPageTouchPointVariant:
+        $ref: '#/definitions/ErrorPageTouchPointVariant'
+      favicon:
+        readOnly: true
+        type: string
+      id:
+        readOnly: true
+        type: string
+      logo:
+        readOnly: true
+        type: string
+      primaryColorContrastHex:
+        type: string
+      primaryColorHex:
+        type: string
+      secondaryColorContrastHex:
+        type: string
+      secondaryColorHex:
+        type: string
+      signInPageTouchPointVariant:
+        $ref: '#/definitions/SignInPageTouchPointVariant'
     x-okta-tags:
       - Brand
   ThreatInsightConfiguration:
