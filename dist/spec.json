@@ -335,6 +335,11 @@
             "schema": {
               "$ref": "#/definitions/ProvisioningConnectionProfile"
             }
+          },
+          {
+            "in": "query",
+            "name": "activate",
+            "type": "boolean"
           }
         ],
         "produces": [

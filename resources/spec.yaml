@@ -224,6 +224,9 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/ProvisioningConnectionProfile'
+        - in: query
+          name: activate
+          type: boolean
       produces:
         - application/json
       responses:
