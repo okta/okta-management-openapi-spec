@@ -7925,7 +7925,7 @@ paths:
       summary: Get the subscription of a User with a specific notification type
       tags:
         - User
-  '/api/v1/roles/{userId}/subscriptions/{notificationType}/subscribe':
+  '/api/v1/users/{userId}/subscriptions/{notificationType}/subscribe':
     post:
       consumes:
         - application/json
@@ -7955,7 +7955,7 @@ paths:
       summary: Subscribe to a specific notification type 
       tags:
         - Subscription
-  '/api/v1/roles/{userId}/subscriptions/{notificationType}/unsubscribe':
+  '/api/v1/users/{userId}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
         - application/json
