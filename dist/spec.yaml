@@ -8618,9 +8618,7 @@ paths:
         '200':
           description: Success
           schema:
-            items:
-              $ref: '#/definitions/Subscription'
-            type: array
+            $ref: '#/definitions/Subscription'
         '404':
           description: Not Found
       security:
