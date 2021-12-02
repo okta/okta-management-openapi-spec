@@ -10504,6 +10504,10 @@ definitions:
     properties:
       kid:
         type: string
+      privateKey:
+        type: string
+      teamId:
+        type: string
     type: object
     x-okta-tags:
       - IdentityProvider
@@ -10793,6 +10797,7 @@ definitions:
         type: boolean
       managed:
         type: boolean
+    x-okta-parent: '#/definitions/DevicePolicyRuleCondition'
     x-okta-tags:
       - Policy
   AccessPolicyRuleActions:
