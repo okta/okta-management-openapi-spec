@@ -10481,6 +10481,7 @@ definitions:
         type: boolean
       registered:
         type: boolean
+    x-okta-parent: '#/definitions/DevicePolicyRuleCondition'
     x-okta-tags:
       - Policy
   DevicePolicyRuleCondition:
