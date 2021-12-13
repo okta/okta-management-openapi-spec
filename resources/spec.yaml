@@ -11552,7 +11552,7 @@ definitions:
         operationId: getDefaultProvisioningConnectionForApplication
       - alias: activateDefaultProvisioningConnectionForApplication
         operationId: activateDefaultProvisioningConnectionForApplication
-      - in: deactivateDefaultProvisioningConnectionForApplication
+      - alias: deactivateDefaultProvisioningConnectionForApplication
         operationId: deactivateDefaultProvisioningConnectionForApplication
     x-okta-tags:
       - Application
@@ -15191,7 +15191,7 @@ definitions:
         operationId: getCustomRoleSubscriptions
       - alias: getCustomRoleSubscriptionByNotificationType
         operationId: getCustomRoleSubscriptionByNotificationType
-      - in: getUserSubscriptionByNotificationType
+      - alias: getUserSubscriptionByNotificationType
         operationId: getUserSubscriptionByNotificationType
       - alias: listUserSubscriptions
         operationId: listUserSubscriptions

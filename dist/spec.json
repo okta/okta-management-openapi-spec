@@ -22235,7 +22235,7 @@
           "operationId": "activateDefaultProvisioningConnectionForApplication"
         },
         {
-          "in": "deactivateDefaultProvisioningConnectionForApplication",
+          "alias": "deactivateDefaultProvisioningConnectionForApplication",
           "operationId": "deactivateDefaultProvisioningConnectionForApplication"
         }
       ],
@@ -23386,7 +23386,7 @@
           "operationId": "getCustomRoleSubscriptionByNotificationType"
         },
         {
-          "in": "getUserSubscriptionByNotificationType",
+          "alias": "getUserSubscriptionByNotificationType",
           "operationId": "getUserSubscriptionByNotificationType"
         },
         {
