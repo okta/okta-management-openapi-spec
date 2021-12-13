@@ -20274,6 +20274,7 @@
           "type": "string"
         }
       },
+      "x-okta-parent": "#/definitions/ApplicationSettingsApplication",
       "x-okta-tags": [
         "Application"
       ]
