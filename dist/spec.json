@@ -14528,6 +14528,10 @@
             }
           ],
           "operationId": "getScopeConsentGrant"
+        },
+        {
+          "alias": "uploadApplicationLogo",
+          "operationId": "uploadApplicationLogo"
         }
       ],
       "x-okta-tags": [

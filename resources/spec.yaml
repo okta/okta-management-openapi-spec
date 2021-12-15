@@ -9160,6 +9160,8 @@ definitions:
           - dest: appId
             src: id
         operationId: getScopeConsentGrant
+      - alias: uploadApplicationLogo
+        operationId: uploadApplicationLogo
     x-okta-tags:
       - Application
     x-openapi-v3-discriminator:
