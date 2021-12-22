@@ -13496,7 +13496,7 @@ definitions:
     properties:
       settings:
         $ref: '#/definitions/Org2OrgApplicationSettings'
-    x-okta-parent: '#/definitions/Application'
+    x-okta-parent: '#/definitions/SamlApplication'
     x-okta-tags:
       - Application
   Org2OrgApplicationSettings:
