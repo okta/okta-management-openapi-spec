@@ -6022,15 +6022,17 @@ paths:
         - api_token: []
       tags:
         - Policy
-  '/api/v1/roles/{roleId}/subscriptions':
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions':
     get:
       consumes:
         - application/json
-      description: List subscriptions of a Custom Role
-      operationId: getCustomRoleSubscriptions
+      description: >-
+        When roleType List all subscriptions of a Role. Else when roleId List
+        subscriptions of a Custom Role
+      operationId: getRoleSubscriptions
       parameters:
         - in: path
-          name: roleId
+          name: roleTypeOrRoleId
           required: true
           type: string
       produces:
@@ -6049,15 +6051,18 @@ paths:
       summary: List all subscriptions of a Custom Role
       tags:
         - Subscription
-  '/api/v1/roles/{roleId}/subscriptions/{notificationType}':
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions/{notificationType}':
     get:
       consumes:
         - application/json
-      description: Get subscription of a Custom Role with a specific notification type
-      operationId: getCustomRoleSubscriptionByNotificationType
+      description: >-
+        When roleType Get subscriptions of a Role with a specific notification
+        type. Else when roleId Get subscription of a Custom Role with a specific
+        notification type.
+      operationId: getRoleSubscriptionByNotificationType
       parameters:
         - in: path
-          name: roleId
+          name: roleTypeOrRoleId
           required: true
           type: string
         - in: path
@@ -6078,18 +6083,21 @@ paths:
       summary: Get subscriptions of a Custom Role with a specific notification type
       tags:
         - Subscription
-  '/api/v1/roles/{roleId}/subscriptions/{notificationType}/subscribe':
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions/{notificationType}/subscribe':
     post:
       consumes:
         - application/json
       description: >-
+        When roleType Subscribes a Role to a specific notification type. When
+        you change the subscription status of a Role, it overrides the
+        subscription of any individual user of that Role. Else when roleId
         Subscribes a Custom Role to a specific notification type. When you
         change the subscription status of a Custom Role, it overrides the
         subscription of any individual user of that Custom Role.
-      operationId: subscribeCustomRoleSubscriptionByNotificationType
+      operationId: subscribeRoleSubscriptionByNotificationType
       parameters:
         - in: path
-          name: roleId
+          name: roleTypeOrRoleId
           required: true
           type: string
         - in: path
@@ -6108,18 +6116,21 @@ paths:
       summary: Subscribe a Custom Role to a specific notification type
       tags:
         - Subscription
-  '/api/v1/roles/{roleId}/subscriptions/{notificationType}/unsubscribe':
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions/{notificationType}/unsubscribe':
     post:
       consumes:
         - application/json
       description: >-
+        When roleType Unsubscribes a Role from a specific notification type.
+        When you change the subscription status of a Role, it overrides the
+        subscription of any individual user of that Role. Else when roleId
         Unsubscribes a Custom Role from a specific notification type. When you
         change the subscription status of a Custom Role, it overrides the
         subscription of any individual user of that Custom Role.
-      operationId: unsubscribeCustomRoleSubscriptionByNotificationType
+      operationId: unsubscribeRoleSubscriptionByNotificationType
       parameters:
         - in: path
-          name: roleId
+          name: roleTypeOrRoleId
           required: true
           type: string
         - in: path
@@ -6136,124 +6147,6 @@ paths:
       security:
         - api_token: []
       summary: Unsubscribe a Custom Role from a specific notification type
-      tags:
-        - Subscription
-  '/api/v1/roles/{roleType}/subscriptions':
-    get:
-      consumes:
-        - application/json
-      description: >-
-        The subscriptions API provides operations to manage email subscription
-        settings for Okta administrator notifications.
-      operationId: getRoleSubscriptions
-      parameters:
-        - in: path
-          name: roleType
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Success
-          schema:
-            items:
-              $ref: '#/definitions/Subscription'
-            type: array
-        '404':
-          description: Not Found
-      security:
-        - api_token: []
-      summary: List all subscriptions of a Role
-      tags:
-        - Subscription
-  '/api/v1/roles/{roleType}/subscriptions/{notificationType}':
-    get:
-      consumes:
-        - application/json
-      description: Get subscription of a Role with a specific notification type
-      operationId: getRoleSubscriptionByNotificationType
-      parameters:
-        - in: path
-          name: roleType
-          required: true
-          type: string
-        - in: path
-          name: notificationType
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Success
-          schema:
-            $ref: '#/definitions/Subscription'
-        '404':
-          description: Not Found
-      security:
-        - api_token: []
-      summary: Get subscriptions of a Role with a specific notification type
-      tags:
-        - Subscription
-  '/api/v1/roles/{roleType}/subscriptions/{notificationType}/subscribe':
-    post:
-      consumes:
-        - application/json
-      description: >-
-        Subscribes a Role to a specific notification type. When you change the
-        subscription status of a Role, it overrides the subscription of any
-        individual user of that Role.
-      operationId: subscribeRoleSubscriptionByNotificationType
-      parameters:
-        - in: path
-          name: roleType
-          required: true
-          type: string
-        - in: path
-          name: notificationType
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Success
-        '404':
-          description: Not Found
-      security:
-        - api_token: []
-      summary: Subscribe a Role to a specific notification type
-      tags:
-        - Subscription
-  '/api/v1/roles/{roleType}/subscriptions/{notificationType}/unsubscribe':
-    post:
-      consumes:
-        - application/json
-      description: >-
-        Unsubscribes a Role from a specific notification type. When you change
-        the subscription status of a Role, it overrides the subscription of any
-        individual user of that Role.
-      operationId: unsubscribeRoleSubscriptionByNotificationType
-      parameters:
-        - in: path
-          name: roleType
-          required: true
-          type: string
-        - in: path
-          name: notificationType
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Success
-        '404':
-          description: Not Found
-      security:
-        - api_token: []
-      summary: Unsubscribe a Role from a specific notification type
       tags:
         - Subscription
   /api/v1/sessions:
@@ -15035,28 +14928,20 @@ definitions:
         $ref: '#/definitions/SubscriptionStatus'
     type: object
     x-okta-operations:
-      - alias: getRoleSubscriptionByNotificationType
-        operationId: getRoleSubscriptionByNotificationType
       - alias: getRoleSubscriptions
         operationId: getRoleSubscriptions
-      - alias: getCustomRoleSubscriptions
-        operationId: getCustomRoleSubscriptions
-      - alias: getCustomRoleSubscriptionByNotificationType
-        operationId: getCustomRoleSubscriptionByNotificationType
+      - alias: getRoleSubscriptionByNotificationType
+        operationId: getRoleSubscriptionByNotificationType
       - alias: getUserSubscriptionByNotificationType
         operationId: getUserSubscriptionByNotificationType
       - alias: listUserSubscriptions
         operationId: listUserSubscriptions
-      - alias: subscribeRoleSubscriptionByNotificationType
-        operationId: subscribeRoleSubscriptionByNotificationType
-      - alias: subscribeCustomRoleSubscriptionByNotificationType
-        operationId: subscribeCustomRoleSubscriptionByNotificationType
       - alias: subscribeUserSubscriptionByNotificationType
         operationId: subscribeUserSubscriptionByNotificationType
       - alias: unsubscribeRoleSubscriptionByNotificationType
         operationId: unsubscribeRoleSubscriptionByNotificationType
-      - alias: unsubscribeCustomRoleSubscriptionByNotificationType
-        operationId: unsubscribeCustomRoleSubscriptionByNotificationType
+      - alias: unsubscribeRoleSubscriptionByNotificationType
+        operationId: unsubscribeRoleSubscriptionByNotificationType
       - alias: unsubscribeUserSubscriptionByNotificationType
         operationId: unsubscribeUserSubscriptionByNotificationType
     x-okta-tags:
