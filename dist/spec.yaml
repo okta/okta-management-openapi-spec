@@ -14940,8 +14940,6 @@ definitions:
         operationId: subscribeUserSubscriptionByNotificationType
       - alias: unsubscribeRoleSubscriptionByNotificationType
         operationId: unsubscribeRoleSubscriptionByNotificationType
-      - alias: unsubscribeRoleSubscriptionByNotificationType
-        operationId: unsubscribeRoleSubscriptionByNotificationType
       - alias: unsubscribeUserSubscriptionByNotificationType
         operationId: unsubscribeUserSubscriptionByNotificationType
     x-okta-tags:
