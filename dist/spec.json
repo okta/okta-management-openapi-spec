@@ -23225,6 +23225,10 @@
           "operationId": "unsubscribeRoleSubscriptionByNotificationType"
         },
         {
+          "alias": "subscribeRoleSubscriptionByNotificationType",
+          "operationId": "subscribeRoleSubscriptionByNotificationType"
+        },
+        {
           "alias": "unsubscribeUserSubscriptionByNotificationType",
           "operationId": "unsubscribeUserSubscriptionByNotificationType"
         }

@@ -15091,6 +15091,8 @@ definitions:
         operationId: subscribeUserSubscriptionByNotificationType
       - alias: unsubscribeRoleSubscriptionByNotificationType
         operationId: unsubscribeRoleSubscriptionByNotificationType
+      - alias: subscribeRoleSubscriptionByNotificationType
+        operationId: subscribeRoleSubscriptionByNotificationType
       - alias: unsubscribeUserSubscriptionByNotificationType
         operationId: unsubscribeUserSubscriptionByNotificationType
   SubscriptionStatus:
