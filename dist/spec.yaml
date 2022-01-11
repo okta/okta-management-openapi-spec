@@ -12895,8 +12895,12 @@ definitions:
       - Application
   Org2OrgApplication:
     properties:
+      name:
+        default: okta_org2org
       settings:
         $ref: '#/definitions/Org2OrgApplicationSettings'
+    x-okta-defined-as:
+      name: okta_org2org
     x-okta-parent: '#/definitions/SamlApplication'
     x-okta-tags:
       - Application
