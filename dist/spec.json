@@ -938,6 +938,104 @@
         ]
       }
     },
+    "/api/v1/apps/{appId}/features/{name}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Fetches a Feature object for an application.",
+        "operationId": "GetFeatureForApplication",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ApplicationFeature"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Fetches a Feature object for an application.",
+        "tags": [
+          "Application"
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Updates a Feature object for an application.",
+        "operationId": "UpdateFeatureForApplication",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "capabilities",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CapabilitiesObject"
+            }
+          },
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ApplicationFeature"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Updates a Feature object for an application.",
+        "tags": [
+          "Application"
+        ]
+      }
+    },
     "/api/v1/apps/{appId}/grants": {
       "get": {
         "consumes": [
@@ -9479,7 +9577,7 @@
           "application/json"
         ],
         "description": "When roleType List all subscriptions of a Role. Else when roleId List subscriptions of a Custom Role",
-        "operationId": "getRoleSubscriptions",
+        "operationId": "listRoleSubscriptions",
         "parameters": [
           {
             "in": "path",
@@ -23207,8 +23305,8 @@
       "type": "object",
       "x-okta-operations": [
         {
-          "alias": "getRoleSubscriptions",
-          "operationId": "getRoleSubscriptions"
+          "alias": "listRoleSubscriptions",
+          "operationId": "listRoleSubscriptions"
         },
         {
           "alias": "getRoleSubscriptionByNotificationType",
