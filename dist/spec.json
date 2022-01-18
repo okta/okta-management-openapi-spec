@@ -14467,7 +14467,6 @@
           "BOOKMARK": "#/definitions/BookmarkApplication",
           "BROWSER_PLUGIN": "#/definitions/BrowserPluginApplication",
           "OPENID_CONNECT": "#/definitions/OpenIdConnectApplication",
-          "ORG2ORG": "#/definitions/Org2OrgApplication",
           "SAML_1_1": "#/definitions/SamlApplication",
           "SAML_2_0": "#/definitions/SamlApplication",
           "SECURE_PASSWORD_STORE": "#/definitions/SecurePasswordStoreApplication",
@@ -22593,7 +22592,13 @@
       "x-okta-parent": "#/definitions/Application",
       "x-okta-tags": [
         "Application"
-      ]
+      ],
+      "x-openapi-v3-discriminator": {
+        "mapping": {
+          "okta_org2org": "#/definitions/Org2OrgApplication"
+        },
+        "propertyName": "name"
+      }
     },
     "SamlApplicationSettings": {
       "properties": {

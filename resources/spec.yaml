@@ -9125,7 +9125,6 @@ definitions:
         BOOKMARK: '#/definitions/BookmarkApplication'
         BROWSER_PLUGIN: '#/definitions/BrowserPluginApplication'
         OPENID_CONNECT: '#/definitions/OpenIdConnectApplication'
-        ORG2ORG: '#/definitions/Org2OrgApplication'
         SAML_2_0: '#/definitions/SamlApplication'
         SAML_1_1: '#/definitions/SamlApplication'
         SECURE_PASSWORD_STORE: '#/definitions/SecurePasswordStoreApplication'
@@ -14664,6 +14663,10 @@ definitions:
     properties:
       settings:
         $ref: '#/definitions/SamlApplicationSettings'
+    x-openapi-v3-discriminator:
+      mapping:
+        okta_org2org: '#/definitions/Org2OrgApplication'
+      propertyName: name
     x-okta-parent: '#/definitions/Application'
     x-okta-tags:
       - Application
