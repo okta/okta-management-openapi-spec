@@ -601,7 +601,7 @@ paths:
       consumes:
         - application/json
       description: Fetches a Feature object for an application.
-      operationId: GetFeatureForApplication
+      operationId: getFeatureForApplication
       parameters:
         - in: path
           name: appId
@@ -629,7 +629,7 @@ paths:
       consumes:
         - application/json
       description: Updates a Feature object for an application.
-      operationId: UpdateFeatureForApplication
+      operationId: updateFeatureForApplication
       parameters:
         - in: body
           name: capabilities
@@ -9116,6 +9116,16 @@ definitions:
         operationId: getScopeConsentGrant
       - alias: uploadApplicationLogo
         operationId: uploadApplicationLogo
+      - alias: getFeatureForApplication
+        arguments:
+          - dest: appId
+            src: id
+        operationId: getFeatureForApplication
+      - alias: updateFeatureForApplication
+        arguments:
+          - dest: appId
+            src: id
+        operationId: updateFeatureForApplication
     x-okta-tags:
       - Application
     x-openapi-v3-discriminator:
