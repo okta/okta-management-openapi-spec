@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.9.1
+  version: 2.10.0
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -198,6 +198,111 @@ paths:
       security:
         - api_token: []
       summary: Update Application
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/connections/default':
+    get:
+      consumes:
+        - application/json
+      description: Get default Provisioning Connection for application
+      operationId: getDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ProvisioningConnection'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Fetches the default Provisioning Connection for an application.
+      tags:
+        - Application
+    post:
+      consumes:
+        - application/json
+      description: Set default Provisioning Connection for application
+      operationId: setDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: body
+          name: profile
+          required: true
+          schema:
+            $ref: '#/definitions/ProvisioningConnectionRequest'
+        - in: query
+          name: activate
+          type: boolean
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/ProvisioningConnection'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Sets the default Provisioning Connection for an application.
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/connections/default/lifecycle/activate':
+    post:
+      consumes:
+        - application/json
+      description: Activates the default Provisioning Connection for an application.
+      operationId: activateDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Activate default Provisioning Connection for application
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/connections/default/lifecycle/deactivate':
+    post:
+      consumes:
+        - application/json
+      description: Deactivates the default Provisioning Connection for an application.
+      operationId: deactivateDefaultProvisioningConnectionForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Deactivate default Provisioning Connection for application
       tags:
         - Application
   '/api/v1/apps/{appId}/credentials/csrs':
@@ -482,6 +587,95 @@ paths:
       summary: Clone Application Key Credential
       tags:
         - Application
+  '/api/v1/apps/{appId}/features':
+    get:
+      consumes:
+        - application/json
+      description: List Features for application
+      operationId: listFeaturesForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/ApplicationFeature'
+            type: array
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Fetches the Feature objects for an application.
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/features/{name}':
+    get:
+      consumes:
+        - application/json
+      description: Fetches a Feature object for an application.
+      operationId: getFeatureForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: path
+          name: name
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ApplicationFeature'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Fetches a Feature object for an application.
+      tags:
+        - Application
+    put:
+      consumes:
+        - application/json
+      description: Updates a Feature object for an application.
+      operationId: updateFeatureForApplication
+      parameters:
+        - in: body
+          name: capabilities
+          required: true
+          schema:
+            $ref: '#/definitions/CapabilitiesObject'
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: path
+          name: name
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ApplicationFeature'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Updates a Feature object for an application.
+      tags:
+        - Application
   '/api/v1/apps/{appId}/grants':
     get:
       consumes:
@@ -752,6 +946,38 @@ paths:
       security:
         - api_token: []
       summary: Deactivate Application
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/logo':
+    post:
+      consumes:
+        - multipart/form-data
+      description: Update the logo for an application.
+      operationId: uploadApplicationLogo
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: formData
+          name: file
+          required: true
+          type: file
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: >-
+        The file must be in PNG, JPG, or GIF format, and less than 1 MB in size.
+        For best results use landscape orientation, a transparent background,
+        and a minimum size of 420px by 120px to prevent upscaling.
       tags:
         - Application
   '/api/v1/apps/{appId}/tokens':
@@ -5858,6 +6084,133 @@ paths:
         - api_token: []
       tags:
         - Policy
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions':
+    get:
+      consumes:
+        - application/json
+      description: >-
+        When roleType List all subscriptions of a Role. Else when roleId List
+        subscriptions of a Custom Role
+      operationId: listRoleSubscriptions
+      parameters:
+        - in: path
+          name: roleTypeOrRoleId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Subscription'
+            type: array
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: List all subscriptions of a Custom Role
+      tags:
+        - Subscription
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions/{notificationType}':
+    get:
+      consumes:
+        - application/json
+      description: >-
+        When roleType Get subscriptions of a Role with a specific notification
+        type. Else when roleId Get subscription of a Custom Role with a specific
+        notification type.
+      operationId: getRoleSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: roleTypeOrRoleId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Subscription'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Get subscriptions of a Custom Role with a specific notification type
+      tags:
+        - Subscription
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions/{notificationType}/subscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        When roleType Subscribes a Role to a specific notification type. When
+        you change the subscription status of a Role, it overrides the
+        subscription of any individual user of that Role. Else when roleId
+        Subscribes a Custom Role to a specific notification type. When you
+        change the subscription status of a Custom Role, it overrides the
+        subscription of any individual user of that Custom Role.
+      operationId: subscribeRoleSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: roleTypeOrRoleId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Subscribe a Custom Role to a specific notification type
+      tags:
+        - Subscription
+  '/api/v1/roles/{roleTypeOrRoleId}/subscriptions/{notificationType}/unsubscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        When roleType Unsubscribes a Role from a specific notification type.
+        When you change the subscription status of a Role, it overrides the
+        subscription of any individual user of that Role. Else when roleId
+        Unsubscribes a Custom Role from a specific notification type. When you
+        change the subscription status of a Custom Role, it overrides the
+        subscription of any individual user of that Custom Role.
+      operationId: unsubscribeRoleSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: roleTypeOrRoleId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Unsubscribe a Custom Role from a specific notification type
+      tags:
+        - Subscription
   /api/v1/sessions:
     post:
       consumes:
@@ -5881,6 +6234,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Session'
+        '400':
+          description: Bad Request
       security:
         - api_token: []
       summary: Create Session with Session Token
@@ -5902,6 +6257,10 @@ paths:
       responses:
         '204':
           description: No Content
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Close Session
@@ -5946,6 +6305,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Session'
+        '404':
+          description: Not Found
       security:
         - api_token: []
       summary: Refresh Session
@@ -8097,6 +8458,129 @@ paths:
         - api_token: []
       tags:
         - User
+  '/api/v1/users/{userId}/subscriptions':
+    get:
+      consumes:
+        - application/json
+      description: >-
+        List subscriptions of a User. Only lists subscriptions for current user.
+        An AccessDeniedException message is sent if requests are made from other
+        users.
+      operationId: listUserSubscriptions
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Subscription'
+            type: array
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: List subscriptions of a User
+      tags:
+        - User
+  '/api/v1/users/{userId}/subscriptions/{notificationType}':
+    get:
+      consumes:
+        - application/json
+      description: >-
+        Get the subscriptions of a User with a specific notification type. Only
+        gets subscriptions for current user. An AccessDeniedException message is
+        sent if requests are made from other users.
+      operationId: getUserSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Subscription'
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Get the subscription of a User with a specific notification type
+      tags:
+        - User
+  '/api/v1/users/{userId}/subscriptions/{notificationType}/subscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Subscribes a User to a specific notification type. Only the current User
+        can subscribe to a specific notification type. An AccessDeniedException
+        message is sent if requests are made from other users.
+      operationId: subscribeUserSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Subscribe to a specific notification type
+      tags:
+        - Subscription
+  '/api/v1/users/{userId}/subscriptions/{notificationType}/unsubscribe':
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Unsubscribes a User from a specific notification type. Only the current
+        User can unsubscribe from a specific notification type. An
+        AccessDeniedException message is sent if requests are made from other
+        users.
+      operationId: unsubscribeUserSubscriptionByNotificationType
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+        - in: path
+          name: notificationType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+      security:
+        - api_token: []
+      summary: Unsubscribe from a specific notification type
+      tags:
+        - Subscription
   /api/v1/zones:
     get:
       consumes:
@@ -8763,6 +9247,18 @@ definitions:
           - dest: appId
             src: id
         operationId: getScopeConsentGrant
+      - alias: uploadApplicationLogo
+        operationId: uploadApplicationLogo
+      - alias: getFeatureForApplication
+        arguments:
+          - dest: appId
+            src: id
+        operationId: getFeatureForApplication
+      - alias: updateFeatureForApplication
+        arguments:
+          - dest: appId
+            src: id
+        operationId: updateFeatureForApplication
     x-okta-tags:
       - Application
     x-openapi-v3-discriminator:
@@ -8855,6 +9351,27 @@ definitions:
       type:
         type: string
     type: object
+    x-okta-tags:
+      - Application
+  ApplicationFeature:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      capabilities:
+        $ref: '#/definitions/CapabilitiesObject'
+      description:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-operations:
+      - alias: listFeaturesForApplication
+        operationId: listFeaturesForApplication
     x-okta-tags:
       - Application
   ApplicationGroupAssignment:
@@ -9696,6 +10213,33 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
+  CapabilitiesCreateObject:
+    properties:
+      lifecycleCreate:
+        $ref: '#/definitions/LifecycleCreateSettingObject'
+    type: object
+    x-okta-tags:
+      - Application
+  CapabilitiesObject:
+    properties:
+      create:
+        $ref: '#/definitions/CapabilitiesCreateObject'
+      update:
+        $ref: '#/definitions/CapabilitiesUpdateObject'
+    type: object
+    x-okta-tags:
+      - Application
+  CapabilitiesUpdateObject:
+    properties:
+      lifecycleDeactivate:
+        $ref: '#/definitions/LifecycleDeactivateSettingObject'
+      password:
+        $ref: '#/definitions/PasswordSettingObject'
+      profile:
+        $ref: '#/definitions/ProfileSettingObject'
+    type: object
+    x-okta-tags:
+      - Application
   CatalogApplication:
     properties:
       _links:
@@ -9741,6 +10285,13 @@ definitions:
     type: string
     x-okta-tags:
       - Role
+  ChangeEnum:
+    enum:
+      - KEEP_EXISTING
+      - CHANGE
+    type: string
+    x-okta-tags:
+      - Application
   ChangePasswordRequest:
     properties:
       newPassword:
@@ -9896,6 +10447,7 @@ definitions:
         type: boolean
       registered:
         type: boolean
+    x-okta-parent: '#/definitions/DevicePolicyRuleCondition'
     x-okta-tags:
       - Policy
   DevicePolicyRuleCondition:
@@ -11336,6 +11888,20 @@ definitions:
     x-okta-parent: '#/definitions/AccessPolicyConstraint'
     x-okta-tags:
       - Policy
+  LifecycleCreateSettingObject:
+    properties:
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
+  LifecycleDeactivateSettingObject:
+    properties:
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
   LifecycleExpirationPolicyRuleCondition:
     properties:
       lifecycleStatus:
@@ -11865,6 +12431,23 @@ definitions:
     type: string
     x-okta-tags:
       - NetworkZone
+  NotificationType:
+    enum:
+      - CONNECTOR_AGENT
+      - USER_LOCKED_OUT
+      - APP_IMPORT
+      - LDAP_AGENT
+      - AD_AGENT
+      - OKTA_ANNOUNCEMENT
+      - OKTA_ISSUE
+      - OKTA_UPDATE
+      - IWA_AGENT
+      - USER_DEPROVISION
+      - REPORT_SUSPICIOUS_ACTIVITY
+      - RATELIMIT_NOTIFICATION
+    type: string
+    x-okta-tags:
+      - Subscription
   OAuth2Actor:
     properties:
       id:
@@ -12379,6 +12962,35 @@ definitions:
       - rotate
       - static
     type: string
+    x-okta-tags:
+      - Application
+  Org2OrgApplication:
+    properties:
+      name:
+        default: okta_org2org
+      settings:
+        $ref: '#/definitions/Org2OrgApplicationSettings'
+    x-okta-defined-as:
+      name: okta_org2org
+    x-okta-parent: '#/definitions/SamlApplication'
+    x-okta-tags:
+      - Application
+  Org2OrgApplicationSettings:
+    properties:
+      app:
+        $ref: '#/definitions/Org2OrgApplicationSettingsApp'
+    x-okta-parent: '#/definitions/SamlApplicationSettings'
+    x-okta-tags:
+      - Application
+  Org2OrgApplicationSettingsApp:
+    properties:
+      acsUrl:
+        type: string
+      audRestriction:
+        type: string
+      baseUrl:
+        type: string
+    x-okta-parent: '#/definitions/ApplicationSettingsApplication'
     x-okta-tags:
       - Application
   OrgContactType:
@@ -12902,6 +13514,17 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  PasswordSettingObject:
+    properties:
+      change:
+        $ref: '#/definitions/ChangeEnum'
+      seed:
+        $ref: '#/definitions/SeedEnum'
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
   PlatformConditionEvaluatorPlatform:
     properties:
       os:
@@ -13469,6 +14092,13 @@ definitions:
     type: object
     x-okta-tags:
       - ProfileMapping
+  ProfileSettingObject:
+    properties:
+      status:
+        $ref: '#/definitions/EnabledStatus'
+    type: object
+    x-okta-tags:
+      - Application
   Protocol:
     properties:
       algorithms:
@@ -13615,6 +14245,61 @@ definitions:
     type: object
     x-okta-tags:
       - IdentityProvider
+  ProvisioningConnection:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      authScheme:
+        $ref: '#/definitions/ProvisioningConnectionAuthScheme'
+      status:
+        $ref: '#/definitions/ProvisioningConnectionStatus'
+    type: object
+    x-okta-operations:
+      - alias: getDefaultProvisioningConnectionForApplication
+        operationId: getDefaultProvisioningConnectionForApplication
+      - alias: activateDefaultProvisioningConnectionForApplication
+        operationId: activateDefaultProvisioningConnectionForApplication
+      - alias: deactivateDefaultProvisioningConnectionForApplication
+        operationId: deactivateDefaultProvisioningConnectionForApplication
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionAuthScheme:
+    enum:
+      - TOKEN
+      - UNKNOWN
+    type: string
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionProfile:
+    properties:
+      authScheme:
+        $ref: '#/definitions/ProvisioningConnectionAuthScheme'
+      token:
+        type: string
+    type: object
+    x-okta-operations:
+      - alias: setDefaultProvisioningConnectionForApplication
+        operationId: setDefaultProvisioningConnectionForApplication
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionRequest:
+    properties:
+      profile:
+        $ref: '#/definitions/ProvisioningConnectionProfile'
+    type: object
+    x-okta-tags:
+      - Application
+  ProvisioningConnectionStatus:
+    enum:
+      - DISABLED
+      - ENABLED
+      - UNKNOWN
+    type: string
+    x-okta-tags:
+      - Application
   ProvisioningDeprovisionedCondition:
     properties:
       action:
@@ -13851,6 +14536,10 @@ definitions:
     x-okta-parent: '#/definitions/Application'
     x-okta-tags:
       - Application
+    x-openapi-v3-discriminator:
+      mapping:
+        okta_org2org: '#/definitions/Org2OrgApplication'
+      propertyName: name
   SamlApplicationSettings:
     properties:
       signOn:
@@ -14055,6 +14744,13 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
+  SeedEnum:
+    enum:
+      - OKTA
+      - RANDOM
+    type: string
+    x-okta-tags:
+      - Application
   Session:
     properties:
       _links:
@@ -14294,6 +14990,48 @@ definitions:
         type: array
     x-okta-tags:
       - Application
+  Subscription:
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+      channels:
+        items:
+          type: string
+        type: array
+      notificationType:
+        $ref: '#/definitions/NotificationType'
+      status:
+        $ref: '#/definitions/SubscriptionStatus'
+    type: object
+    x-okta-operations:
+      - alias: listRoleSubscriptions
+        operationId: listRoleSubscriptions
+      - alias: getRoleSubscriptionByNotificationType
+        operationId: getRoleSubscriptionByNotificationType
+      - alias: getUserSubscriptionByNotificationType
+        operationId: getUserSubscriptionByNotificationType
+      - alias: listUserSubscriptions
+        operationId: listUserSubscriptions
+      - alias: subscribeUserSubscriptionByNotificationType
+        operationId: subscribeUserSubscriptionByNotificationType
+      - alias: unsubscribeRoleSubscriptionByNotificationType
+        operationId: unsubscribeRoleSubscriptionByNotificationType
+      - alias: subscribeRoleSubscriptionByNotificationType
+        operationId: subscribeRoleSubscriptionByNotificationType
+      - alias: unsubscribeUserSubscriptionByNotificationType
+        operationId: unsubscribeUserSubscriptionByNotificationType
+    x-okta-tags:
+      - Role
+  SubscriptionStatus:
+    enum:
+      - subscribed
+      - unsubscribed
+    type: string
+    x-okta-tags:
+      - Role
   SwaApplication:
     properties:
       name:
