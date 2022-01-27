@@ -1,10 +1,39 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.11.0
+### Additions
+ - New Paths:
+    - `GET /api/v1/brands/{brandId}/templates/email`
+        - operation added: `listEmailTemplates`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}`
+        - operation added: `getEmailTemplate`
+    - `DELETE & GET & POST /api/v1/brands/{brandId}/templates/email/{templateName}/customizations`
+        - operations added: `deleteEmailTemplateCustomizations`, `listEmailTemplateCustomizations`, `createEmailTemplateCustomization`
+    - `DELETE & GET & PUT /api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}`
+        - operations added: `deleteEmailTemplateCustomization`, `getEmailTemplateCustomization`, `updateEmailTemplateCustomization`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}/preview`
+        - operation added: `getEmailTemplateCustomizationPreview`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}/default-content`
+        - operation added: `getEmailTemplateDefaultContent`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}/default-content/preview`
+        - operation added: `getEmailTemplateDefaultContentPreview`
+    - `POST /api/v1/brands/{brandId}/templates/email/{templateName}/test`
+        - operation added: `sendTestEmail`
+ - Models Added:
+    - `EmailTemplate`
+    - `EmailTemplateCustomization`
+    - `EmailTemplateCustomizationRequest`
+    - `EmailTemplateContent`
+    - `EmailTemplateTestRequest`
+
+
+## 2.10.0
+
 ## 2.9.1
 
 ### Bug fixes
- - Added `sharedSecret` attribute to `AuthenticatorProviderConfiguration` 
+ - Added `sharedSecret` attribute to `AuthenticatorProviderConfiguration`
  - `Authenticator`'s properties should not inherit from `Authenticator`
 
 ### Bug Fixes:
