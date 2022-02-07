@@ -7906,7 +7906,7 @@ paths:
           description: Not Found
       security:
         - api_token: []
-      summary: Subscribe to a specific notification type 
+      summary: Subscribe to a specific notification type
       tags:
         - Subscription
   '/api/v1/users/{userId}/subscriptions/{notificationType}/unsubscribe':
@@ -8612,6 +8612,378 @@ paths:
       summary: Deletes a Theme background image
       tags:
         - Brand
+  '/idp/myaccount/emails':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: addNewEmail
+      parameters:
+        - in: body
+          name: emailRequest
+          required: true
+          schema:
+            $ref: '#/definitions/AddEmailRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Email'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: listEmails
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Email'
+            type: array
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/emails/{emailId}':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: listEmail
+      parameters:
+        - in: path
+          name: emailId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Email'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: deleteEmail
+      parameters:
+        - in: path
+          name: emailId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: NoContent
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/emails/{emailId}/challenge/{challengeId}/verify':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: verifyEmailOTP
+      parameters:
+        - in: path
+          name: emailId
+          required: true
+          type: string
+        - in: path
+          name: challengeId
+          required: true
+          type: string
+        - in: body
+          name: verificationRequest
+          required: true
+          schema:
+            $ref: '#/definitions/VerifyEmailOTP'
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/emails/{emailId}/challenge':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: sendEmailChallenge
+      parameters:
+        - in: path
+          name: emailId
+          required: true
+          type: string
+        - in: body
+          name: emailChallengeRequest
+          required: true
+          schema:
+            $ref: '#/definitions/EmailChallengeRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Email'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/emails/{emailId}/challenge/{challengeId}':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: pollForEmailMagicLink
+      parameters:
+        - in: path
+          name: emailId
+          required: true
+          type: string
+        - in: path
+          name: challengeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailChallenge'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/phones':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: listPhones
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/Phone'
+            type: array
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: addPhone
+      parameters:
+        - in: body
+          name: addPhoneRequest
+          required: true
+          schema:
+            $ref: '#/definitions/AddPhoneRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Phone'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/phones/{phoneId}':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: getPhone
+      parameters:
+        - in: path
+          name: phoneId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Phone'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: deletePhone
+      parameters:
+        - in: path
+          name: phoneId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/phones/{phoneId}/challenge':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: sendPhoneChallenge
+      parameters:
+        - in: path
+          name: phoneId
+          required: true
+          type: string
+        - in: body
+          name: phoneChallengeRequest
+          required: true
+          schema:
+            $ref: '#/definitions/PhoneChallengeRequest'
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/phones/{phoneId}/verify':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: verifyPhoneChallenge
+      parameters:
+        - in: path
+          name: phoneId
+          required: true
+          type: string
+        - in: body
+          name: verifyPhoneChallengeRequest
+          required: true
+          schema:
+            $ref: '#/definitions/VerifyPhoneChallengeRequest'
+      responses:
+        '200':
+          description: Success
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/profile':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: getMyProfile
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/MyProfile'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: updateMyProfile
+      parameters:
+        - in: body
+          name: updateRequest
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateMyProfileRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/MyProfile'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
+  '/idp/myaccount/profile/schema':
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: TODO
+      operationId: getMyProfileSchema
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/MyProfileSchema'
+      security:
+        - api_token: []
+      summary: TODO
+      tags:
+        - MyAccount
 definitions:
   ActivateFactorRequest:
     properties:
@@ -16320,3 +16692,162 @@ definitions:
         readOnly: true
     x-okta-tags:
       - Brand
+  AddEmailRequest:
+    properties:
+      profile:
+        $ref: '#/definitions/EmailProfile'
+      sendEmail:
+        type: boolean
+        default: true
+      state:
+        type: string
+    x-okta-tags:
+      - MyAccount
+  EmailProfile:
+    properties:
+      email:
+        type: string
+    x-okta-tags:
+      - MyAccount
+  Email:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      profile:
+        $ref: '#/definitions/EmailProfile'
+      roles:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+        readOnly: true
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - MyAccount
+  VerifyEmailOTP:
+    properties:
+      verificationCode:
+        type: string
+    x-okta-tags:
+      - MyAccount
+  EmailChallengeRequest:
+    properties:
+      state:
+        type: string
+    x-okta-tags:
+      - MyAccount
+  EmailChallenge:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      expiresAt:
+        format: date-time
+        readOnly: true
+        type: string
+      profile:
+        $ref: '#/definitions/EmailProfile'
+      status:
+        type: string
+        readOnly: true
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - MyAccount
+  Phone:
+    properties:
+      id:
+        type: string
+        readOnly: true
+      profile:
+        $ref: '#/definitions/PhoneProfile'
+      status:
+        type: string
+        readOnly: true
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - MyAccount
+  PhoneProfile:
+    properties:
+      phoneNumber:
+        type: string
+    x-okta-tags:
+      - MyAccount
+  AddPhoneRequest:
+    properties:
+      profile:
+        $ref: '#/definitions/PhoneProfile'
+      method:
+        $ref: '#/definitions/PhoneMethod'
+      sendCode:
+        type: boolean
+    x-okta-tags:
+      - MyAccount
+  PhoneMethod:
+    enum:
+      - SMS
+      - CALL
+    type: string
+    x-okta-tags:
+      - MyAccount
+  PhoneChallengeRequest:
+    properties:
+      method:
+        $ref: '#/definitions/PhoneMethod'
+    x-okta-tags:
+      - MyAccount
+  VerifyPhoneChallengeRequest:
+    properties:
+      verificationCode:
+        type: string
+    x-okta-tags:
+      - MyAccount
+  MyProfile:
+    properties:
+      createdAt:
+        format: date-time
+        readOnly: false
+        type: string
+      updatedAt:
+        type: string
+      profile:
+        $ref: '#/definitions/MyProfileProfile'
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - MyAccount
+  MyProfileProfile:
+    properties:
+      login:
+        type: string
+    type: object
+    x-okta-extensible: true
+    x-okta-tags:
+      - MyAccount
+  UpdateMyProfileRequest:
+    properties:
+      profile:
+        $ref: '#/definitions/MyProfileProfile'
+    x-okta-tags:
+      - MyAccount
+  MyProfileSchema:
+    type: object
+    x-okta-extensible: true
+    x-okta-tags:
+      - MyAccount
