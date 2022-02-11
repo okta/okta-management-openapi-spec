@@ -2649,7 +2649,6 @@ paths:
             - okta.brands.manage
       tags:
         - Brand
-        - Brand
   /api/v1/brands/{brandId}/themes:
     parameters:
       - in: path
