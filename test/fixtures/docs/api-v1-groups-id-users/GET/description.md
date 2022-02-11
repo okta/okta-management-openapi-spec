@@ -1,1 +1,0 @@
-Enumerates all [users](#users.html) that are a member of a group.

@@ -1,1 +1,0 @@
-Lists users in your organization with pagination in most cases.  A subset of users can be returned that match a supported filter expression or search criteria.
