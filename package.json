@@ -13,16 +13,6 @@
   "engines": {
     "node": ">=8.11"
   },
-  "scripts": {
-    "start-redoc": "redoc-cli serve --port 9090 --watch dist/spec.yaml",
-    "build-redoc": "redoc-cli bundle dist/spec.yaml -o build/gh-pages/index.html",
-    "build": "node lib/build.js && npm run validate-custom && npm run validate-swagger",
-    "test": "npm run test:unit && npm run test:coverage",
-    "test:unit": "istanbul cover _mocha -- \"test/**/*.js\"",
-    "test:coverage": "istanbul check-coverage --statements 70 --branches 70 --functions 85 --lines 70",
-    "validate-swagger": "swagger-cli validate dist/spec.json",
-    "validate-custom": "node lib/validate.js"
-  },
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
