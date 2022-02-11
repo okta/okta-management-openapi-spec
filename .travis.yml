@@ -3,14 +3,6 @@ language: node_js
 install:
   - npm install
 
-scripts:
-  - npm run validate-swagger
-  - npm run validate-custom
-  - npm test
-
-after_success:
-  - npm run build-redoc
-
 deploy:
   - provider: pages
     skip_cleanup: true
