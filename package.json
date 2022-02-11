@@ -13,6 +13,9 @@
   "engines": {
     "node": ">=8.11"
   },
+  "scripts": {
+    "test": "echo 'Tests are skipped'",
+  },
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
