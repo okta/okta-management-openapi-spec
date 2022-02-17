@@ -5864,6 +5864,119 @@ paths:
       summary: Update SMS Template
       tags:
         - Template
+  /api/v1/templates/emails:
+    get:
+      description: Enumerates custom Email templates in your organization.
+      operationId: listEmailTemplates
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/EmailTemplate'
+            type: array
+      security:
+        - api_token: []
+      summary: List Email Templates
+      tags:
+        - Template
+    post:
+      consumes:
+        - application/json
+      description: Adds a new custom Email template to your organization.
+      operationId: createEmailTemplate
+      parameters:
+        - in: body
+          name: emailTemplate
+          required: true
+          schema:
+            $ref: '#/definitions/EmailTemplate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplate'
+      security:
+        - api_token: []
+      summary: Add Email Template
+      tags:
+        - Template
+  '/api/v1/templates/email/{templateId}':
+    get:
+      consumes:
+        - application/json
+      description: Fetches a specific template by `id`
+      operationId: getEmailTemplate
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplate'
+      security:
+        - api_token: []
+      summary: Get Email Template
+      tags:
+        - Template
+    put:
+      consumes:
+        - application/json
+      description: Updates the Email template.
+      operationId: updateEmailTemplate
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          type: string
+        - in: body
+          name: emailTemplate
+          required: true
+          schema:
+            $ref: '#/definitions/EmailTemplate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplate'
+      security:
+        - api_token: []
+      summary: Update Email Template
+      tags:
+        - Template
+    delete:
+      consumes:
+        - application/json
+      description: Removes Email template.
+      operationId: deleteEmailTemplate
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: No Content
+      security:
+        - api_token: []
+      summary: Remove Email Template
+      tags:
+        - Template
   /api/v1/trustedOrigins:
     get:
       consumes:
@@ -7906,7 +8019,7 @@ paths:
           description: Not Found
       security:
         - api_token: []
-      summary: Subscribe to a specific notification type 
+      summary: Subscribe to a specific notification type
       tags:
         - Subscription
   '/api/v1/users/{userId}/subscriptions/{notificationType}/unsubscribe':
@@ -15122,6 +15235,150 @@ definitions:
         type: string
     x-okta-tags:
       - UserFactor
+  EmailTemplate:
+    properties:
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      id:
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      name:
+        type: string
+      template:
+        type: string
+      translations:
+        $ref: '#/definitions/EmailTemplateTranslations'
+      type:
+        $ref: '#/definitions/EmailTemplateType'
+      defaultLanguage:
+        type: string
+      subject:
+        type: string
+    type: object
+    x-okta-tags:
+      - Template
+  EmailTemplateTranslations:
+    properties:
+      uk:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      cs:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      da:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      de:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      el:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      en:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      es:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      fi:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      fr:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      hu:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      id:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      it:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      ja:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      ko:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      ms:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      nb:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      nl_NL:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      pl:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      pt_BR:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      ro:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      ru:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      sv:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      th:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      tr:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      vi:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      zh_CN:
+        $ref: '#/definitions/EmailTemplateTranslation'
+      zh_TW:
+        $ref: '#/definitions/EmailTemplateTranslation'
+    type: object
+    x-okta-extensible: true
+    x-okta-tags:
+      - Template
+  EmailTemplateTranslation:
+    properties:
+      subject:
+        type: string
+      template:
+        type: string
+    x-okta-tags:
+      - Template
+  EmailTemplateType:
+    enum:
+      - email.welcome
+      - email.forgotPassword
+      - email.emailLinkRecoveryResetFactor
+      - email.emailLinkRecoveryResetPwdFactor
+      - email.emailLinkRecoveryAdResetFactor
+      - email.emailLinkRecoveryAdResetPwdFactor
+      - email.emailLinkRecoveryLdapResetPwdFactor
+      - email.forgotPasswordDenied
+      - email.tempPassword
+      - email.ad.welcome
+      - email.ad.forgotPassword
+      - email.ad.forgotPasswordReset
+      - email.sunone.welcome
+      - email.sunone.forgotPassword
+      - email.sunone.forgotPasswordDenied
+      - email.selfServiceUnlock
+      - email.emailLinkRecoveryUnlockFactor
+      - email.emailLinkRecoveryAdUnlockFactor
+      - email.emailLinkRecoveryUnlockPwdFactor
+      - email.emailLinkRecoveryAdUnlockPwdFactor
+      - email.emailLinkRecoveryLdapUnlockPwdFactor
+      - email.ad.selfServiceUnlock
+      - email.pushVerifyActivation
+      - email.accountLockout
+      - email.emailTransactionVerification
+      - email.emailLinkAuthenticationTransaction
+      - email.emailActivation
+      - email.signInFromNewDevice
+      - email.registrationActivation
+      - email.emailChangeConfirmation
+      - email.emailNewChangeNotification
+      - email.emailNewAlreadyChangedNotification
+      - email.registrationEmailVerification
+      - email.emailLinkFactorVerification
+      - email.selfServiceUnlockOnUnlockedAccount
+      - email.endUserScheduledLifecycleStatusChange
+      - email.adminUsersListScheduledLifecycleStatusChange
+      - email.factorEnrollment
+      - email.factorReset
+      - email.authenticatorEnrollment
+      - email.authenticatorReset
+      - email.automation
+      - email.passwordChanged
+    type: string
+    x-okta-tags:
+      - Template
   CustomHotpUserFactor:
     properties:
       factorProfileId:
