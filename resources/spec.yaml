@@ -5868,6 +5868,11 @@ paths:
     get:
       description: Enumerates custom Email templates in your organization.
       operationId: listEmailTemplates
+      parameters:
+        - in: query
+          name: template
+          type: string
+          x-openapi-v3-schema-ref: '#/definitions/EmailTemplateType'
       consumes:
         - application/json
       produces:
@@ -5975,6 +5980,27 @@ paths:
       security:
         - api_token: []
       summary: Remove Email Template
+      tags:
+        - Template
+  '/api/v1/templates/email/{templateId}/getTestEmailInfo':
+    get:
+      description: Get test email info
+      operationId: getTestEmailInfo
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTestInfo'
+      security:
+        - api_token: []
+      summary: Get test email info
       tags:
         - Template
   /api/v1/trustedOrigins:
@@ -15377,6 +15403,19 @@ definitions:
       - email.automation
       - email.passwordChanged
     type: string
+    x-okta-tags:
+      - Template
+  EmailTestInfo:
+    properties:
+      fromAddress:
+        type: string
+      fromName:
+        type: string
+      userEmail:
+        type: string
+      secondaryEmail:
+        type: string
+    type: object
     x-okta-tags:
       - Template
   CustomHotpUserFactor:

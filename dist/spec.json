@@ -10014,6 +10014,43 @@
         ]
       }
     },
+    "/api/v1/templates/email/{templateId}/getTestEmailInfo": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get test email info",
+        "operationId": "getTestEmailInfo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "templateId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTestInfo"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get test email info",
+        "tags": [
+          "Template"
+        ]
+      }
+    },
     "/api/v1/templates/emails": {
       "get": {
         "consumes": [
@@ -10021,6 +10058,14 @@
         ],
         "description": "Enumerates custom Email templates in your organization.",
         "operationId": "listEmailTemplates",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "template",
+            "type": "string",
+            "x-openapi-v3-schema-ref": "#/definitions/EmailTemplateType"
+          }
+        ],
         "produces": [
           "application/json"
         ],
@@ -16962,6 +17007,26 @@
         "email.passwordChanged"
       ],
       "type": "string",
+      "x-okta-tags": [
+        "Template"
+      ]
+    },
+    "EmailTestInfo": {
+      "properties": {
+        "fromAddress": {
+          "type": "string"
+        },
+        "fromName": {
+          "type": "string"
+        },
+        "secondaryEmail": {
+          "type": "string"
+        },
+        "userEmail": {
+          "type": "string"
+        }
+      },
+      "type": "object",
       "x-okta-tags": [
         "Template"
       ]
