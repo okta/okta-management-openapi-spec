@@ -11470,6 +11470,24 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  IdpPolicyRuleAction:
+    properties:
+      providers:
+        items:
+          $ref: '#/definitions/IdpPolicyRuleActionProvider'
+        type: array
+    type: object
+    x-okta-tags:
+      - Policy
+  IdpPolicyRuleActionProvider:
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
   ProfileEnrollmentPolicyRuleActions:
     properties:
       profileEnrollment:
@@ -14172,6 +14190,8 @@ definitions:
         $ref: '#/definitions/PasswordPolicyRuleAction'
       selfServiceUnlock:
         $ref: '#/definitions/PasswordPolicyRuleAction'
+      idp:
+        $ref: '#/definitions/IdpPolicyRuleAction'
     type: object
     x-okta-tags:
       - Policy

@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.10.0"
+    "version": "2.11.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -18138,6 +18138,35 @@
         "Policy"
       ]
     },
+    "IdpPolicyRuleAction": {
+      "properties": {
+        "providers": {
+          "items": {
+            "$ref": "#/definitions/IdpPolicyRuleActionProvider"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
+    "IdpPolicyRuleActionProvider": {
+      "properties": {
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-okta-tags": [
+        "Policy"
+      ]
+    },
     "ImageUploadResponse": {
       "properties": {
         "url": {
@@ -21511,6 +21540,9 @@
       "properties": {
         "enroll": {
           "$ref": "#/definitions/PolicyRuleActionsEnroll"
+        },
+        "idp": {
+          "$ref": "#/definitions/IdpPolicyRuleAction"
         },
         "passwordChange": {
           "$ref": "#/definitions/PasswordPolicyRuleAction"
