@@ -6332,7 +6332,7 @@ paths:
         - api_token: []
       summary: Remove Email Template
       tags:
-        - Template
+        - EmailTemplate
     get:
       consumes:
         - application/json
@@ -6354,7 +6354,7 @@ paths:
         - api_token: []
       summary: Get Email Template
       tags:
-        - Template
+        - EmailTemplate
     put:
       consumes:
         - application/json
@@ -6381,7 +6381,7 @@ paths:
         - api_token: []
       summary: Update Email Template
       tags:
-        - Template
+        - EmailTemplate
   '/api/v1/templates/email/{templateId}/getTestEmailInfo':
     get:
       consumes:
@@ -6404,7 +6404,7 @@ paths:
         - api_token: []
       summary: Get test email info
       tags:
-        - Template
+        - EmailTemplate
   /api/v1/templates/emails:
     get:
       consumes:
@@ -6429,7 +6429,7 @@ paths:
         - api_token: []
       summary: List Email Templates
       tags:
-        - Template
+        - EmailTemplate
     post:
       consumes:
         - application/json
@@ -6452,7 +6452,7 @@ paths:
         - api_token: []
       summary: Add Email Template
       tags:
-        - Template
+        - EmailTemplate
   /api/v1/templates/sms:
     get:
       consumes:
@@ -10742,7 +10742,7 @@ definitions:
         $ref: '#/definitions/EmailTemplateType'
     type: object
     x-okta-tags:
-      - Template
+      - EmailTemplate
   EmailTemplateTouchPointVariant:
     enum:
       - OKTA_DEFAULT
@@ -10757,7 +10757,7 @@ definitions:
       template:
         type: string
     x-okta-tags:
-      - Template
+      - EmailTemplate
   EmailTemplateTranslations:
     properties:
       cs:
@@ -10818,7 +10818,7 @@ definitions:
     type: object
     x-okta-extensible: true
     x-okta-tags:
-      - Template
+      - EmailTemplate
   EmailTemplateType:
     enum:
       - email.welcome
@@ -10866,7 +10866,7 @@ definitions:
       - email.passwordChanged
     type: string
     x-okta-tags:
-      - Template
+      - EmailTemplate
   EmailTestInfo:
     properties:
       fromAddress:
@@ -10879,7 +10879,7 @@ definitions:
         type: string
     type: object
     x-okta-tags:
-      - Template
+      - EmailTemplate
   EmailUserFactor:
     properties:
       profile:

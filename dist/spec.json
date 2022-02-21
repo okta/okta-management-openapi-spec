@@ -9932,7 +9932,7 @@
         ],
         "summary": "Remove Email Template",
         "tags": [
-          "Template"
+          "EmailTemplate"
         ]
       },
       "get": {
@@ -9967,7 +9967,7 @@
         ],
         "summary": "Get Email Template",
         "tags": [
-          "Template"
+          "EmailTemplate"
         ]
       },
       "put": {
@@ -10010,7 +10010,7 @@
         ],
         "summary": "Update Email Template",
         "tags": [
-          "Template"
+          "EmailTemplate"
         ]
       }
     },
@@ -10047,7 +10047,7 @@
         ],
         "summary": "Get test email info",
         "tags": [
-          "Template"
+          "EmailTemplate"
         ]
       }
     },
@@ -10087,7 +10087,7 @@
         ],
         "summary": "List Email Templates",
         "tags": [
-          "Template"
+          "EmailTemplate"
         ]
       },
       "post": {
@@ -10124,7 +10124,7 @@
         ],
         "summary": "Add Email Template",
         "tags": [
-          "Template"
+          "EmailTemplate"
         ]
       }
     },
@@ -16843,7 +16843,7 @@
       },
       "type": "object",
       "x-okta-tags": [
-        "Template"
+        "EmailTemplate"
       ]
     },
     "EmailTemplateTouchPointVariant": {
@@ -16866,7 +16866,7 @@
         }
       },
       "x-okta-tags": [
-        "Template"
+        "EmailTemplate"
       ]
     },
     "EmailTemplateTranslations": {
@@ -16957,7 +16957,7 @@
       "type": "object",
       "x-okta-extensible": true,
       "x-okta-tags": [
-        "Template"
+        "EmailTemplate"
       ]
     },
     "EmailTemplateType": {
@@ -17008,7 +17008,7 @@
       ],
       "type": "string",
       "x-okta-tags": [
-        "Template"
+        "EmailTemplate"
       ]
     },
     "EmailTestInfo": {
@@ -17028,7 +17028,7 @@
       },
       "type": "object",
       "x-okta-tags": [
-        "Template"
+        "EmailTemplate"
       ]
     },
     "EmailUserFactor": {
