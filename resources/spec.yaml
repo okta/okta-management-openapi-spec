@@ -8427,7 +8427,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/EmailTemplateCustomizationRequest'
+              $ref: '#/definitions/EmailTemplateCustomization'
             type: array
       summary: List Email Template Customization
       security:

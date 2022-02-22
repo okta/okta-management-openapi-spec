@@ -2586,7 +2586,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/EmailTemplateCustomizationRequest'
+              $ref: '#/definitions/EmailTemplateCustomization'
             type: array
       security:
         - api_token: []
