@@ -12019,6 +12019,25 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  IdpPolicyRuleAction:
+    properties:
+      providers:
+        items:
+          $ref: '#/definitions/IdpPolicyRuleActionProvider'
+        type: array
+    type: object
+    x-okta-tags:
+      - Policy
+  IdpPolicyRuleActionProvider:
+    properties:
+      id:
+        readOnly: true
+        type: string
+      type:
+        type: string
+    type: object
+    x-okta-tags:
+      - Policy
   ImageUploadResponse:
     properties:
       url:
@@ -14327,6 +14346,8 @@ definitions:
     properties:
       enroll:
         $ref: '#/definitions/PolicyRuleActionsEnroll'
+      idp:
+        $ref: '#/definitions/IdpPolicyRuleAction'
       passwordChange:
         $ref: '#/definitions/PasswordPolicyRuleAction'
       selfServicePasswordReset:
