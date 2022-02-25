@@ -4420,7 +4420,7 @@
         "consumes": [
           "application/json"
         ],
-        "description": "Send a test email to the current users primary and secondary email addresses. The email content is selected based on the following priority:\n  An email customization specifically for the users locale.\n  The default language of email customizations.\n  The email templates default content.",
+        "description": "Send a test email to the current users primary and secondary email addresses. The email content is selected based on the following priority: An email customization specifically for the users locale. The default language of email customizations. The email templates default content.",
         "operationId": "sendTestEmail",
         "parameters": [
           {
@@ -17271,7 +17271,7 @@
           "type": "string"
         },
         "isDefault": {
-          "format": "boolean"
+          "type": "boolean"
         },
         "language": {
           "description": "unique under each email template",
@@ -17296,7 +17296,7 @@
           "type": "string"
         },
         "isDefault": {
-          "format": "boolean"
+          "type": "boolean"
         },
         "language": {
           "description": "unique under each email template",

@@ -8678,9 +8678,9 @@ paths:
     post:
       description: >-
         Send a test email to the current users primary and secondary email addresses. The email content is selected based on the following priority:
-          An email customization specifically for the users locale.
-          The default language of email customizations.
-          The email templates default content.
+        An email customization specifically for the users locale.
+        The default language of email customizations.
+        The email templates default content.
       consumes:
         - application/json
       produces:
@@ -16743,7 +16743,7 @@ definitions:
         readOnly: true
         type: string
       isDefault:
-        format: boolean
+        type: boolean
       lastUpdated:
         format: date-time
         readOnly: true
@@ -16765,7 +16765,7 @@ definitions:
       subject:
         type: string
       isDefault:
-        format: boolean
+        type: boolean
     x-okta-tags:
       - Brands
   EmailTemplateContent:
