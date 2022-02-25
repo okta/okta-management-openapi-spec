@@ -3893,6 +3893,579 @@
         ]
       }
     },
+    "/api/v1/brands/{brandId}/templates/email": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "List email templates in your organization with pagination.",
+        "operationId": "listEmailTemplates",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Specifies the pagination cursor for the next page of email templates.",
+            "in": "query",
+            "name": "after",
+            "type": "string"
+          },
+          {
+            "default": 20,
+            "description": "Specifies the number of results returned (maximum 200)",
+            "format": "int32",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/EmailTemplate"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "List Email Templates",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/v1/brands/{brandId}/templates/email/{templateName}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Fetch an email template by templateName",
+        "operationId": "getEmailTemplate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplate"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get Email Template",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/v1/brands/{brandId}/templates/email/{templateName}/customizations": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Delete all customizations for an email template. Also known as “Reset to Default”.",
+        "operationId": "deleteEmailTemplateCustomizations",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Delete Email Template Customization",
+        "tags": [
+          "Brand"
+        ]
+      },
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "List all email customizations for an email template",
+        "operationId": "listEmailTemplateCustomizations",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/EmailTemplateCustomization"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "List Email Template Customization",
+        "tags": [
+          "Brand"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Create an email customization",
+        "operationId": "createEmailTemplateCustomization",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "customization",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateCustomizationRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateCustomization"
+            }
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Create Email Template Customization",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Delete an email customization",
+        "operationId": "deleteEmailTemplateCustomization",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "customizationId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Delete Email Customization",
+        "tags": [
+          "Brand"
+        ]
+      },
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Fetch an email customization by id.",
+        "operationId": "getEmailTemplateCustomization",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "customizationId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateCustomization"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get Email Template Customization",
+        "tags": [
+          "Brand"
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Update an email customization",
+        "operationId": "updateEmailTemplateCustomization",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "customizationId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "customization",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateCustomizationRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateCustomization"
+            }
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Update Email Customization",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}/preview": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get a preview of an email template customization.",
+        "operationId": "getEmailTemplateCustomizationPreview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "customizationId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateContent"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get Preview Content of Email Customization",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/v1/brands/{brandId}/templates/email/{templateName}/default-content": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Fetch the default content for an email template.",
+        "operationId": "getEmailTemplateDefaultContent",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateContent"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get Default Content of Email Template",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/v1/brands/{brandId}/templates/email/{templateName}/default-content/preview": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Fetch a preview of an email template's default content by populating velocity references with the current user's environment.",
+        "operationId": "getEmailTemplateDefaultContentPreview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateContent"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get Preview of Email Template Default Content",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/v1/brands/{brandId}/templates/email/{templateName}/test": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Send a test email to the current users primary and secondary email addresses. The email content is selected based on the following priority: An email customization specifically for the users locale. The default language of email customizations. The email templates default content.",
+        "operationId": "sendTestEmail",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brandId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "templateName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "customization",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateTestRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmailTemplateContent"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Get Preview of Email Template Default Content",
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
     "/api/v1/brands/{brandId}/themes": {
       "get": {
         "consumes": [
@@ -16578,6 +17151,173 @@
       "type": "object",
       "x-okta-tags": [
         "Policy"
+      ]
+    },
+    "EmailTemplate": {
+      "properties": {
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "name": {
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "x-okta-crud": [
+        {
+          "alias": "read",
+          "operationId": "getEmailTemplate"
+        }
+      ],
+      "x-okta-operations": [
+        {
+          "alias": "getEmailTemplate",
+          "operationId": "getEmailTemplate"
+        },
+        {
+          "alias": "deleteEmailTemplateCustomizations",
+          "operationId": "deleteEmailTemplateCustomizations"
+        },
+        {
+          "alias": "listEmailTemplateCustomizations",
+          "operationId": "listEmailTemplateCustomizations"
+        },
+        {
+          "alias": "createEmailTemplateCustomization",
+          "operationId": "createEmailTemplateCustomization"
+        },
+        {
+          "alias": "deleteEmailTemplateCustomization",
+          "operationId": "deleteEmailTemplateCustomization"
+        },
+        {
+          "alias": "getEmailTemplateCustomization",
+          "operationId": "getEmailTemplateCustomization"
+        },
+        {
+          "alias": "updateEmailTemplateCustomization",
+          "operationId": "updateEmailTemplateCustomization"
+        },
+        {
+          "alias": "getEmailTemplateCustomizationPreview",
+          "operationId": "getEmailTemplateCustomizationPreview"
+        },
+        {
+          "alias": "getEmailTemplateDefaultContent",
+          "operationId": "getEmailTemplateDefaultContent"
+        },
+        {
+          "alias": "getEmailTemplateDefaultContentPreview",
+          "operationId": "getEmailTemplateDefaultContentPreview"
+        },
+        {
+          "alias": "sendTestEmail",
+          "operationId": "sendTestEmail"
+        }
+      ],
+      "x-okta-tags": [
+        "Brands"
+      ]
+    },
+    "EmailTemplateContent": {
+      "properties": {
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "body": {
+          "type": "string"
+        },
+        "fromAddress": {
+          "type": "string"
+        },
+        "fromName": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Brands"
+      ]
+    },
+    "EmailTemplateCustomization": {
+      "properties": {
+        "_links": {
+          "additionalProperties": {
+            "type": "object"
+          },
+          "readOnly": true,
+          "type": "object"
+        },
+        "body": {
+          "type": "string"
+        },
+        "created": {
+          "format": "date-time",
+          "readOnly": true,
+          "type": "string"
+        },
+        "id": {
+          "readOnly": true,
+          "type": "string"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "language": {
+          "description": "unique under each email template",
+          "type": "string"
+        },
+        "lastUpdated": {
+          "format": "date-time",
+          "readOnly": true,
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Brands"
+      ]
+    },
+    "EmailTemplateCustomizationRequest": {
+      "properties": {
+        "body": {
+          "type": "string"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "language": {
+          "description": "unique under each email template",
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Brands"
+      ]
+    },
+    "EmailTemplateTestRequest": {
+      "properties": {
+        "customizationId": {
+          "type": "string"
+        }
+      },
+      "x-okta-tags": [
+        "Brands"
       ]
     },
     "EmailTemplateTouchPointVariant": {
