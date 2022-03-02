@@ -1,6 +1,9 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.11.1
+### Changes
+ - Changes `sendTestEmail` response to a `204 no content` instead of `200 success`
 ## 2.11.0
 ### Additions
  - New Paths:
