@@ -8701,10 +8701,8 @@ paths:
           schema:
             $ref: '#/definitions/EmailTemplateTestRequest'
       responses:
-        '200':
-          description: Success
-          schema:
-            $ref: '#/definitions/EmailTemplateContent'
+        '204':
+          description: No Content
       summary: Get Preview of Email Template Default Content
       security:
         - api_token: []
