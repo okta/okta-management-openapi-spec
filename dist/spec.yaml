@@ -11250,6 +11250,7 @@ definitions:
       - DUO
       - YUBICO
       - CUSTOM
+      - APPLE
     type: string
     x-okta-tags:
       - UserFactor
@@ -11996,6 +11997,10 @@ definitions:
     properties:
       kid:
         type: string
+      privateKey:
+        type: string
+      teamId:
+        type: string
     type: object
     x-okta-tags:
       - IdentityProvider
@@ -12544,6 +12549,7 @@ definitions:
       - GOOGLE
       - DUO
       - YUBIKEY
+      - APPLE
     type: string
     x-okta-tags:
       - Log

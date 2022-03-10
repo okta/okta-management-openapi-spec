@@ -17624,7 +17624,8 @@
         "SYMANTEC",
         "DUO",
         "YUBICO",
-        "CUSTOM"
+        "CUSTOM",
+        "APPLE"
       ],
       "type": "string",
       "x-okta-tags": [
@@ -18797,6 +18798,12 @@
       "properties": {
         "kid": {
           "type": "string"
+        },
+        "privateKey": {
+          "type": "string"
+        },
+        "teamId": {
+          "type": "string"
         }
       },
       "type": "object",
@@ -19622,7 +19629,8 @@
         "SYMANTEC",
         "GOOGLE",
         "DUO",
-        "YUBIKEY"
+        "YUBIKEY",
+        "APPLE"
       ],
       "type": "string",
       "x-okta-tags": [
