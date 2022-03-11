@@ -21371,7 +21371,8 @@
     "OpenIdConnectApplicationIssuerMode": {
       "enum": [
         "CUSTOM_URL",
-        "ORG_URL"
+        "ORG_URL",
+        "DYNAMIC"
       ],
       "type": "string",
       "x-okta-tags": [
