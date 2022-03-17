@@ -8701,10 +8701,8 @@ paths:
           schema:
             $ref: '#/definitions/EmailTemplateTestRequest'
       responses:
-        '200':
-          description: Success
-          schema:
-            $ref: '#/definitions/EmailTemplateContent'
+        '204':
+          description: No Content
       summary: Get Preview of Email Template Default Content
       security:
         - api_token: []
@@ -10721,6 +10719,7 @@ definitions:
       - DUO
       - YUBICO
       - CUSTOM
+      - APPLE
     type: string
     x-okta-tags:
       - UserFactor
@@ -11457,6 +11456,10 @@ definitions:
   IdentityProviderCredentialsSigning:
     properties:
       kid:
+        type: string
+      privateKey:
+        type: string
+      teamId:
         type: string
     type: object
     x-okta-tags:
@@ -12927,6 +12930,7 @@ definitions:
       - GOOGLE
       - DUO
       - YUBIKEY
+      - APPLE
     type: string
     x-okta-tags:
       - Log

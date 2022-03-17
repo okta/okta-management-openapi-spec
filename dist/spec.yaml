@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.11.0
+  version: 2.11.1
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -2839,10 +2839,8 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
-          description: Success
-          schema:
-            $ref: '#/definitions/EmailTemplateContent'
+        '204':
+          description: No Content
       security:
         - api_token: []
       summary: Get Preview of Email Template Default Content
@@ -11252,6 +11250,7 @@ definitions:
       - DUO
       - YUBICO
       - CUSTOM
+      - APPLE
     type: string
     x-okta-tags:
       - UserFactor
@@ -11998,6 +11997,10 @@ definitions:
     properties:
       kid:
         type: string
+      privateKey:
+        type: string
+      teamId:
+        type: string
     type: object
     x-okta-tags:
       - IdentityProvider
@@ -12546,6 +12549,7 @@ definitions:
       - GOOGLE
       - DUO
       - YUBIKEY
+      - APPLE
     type: string
     x-okta-tags:
       - Log
