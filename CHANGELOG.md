@@ -3,7 +3,7 @@ Running changelog of releases since `2.2.3`
 
 ## 2.11.2
 ### Changes
- - Add `_links` property to `ResposeLinks` model
+ - Add `_links` property to `ResponseLinks` model
 
 ## 2.11.1
 ### Changes
