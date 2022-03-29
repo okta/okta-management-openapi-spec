@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.11.1
+  version: 2.11.2
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -14898,7 +14898,12 @@ definitions:
     x-okta-tags:
       - User
   ResponseLinks:
-    properties: {}
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
     type: object
     x-okta-tags:
       - User
