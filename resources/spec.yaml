@@ -14928,7 +14928,12 @@ definitions:
     x-okta-tags:
       - User
   ResponseLinks:
-    properties: { }
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
     type: object
     x-okta-tags:
       - User
