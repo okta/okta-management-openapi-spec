@@ -12071,6 +12071,12 @@ definitions:
     type: object
     x-okta-tags:
       - Policy
+  IframeEmbedScopeAllowedApps:
+    enum:
+      - OKTA_ENDUSER
+    type: string
+    x-okta-tags:
+      - Role
   ImageUploadResponse:
     properties:
       url:
@@ -15167,6 +15173,10 @@ definitions:
       - Application
   Scope:
     properties:
+      allowedOktaApps:
+        items:
+          $ref: '#/definitions/IframeEmbedScopeAllowedApps'
+        type: array
       stringValue:
         type: string
       type:
@@ -15178,6 +15188,7 @@ definitions:
     enum:
       - CORS
       - REDIRECT
+      - IFRAME_EMBED
     type: string
     x-okta-tags:
       - Role

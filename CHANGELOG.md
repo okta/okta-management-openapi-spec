@@ -1,6 +1,9 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.12.0
+ - Adds model `IframeEmbedScopeAllowedApps`
+ - Updates `ScopeType` to include option `IFRAME_EMBED`
 ## 2.11.2
 ### Changes
  - Add `_links` property to `ResponseLinks` model
