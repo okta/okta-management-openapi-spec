@@ -4,6 +4,9 @@ Running changelog of releases since `2.2.3`
 ## 2.12.0
  - Adds model `IframeEmbedScopeAllowedApps`
  - Updates `ScopeType` to include option `IFRAME_EMBED`
+ - Add Update Application Policy Path
+    - `PUT /api/v1/apps/{applicationId}/policies/{policyId}`
+        - operation added `updateApplicationPolicy`
 ## 2.11.2
 ### Changes
  - Add `_links` property to `ResponseLinks` model
