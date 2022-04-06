@@ -9517,6 +9517,11 @@ definitions:
           - dest: appId
             src: id
         operationId: updateFeatureForApplication
+      - alias: updateApplicationPolicy
+        arguments:
+          - dest: appId
+            src: id
+        operationId: updateApplicationPolicy
     x-okta-tags:
       - Application
     x-openapi-v3-discriminator:
