@@ -1523,7 +1523,7 @@
         "consumes": [
           "application/json"
         ],
-        "description": "Assign an application to a specific policy. This un-assigns the application from its currently assigned policy.",
+        "description": "Assign an application to a specific policy. This unassigns the application from its currently assigned policy.",
         "operationId": "updateApplicationPolicy",
         "parameters": [
           {

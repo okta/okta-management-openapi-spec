@@ -985,7 +985,7 @@ paths:
       consumes:
         - application/json
       description: >-
-        Assign an application to a specific policy. This un-assigns the
+        Assign an application to a specific policy. This unassigns the
         application from its currently assigned policy.
       operationId: updateApplicationPolicy
       parameters:
