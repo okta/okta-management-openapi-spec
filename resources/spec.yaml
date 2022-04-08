@@ -15235,6 +15235,10 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/ScopeType'
+      allowedOktaApps:
+        type: array
+        items:
+          $ref: '#/definitions/IframeEmbedScopeAllowedApps'
     type: object
     x-okta-tags:
       - Role
@@ -15242,7 +15246,14 @@ definitions:
     enum:
       - CORS
       - REDIRECT
+      - IFRAME_EMBED
     type: string
+    x-okta-tags:
+      - Role
+  IframeEmbedScopeAllowedApps:
+    type: string
+    enum:
+      - OKTA_ENDUSER
     x-okta-tags:
       - Role
   SecurePasswordStoreApplication:

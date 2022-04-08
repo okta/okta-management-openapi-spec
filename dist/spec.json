@@ -18911,6 +18911,15 @@
         "Policy"
       ]
     },
+    "IframeEmbedScopeAllowedApps": {
+      "enum": [
+        "OKTA_ENDUSER"
+      ],
+      "type": "string",
+      "x-okta-tags": [
+        "Role"
+      ]
+    },
     "ImageUploadResponse": {
       "properties": {
         "url": {
@@ -23584,6 +23593,12 @@
     },
     "Scope": {
       "properties": {
+        "allowedOktaApps": {
+          "items": {
+            "$ref": "#/definitions/IframeEmbedScopeAllowedApps"
+          },
+          "type": "array"
+        },
         "stringValue": {
           "type": "string"
         },
@@ -23599,7 +23614,8 @@
     "ScopeType": {
       "enum": [
         "CORS",
-        "REDIRECT"
+        "REDIRECT",
+        "IFRAME_EMBED"
       ],
       "type": "string",
       "x-okta-tags": [
