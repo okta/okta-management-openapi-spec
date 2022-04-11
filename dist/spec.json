@@ -1518,6 +1518,46 @@
         ]
       }
     },
+    "/api/v1/apps/{appId}/policies/{policyId}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Assign an application to a specific policy. This unassigns the application from its currently assigned policy.",
+        "operationId": "updateApplicationPolicy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "policyId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Update application policy",
+        "tags": [
+          "Application"
+        ]
+      }
+    },
     "/api/v1/apps/{appId}/tokens": {
       "delete": {
         "consumes": [
@@ -15045,6 +15085,16 @@
             }
           ],
           "operationId": "updateFeatureForApplication"
+        },
+        {
+          "alias": "updateApplicationPolicy",
+          "arguments": [
+            {
+              "dest": "appId",
+              "src": "id"
+            }
+          ],
+          "operationId": "updateApplicationPolicy"
         }
       ],
       "x-okta-tags": [
