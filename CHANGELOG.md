@@ -6,7 +6,14 @@ Running changelog of releases since `2.2.3`
 ### Additions
 
  - Added `/api/v1/apps/${applicationId}/credentials/secrets` endpoints and `ClientSecret` model by @monde in https://github.com/okta/okta-management-openapi-spec/pull/146
- - Added property `pkce_required` to `ApplicationCredentialsOAuthClient` model by @monde in https://github.com/okta/okta-management-openapi-spec/pull/146
+ - Added property `pkce_required` to `ApplicationCredentialsOAuthClient` model by @monde in https://github.com/okta/okta-management-openapi-spec/pull/145
+
+### Bug fixes
+
+ - Corrected parameters order 
+   - `/api/v1/authorizationServers/{authServerId}/policies/{policyId}/rules`
+   - `/api/v1/authorizationServers/{authServerId}/policies/{policyId}/rules/{ruleId}`
+   - By @monde https://github.com/okta/okta-management-openapi-spec/pull/131
 
 ## 2.14.0
 
@@ -18,7 +25,6 @@ Running changelog of releases since `2.2.3`
 
  - Added new enum values `mca` and `sc` to `SessionAuthenticationMethod` by @arvindkrishnakumar-okta in https://github.com/okta/okta-management-openapi-spec/pull/143
  - Verification Method model is missing inactivityPeriod property by @monde in https://github.com/okta/okta-management-openapi-spec/pull/140
-
 
 ## 2.13.0
 
@@ -36,6 +42,7 @@ Running changelog of releases since `2.2.3`
  - Add Update Application Policy Path
     - `PUT /api/v1/apps/{applicationId}/policies/{policyId}`
         - operation added `updateApplicationPolicy`
+
 ## 2.11.2
 ### Changes
  - Add `_links` property to `ResponseLinks` model
