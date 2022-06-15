@@ -29,18 +29,22 @@
     "chai": "3.5.0",
     "istanbul": "0.4.5",
     "lodash": "^4.17.15",
-    "mocha": "^6.1.4",
-    "redoc-cli": "^0.10.2",
+    "mocha": "^10.0.0",
+    "redoc-cli": "^0.13.16",
     "semver": "5.3.0",
     "sinon": "2.2.0"
   },
   "dependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
     "commander": "2.9.0",
     "fs-extra": "3.0.1",
     "handlebars": "^4.7.6",
     "js-yaml": "^3.13.1",
     "json-stable-stringify": "1.0.1",
-    "node-fetch": "^2.6.0",
-    "swagger-cli": "^2.3.0"
+    "node-fetch": "^2.6.0"
+  },
+  "resolutions": {
+    "minimist": "^1.2.6",
+    "ansi-regex": "^5.0.1"
   }
 }
