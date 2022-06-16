@@ -3587,7 +3587,7 @@ paths:
           type: string
         - description: Filter expression for groups
           in: query
-          name: search
+          name: filter
           type: string
         - description: Specifies the pagination cursor for the next page of groups
           in: query
@@ -3604,6 +3604,12 @@ paths:
             response.
           in: query
           name: expand
+          type: string
+        - description: >-
+            Searches for groups with a supported filtering expression for all
+            attributes except for _embedded, _links, and objectClass
+          in: query
+          name: search
           type: string
       produces:
         - application/json

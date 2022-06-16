@@ -5639,7 +5639,7 @@
           {
             "description": "Filter expression for groups",
             "in": "query",
-            "name": "search",
+            "name": "filter",
             "type": "string"
           },
           {
@@ -5660,6 +5660,12 @@
             "description": "If specified, it causes additional metadata to be included in the response.",
             "in": "query",
             "name": "expand",
+            "type": "string"
+          },
+          {
+            "description": "Searches for groups with a supported filtering expression for all attributes except for _embedded, _links, and objectClass",
+            "in": "query",
+            "name": "search",
             "type": "string"
           }
         ],
