@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.12.1"
+    "version": "2.13.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -15628,10 +15628,19 @@
         "authPort": {
           "type": "integer"
         },
+        "host": {
+          "type": "string"
+        },
         "hostName": {
           "type": "string"
         },
         "instanceId": {
+          "type": "string"
+        },
+        "integrationKey": {
+          "type": "string"
+        },
+        "secretKey": {
           "type": "string"
         },
         "sharedSecret": {

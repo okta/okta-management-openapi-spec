@@ -9876,6 +9876,12 @@ definitions:
         type: string
       userNameTemplate:
         $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
+      host:
+        type: string
+      secretKey:
+        type: string
+      integrationKey:
+        type: string
     x-okta-tags:
       - Authenticator
   AuthenticatorProviderConfigurationUserNamePlate:
