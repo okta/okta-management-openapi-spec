@@ -1,6 +1,16 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.13.0
+
+### Additions
+
+ - Added properties `host`, `integrationKey`, and `secretKey` to `AuthenticatorProviderConfiguration` model to support Duo Authenticator [#134](https://github.com/okta/okta-management-openapi-spec/pull/134)
+
+### Bug Fixes
+
+ - Renamed query parameter `search` to `filter` on `GET /api/v1/groups` endpoint [#138](https://github.com/okta/okta-management-openapi-spec/pull/138)
+
 ## 2.12.0
  - Adds model `IframeEmbedScopeAllowedApps`
  - Updates `ScopeType` to include option `IFRAME_EMBED`
