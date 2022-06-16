@@ -1,5 +1,6 @@
 [![Build Status](https://www.travis-ci.com/okta/okta-management-openapi-spec.svg?branch=master&status=passed)](https://travis-ci.com/okta/okta-management-openapi-spec)
 
+
 # Okta OpenAPI Specification (Management APIs)
 
 - [Okta OpenAPI Specification (Management APIs)](#okta-openapi-specification-management-apis)
