@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.13.0
+  version: 2.14.0
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -9365,6 +9365,9 @@ definitions:
         $ref: '#/definitions/AppUserCredentials'
       externalId:
         readOnly: true
+        type: string
+      foo:
+        readOnly: false
         type: string
       id:
         type: string

@@ -9109,6 +9109,9 @@ definitions:
       - User
   AppUser:
     properties:
+      foo:
+        type: string
+        readOnly: false
       _embedded:
         additionalProperties:
           type: object
