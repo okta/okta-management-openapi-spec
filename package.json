@@ -18,7 +18,7 @@
     "build-redoc": "redoc-cli bundle dist/spec.yaml -o build/gh-pages/index.html",
     "build": "node lib/build.js && npm run validate-custom && npm run validate-swagger",
     "test": "npm run test:unit && npm run test:coverage",
-    "test:unit": "istanbul cover _mocha -- \"test/**/*.js\"",
+    "test:unit": "nyc --reporter=lcov --reporter=text-summary _mocha -- \"test/**/*.js\"",
     "test:coverage": "istanbul check-coverage --statements 70 --branches 70 --functions 85 --lines 70",
     "validate-swagger": "swagger-cli validate dist/spec.json",
     "validate-custom": "node lib/validate.js"
@@ -27,9 +27,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "chai": "3.5.0",
-    "istanbul": "0.4.5",
     "lodash": "^4.17.15",
     "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
     "redoc-cli": "^0.13.16",
     "semver": "5.3.0",
     "sinon": "2.2.0"
