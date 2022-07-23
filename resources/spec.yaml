@@ -14993,6 +14993,8 @@ definitions:
       - fpt
       - kba
       - mfa
+      - mca
+      - sc
     type: string
     x-okta-tags:
       - Session

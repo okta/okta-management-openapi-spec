@@ -13,7 +13,7 @@
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "2.10.0"
+    "version": "2.11.0"
   },
   "externalDocs": {
     "description": "Find more info here",
@@ -23047,7 +23047,9 @@
         "geo",
         "fpt",
         "kba",
-        "mfa"
+        "mfa",
+        "mca",
+        "sc"
       ],
       "type": "string",
       "x-okta-tags": [
