@@ -184,6 +184,31 @@ paths:
       summary: Update Application
       tags:
         - Application
+  '/api/v1/apps/{appId}/policies/{policyId}':
+    put:
+      consumes:
+        - application/json
+      description: Assign an application to a specific policy. This unassigns the application from its currently assigned policy.
+      operationId: updateApplicationPolicy
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: path
+          name: policyId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: No Content
+      security:
+        - api_token: []
+      summary: Update application policy
+      tags:
+        - Application
   '/api/v1/apps/{appId}/connections/default':
     get:
       consumes:
@@ -2670,7 +2695,7 @@ paths:
           type: string
         - description: Filter expression for groups
           in: query
-          name: search
+          name: filter
           type: string
         - description: Specifies the pagination cursor for the next page of groups
           in: query
@@ -2685,6 +2710,10 @@ paths:
         - description: If specified, it causes additional metadata to be included in the response.
           in: query
           name: expand
+          type: string
+        - description: Searches for groups with a supported filtering expression for all attributes except for _embedded, _links, and objectClass
+          in: query
+          name: search
           type: string
       produces:
         - application/json
@@ -7906,7 +7935,7 @@ paths:
           description: Not Found
       security:
         - api_token: []
-      summary: Subscribe to a specific notification type 
+      summary: Subscribe to a specific notification type
       tags:
         - Subscription
   '/api/v1/users/{userId}/subscriptions/{notificationType}/unsubscribe':
@@ -8340,6 +8369,372 @@ paths:
       security:
         - api_token: []
       summary: Update Brand
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email':
+    get:
+      description: List email templates in your organization with pagination.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: listEmailTemplates
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - description: Specifies the pagination cursor for the next page of email templates.
+          in: query
+          name: after
+          type: string
+        - default: 20
+          description: Specifies the number of results returned (maximum 200)
+          format: int32
+          in: query
+          name: limit
+          type: integer
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/EmailTemplate'
+            type: array
+      summary: List Email Templates
+      security:
+        - api_token: []
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email/{templateName}':
+    get:
+      description: Fetch an email template by templateName
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: getEmailTemplate
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplate'
+      summary: Get Email Template
+      security:
+        - api_token: []
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email/{templateName}/customizations':
+    get:
+      description: List all email customizations for an email template
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: listEmailTemplateCustomizations
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+      responses:
+
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/EmailTemplateCustomization'
+            type: array
+      summary: List Email Template Customization
+      security:
+        - api_token: []
+      tags:
+        - Brand
+    post:
+      description: Create an email customization
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: createEmailTemplateCustomization
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+        - in: body
+          name: customization
+          required: true
+          schema:
+            $ref: '#/definitions/EmailTemplateCustomizationRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplateCustomization'
+        '409':
+          description: Conflict
+      summary: Create Email Template Customization
+      security:
+        - api_token: []
+      tags:
+        - Brand
+    delete:
+      description: Delete all customizations for an email template. Also known as “Reset to Default”.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: deleteEmailTemplateCustomizations
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Success
+      summary: Delete Email Template Customization
+      security:
+        - api_token: []
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}':
+    get:
+      description: Fetch an email customization by id.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: getEmailTemplateCustomization
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+        - in: path
+          name: customizationId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplateCustomization'
+      summary: Get Email Template Customization
+      security:
+        - api_token: []
+      tags:
+        - Brand
+    put:
+      description: Update an email customization
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: updateEmailTemplateCustomization
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+        - in: path
+          name: customizationId
+          required: true
+          type: string
+        - in: body
+          name: customization
+          required: true
+          schema:
+            $ref: '#/definitions/EmailTemplateCustomizationRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplateCustomization'
+        '409':
+          description: Conflict
+      summary: Update Email Customization
+      security:
+        - api_token: []
+      tags:
+        - Brand
+    delete:
+      description: Delete an email customization
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: deleteEmailTemplateCustomization
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+        - in: path
+          name: customizationId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '409':
+          description: Conflict
+      summary: Delete Email Customization
+      security:
+        - api_token: []
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}/preview':
+    get:
+      description: Get a preview of an email template customization.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: getEmailTemplateCustomizationPreview
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+        - in: path
+          name: customizationId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplateContent'
+      summary: Get Preview Content of Email Customization
+      security:
+        - api_token: []
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email/{templateName}/default-content':
+    get:
+      description: Fetch the default content for an email template.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: getEmailTemplateDefaultContent
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplateContent'
+      summary: Get Default Content of Email Template
+      security:
+        - api_token: []
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email/{templateName}/default-content/preview':
+    get:
+      description: Fetch a preview of an email template's default content by populating velocity references with the current user's environment.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: getEmailTemplateDefaultContentPreview
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EmailTemplateContent'
+      summary: Get Preview of Email Template Default Content
+      security:
+        - api_token: []
+      tags:
+        - Brand
+  '/api/v1/brands/{brandId}/templates/email/{templateName}/test':
+    post:
+      description: >-
+        Send a test email to the current users primary and secondary email addresses. The email content is selected based on the following priority:
+        An email customization specifically for the users locale.
+        The default language of email customizations.
+        The email templates default content.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: sendTestEmail
+      parameters:
+        - in: path
+          name: brandId
+          required: true
+          type: string
+        - in: path
+          name: templateName
+          required: true
+          type: string
+        - in: body
+          name: customization
+          required: true
+          schema:
+            $ref: '#/definitions/EmailTemplateTestRequest'
+      responses:
+        '204':
+          description: No Content
+      summary: Get Preview of Email Template Default Content
+      security:
+        - api_token: []
       tags:
         - Brand
   '/api/v1/brands/{brandId}/themes':
@@ -9126,6 +9521,11 @@ definitions:
           - dest: appId
             src: id
         operationId: updateFeatureForApplication
+      - alias: updateApplicationPolicy
+        arguments:
+          - dest: appId
+            src: id
+        operationId: updateApplicationPolicy
     x-okta-tags:
       - Application
     x-openapi-v3-discriminator:
@@ -9480,6 +9880,12 @@ definitions:
         type: string
       userNameTemplate:
         $ref: '#/definitions/AuthenticatorProviderConfigurationUserNamePlate'
+      host:
+        type: string
+      secretKey:
+        type: string
+      integrationKey:
+        type: string
     x-okta-tags:
       - Authenticator
   AuthenticatorProviderConfigurationUserNamePlate:
@@ -10353,6 +10759,7 @@ definitions:
       - DUO
       - YUBICO
       - CUSTOM
+      - APPLE
     type: string
     x-okta-tags:
       - UserFactor
@@ -11090,6 +11497,10 @@ definitions:
     properties:
       kid:
         type: string
+      privateKey:
+        type: string
+      teamId:
+        type: string
     type: object
     x-okta-tags:
       - IdentityProvider
@@ -11467,6 +11878,24 @@ definitions:
       name:
         type: string
     x-okta-parent: '#/definitions/PolicyRule'
+    type: object
+    x-okta-tags:
+      - Policy
+  IdpPolicyRuleAction:
+    properties:
+      providers:
+        items:
+          $ref: '#/definitions/IdpPolicyRuleActionProvider'
+        type: array
+    type: object
+    x-okta-tags:
+      - Policy
+  IdpPolicyRuleActionProvider:
+    properties:
+      id:
+        type: string
+      type:
+        type: string
     type: object
     x-okta-tags:
       - Policy
@@ -12541,6 +12970,7 @@ definitions:
       - GOOGLE
       - DUO
       - YUBIKEY
+      - APPLE
     type: string
     x-okta-tags:
       - Log
@@ -14172,6 +14602,8 @@ definitions:
         $ref: '#/definitions/PasswordPolicyRuleAction'
       selfServiceUnlock:
         $ref: '#/definitions/PasswordPolicyRuleAction'
+      idp:
+        $ref: '#/definitions/IdpPolicyRuleAction'
     type: object
     x-okta-tags:
       - Policy
@@ -14536,7 +14968,12 @@ definitions:
     x-okta-tags:
       - User
   ResponseLinks:
-    properties: { }
+    properties:
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
     type: object
     x-okta-tags:
       - User
@@ -14838,6 +15275,10 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/ScopeType'
+      allowedOktaApps:
+        type: array
+        items:
+          $ref: '#/definitions/IframeEmbedScopeAllowedApps'
     type: object
     x-okta-tags:
       - Role
@@ -14845,7 +15286,14 @@ definitions:
     enum:
       - CORS
       - REDIRECT
+      - IFRAME_EMBED
     type: string
+    x-okta-tags:
+      - Role
+  IframeEmbedScopeAllowedApps:
+    type: string
+    enum:
+      - OKTA_ENDUSER
     x-okta-tags:
       - Role
   SecurePasswordStoreApplication:
@@ -16322,3 +16770,106 @@ definitions:
         readOnly: true
     x-okta-tags:
       - Brand
+  EmailTemplate:
+    properties:
+      name:
+        type: string
+        readOnly: true
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-crud:
+      - alias: read
+        operationId: getEmailTemplate
+    x-okta-operations:
+      - alias: getEmailTemplate
+        operationId: getEmailTemplate
+      - alias: deleteEmailTemplateCustomizations
+        operationId: deleteEmailTemplateCustomizations
+      - alias: listEmailTemplateCustomizations
+        operationId: listEmailTemplateCustomizations
+      - alias: createEmailTemplateCustomization
+        operationId: createEmailTemplateCustomization
+      - alias: deleteEmailTemplateCustomization
+        operationId: deleteEmailTemplateCustomization
+      - alias: getEmailTemplateCustomization
+        operationId: getEmailTemplateCustomization
+      - alias: updateEmailTemplateCustomization
+        operationId: updateEmailTemplateCustomization
+      - alias: getEmailTemplateCustomizationPreview
+        operationId: getEmailTemplateCustomizationPreview
+      - alias: getEmailTemplateDefaultContent
+        operationId: getEmailTemplateDefaultContent
+      - alias: getEmailTemplateDefaultContentPreview
+        operationId: getEmailTemplateDefaultContentPreview
+      - alias: sendTestEmail
+        operationId: sendTestEmail
+    x-okta-tags:
+      - Brands
+  EmailTemplateCustomization:
+    properties:
+      body:
+        type: string
+      language:
+        type: string
+        description: unique under each email template
+      subject:
+        type: string
+      id:
+        type: string
+        readOnly: true
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      isDefault:
+        type: boolean
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - Brands
+  EmailTemplateCustomizationRequest:
+    properties:
+      body:
+        type: string
+      language:
+        type: string
+        description: unique under each email template
+      subject:
+        type: string
+      isDefault:
+        type: boolean
+    x-okta-tags:
+      - Brands
+  EmailTemplateContent:
+    properties:
+      body:
+        type: string
+      fromAddress:
+        type: string
+      fromName:
+        type: string
+      subject:
+        type: string
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - Brands
+  EmailTemplateTestRequest:
+    properties:
+      customizationId:
+        type: string
+    x-okta-tags:
+      - Brands

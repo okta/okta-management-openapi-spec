@@ -1,10 +1,65 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.13.0
+
+### Additions
+
+ - Added properties `host`, `integrationKey`, and `secretKey` to `AuthenticatorProviderConfiguration` model to support Duo Authenticator [#134](https://github.com/okta/okta-management-openapi-spec/pull/134)
+
+### Bug Fixes
+
+ - Renamed query parameter `search` to `filter` on `GET /api/v1/groups` endpoint [#138](https://github.com/okta/okta-management-openapi-spec/pull/138)
+
+## 2.12.0
+ - Adds model `IframeEmbedScopeAllowedApps`
+ - Updates `ScopeType` to include option `IFRAME_EMBED`
+ - Add Update Application Policy Path
+    - `PUT /api/v1/apps/{applicationId}/policies/{policyId}`
+        - operation added `updateApplicationPolicy`
+## 2.11.2
+### Changes
+ - Add `_links` property to `ResponseLinks` model
+
+## 2.11.1
+### Changes
+ - Changes `sendTestEmail` response to a `204 no content` instead of `200 success`
+ - Adds `privateKey` and `teamId` properties to `IdentityProviderCredentialsSigning` to support Apple devices
+ - Adds to `APPLE` to the enums in `FactorProvider' and `LogCredentialProvider
+
+## 2.11.0
+### Additions
+ - New Paths:
+    - `GET /api/v1/brands/{brandId}/templates/email`
+        - operation added: `listEmailTemplates`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}`
+        - operation added: `getEmailTemplate`
+    - `DELETE & GET & POST /api/v1/brands/{brandId}/templates/email/{templateName}/customizations`
+        - operations added: `deleteEmailTemplateCustomizations`, `listEmailTemplateCustomizations`, `createEmailTemplateCustomization`
+    - `DELETE & GET & PUT /api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}`
+        - operations added: `deleteEmailTemplateCustomization`, `getEmailTemplateCustomization`, `updateEmailTemplateCustomization`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}/customizations/{customizationId}/preview`
+        - operation added: `getEmailTemplateCustomizationPreview`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}/default-content`
+        - operation added: `getEmailTemplateDefaultContent`
+    - `GET /api/v1/brands/{brandId}/templates/email/{templateName}/default-content/preview`
+        - operation added: `getEmailTemplateDefaultContentPreview`
+    - `POST /api/v1/brands/{brandId}/templates/email/{templateName}/test`
+        - operation added: `sendTestEmail`
+ - Models Added:
+    - `EmailTemplate`
+    - `EmailTemplateCustomization`
+    - `EmailTemplateCustomizationRequest`
+    - `EmailTemplateContent`
+    - `EmailTemplateTestRequest`
+
+
+## 2.10.0
+
 ## 2.9.1
 
 ### Bug fixes
- - Added `sharedSecret` attribute to `AuthenticatorProviderConfiguration` 
+ - Added `sharedSecret` attribute to `AuthenticatorProviderConfiguration`
  - `Authenticator`'s properties should not inherit from `Authenticator`
 
 ### Bug Fixes:
