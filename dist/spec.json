@@ -17160,7 +17160,8 @@
     },
     "DomainCertificateSourceType": {
       "enum": [
-        "MANUAL"
+        "MANUAL",
+        "OKTA_MANAGED"
       ],
       "type": "string",
       "x-okta-tags": [
@@ -17194,6 +17195,8 @@
         "NOT_STARTED",
         "IN_PROGRESS",
         "VERIFIED",
+        "FAILED_TO_VERIFY",
+        "DOMAIN_TAKEN",
         "COMPLETED"
       ],
       "type": "string",
