@@ -10955,6 +10955,7 @@ definitions:
   DomainCertificateSourceType:
     enum:
       - MANUAL
+      - OKTA_MANAGED
     type: string
     x-okta-tags:
       - Domain
@@ -10977,6 +10978,8 @@ definitions:
       - NOT_STARTED
       - IN_PROGRESS
       - VERIFIED
+      - FAILED_TO_VERIFY
+      - DOMAIN_TAKEN
       - COMPLETED
     type: string
     x-okta-tags:
