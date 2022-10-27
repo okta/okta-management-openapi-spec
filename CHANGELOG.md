@@ -1,6 +1,11 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.15.0
+
+### Additions
+ - Added property `pkce_required` to `ApplicationCredentialsOAuthClient` model
+
 ## 2.13.0
 
 ### Additions

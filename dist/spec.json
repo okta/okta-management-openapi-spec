@@ -15163,6 +15163,9 @@
         "client_secret": {
           "type": "string"
         },
+        "pkce_required": {
+          "type": "boolean"
+        },
         "token_endpoint_auth_method": {
           "$ref": "#/definitions/OAuthEndpointAuthenticationMethod"
         }
