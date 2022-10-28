@@ -4,7 +4,21 @@ Running changelog of releases since `2.2.3`
 ## 2.15.0
 
 ### Additions
- - Added property `pkce_required` to `ApplicationCredentialsOAuthClient` model
+
+ - Added `/api/v1/apps/${applicationId}/credentials/secrets` endpoints and `ClientSecret` model by @monde in https://github.com/okta/okta-management-openapi-spec/pull/146
+ - Added property `pkce_required` to `ApplicationCredentialsOAuthClient` model by @monde in https://github.com/okta/okta-management-openapi-spec/pull/146
+
+## 2.14.0
+
+### Changes
+
+ -  chore(deps): upgrade vulnerable dependency by @oleksandrpravosudko-okta in https://github.com/okta/okta-management-openapi-spec/pull/142
+
+### Additions
+
+ - Added new enum values `mca` and `sc` to `SessionAuthenticationMethod` by @arvindkrishnakumar-okta in https://github.com/okta/okta-management-openapi-spec/pull/143
+ - Verification Method model is missing inactivityPeriod property by @monde in https://github.com/okta/okta-management-openapi-spec/pull/140
+
 
 ## 2.13.0
 
