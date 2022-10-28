@@ -314,6 +314,162 @@ paths:
         - api_token: []
       tags:
         - Application
+  '/api/v1/apps/{appId}/credentials/secrets':
+    get:
+      consumes:
+        - application/json
+      description: Enumerates the client's collection of secrets
+      operationId: listClientSecretsForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/ClientSecret'
+            type: array
+      security:
+        - api_token: []
+      summary: List client secrets
+      tags:
+        - Application
+    post:
+      consumes:
+        - application/json
+      description: >-
+        Adds a new secret to the client's collection of secrets.
+      operationId: createNewClientSecretForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: body
+          name: metadata
+          required: true
+          schema:
+            $ref: '#/definitions/ClientSecretMetadata'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/ClientSecret'
+      security:
+        - api_token: []
+      summary: Add new client secret
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/credentials/secrets/{secretId}':
+    get:
+      consumes:
+        - application/json
+      description: Gets a specific client secret by secretId
+      operationId: getClientSecretForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: path
+          name: secretId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ClientSecret'
+      security:
+        - api_token: []
+      summary: Get client secret
+      tags:
+        - Application
+    delete:
+      consumes:
+        - application/json
+      operationId: deleteClientSecretForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: path
+          name: secretId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: No Content
+      security:
+        - api_token: []
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/credentials/secrets/{secretId}/lifecycle/activate':
+    post:
+      consumes:
+        - application/json
+      description: Activates a specific client secret by secretId
+      operationId: activateClientSecretForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: path
+          name: secretId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ClientSecret'
+      security:
+        - api_token: []
+      summary: Activate a client secret
+      tags:
+        - Application
+  '/api/v1/apps/{appId}/credentials/secrets/{secretId}/lifecycle/deactivate':
+    post:
+      consumes:
+        - application/json
+      description: Deactivates a specific client secret by secretId
+      operationId: deactivateClientSecretForApplication
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: path
+          name: secretId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ClientSecret'
+      security:
+        - api_token: []
+      summary: Deactivate a client secret
+      tags:
+        - Application
   '/api/v1/apps/{appId}/credentials/csrs':
     get:
       consumes:
@@ -10339,6 +10495,43 @@ definitions:
         readOnly: true
         type: string
     type: object
+    x-okta-tags:
+      - Application
+  ClientSecret:
+    properties:
+      id:
+        type:
+          string
+      client_secret:
+        type:
+          string
+      secret_hash:
+        type:
+          string
+      created:
+        format: date-time
+        readOnly: true
+        type: string
+      lastUpdated:
+        format: date-time
+        readOnly: true
+        type: string
+      status:
+        enum:
+          - ACTIVE
+          - INACTIVE
+        type: string
+      _links:
+        additionalProperties:
+          type: object
+        readOnly: true
+        type: object
+    x-okta-tags:
+      - Application
+  ClientSecretMetadata:
+    properties:
+      client_secret:
+        type: string
     x-okta-tags:
       - Application
   CsrMetadata:
