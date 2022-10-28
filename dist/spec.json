@@ -3511,13 +3511,13 @@
         "parameters": [
           {
             "in": "path",
-            "name": "policyId",
+            "name": "authServerId",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "authServerId",
+            "name": "policyId",
             "required": true,
             "type": "string"
           }
@@ -3554,13 +3554,13 @@
         "parameters": [
           {
             "in": "path",
-            "name": "policyId",
+            "name": "authServerId",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "authServerId",
+            "name": "policyId",
             "required": true,
             "type": "string"
           },
@@ -3604,13 +3604,13 @@
         "parameters": [
           {
             "in": "path",
-            "name": "policyId",
+            "name": "authServerId",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "authServerId",
+            "name": "policyId",
             "required": true,
             "type": "string"
           },
@@ -3647,13 +3647,13 @@
         "parameters": [
           {
             "in": "path",
-            "name": "policyId",
+            "name": "authServerId",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "authServerId",
+            "name": "policyId",
             "required": true,
             "type": "string"
           },
@@ -3693,13 +3693,13 @@
         "parameters": [
           {
             "in": "path",
-            "name": "policyId",
+            "name": "authServerId",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "authServerId",
+            "name": "policyId",
             "required": true,
             "type": "string"
           },
