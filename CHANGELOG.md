@@ -7,6 +7,7 @@ Running changelog of releases since `2.2.3`
 
  - Added `/api/v1/apps/${applicationId}/credentials/secrets` endpoints and `ClientSecret` model by @monde in https://github.com/okta/okta-management-openapi-spec/pull/146
  - Added property `pkce_required` to `ApplicationCredentialsOAuthClient` model by @monde in https://github.com/okta/okta-management-openapi-spec/pull/145
+ - Added `uiSchemaId` property to the `ProfileEnrollmentPolicyRuleAction` model by @emanor-okta in https://github.com/okta/okta-management-openapi-spec/pull/144
 
 ### Bug fixes
 

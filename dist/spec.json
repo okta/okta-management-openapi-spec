@@ -22939,6 +22939,9 @@
           },
           "type": "array"
         },
+        "uiSchemaId": {
+          "type": "string"
+        },
         "unknownUserAction": {
           "type": "string"
         }

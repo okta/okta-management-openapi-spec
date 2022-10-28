@@ -14744,6 +14744,8 @@ definitions:
         items:
           type: string
         type: array
+      uiSchemaId:
+        type: string
       unknownUserAction:
         type: string
     type: object
