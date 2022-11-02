@@ -6221,7 +6221,7 @@ paths:
       consumes:
         - application/json
       description: >-
-        Lists users in your organization with pagination in most cases.  A
+        Lists users that do not have a status of 'DEPROVISIONED' (by default), up to the maximum (200 for most orgs), with pagination in most cases. A
         subset of users can be returned that match a supported filter expression
         or search criteria.
       operationId: listUsers
