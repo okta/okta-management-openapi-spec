@@ -7438,8 +7438,7 @@ paths:
       consumes:
         - application/json
       description: >-
-        Fetch a user by `id`, `login`, or `login shortname` if the short name is
-        unambiguous.
+        Update a user's profile or credentials with partial update semantics.
       operationId: partialUpdateUser
       parameters:
         - in: body
