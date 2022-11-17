@@ -2241,7 +2241,7 @@
         "consumes": [
           "application/json"
         ],
-        "description": "Success",
+        "description": "List Authenticators",
         "operationId": "listAuthenticators",
         "parameters": [],
         "produces": [
@@ -2263,6 +2263,49 @@
             "api_token": []
           }
         ],
+        "summary": "Lists all available Authenticators",
+        "tags": [
+          "Authenticator"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Create Authenticator",
+        "operationId": "createAuthenticator",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "activate",
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "authenticator",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Authenticator"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "summary": "Create an Authenticator",
         "tags": [
           "Authenticator"
         ]
