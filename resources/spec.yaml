@@ -1421,7 +1421,8 @@ paths:
     get:
       consumes:
         - application/json
-      description: Success
+      description: List Authenticators
+      summary: Lists all available Authenticators
       operationId: listAuthenticators
       parameters: []
       produces:
@@ -1433,6 +1434,32 @@ paths:
             items:
               $ref: '#/definitions/Authenticator'
             type: array
+      security:
+        - api_token: []
+      tags:
+        - Authenticator
+    post:
+      consumes:
+        - application/json
+      description: Create Authenticator
+      summary: Create an Authenticator
+      operationId: createAuthenticator
+      parameters:
+        - in: query
+          name: activate
+          type: boolean
+        - in: body
+          name: authenticator
+          required: true
+          schema:
+            $ref: '#/definitions/Authenticator'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Authenticator'
       security:
         - api_token: []
       tags:
