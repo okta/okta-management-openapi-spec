@@ -15395,6 +15395,7 @@ definitions:
       - API_ACCESS_MANAGEMENT_ADMIN
       - REPORT_ADMIN
       - GROUP_MEMBERSHIP_ADMIN
+      - CUSTOM
     type: string
     x-okta-tags:
       - Role
