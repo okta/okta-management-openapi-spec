@@ -26373,6 +26373,7 @@ components:
       enum:
         - API_ACCESS_MANAGEMENT_ADMIN
         - APP_ADMIN
+        - CUSTOM
         - GROUP_MEMBERSHIP_ADMIN
         - HELP_DESK_ADMIN
         - MOBILE_ADMIN
