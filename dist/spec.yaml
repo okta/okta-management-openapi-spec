@@ -25,7 +25,7 @@ info:
   license:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 2.15.0
+  version: 2.16.0
 externalDocs:
   description: Find more info here
   url: 'https://developer.okta.com/docs/api/getting_started/design_principles.html'
@@ -13144,16 +13144,6 @@ definitions:
     type: string
     x-okta-tags:
       - Policy
-  MultifactorEnrollmentPolicyRule:
-    properties:
-      actions:
-        $ref: '#/definitions/ProfileEnrollmentPolicyRuleActions'
-      name:
-        type: string
-    type: object
-    x-okta-parent: '#/definitions/PolicyRule'
-    x-okta-tags:
-      - Policy
   MultifactorEnrollmentPolicySettings:
     properties:
       authenticators:
@@ -14679,7 +14669,6 @@ definitions:
     x-openapi-v3-discriminator:
       mapping:
         ACCESS_POLICY: '#/definitions/AccessPolicyRule'
-        MFA_ENROLL: '#/definitions/MultifactorEnrollmentPolicyRule'
         PASSWORD: '#/definitions/PasswordPolicyRule'
         PROFILE_ENROLLMENT: '#/definitions/ProfileEnrollmentPolicyRule'
         SIGN_ON: '#/definitions/OktaSignOnPolicyRule'

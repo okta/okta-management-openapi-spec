@@ -12171,16 +12171,6 @@ definitions:
             $ref: '#/definitions/PolicyRuleConditions'
           settings:
             $ref: '#/definitions/MultifactorEnrollmentPolicySettings'
-  MultifactorEnrollmentPolicyRule:
-    properties:
-      actions:
-        $ref: '#/definitions/ProfileEnrollmentPolicyRuleActions'
-      name:
-        type: string
-    x-okta-parent: '#/definitions/PolicyRule'
-    type: object
-    x-okta-tags:
-      - Policy
   MultifactorEnrollmentPolicySettings:
     type: object
     properties:
@@ -14861,7 +14851,6 @@ definitions:
         SIGN_ON: '#/definitions/OktaSignOnPolicyRule'
         PROFILE_ENROLLMENT: '#/definitions/ProfileEnrollmentPolicyRule'
         ACCESS_POLICY: '#/definitions/AccessPolicyRule'
-        MFA_ENROLL: '#/definitions/MultifactorEnrollmentPolicyRule'
       propertyName: type
   PolicyRuleAuthContextCondition:
     properties:
