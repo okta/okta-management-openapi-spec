@@ -22745,7 +22745,6 @@
           "enum": [
             "SIGN_ON",
             "PASSWORD",
-            "MFA_ENROLL",
             "IDP_DISCOVERY",
             "ACCESS_POLICY",
             "PROFILE_ENROLLMENT"
