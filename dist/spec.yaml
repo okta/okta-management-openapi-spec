@@ -14626,9 +14626,6 @@ definitions:
         enum:
           - SIGN_ON
           - PASSWORD
-          - IDP_DISCOVERY
-          - ACCESS_POLICY
-          - PROFILE_ENROLLMENT
         type: string
     type: object
     x-okta-crud:

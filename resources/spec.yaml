@@ -14799,9 +14799,6 @@ definitions:
         enum:
           - SIGN_ON
           - PASSWORD
-          - IDP_DISCOVERY
-          - ACCESS_POLICY
-          - PROFILE_ENROLLMENT
         type: string
       name:
         type: string
