@@ -21471,6 +21471,9 @@ components:
           readOnly: true
         credentials:
           $ref: '#/components/schemas/AuthorizationServerCredentials'
+        default:
+          readOnly: true
+          type: boolean
         description:
           type: string
         id:
