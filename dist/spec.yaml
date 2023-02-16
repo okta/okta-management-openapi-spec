@@ -10279,6 +10279,9 @@ definitions:
         type: string
       credentials:
         $ref: '#/definitions/AuthorizationServerCredentials'
+      default:
+        readOnly: true
+        type: boolean
       description:
         type: string
       id:
