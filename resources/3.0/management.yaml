@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 5.0.0
+  version: 5.1.0
   x-logo:
     url: logo.svg
     backgroundColor: transparent
@@ -106,6 +106,9 @@ tags:
   - name: DeviceAssurance
     x-displayName: Device Assurance Policies
     description: The Device Assurance Policies API provides operations to manage device assurance policies in your organization.
+  - name: EmailDomain
+    x-displayName: Email Domains
+    description: The Email Domains API provides operations to manage email domains for your organization.
   - name: EventHook
     x-displayName: Event Hooks
     description: |-
@@ -2897,7 +2900,7 @@ paths:
       - $ref: '#/components/parameters/pathAuthServerId'
     get:
       summary: List all Associated Authorization Servers
-      description: Lists all associated authorization servers by trusted type for the given authServerId
+      description: Lists all associated authorization servers by trusted type for the given `authServerId`
       operationId: listAssociatedServersByTrustedType
       parameters:
         - name: trusted
@@ -2907,7 +2910,7 @@ paths:
             type: boolean
         - name: q
           in: query
-          description: Searches the name or andience of the associated authorization servers
+          description: Searches the name or audience of the associated authorization servers
           schema:
             type: string
         - name: limit
@@ -4403,7 +4406,7 @@ paths:
         isGenerallyAvailable: true
     post:
       summary: Create a Brand
-      description: Creates new brand in your org
+      description: Creates a new brand in your org
       operationId: createBrand
       requestBody:
         content:
@@ -4514,7 +4517,7 @@ paths:
         isGenerallyAvailable: true
     delete:
       summary: Delete a brand
-      description: Deletes a brand by its unique identifier
+      description: Deletes a brand by `brandId`
       operationId: deleteBrand
       responses:
         '204':
@@ -6865,6 +6868,234 @@ paths:
         - CustomDomain
       x-okta-lifecycle:
         lifecycle: GA
+        isGenerallyAvailable: true
+  /api/v1/email-domains:
+    get:
+      summary: List all Email Domains
+      description: Lists all the Email Domains in your org
+      operationId: listEmailDomains
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailDomainResponse'
+              examples:
+                List email domain response:
+                  $ref: '#/components/examples/EmailDomainResponse'
+        '403':
+          $ref: '#/components/responses/ErrorAccessDenied403'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests429'
+      security:
+        - apiToken: []
+        - oauth2:
+            - okta.emailDomains.read
+      tags:
+        - EmailDomain
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: true
+    post:
+      summary: Create an Email Domain
+      description: Creates an Email Domain in your org
+      operationId: createEmailDomain
+      x-codegen-request-body-name: emailDomain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailDomain'
+            examples:
+              Create email domain request:
+                $ref: '#/components/examples/CreateEmailDomainRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailDomainResponse'
+              examples:
+                Create email domain response:
+                  $ref: '#/components/examples/EmailDomainResponse'
+        '400':
+          $ref: '#/components/responses/ErrorApiValidationFailed400'
+        '403':
+          $ref: '#/components/responses/ErrorAccessDenied403'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound404'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Email domain already exists:
+                  $ref: '#/components/examples/ErrorEmailDomainAlreadyExists'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests429'
+      security:
+        - apiToken: []
+        - oauth2:
+            - okta.emailDomains.manage
+      tags:
+        - EmailDomain
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: true
+  /api/v1/email-domains/{emailDomainId}:
+    parameters:
+      - $ref: '#/components/parameters/pathEmailDomainId'
+    get:
+      summary: Retrieve an Email Domain
+      description: Retrieves an Email Domain by `emailDomainId`
+      operationId: getEmailDomain
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailDomainResponse'
+              examples:
+                Retrieve email domain response:
+                  $ref: '#/components/examples/EmailDomainResponse'
+        '403':
+          $ref: '#/components/responses/ErrorAccessDenied403'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound404'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests429'
+      security:
+        - apiToken: []
+        - oauth2:
+            - okta.emailDomains.read
+      tags:
+        - EmailDomain
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: true
+    put:
+      summary: Replace an Email Domain
+      description: Replaces associated username and sender display name by `emailDomainId`
+      operationId: replaceEmailDomain
+      x-codegen-request-body-name: updateEmailDomain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmailDomain'
+            examples:
+              Update email domain request:
+                $ref: '#/components/examples/UpdateEmailDomainRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailDomainResponse'
+              examples:
+                Update email domain response:
+                  $ref: '#/components/examples/UpdatedEmailDomainResponse'
+        '400':
+          $ref: '#/components/responses/ErrorApiValidationFailed400'
+        '403':
+          $ref: '#/components/responses/ErrorAccessDenied403'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound404'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests429'
+      security:
+        - apiToken: []
+        - oauth2:
+            - okta.emailDomains.manage
+      tags:
+        - EmailDomain
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: true
+    delete:
+      summary: Delete an Email Domain
+      description: Deletes an Email Domain by `emailDomainId`
+      operationId: deleteEmailDomain
+      responses:
+        '204':
+          description: No Content
+          content: {}
+        '400':
+          description: Unable to delete custom email domain due to mail provider specific restrictions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Email domain in use:
+                  $ref: '#/components/examples/ErrorEmailDomainInUse'
+        '403':
+          $ref: '#/components/responses/ErrorAccessDenied403'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound404'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests429'
+      security:
+        - apiToken: []
+        - oauth2:
+            - okta.emailDomains.manage
+      tags:
+        - EmailDomain
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: true
+  /api/v1/email-domains/{emailDomainId}/verify:
+    parameters:
+      - $ref: '#/components/parameters/pathEmailDomainId'
+    post:
+      summary: Verify an Email Domain
+      description: Verifies an Email Domain by `emailDomainId`
+      operationId: verifyEmailDomain
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailDomainResponse'
+              examples:
+                Verified email domain response:
+                  $ref: '#/components/examples/VerifiedEmailDomainResponse'
+        '400':
+          description: Email domain could not be verified by mail provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Email domain could not be verified:
+                  $ref: '#/components/examples/ErrorEmailDomainNotVerified'
+                Email domain invalid status:
+                  $ref: '#/components/examples/ErrorEmailDomainInvalidStatus'
+        '403':
+          $ref: '#/components/responses/ErrorAccessDenied403'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound404'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests429'
+      security:
+        - apiToken: []
+        - oauth2:
+            - okta.emailDomains.manage
+      tags:
+        - EmailDomain
+      x-okta-lifecycle:
+        lifecycle: EA
         isGenerallyAvailable: true
   /api/v1/email-servers/{emailServerId}:
     parameters:
@@ -13570,6 +13801,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RiskProvider'
+              examples:
+                RiskProviderList:
+                  $ref: '#/components/examples/ListRiskProviderResponse'
         '403':
           $ref: '#/components/responses/ErrorAccessDenied403'
         '429':
@@ -13595,7 +13829,7 @@ paths:
             schema:
               $ref: '#/components/schemas/RiskProvider'
             examples:
-              Request Example:
+              Request example:
                 $ref: '#/components/examples/RiskProviderRequest'
         required: true
       responses:
@@ -13606,7 +13840,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RiskProvider'
               examples:
-                Example Response:
+                Response example:
                   $ref: '#/components/examples/RiskProviderResponse'
         '400':
           $ref: '#/components/responses/ErrorApiValidationFailed400'
@@ -13646,7 +13880,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RiskProvider'
               examples:
-                Example Response:
+                Response example:
                   $ref: '#/components/examples/RiskProviderResponse'
         '403':
           $ref: '#/components/responses/ErrorAccessDenied403'
@@ -13675,8 +13909,8 @@ paths:
             schema:
               $ref: '#/components/schemas/RiskProvider'
             examples:
-              Request Example:
-                $ref: '#/components/examples/RiskProviderRequest'
+              RiskProviderPutRequestExample:
+                $ref: '#/components/examples/RiskProviderPutRequest'
         required: true
       responses:
         '200':
@@ -13686,8 +13920,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/RiskProvider'
               examples:
-                Example Response:
-                  $ref: '#/components/examples/RiskProviderResponse'
+                RiskProviderPutResponseExample:
+                  $ref: '#/components/examples/RiskProviderPutResponse'
         '400':
           $ref: '#/components/responses/ErrorApiValidationFailed400'
         '403':
@@ -18155,6 +18389,7 @@ components:
         errorId: sampleMlLvGUj_YD5v16vkYWY
         errorCauses: []
     ErrorTooManyRequests:
+      summary: Too Many Requests
       value:
         errorCode: E0000047
         errorSummary: You exceeded the maximum number of requests. Try again in a while.
@@ -18383,6 +18618,22 @@ components:
               rel: self
               href: http://your-subdomain.okta.com/api/v1/realms/guox9jQ16k9V8IFEL0g3
               method: GET
+    ListRiskProviderResponse:
+      summary: List Risk Provider response example
+      value:
+        - id: 00rp12r4skkjkjgsn
+          action: log_only
+          name: Risk-Partner-X
+          clientId: 00ckjsfgjkdkjdkkljjsd
+          created: '2021-01-05 22:18:30'
+          lastUpdated: '2021-01-05 22:18:30'
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/risk/providers/00rp12r4skkjkjgsn
+              hints:
+                allow:
+                  - GET
+                  - PUT
     ListSessionsResponse:
       value:
         - id: uij4ri8ZLk0ywyqxB0g4
@@ -19122,6 +19373,28 @@ components:
               riskLevel: LOW
             - ip: 2.2.2.2
               riskLevel: HIGH
+    RiskProviderPutRequest:
+      summary: Replace Risk Provider request example
+      value:
+        name: Risk-Partner-Y
+        action: enforce_and_log
+        clientId: 00ckjsfgjkdkjdkkljjsd
+    RiskProviderPutResponse:
+      summary: Replace Risk Provider response example
+      value:
+        id: 00rp12r4skkjkjgsn
+        action: enforce_and_log
+        name: Risk-Partner-Y
+        clientId: 00ckjsfgjkdkjdkkljjsd
+        created: '2021-01-05 22:18:30'
+        lastUpdated: '2021-01-05 23:18:30'
+        _links:
+          self:
+            href: https://{yourOktaDomain}/api/v1/risk/providers/00rp12r4skkjkjgsn
+            hints:
+              allow:
+                - GET
+                - PUT
     RiskProviderRequest:
       value:
         name: Risk-Partner-X
@@ -19134,7 +19407,7 @@ components:
         name: Risk-Partner-X
         clientId: 00ckjsfgjkdkjdkkljjsd
         created: '2021-01-05 22:18:30'
-        lastUpdated: '2021-01-05 21:23:10'
+        lastUpdated: '2021-01-05 22:18:30'
         _links:
           self:
             href: https://{yourOktaDomain}/api/v1/risk/providers/00rp12r4skkjkjgsn
@@ -20134,7 +20407,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Resource Not Found:
+            TooManyRequests:
               $ref: '#/components/examples/ErrorTooManyRequests'
     AuthenticatorResponse:
       description: OK
@@ -26553,24 +26826,29 @@ components:
         clientId:
           type: string
           description: The ID of the [OAuth service app](https://developer.okta.com/docs/guides/implement-oauth-for-okta-serviceapp/main/#create-a-service-app-and-grant-scopes) that is used to send risk events to Okta
+          example: 00cjkjjkkgjkdkjdkkljjsd
         created:
           type: string
           format: date-time
           description: Timestamp when the Risk Provider object was created
           readOnly: true
+          example: '2021-01-05 22:18:30'
         id:
           type: string
           description: The ID of the Risk Provider object
           readOnly: true
+          example: 00rp12r4skkjkjgsn
         lastUpdated:
           type: string
           format: date-time
           description: Timestamp when the Risk Provider object was last updated
           readOnly: true
+          example: '2021-01-05 22:18:30'
         name:
           type: string
           description: Name of the risk provider
           maxLength: 50
+          example: Risk-Partner-X
         _links:
           $ref: '#/components/schemas/LinksSelf'
       required:
@@ -26675,6 +26953,7 @@ components:
         - API_ACCESS_MANAGEMENT_ADMIN
         - API_ADMIN
         - APP_ADMIN
+        - CUSTOM
         - GROUP_MEMBERSHIP_ADMIN
         - HELP_DESK_ADMIN
         - MOBILE_ADMIN
@@ -26687,6 +26966,7 @@ components:
         - API_ACCESS_MANAGEMENT_ADMIN: Access Management Administrator
         - API_ADMIN: Access Management Administrator
         - APP_ADMIN: Application Administrator
+        - CUSTOM: Custom Label specified by the client
         - GROUP_MEMBERSHIP_ADMIN: Group Membership Administrator
         - HELP_DESK_ADMIN: Help Desk Administrator
         - MOBILE_ADMIN: Mobile Administrator
@@ -28353,6 +28633,8 @@ components:
             okta.devices.read: Allows the app to read the existing device's profile and search devices.
             okta.domains.manage: Allows the app to manage custom Domains for your Okta organization.
             okta.domains.read: Allows the app to read information about custom Domains for your Okta organization.
+            okta.emailDomains.manage: Allows the app to manage Email Domains for your Okta organization.
+            okta.emailDomains.read: Allows the app to read information about Email Domains for your Okta organization.
             okta.emailServers.manage: Allows the app to manage Email Servers for your Okta organization.
             okta.emailServers.read: Allows the app to read information about Email Servers for your Okta organization.
             okta.eventHooks.manage: Allows the app to create and manage Event Hooks in your Okta organization.
