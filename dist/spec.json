@@ -16051,7 +16051,8 @@
         "issuerMode": {
           "enum": [
             "ORG_URL",
-            "CUSTOM_URL"
+            "CUSTOM_URL",
+            "DYNAMIC"
           ],
           "type": "string"
         },
@@ -18884,7 +18885,8 @@
         "issuerMode": {
           "enum": [
             "ORG_URL",
-            "CUSTOM_URL"
+            "CUSTOM_URL",
+            "DYNAMIC"
           ],
           "type": "string"
         },
@@ -21371,7 +21373,8 @@
     "OpenIdConnectApplicationIssuerMode": {
       "enum": [
         "CUSTOM_URL",
-        "ORG_URL"
+        "ORG_URL",
+        "DYNAMIC"
       ],
       "type": "string",
       "x-okta-tags": [
