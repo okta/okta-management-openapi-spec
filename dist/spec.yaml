@@ -643,6 +643,7 @@ paths:
     delete:
       consumes:
         - application/json
+      description: Removes a secret from the client's collection of secrets.
       operationId: deleteClientSecretForApplication
       parameters:
         - in: path
@@ -7436,9 +7437,7 @@ paths:
     post:
       consumes:
         - application/json
-      description: >-
-        Fetch a user by `id`, `login`, or `login shortname` if the short name is
-        unambiguous.
+      description: Update a user's profile or credentials with partial update semantics.
       operationId: partialUpdateUser
       parameters:
         - in: body
@@ -10279,6 +10278,9 @@ definitions:
         type: string
       credentials:
         $ref: '#/definitions/AuthorizationServerCredentials'
+      default:
+        readOnly: true
+        type: boolean
       description:
         type: string
       id:
@@ -15398,6 +15400,7 @@ definitions:
       - API_ACCESS_MANAGEMENT_ADMIN
       - REPORT_ADMIN
       - GROUP_MEMBERSHIP_ADMIN
+      - CUSTOM
     type: string
     x-okta-tags:
       - Role
