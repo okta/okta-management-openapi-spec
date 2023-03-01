@@ -10290,6 +10290,7 @@ definitions:
         enum:
           - ORG_URL
           - CUSTOM_URL
+          - DYNAMIC
         type: string
       lastUpdated:
         format: date-time
@@ -12072,6 +12073,7 @@ definitions:
         enum:
           - ORG_URL
           - CUSTOM_URL
+          - DYNAMIC
         type: string
       lastUpdated:
         format: date-time
@@ -13735,6 +13737,7 @@ definitions:
     enum:
       - CUSTOM_URL
       - ORG_URL
+      - DYNAMIC
     type: string
     x-okta-tags:
       - Application
