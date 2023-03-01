@@ -7437,8 +7437,7 @@ paths:
     post:
       consumes:
         - application/json
-      description: >-
-        Update a user's profile or credentials with partial update semantics.
+      description: Update a user's profile or credentials with partial update semantics.
       operationId: partialUpdateUser
       parameters:
         - in: body

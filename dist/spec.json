@@ -11638,7 +11638,7 @@
         "consumes": [
           "application/json"
         ],
-        "description": "Fetch a user by `id`, `login`, or `login shortname` if the short name is unambiguous.",
+        "description": "Update a user's profile or credentials with partial update semantics.",
         "operationId": "partialUpdateUser",
         "parameters": [
           {
