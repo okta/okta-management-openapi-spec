@@ -15460,6 +15460,8 @@ definitions:
         type: boolean
       responseSigned:
         type: boolean
+      samlSignedRequestEnabled:
+        type: boolean
       signatureAlgorithm:
         type: string
       slo:
