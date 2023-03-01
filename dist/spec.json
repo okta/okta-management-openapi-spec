@@ -983,6 +983,7 @@
         "consumes": [
           "application/json"
         ],
+        "description": "Removes a secret from the client's collection of secrets.",
         "operationId": "deleteClientSecretForApplication",
         "parameters": [
           {
