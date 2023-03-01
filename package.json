@@ -2,6 +2,11 @@
   "name": "@okta/openapi",
   "version": "2.16.0",
   "description": "Utilities to generate OpenAPI specifications for the Okta API",
+  "homepage": "https://github.com/okta/okta-management-openapi-spec",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/okta/okta-management-openapi-spec.git"
+  },
   "main": "./dist/spec.json",
   "bin": {
     "okta-sdk-generator": "lib/generator.js"
