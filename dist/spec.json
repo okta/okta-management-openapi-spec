@@ -1807,6 +1807,149 @@
         ]
       }
     },
+    "/api/v1/apps/{appId}/sso/saml/metadata": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Previews SAML metadata based on a specific key credential for an application",
+        "operationId": "previewSAMLAppMetadata",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "unique key identifier of an Application Key Credential",
+            "in": "query",
+            "name": "kid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "properties": {
+                "EntityDescriptor": {
+                  "properties": {
+                    "IDPSSODescriptor": {
+                      "properties": {
+                        "KeyDescriptor": {
+                          "properties": {
+                            "KeyInfo": {
+                              "properties": {
+                                "X509Data": {
+                                  "properties": {
+                                    "X509Certificate": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "use": {
+                              "type": "string",
+                              "xml": {
+                                "attribute": true
+                              }
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "NameIDFormat": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "SingleLogoutService": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "properties": {
+                            "Binding": {
+                              "type": "string",
+                              "xml": {
+                                "attribute": true
+                              }
+                            },
+                            "Location": {
+                              "type": "string",
+                              "xml": {
+                                "attribute": true
+                              }
+                            }
+                          },
+                          "type": "array"
+                        },
+                        "SingleSignOnService": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "properties": {
+                            "Binding": {
+                              "type": "string",
+                              "xml": {
+                                "attribute": true
+                              }
+                            },
+                            "Location": {
+                              "type": "string",
+                              "xml": {
+                                "attribute": true
+                              }
+                            }
+                          },
+                          "type": "array"
+                        },
+                        "WantAuthnRequestsSigned": {
+                          "type": "boolean",
+                          "xml": {
+                            "attribute": true
+                          }
+                        },
+                        "protocolSupportEnumeration": {
+                          "type": "string",
+                          "xml": {
+                            "attribute": true
+                          }
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "entityID": {
+                      "type": "string",
+                      "xml": {
+                        "attribute": true
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Application"
+        ]
+      }
+    },
     "/api/v1/apps/{appId}/tokens": {
       "delete": {
         "consumes": [

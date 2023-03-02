@@ -1195,6 +1195,97 @@ paths:
         - api_token: []
       tags:
         - Application
+  '/api/v1/apps/{appId}/sso/saml/metadata':
+    get:
+      consumes:
+        - application/json
+      description: Previews SAML metadata based on a specific key credential for an application
+      operationId: previewSAMLAppMetadata
+      parameters:
+        - in: path
+          name: appId
+          required: true
+          type: string
+        - in: query
+          name: kid
+          type: string
+          required: true
+          description: unique key identifier of an Application Key Credential
+      produces:
+        - application/xml
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties: 
+              EntityDescriptor:
+                type: object
+                properties:
+                  entityID:
+                    type: string
+                    xml:
+                      attribute: true
+                  IDPSSODescriptor:
+                    type: object
+                    properties: 
+                      WantAuthnRequestsSigned:
+                        type: boolean
+                        xml:
+                          attribute: true
+                      protocolSupportEnumeration:
+                        type: string
+                        xml:
+                          attribute: true
+                      KeyDescriptor:
+                        type: object
+                        properties:
+                          use:
+                            type: string
+                            xml:
+                              attribute: true
+                          KeyInfo:
+                            type: object
+                            properties: 
+                              X509Data:
+                                type: object
+                                properties: 
+                                  X509Certificate:
+                                    type: string
+                      NameIDFormat:
+                        type: array
+                        items:
+                          type: string
+                      SingleSignOnService:
+                        type: array
+                        items:
+                          type: string
+                        properties:
+                          Binding:
+                            type: string
+                            xml:
+                              attribute: true
+                          Location:
+                            type: string
+                            xml:
+                              attribute: true
+                      SingleLogoutService:
+                        type: array
+                        items:
+                          type: string
+                        properties:
+                          Binding:
+                            type: string
+                            xml:
+                              attribute: true
+                          Location:
+                            type: string
+                            xml:
+                              attribute: true
+      security:
+        - api_token: []
+      tags:
+        - Application
   '/api/v1/apps/{appId}/tokens/{tokenId}':
     delete:
       consumes:
