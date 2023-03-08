@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: MyAccount Management
-  version: 2.0.0
+  version: 2.1.0
   description: APIs for managing a user's own emails, phones, profile, and app authenticators.
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -39,7 +39,7 @@ paths:
       operationId: createAppAuthenticatorEnrollment
       requestBody:
         content:
-          application/json:
+          application/json, okta-version=1.0.0:
             schema:
               $ref: '#/components/schemas/AppAuthenticatorEnrollmentRequest'
             examples:
@@ -95,7 +95,7 @@ paths:
       operationId: verifyAppAuthenticatorPushNotificationChallenge
       requestBody:
         content:
-          application/json:
+          application/json;okta-version=1.0.0:
             schema:
               $ref: '#/components/schemas/PushNotificationVerification'
             examples:
@@ -123,11 +123,22 @@ paths:
       - $ref: '#/components/parameters/appAuthenticatorEnrollmentId'
     patch:
       summary: Update an app authenticator enrollment
-      description: 'Updates an app authenticator enrollment. Allowed operations: update the user verification key, remove the user verification key, update the push token, and updating the push method transaction types.'
+      description: |-
+        Updates an app authenticator enrollment
+
+        The following update operations are allowed:
+        * Update the user verification key
+        * Remove the user verification key
+        * Update the push token
+        * Update the push method transaction types
+
+        > **Note:** The following higher risk update operations require a stronger `okta.myAccount.appAuthenticator.manage` scope:
+        * Update the user verification key
+        * Remove the user verification key
       operationId: updateAppAuthenticatorEnrollment
       requestBody:
         content:
-          application/json:
+          application/merge-patch+json;okta-version=1.0.0:
             schema:
               $ref: '#/components/schemas/UpdateAppAuthenticatorEnrollmentRequest'
             examples:
@@ -145,9 +156,9 @@ paths:
         '200':
           description: OK
           content:
-            application/merge-patch+json;okta-version=1.0.0:
+            application/json;okta-version=1.0.0:
               schema:
-                $ref: '#/components/schemas/UpdateAppAuthenticatorEnrollmentRequest'
+                $ref: '#/components/schemas/AppAuthenticatorEnrollment'
         '401':
           description: Unauthorized
           content:
@@ -168,7 +179,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - oauth2:
-            - okta.myAccount.appAuthenticator.manage
+            - okta.myAccount.appAuthenticator.maintenance.manage
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
@@ -236,7 +247,7 @@ paths:
                   $ref: '#/components/examples/GetPendingNotificationsJWTPayload'
       security:
         - oauth2:
-            - okta.myAccount.appAuthenticator.read
+            - okta.myAccount.appAuthenticator.maintenance.read
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
@@ -1194,6 +1205,7 @@ components:
           appInstanceName: Okta Dashboard
           method: push
           methodEnrollmentId: opf6aeq9U2hoM8aqO0w5
+          authorizationServerId: aus1k3lsbNOta5rds0g5
           userMediation: REQUIRED
           userVerification: PREFERRED
           authenticatorEnrollmentId": pfd7rzcmvlhmE0Y1w0g4
@@ -2068,6 +2080,33 @@ components:
           properties:
             push:
               type: object
+              properties:
+                id:
+                  type: string
+                createdDate:
+                  type: string
+                  format: date-time
+                lastUpdated:
+                  type: string
+                  format: date-time
+                links:
+                  type: object
+                  properties:
+                    pending:
+                      type: object
+                      properties:
+                        href:
+                          type: string
+                          minLength: 1
+                        hints:
+                          type: object
+                          properties:
+                            allow:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                  - GET
         user:
           type: object
           properties:
@@ -2526,6 +2565,8 @@ components:
           authorizationUrl: /oauth2/v1/authorize
           tokenUrl: /oauth2/v1/token
           scopes:
+            okta.myAccount.appAuthenticator.maintenance.manage: Write access to non-sensitive attributes of user app authenticator enrollments
+            okta.myAccount.appAuthenticator.maintenance.read: Read access to non-sensitive attributes of user app authenticator enrollments
             okta.myAccount.appAuthenticator.manage: Write access to user app authenticator enrollments
             okta.myAccount.appAuthenticator.read: Read access to user app authenticator enrollments
             okta.myAccount.email.manage: Write access to user emails

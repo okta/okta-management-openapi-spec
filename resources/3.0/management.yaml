@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 5.1.0
+  version: 5.2.0
   x-logo:
     url: logo.svg
     backgroundColor: transparent
@@ -30,7 +30,7 @@ tags:
     description: The Agent Pools API provides operation to manage the update settings of the agents for your organization.
   - name: ApiServiceIntegrations
     x-displayName: API Service Integrations
-    description: This API provides operations to manage API Service Integration instances in your organization.
+    description: This API provides operations to manage API Service Integration instances in your organization. See [API service integrations in the OIN](https://developer.okta.com/docs/guides/oin-api-service-overview/).
   - name: ApiToken
     x-displayName: API Tokens
     description: The API Tokens API provides operations to manage SSWS API tokens for your organization.
@@ -92,6 +92,7 @@ tags:
       The Devices API supports the following **Device Operations**:
       * Get, Delete Device objects.
       * Perform lifecycle transitions on the Device objects.
+        Device lifecycle is defined as transitions of the Device Status by the associated operations. The Device object follows a predefined lifecycle transition flow. Device Lifecycle operations are idempotent and its calls are synchronous.
 
       The Devices API supports the following **Authorization Schemes**:
       * SSWS - [API tokens](https://developer.okta.com/docs/reference/core-okta-api/#authentication)
@@ -101,7 +102,7 @@ tags:
       > 1. Admins - Enable Okta FastPass. See [Enable FastPass](https://help.okta.com/okta_help.htm?type=oie&id=ext-fp-enable)
       > 2. End users with existing mobile Okta Verify enrollments - After you upgrade your org to Okta Identity Engine, direct end users with existing Okta Verify enrollments to use [FastPass](https://help.okta.com/okta_help.htm?type=oie&id=csh-fp-main).
 
-      > End users with a new enrollment in Okta Verify on an Okta Identity Engine org have a device record created in the device inventory by default.
+      > **Note:** End users with a new enrollment in Okta Verify on an Okta Identity Engine org have a device record created in the device inventory by default.
       See [Device Registration](https://help.okta.com/okta_help.htm?type=oie&id=csh-device-registration), [Login Using Okta Verify](https://help.okta.com/okta_help.htm?type=eu&id=ext-ov-user-overview).
   - name: DeviceAssurance
     x-displayName: Device Assurance Policies
@@ -214,7 +215,7 @@ tags:
     description: The Principal Rate Limits API provides operations to manage Principal Rate Limits for your organization.
   - name: ProfileMapping
     x-displayName: Profile Mappings
-    description: The Mappings API provides operations to manage the mapping of properties between an Okta User's and an App User's Profile properties using [Okta Expression Language](https://developer.okta.com/docs/reference/okta-expression-language). More information on Okta User and App User Profiles can be found in Okta's [User profiles](https://developer.okta.com/docs/concepts/user-profiles/#what-is-the-okta-universal-directory).
+    description: The Mappings API provides operations to manage the mapping of Profile properties between an Okta User and an App User using [Okta Expression Language](https://developer.okta.com/docs/reference/okta-expression-language). More information on Okta User and App User Profiles can be found in Okta's [User profiles](https://developer.okta.com/docs/concepts/user-profiles/#what-is-the-okta-universal-directory).
   - name: PushProvider
     x-displayName: Push Providers
     description: The Push Providers API provides operations to manage Push Providers for your organization.
@@ -6433,14 +6434,10 @@ paths:
       summary: List all Devices
       description: |-
         Lists all devices with pagination support.
-
         A subset of Devices can be returned that match a supported search criteria using the `search` query parameter.
-
         Searches for devices based on the properties specified in the `search` parameter conforming SCIM filter specifications (case-insensitive). This data is eventually consistent. The API returns different results depending on specified queries in the request. Empty list is returned if no objects match `search` request.
-
         > **Note:** Listing devices with `search` should not be used as a part of any critical flows—such as authentication or updates—to prevent potential data loss. `search` results may not reflect the latest information, as this endpoint uses a search index which may not be up-to-date with recent updates to the object. <br> Don't use search results directly for record updates, as the data might be stale and therefore overwrite newer data, resulting in data loss. <br> Use an `id` lookup for records that you update to ensure your results contain the latest data.
-
-        This operation equires [URL encoding](http://en.wikipedia.org/wiki/Percent-encoding). For example, `search=profile.displayName eq "Bob"` is encoded as `search=profile.displayName%20eq%20%22Bob%22`.
+        This operation requires [URL encoding](https://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1). For example, `search=profile.displayName eq "Bob"` is encoded as `search=profile.displayName%20eq%20%22Bob%22`.
       operationId: listDevices
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -6463,6 +6460,13 @@ paths:
               value: profile.platform eq "WINDOWS"
             Devices whose `sid` starts with `S-1`:
               value: profile.sid sw "S-1"
+        - in: query
+          name: expand
+          schema:
+            type: string
+            enum:
+              - user
+          description: Lists associated users for the device in `_embedded` element
       responses:
         '200':
           description: OK
@@ -6523,7 +6527,10 @@ paths:
           - Okta Identity Engine
     delete:
       summary: Delete a Device
-      description: Deletes a device by `deviceId`
+      description: |-
+        Deletes (permanently) a device by `deviceId` if it has a status of `DEACTIVATED`. You can transition the device to `DEACTIVATED` status using the [Deactivate a Device](#tag/Device/operation/deactivateDevice) endpoint.
+        This request is destructive and deletes all of the profile data related to the device. Once deleted, device data can't be recovered. However, reenrollment creates a new device record.
+        > **Note:** Attempts to delete a device that isn't in a `DEACTIVATED` state raise an error.
       operationId: deleteDevice
       responses:
         '204':
@@ -6558,7 +6565,9 @@ paths:
       - $ref: '#/components/parameters/pathDeviceId'
     post:
       summary: Activate a Device
-      description: Activates a device by `deviceId`
+      description: |-
+        Activates a Device by setting its status to ACTIVE by `deviceId`.
+        Activated devices are used to create and delete Device user links.
       operationId: activateDevice
       responses:
         '204':
@@ -6585,7 +6594,13 @@ paths:
       - $ref: '#/components/parameters/pathDeviceId'
     post:
       summary: Deactivate a Device
-      description: Deactivates a device by `deviceId`
+      description: |-
+        Deactivates a Device by setting its status to DEACTIVATED by `deviceId`.
+        Deactivation causes a Device to lose all device user links.
+        Set the Device status to DEACTIVATED before deleting it.
+        > **Note:** When deactivating a Device, keep in mind the following:
+          - Device deactivation is a destructive operation for device factors and client certificates. Device reenrollment using Okta Verify allows end users to set up new factors on the device.
+          - Device deletion removes the device record from Okta. Reenrollment creates a new device record.
       operationId: deactivateDevice
       responses:
         '204':
@@ -6612,7 +6627,11 @@ paths:
       - $ref: '#/components/parameters/pathDeviceId'
     post:
       summary: Suspend a Device
-      description: Suspends a device by `deviceId`
+      description: |-
+        Suspends a Device by setting its status to ACTIVE.
+        Use suspended devices to create and delete device user links.
+        You can only unsuspend or deactivate suspended devices.
+        > **Note:** SUSPENDED status is meant to be temporary, so it isn't destructive.
       operationId: suspendDevice
       responses:
         '204':
@@ -6639,7 +6658,9 @@ paths:
       - $ref: '#/components/parameters/pathDeviceId'
     post:
       summary: Unsuspend a Device
-      description: Unsuspends a device by `deviceId`
+      description: |-
+        Unsuspends a Device by returning its `status` to ACTIVE.
+        >**Note:** Only devices with a SUSPENDED status can be unsuspended.
       operationId: unsuspendDevice
       responses:
         '204':
@@ -8724,7 +8745,7 @@ paths:
   /api/v1/iam/resource-sets:
     get:
       summary: List all Resource Sets
-      description: Lists all resource sets with pagination support
+      description: Lists all Resource Sets with pagination support
       operationId: listResourceSets
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -8753,14 +8774,14 @@ paths:
         isGenerallyAvailable: true
     post:
       summary: Create a Resource Set
-      description: Creates a new resource set
+      description: Creates a new Resource Set
       operationId: createResourceSet
       x-codegen-request-body-name: instance
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResourceSet'
+              $ref: '#/components/schemas/CreateResourceSetRequest'
             examples:
               Example Request:
                 $ref: '#/components/examples/ResourceSetRequest'
@@ -8802,7 +8823,7 @@ paths:
       - $ref: '#/components/parameters/pathResourceSetId'
     get:
       summary: Retrieve a Resource Set
-      description: Retrieves a resource set by `resourceSetId`
+      description: Retrieves a Resource Set by `resourceSetId`
       operationId: getResourceSet
       responses:
         '200':
@@ -8831,7 +8852,7 @@ paths:
         isGenerallyAvailable: true
     put:
       summary: Replace a Resource Set
-      description: Replaces a resource set by `resourceSetId`
+      description: Replaces a Resource Set by `resourceSetId`
       operationId: replaceResourceSet
       x-codegen-request-body-name: instance
       requestBody:
@@ -8905,7 +8926,7 @@ paths:
       - $ref: '#/components/parameters/pathResourceSetId'
     get:
       summary: List all Bindings
-      description: Lists all resource set bindings with pagination support
+      description: Lists all Resource Set bindings with pagination support
       operationId: listBindings
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -8936,7 +8957,7 @@ paths:
         isGenerallyAvailable: true
     post:
       summary: Create a Resource Set Binding
-      description: Creates a new resource set binding
+      description: Creates a new Resource Set binding
       operationId: createResourceSetBinding
       x-codegen-request-body-name: instance
       requestBody:
@@ -8988,7 +9009,7 @@ paths:
       - $ref: '#/components/parameters/pathRoleIdOrLabel'
     get:
       summary: Retrieve a Binding
-      description: Retrieves a resource set binding by `resourceSetId` and `roleIdOrLabel`
+      description: Retrieves a Resource Set binding by `resourceSetId` and `roleIdOrLabel`
       operationId: getBinding
       responses:
         '200':
@@ -9017,7 +9038,7 @@ paths:
         isGenerallyAvailable: true
     delete:
       summary: Delete a Binding
-      description: Deletes a resource set binding by `resourceSetId` and `roleIdOrLabel`
+      description: Deletes a Resource Set binding by `resourceSetId` and `roleIdOrLabel`
       operationId: deleteBinding
       responses:
         '204':
@@ -9051,7 +9072,7 @@ paths:
       - $ref: '#/components/parameters/pathRoleIdOrLabel'
     get:
       summary: List all Members of a binding
-      description: Lists all members of a resource set binding with pagination support
+      description: Lists all members of a Resource Set binding with pagination support
       operationId: listMembersOfBinding
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -9082,7 +9103,7 @@ paths:
         isGenerallyAvailable: true
     patch:
       summary: Add more Members to a binding
-      description: Adds more members to a resource set binding
+      description: Adds more members to a Resource Set binding
       operationId: addMembersToBinding
       x-codegen-request-body-name: instance
       requestBody:
@@ -9197,8 +9218,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/pathResourceSetId'
     get:
-      summary: List all Resources of a resource set
-      description: Lists all resources that make up the resource set
+      summary: List all Resources of a Resource Set
+      description: Lists all resources that make up the Resource Set
       operationId: listResourceSetResources
       responses:
         '200':
@@ -9226,8 +9247,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     patch:
-      summary: Add more Resource to a resource set
-      description: Adds more resources to a resource set
+      summary: Add more Resource to a Resource Set
+      description: Adds more resources to a Resource Set
       operationId: addResourceSetResource
       x-codegen-request-body-name: instance
       requestBody:
@@ -9278,8 +9299,8 @@ paths:
       - $ref: '#/components/parameters/pathResourceSetId'
       - $ref: '#/components/parameters/pathResourceId'
     delete:
-      summary: Delete a Resource from a resource set
-      description: Deletes a resource identified by `resourceId` from a resource set
+      summary: Delete a Resource from a Resource Set
+      description: Deletes a resource identified by `resourceId` from a Resource Set
       operationId: deleteResourceSetResource
       responses:
         '204':
@@ -11213,28 +11234,36 @@ paths:
   /api/v1/mappings:
     get:
       summary: List all Profile Mappings
-      description: Lists all profile mappings with pagination
+      description: |-
+        Lists all profile mappings in your organization with [pagination](https://developer.okta.com/docs/api/#pagination). You can return a subset of profile mappings that match a supported `sourceId` and/or `targetId`.
+        The results are [paginated](/#pagination) according to the limit parameter. If there are multiple pages of results, the Link header contains a `next` link that should be treated as an opaque value (follow it, don't parse it).
+
+        The response is a collection of profile mappings that include a subset of the profile mapping object's parameters. The profile mapping object describes
+        the properties mapping between an Okta User and an App User Profile using [JSON Schema Draft 4](https://datatracker.ietf.org/doc/html/draft-zyp-json-schema-04).
       operationId: listProfileMappings
       parameters:
         - name: after
           in: query
+          description: Mapping `id` that specifies the pagination cursor for the next page of mappings
           schema:
             type: string
         - name: limit
           in: query
+          description: Specifies the number of results per page (maximum 200)
           schema:
             type: integer
             format: int32
-            default: -1
+            default: 20
         - name: sourceId
           in: query
+          description: The UserType or App Instance `id` that acts as the source of expressions in a mapping. If this parameter is included, all returned mappings have this as their `source.id`.
           schema:
             type: string
         - name: targetId
           in: query
+          description: The UserType or App Instance `id` that acts as the target of expressions in a mapping. If this parameter is included, all returned mappings have this as their `target.id`.
           schema:
             type: string
-            default: ''
       responses:
         '200':
           description: Success
@@ -11243,7 +11272,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProfileMapping'
+                  $ref: '#/components/schemas/ListProfileMappings'
+              examples:
+                MappingList:
+                  summary: List all Profile Mappings response
+                  $ref: '#/components/examples/ListMappingsResponse'
         '403':
           $ref: '#/components/responses/ErrorAccessDenied403'
         '429':
@@ -11272,6 +11305,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProfileMapping'
+              examples:
+                MappingRetrieve:
+                  summary: Retrieve a single Profile Mapping
+                  $ref: '#/components/examples/RetrieveMappingsResponse'
         '403':
           $ref: '#/components/responses/ErrorAccessDenied403'
         '404':
@@ -11290,14 +11327,21 @@ paths:
         SKUs: []
     post:
       summary: Update a Profile Mapping
-      description: Updates an existing Profile Mapping by adding, updating, or removing one or many Property Mappings
+      description: Updates an existing profile mapping by adding, updating, or removing one or many property mappings
       operationId: updateProfileMapping
       x-codegen-request-body-name: profileMapping
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProfileMapping'
+              $ref: '#/components/schemas/ProfileMappingRequest'
+            examples:
+              Addpropertymapping:
+                $ref: '#/components/examples/AddMappingBody'
+              Updatepropertymapping:
+                $ref: '#/components/examples/UpdateMappingBody'
+              Removepropertymapping:
+                $ref: '#/components/examples/RemoveMappingBody'
         required: true
       responses:
         '200':
@@ -11306,6 +11350,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProfileMapping'
+              examples:
+                Addpropertymapping:
+                  summary: Update an existing profile mapping by adding one or more properties
+                  $ref: '#/components/examples/AddMappingResponse'
+                Updatepropertymapping:
+                  summary: Update an existing profile mapping by updating one or more properties
+                  $ref: '#/components/examples/UpdateMappingResponse'
+                Removepropertymapping:
+                  summary: Update an existing profile mapping by removing one or more properties
+                  $ref: '#/components/examples/RemoveMappingResponse'
         '400':
           $ref: '#/components/responses/ErrorApiValidationFailed400'
         '403':
@@ -16038,7 +16092,7 @@ paths:
     post:
       summary: Activate a User
       description: |-
-        Activates a user. This operation can only be performed on users with a `STAGED` status.
+        Activates a user. This operation can only be performed on users with a `STAGED` or `DEPROVISIONED` status.
         Activation of a user is an asynchronous operation. The user will have the `transitioningToStatus`
         property with a value of `ACTIVE` during activation to indicate that the user hasn't completed the asynchronous operation.
         The user will have a status of `ACTIVE` when the activation process is complete.
@@ -17339,14 +17393,10 @@ paths:
   /integrations/api/v1/api-services:
     get:
       summary: List all API Service Integration instances
-      description: Lists all API Service Integration instances with pagination
+      description: Lists all API Service Integration instances with a pagination option
       operationId: listApiServiceIntegrationInstances
       parameters:
-        - in: query
-          name: after
-          schema:
-            type: string
-          description: Specifies the pagination cursor for the next page of apps
+        - $ref: '#/components/parameters/queryAfter'
       responses:
         '200':
           description: OK
@@ -17356,6 +17406,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/APIServiceIntegrationInstance'
+              examples:
+                APIServiceIntegrationResponseExample:
+                  $ref: '#/components/examples/APIServiceIntegrationListResponse'
         '401':
           $ref: '#/components/responses/ErrorInvalidToken401'
         '403':
@@ -17379,7 +17432,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/APIServiceIntegrationInstance'
+              $ref: '#/components/schemas/postAPIServiceIntegrationInstanceRequest'
+            examples:
+              postAPIServiceIntegrationRequestExample:
+                $ref: '#/components/examples/postAPIServiceIntegrationRequest'
         required: true
       responses:
         '201':
@@ -17387,7 +17443,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIServiceIntegrationInstance'
+                $ref: '#/components/schemas/postAPIServiceIntegrationInstance'
+              examples:
+                APIServiceIntegrationResponseExample:
+                  $ref: '#/components/examples/postAPIServiceIntegrationResponse'
         '400':
           $ref: '#/components/responses/ErrorApiValidationFailed400'
         '401':
@@ -17417,6 +17476,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIServiceIntegrationInstance'
+              examples:
+                APIServiceIntegrationResponseExample:
+                  $ref: '#/components/examples/APIServiceIntegrationResponse'
         '401':
           $ref: '#/components/responses/ErrorInvalidToken401'
         '403':
@@ -17436,7 +17498,7 @@ paths:
         isGenerallyAvailable: true
     delete:
       summary: Delete an API Service Integration instance
-      description: Deletes an API Service Integration instance by `id`
+      description: Deletes an API Service Integration instance by `id`. This operation also revokes access to scopes that were previously granted to this API Service Integration instance.
       operationId: deleteApiServiceIntegrationInstance
       responses:
         '204':
@@ -17460,6 +17522,105 @@ paths:
         isGenerallyAvailable: true
 components:
   examples:
+    APIServiceIntegrationListResponse:
+      summary: List response example
+      value:
+        - id: 0oa72lrepvp4WqEET1d9
+          type: my_app_cie
+          name: My App Cloud Identity Engine
+          createdAt: '2023-02-21T20:08:24.000Z'
+          createdBy: 00uu3u0ujW1P6AfZC2d5
+          configGuideUrl: https://{docDomain}/my-app-cie/configuration-guide
+          grantedScopes:
+            - okta.logs.read
+            - okta.groups.read
+            - okta.users.read
+          _links:
+            self:
+              href: https://{yourOktaDomain}/integrations/api/v1/api-services/0oa72lrepvp4WqEET1d9
+              hints:
+                allow:
+                  - GET
+                  - DELETE
+            client:
+              href: https://{yourOktaDomain}/oauth2/v1/clients/0oa72lrepvp4WqEET1d9
+              hints:
+                allow:
+                  - GET
+            logo:
+              name: small
+              href: https://{logoDomain}/{logoPath}/my_app_cie_small_logo
+    APIServiceIntegrationResponse:
+      summary: Response example
+      value:
+        id: 0oa72lrepvp4WqEET1d9
+        type: my_app_cie
+        name: My App Cloud Identity Engine
+        createdAt: '2023-02-21T20:08:24.000Z'
+        createdBy: 00uu3u0ujW1P6AfZC2d5
+        configGuideUrl: https://{docDomain}/my-app-cie/configuration-guide
+        grantedScopes:
+          - okta.logs.read
+          - okta.groups.read
+          - okta.users.read
+        _links:
+          self:
+            href: https://{yourOktaDomain}/integrations/api/v1/api-services/0oa72lrepvp4WqEET1d9
+            hints:
+              allow:
+                - GET
+                - DELETE
+          client:
+            href: https://{yourOktaDomain}/oauth2/v1/clients/0oa72lrepvp4WqEET1d9
+            hints:
+              allow:
+                - GET
+          logo:
+            name: small
+            href: https://{logoDomain}/{logoPath}/my_app_cie_small_logo
+    AddMappingBody:
+      summary: Update an existing profile mapping by adding one or more properties
+      value:
+        properties:
+          additionalProperties:
+            fullName:
+              expression: user.firstName + user.lastName
+              pushStatus: PUSH
+            nickName:
+              expression: user.nickName
+              pushStatus: PUSH
+    AddMappingResponse:
+      summary: Update an existing profile mapping by adding one or more properties
+      value:
+        id: prm1k47ghydIQOTBW0g4
+        source:
+          id: otysbePhQ3yqt4cVv0g3
+          name: user
+          type: user
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/meta/types/user/otysbePhQ3yqt4cVv0g3
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/user/oscsbePhQ3yqt4cVv0g3
+        target:
+          id: 0oa1qmn4LZQQEH0wZ0g4
+          name: okta_org2org
+          type: appuser
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/apps/0oa1qmn4LZQQEH0wZ0g4
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/apps/0oa1qmn4LZQQEH0wZ0g4/default
+        properties:
+          fullName:
+            expression: user.firstName + user.lastName
+            pushStatus: PUSH
+          nickName:
+            expression: user.nickName
+            pushStatus: PUSH
+        _links:
+          self:
+            href: https://{yourOktaDomain}/api/v1/mappings/prm1k48weFSOnEUnw0g4
     ApiTokenListMetadataResponse:
       value:
         - name: My API Token
@@ -17991,6 +18152,14 @@ components:
             hints:
               allow:
                 - POST
+    CreateUpdateIamRolePermissionRequestExample:
+      value:
+        conditions:
+          include:
+            okta:ResourceAttribute/User/Profile:
+              - city
+              - state
+              - zipCode
     DefaultRealmResponse:
       value:
         id: guox9jQ16k9V8IQWL0g3
@@ -18605,6 +18774,31 @@ components:
               hints:
                 allow:
                   - POST
+    ListMappingsResponse:
+      summary: List all Profile Mappings response
+      value:
+        - id: prm1k47ghydIQOTBW0g4
+          source:
+            id: otysbePhQ3yqt4cVv0g3
+            name: user
+            type: user
+            _links:
+              self:
+                href: https://{yourOktaDomain}/api/v1/meta/types/user/otysbePhQ3yqt4cVv0g3
+              schema:
+                href: https://{yourOktaDomain}/api/v1/meta/schemas/user/oscsbePhQ3yqt4cVv0g3
+          target:
+            id: 0oa1qmn4LZQQEH0wZ0g4
+            name: okta_org2org
+            type: appuser
+            _links:
+              self:
+                href: https://{yourOktaDomain}/api/v1/apps/0oa1qmn4LZQQEH0wZ0g4
+              schema:
+                href: https://{yourOktaDomain}/api/v1/meta/schemas/apps/0oa1qmn4LZQQEH0wZ0g4/default
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/mappings/prm1k48weFSOnEUnw0g4
     ListRealmsResponse:
       value:
         - id: guox9jQ16k9V8IFEL0g3
@@ -19020,6 +19214,22 @@ components:
             href: https://{yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3
           self:
             href: https://{yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3/permissions/okta.users.manage
+    PermissionResponseWithConditions:
+      value:
+        label: okta.users.read
+        conditions:
+          include:
+            okta:ResourceAttribute/User/Profile:
+              - city
+              - state
+              - zipCode
+        created: '2021-02-06T16:20:57.000Z'
+        lastUpdated: '2021-02-06T16:20:57.000Z'
+        _links:
+          role:
+            href: https://{yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3
+          self:
+            href: https://{yourOktaDomain}/api/v1/iam/roles/cr0Yq6IJxGIr0ouum0g3/permissions/okta.users.read
     PermissionsResponse:
       value:
         permissions:
@@ -19200,6 +19410,42 @@ components:
             rel: self
             href: http://your-subdomain.okta.com/api/v1/realms/guox9jQ16k9V8IFEL0g3
             method: GET
+    RemoveMappingBody:
+      summary: Update an existing profile mapping by removing one or more properties
+      value:
+        properties:
+          nickName:
+            expression: null
+            pushStatus: null
+    RemoveMappingResponse:
+      summary: Update an existing profile mapping by removing one or more properties
+      value:
+        id: prm1k47ghydIQOTBW0g4
+        source:
+          id: otysbePhQ3yqt4cVv0g3
+          name: user
+          type: user
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/meta/types/user/otysbePhQ3yqt4cVv0g3
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/user/oscsbePhQ3yqt4cVv0g3
+        target:
+          id: 0oa1qmn4LZQQEH0wZ0g4
+          name: okta_org2org
+          type: appuser
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/apps/0oa1qmn4LZQQEH0wZ0g4
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/apps/0oa1qmn4LZQQEH0wZ0g4/default
+        properties:
+          fullName:
+            expression: user.firstName + user.lastName
+            pushStatus: PUSH
+        _links:
+          self:
+            href: https://{yourOktaDomain}/api/v1/mappings/prm1k48weFSOnEUnw0g4
     ResourceSetBindingAddMembersRequestExample:
       value:
         additions:
@@ -19358,6 +19604,38 @@ components:
         _links:
           next:
             href: https://{yourOktaDomain}/api/v1/iam/resource-sets?after=iamoJDFKaJxGIr0oamd0q
+    RetrieveMappingsResponse:
+      summary: Retrieve a single Profile Mapping
+      value:
+        id: prm1k47ghydIQOTBW0g4
+        source:
+          id: otysbePhQ3yqt4cVv0g3
+          name: user
+          type: user
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/meta/types/user/otysbePhQ3yqt4cVv0g3
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/user/oscsbePhQ3yqt4cVv0g3
+        target:
+          id: 0oa1qmn4LZQQEH0wZ0g4
+          name: okta_org2org
+          type: appuser
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/apps/0oa1qmn4LZQQEH0wZ0g4
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/apps/0oa1qmn4LZQQEH0wZ0g4/default
+        properties:
+          firstName:
+            expression: user.firstName
+            pushStatus: PUSH
+          lastName:
+            expression: user.lastName
+            pushStatus: PUSH
+        _links:
+          self:
+            href: https://{yourOktaDomain}/api/v1/mappings/prm1k48weFSOnEUnw0g4
     RiskEventsRequest:
       value:
         - timestamp: '2021-01-20T00:00:00.001Z'
@@ -19513,6 +19791,45 @@ components:
       value:
         displayName: IT Admin
         username: noreply
+    UpdateMappingBody:
+      summary: Update an existing profile mapping by updating one or more properties
+      value:
+        properties:
+          nickName:
+            expression: user.honorificPrefix + user.displayName
+            pushStatus: DONT_PUSH
+    UpdateMappingResponse:
+      summary: Update an existing profile mapping by updating one or more properties
+      value:
+        id: prm1k47ghydIQOTBW0g4
+        source:
+          id: otysbePhQ3yqt4cVv0g3
+          name: user
+          type: user
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/meta/types/user/otysbePhQ3yqt4cVv0g3
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/user/oscsbePhQ3yqt4cVv0g3
+        target:
+          id: 0oa1qmn4LZQQEH0wZ0g4
+          name: okta_org2org
+          type: appuser
+          _links:
+            self:
+              href: https://{yourOktaDomain}/api/v1/apps/0oa1qmn4LZQQEH0wZ0g4
+            schema:
+              href: https://{yourOktaDomain}/api/v1/meta/schemas/apps/0oa1qmn4LZQQEH0wZ0g4/default
+        properties:
+          fullName:
+            expression: user.firstName + user.lastName
+            pushStatus: PUSH
+          nickName:
+            expression: user.honorificPrefix + user.displayName
+            pushStatus: DONT_PUSH
+        _links:
+          self:
+            href: https://{yourOktaDomain}/api/v1/mappings/prm1k48weFSOnEUnw0g4
     UpdatedEmailDomainResponse:
       value:
         id: OeD114iNkrcN6aR680g4
@@ -19669,6 +19986,42 @@ components:
           analyticsCollectionEnabled: false
           bugReportingEnabled: true
           omEnabled: false
+    postAPIServiceIntegrationRequest:
+      value:
+        type: my_app_cie
+        grantedScopes:
+          - okta.logs.read
+          - okta.groups.read
+          - okta.users.read
+    postAPIServiceIntegrationResponse:
+      summary: Post response example
+      value:
+        id: 0oa72lrepvp4WqEET1d9
+        type: my_app_cie
+        name: My App Cloud Identity Engine
+        createdAt: '2023-02-21T20:08:24.000Z'
+        createdBy: 00uu3u0ujW1P6AfZC2d5
+        clientSecret: CkF69kXtag0q0P4pXU8OnP5IAzgGlwx6eqGy7Fmg
+        configGuideUrl: https://{docDomain}/my-app-cie/configuration-guide
+        grantedScopes:
+          - okta.logs.read
+          - okta.groups.read
+          - okta.users.read
+        _links:
+          self:
+            href: https://{yourOktaDomain}/integrations/api/v1/api-services/0oa72lrepvp4WqEET1d9
+            hints:
+              allow:
+                - GET
+                - DELETE
+          client:
+            href: https://{yourOktaDomain}/oauth2/v1/clients/0oa72lrepvp4WqEET1d9
+            hints:
+              allow:
+                - GET
+          logo:
+            name: small
+            href: https://{logoDomain}/{logoPath}/my_app_cie_small_logo
   parameters:
     pathApiServiceId:
       name: apiServiceId
@@ -20101,7 +20454,7 @@ components:
         type: string
         example: iamoJDFKaJxGIr0oamd9g
       required: true
-      description: '`id` of a resource set'
+      description: '`id` of a Resource Set'
     pathRiskProviderId:
       name: riskProviderId
       in: path
@@ -20432,37 +20785,55 @@ components:
     APIServiceIntegrationInstance:
       type: object
       properties:
-        clientSecret:
-          type: string
-          writeOnly: true
         configGuideUrl:
           type: string
+          description: The URL to the API service integration configuration guide
+          example: https://{docDomain}/my-app-cie/configuration-guide
           readOnly: true
         createdAt:
           type: string
+          description: Timestamp when the API Service Integration instance was created
+          example: '2023-02-21T20:08:24.000Z'
           readOnly: true
         createdBy:
           type: string
+          description: The user ID of the API Service Integration instance creator
+          example: 00uu3u0ujW1P6AfZC2d5
           readOnly: true
         grantedScopes:
           type: array
+          description: The list of Okta management scopes granted to the API Service Integration instance. See [Okta management OAuth 2.0 scopes](/oauth2/#okta-admin-management).
           items:
             type: string
+          example:
+            - okta.logs.read
         id:
           type: string
+          description: The ID of the API Service Integration instance
           readOnly: true
+          example: 0oa72lrepvp4WqEET1d9
         name:
           type: string
+          description: The name of the API service integration that corresponds with the `type` property. This is the full name of the API service integration listed in the Okta Integration Network (OIN) catalog.
+          readOnly: true
+          example: My App Cloud Identity Engine
         type:
           type: string
+          description: The type of the API service integration. This string is an underscore-concatenated, lowercased API service integration name. For example, `my_api_log_integration`.
+          example: my_app_cie
         _links:
-          allOf:
-            - $ref: '#/components/schemas/LinksSelf'
-            - properties:
-                client:
-                  $ref: '#/components/schemas/HrefObject'
-                logo:
-                  $ref: '#/components/schemas/HrefObject'
+          $ref: '#/components/schemas/APIServiceIntegrationLinks'
+          readOnly: true
+    APIServiceIntegrationLinks:
+      description: Specifies link relations (see [Web Linking](https://www.rfc-editor.org/rfc/rfc8288)) available for the current status of an application using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06) specification. This object is used for dynamic discovery of related resources and lifecycle operations.
+      properties:
+        client:
+          $ref: '#/components/schemas/HrefObjectClientLink'
+        logo:
+          $ref: '#/components/schemas/HrefObjectLogoLink'
+        self:
+          $ref: '#/components/schemas/HrefObjectSelfLink'
+      readOnly: true
     APNSConfiguration:
       properties:
         fileName:
@@ -21471,9 +21842,6 @@ components:
           readOnly: true
         credentials:
           $ref: '#/components/schemas/AuthorizationServerCredentials'
-        default:
-          readOnly: true
-          type: boolean
         description:
           type: string
         id:
@@ -22136,12 +22504,27 @@ components:
         - label
         - description
         - permissions
+    CreateResourceSetRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the Resource Set
+        label:
+          type: string
+          description: Unique label for the Resource Set
+        resources:
+          type: array
+          items:
+            type: string
     CreateSessionRequest:
       type: object
       properties:
         sessionToken:
           type: string
           description: The session token obtained during authentication
+    CreateUpdateIamRolePermissionRequest:
+      type: object
     CreateUserRequest:
       type: object
       properties:
@@ -23510,10 +23893,18 @@ components:
       allOf:
         - $ref: '#/components/schemas/HrefObject'
         - description: Link to activate the resource
+    HrefObjectClientLink:
+      allOf:
+        - $ref: '#/components/schemas/HrefObject'
+        - description: Link to the client resource
     HrefObjectDeactivateLink:
       allOf:
         - $ref: '#/components/schemas/HrefObject'
         - description: Link to deactivate the resource
+    HrefObjectLogoLink:
+      allOf:
+        - $ref: '#/components/schemas/HrefObject'
+        - description: Link to the logo resource
     HrefObjectSelfLink:
       allOf:
         - $ref: '#/components/schemas/HrefObject'
@@ -24121,6 +24512,27 @@ components:
               $ref: '#/components/schemas/HrefObjectActivateLink'
             deactivate:
               $ref: '#/components/schemas/HrefObjectDeactivateLink'
+    ListProfileMappings:
+      description: |-
+        A collection of the profile mappings that include a subset of the profile mapping object's properties. The Profile Mapping object describes a mapping between an Okta User's and an App User's properties using [JSON Schema Draft 4](https://datatracker.ietf.org/doc/html/draft-zyp-json-schema-04).
+
+        > **Note:** Same type source/target mappings aren't supported by this API. Profile mappings must either be Okta->App or App->Okta.
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for profile mapping
+          readOnly: true
+        source:
+          type: object
+          description: Source of the schema property expressions (Okta object or App Instance object)
+          $ref: '#/components/schemas/ProfileMappingSource'
+        target:
+          type: object
+          description: Target of the schema property expressions (Okta object or App Instance object)
+          $ref: '#/components/schemas/ProfileMappingTarget'
+        _links:
+          $ref: '#/components/schemas/LinksSelf'
     LoadingPageTouchPointVariant:
       type: string
       enum:
@@ -26196,10 +26608,15 @@ components:
         required:
           type: boolean
     ProfileMapping:
+      description: |-
+        The Profile Mapping object describes a mapping between an Okta User's and an App User's properties using [JSON Schema Draft 4](https://datatracker.ietf.org/doc/html/draft-zyp-json-schema-04).
+
+        > **Note:** Same type source/target mappings aren't supported by this API. Profile mappings must either be Okta->App or App->Okta.
       type: object
       properties:
         id:
           type: string
+          description: Unique identifier for a profile mapping
           readOnly: true
         properties:
           type: object
@@ -26207,37 +26624,86 @@ components:
             $ref: '#/components/schemas/ProfileMappingProperty'
           readOnly: true
         source:
+          type: object
           $ref: '#/components/schemas/ProfileMappingSource'
         target:
-          $ref: '#/components/schemas/ProfileMappingSource'
+          type: object
+          $ref: '#/components/schemas/ProfileMappingTarget'
         _links:
           $ref: '#/components/schemas/LinksSelf'
     ProfileMappingProperty:
+      description: A target property, in string form, that maps to a valid [JSON Schema Draft](https://tools.ietf.org/html/draft-zyp-json-schema-04) document.
       type: object
       properties:
         expression:
+          description: Combination or single source properties that are mapped to the target property
           type: string
         pushStatus:
           $ref: '#/components/schemas/ProfileMappingPropertyPushStatus'
     ProfileMappingPropertyPushStatus:
+      description: |-
+        Indicates whether to update target properties for user create and update or just for user create.
+
+        Having a pushStatus of `PUSH` causes properties in the target to be updated on create and update. Having a pushStatus of `DONT_PUSH` causes properties in the target to be updated only on create.
       type: string
       enum:
         - DONT_PUSH
         - PUSH
+    ProfileMappingRequest:
+      description: The updated request body properties
+      type: object
+      properties:
+        properties:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProfileMappingProperty'
+      required:
+        - properties
+        - additionalProperties
+        - expression
+        - pushStatus
     ProfileMappingSource:
+      description: |-
+        The parameter is the source of a profile mapping and is a valid [JSON Schema Draft 4](https://datatracker.ietf.org/doc/html/draft-zyp-json-schema-04) document with the following properties. The data type can be an app instance or an Okta object.
+
+        > **Note:** If the source is Okta and the UserTypes feature isn't enabled, then the source `_links` only has a link to the schema.
       type: object
       properties:
         id:
           type: string
+          description: Unique identifier for the application instance or userType
           readOnly: true
         name:
           type: string
+          description: Variable name of the application instance or name of the referenced UserType
           readOnly: true
         type:
           type: string
+          description: Type of user referenced in the mapping
           readOnly: true
         _links:
-          $ref: '#/components/schemas/LinksSelf'
+          $ref: '#/components/schemas/SourceLinks'
+    ProfileMappingTarget:
+      description: |-
+        The parameter is the target of a profile mapping and is a valid [JSON Schema Draft 4](https://datatracker.ietf.org/doc/html/draft-zyp-json-schema-04) document with the following properties. The data type can be an app instance or an Okta object.
+
+         > **Note:** If the target is Okta and the UserTypes feature isn't enabled, then the target `_links` only has a link to the schema.
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the application instance or UserType
+          readOnly: true
+        name:
+          type: string
+          description: Variable name of the application instance or name of the referenced userType
+          readOnly: true
+        type:
+          type: string
+          description: Type of user referenced in the mapping
+          readOnly: true
+        _links:
+          $ref: '#/components/schemas/SourceLinks'
     ProfileSettingObject:
       type: object
       properties:
@@ -26609,14 +27075,14 @@ components:
           readOnly: true
         description:
           type: string
-          description: Description of the resource set
+          description: Description of the Resource Set
         id:
           type: string
           description: Unique key for the role
           readOnly: true
         label:
           type: string
-          description: Unique label for the resource set
+          description: Unique label for the Resource Set
         lastUpdated:
           type: string
           format: date-time
@@ -26729,7 +27195,7 @@ components:
           readOnly: true
         description:
           type: string
-          description: Description of the resource set
+          description: Description of the Resource Set
         id:
           type: string
           description: Unique key for the role
@@ -27426,6 +27892,15 @@ components:
           type: string
         tokenType:
           type: string
+    SourceLinks:
+      allOf:
+        - $ref: '#/components/schemas/LinksSelf'
+        - type: object
+          properties:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/HrefObject'
+                - description: The associated schema
     SpCertificate:
       type: object
       properties:
@@ -28600,6 +29075,32 @@ components:
         SIGN_IN: User sign-in page
         SSPR: Self-service Password Recovery page
         SSR: Self-service Registration page
+    postAPIServiceIntegrationInstance:
+      allOf:
+        - $ref: '#/components/schemas/APIServiceIntegrationInstance'
+        - type: object
+          properties:
+            clientSecret:
+              type: string
+              description: The client secret for the API Service Integration instance. This property is only returned in a POST response.
+              readOnly: true
+    postAPIServiceIntegrationInstanceRequest:
+      type: object
+      properties:
+        grantedScopes:
+          type: array
+          description: The list of Okta management scopes granted to the API Service Integration instance. See [Okta management OAuth 2.0 scopes](/oauth2/#okta-admin-management).
+          items:
+            type: string
+          example:
+            - okta.logs.read
+        type:
+          type: string
+          description: The type of the API service integration. This string is an underscore-concatenated, lowercased API service integration name. For example, `my_api_log_integration`.
+          example: my_app_cie
+      required:
+        - type
+        - grantedScopes
   securitySchemes:
     apiToken:
       description: 'Pass the API token as the Authorization header value prefixed with SSWS: `Authorization: SSWS {API Token}`'
