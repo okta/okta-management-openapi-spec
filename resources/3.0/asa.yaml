@@ -22,6 +22,8 @@ tags:
     x-displayName: Clients
   - name: entitlements
     x-displayName: Entitlements
+  - name: gateways
+    x-displayName: Gateways
   - name: groups
     x-displayName: Groups
   - name: projects
@@ -37,9 +39,9 @@ tags:
 paths:
   /v1/teams/{team_name}/auditsV2:
     get:
-      summary: List the Audits for a Team
+      summary: List all Audit Events
       description: |-
-        Lists the Audits for a Team
+        Lists all Audit events for your Team
 
         This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: ListAuditsForTeamV2
@@ -87,7 +89,7 @@ paths:
                       type: auth_token.issue
                       via: null
                     id: UD5pqjIhjKVQPmmqMiGMpQ==
-                    timestamp: '2023-02-15T22:24:08.428767458Z'
+                    timestamp: '2023-04-05T22:49:41.544980477Z'
                 related_objects:
                   FWUysQmguH4ns9NT1Uszl5j2a1t9SK2lYNACeu03uBs=:
                     object:
@@ -99,8 +101,6 @@ paths:
                         last_name: Compson
                       id: e4c22cba-f8ec-4beb-98f4-b1a03725b204
                       name: Jason.Compson.IV
-                      oauth_client_application_id: null
-                      role_grants: null
                       status: ACTIVE
                       team_name: ''
                       user_type: human
@@ -123,7 +123,7 @@ paths:
                       $ref: '#/components/schemas/AuditEventV2Schema'
                     type: array
                 type: object
-          description: List of Audits
+          description: OK
           headers:
             Link:
               description: |-
@@ -138,11 +138,11 @@ paths:
         - audits
   /v1/teams/{team_name}/clients:
     get:
-      summary: List ASA Clients
+      summary: List all Clients
       description: |-
-        Returns a list of ASA Clients. By default, this API returns the ASA Clients for the requesting ASA User. You can provide query options to filter by ASA User or state.
+        Returns a list of Clients for your Team. By default, this only returns Clients associated with the requesting User. Use query parameters to adjust the list of returned Clients.
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `reporting_user`, or `end_user`.
+        This endpoint requires one of the following roles: `access_admin`, `reporting_user`, or `access_user`.
       operationId: ListClients
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -215,7 +215,7 @@ paths:
                       $ref: '#/components/schemas/Client'
                     type: array
                 type: object
-          description: List of ASA Clients.
+          description: OK
           headers:
             Link:
               description: |-
@@ -230,11 +230,11 @@ paths:
         - clients
   /v1/teams/{team_name}/clients/{client_id}:
     get:
-      summary: Fetch an ASA Client
+      summary: Retrieve a Client
       description: |-
-        Fetches a single ASA Client with the specified Client ID on the specified Team
+        Retrieves the properties of a specified Client
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `reporting_user`, or `end_user`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: FetchClient
       parameters:
         - description: The name of your Team
@@ -264,15 +264,15 @@ paths:
                 user_name: Jason.Compson.IV
               schema:
                 $ref: '#/components/schemas/Client'
-          description: The ASA Client that was requested.
+          description: OK
       tags:
         - clients
     put:
-      summary: Approve or assign an ASA Client
+      summary: Update a Client
       description: |-
-        Approves or assigns an ASA Client to be used by an ASA User. Used for ASA Clients enrolled using a token policy or a policy that requires approval.
+        Updates the state or assigned user for a specified Client. This is required for some enrollment policies. See [Silently enroll the Client](https://help.okta.com/okta_help.htm?type=asa&id=ext-asa-enroll-sft-silent).
 
-        This endpoint requires one of the following roles: `security_admin`, or `access_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: UpdateClient
       parameters:
         - description: The name of your Team
@@ -295,19 +295,18 @@ paths:
               user_name: Jason.Compson.IV
             schema:
               $ref: '#/components/schemas/ClientUpdateRequest'
-        description: An ASA User to which to assign the ASA Client or a state to which to update the ASA Client.
         required: true
       responses:
         '204':
-          description: The ASA Client was updated successfully.
+          description: No Content
       tags:
         - clients
     delete:
-      summary: Revoke an ASA Client
+      summary: Revoke access to a Client
       description: |-
-        Revokes an ASA Client's access to this Team
+        Revokes access to a specified Client from your Team
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `authenticated_client`, or `end_user`.
+        This endpoint requires one of the following roles: `authenticated_client`, `access_user`, or `access_admin`.
       operationId: RemoveClient
       parameters:
         - description: The name of your Team
@@ -324,16 +323,16 @@ paths:
             type: string
       responses:
         '204':
-          description: The ASA Client was revoked successfully.
+          description: No Content
       tags:
         - clients
   /v1/teams/{team_name}/entitlements/sudo:
     get:
-      summary: List the sudo Entitlements for a Team
+      summary: List all sudo Entitlements
       description: |-
-        Lists the sudo Entitlements for a Team
+        Lists all sudo Entitlements for your Team
 
-        This endpoint requires one of the following roles: `access_admin`, `resource_admin`, or `security_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: ListEntitlementsSudo
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -398,7 +397,7 @@ paths:
                       $ref: '#/components/schemas/EntitlementSudo'
                     type: array
                 type: object
-          description: List of sudo Entitlements.
+          description: OK
           headers:
             Link:
               description: |-
@@ -414,9 +413,9 @@ paths:
     post:
       summary: Create a sudo Entitlement
       description: |-
-        Creates a sudo Entitlement that corresponds to a set of commands that can be run as sudo for a selected group.
+        Creates a sudo Entitlement that allows a Group to run specific commands as sudo
 
-        This endpoint requires one of the following roles: `access_admin`, or `resource_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: CreateEntitlementsSudo
       parameters:
         - description: The name of your Team
@@ -454,7 +453,6 @@ paths:
               updated_at: '0001-01-01T00:00:00Z'
             schema:
               $ref: '#/components/schemas/EntitlementSudo'
-        description: Sudo Entitlement to create
         required: true
       responses:
         '201':
@@ -486,16 +484,16 @@ paths:
                 updated_at: '2018-04-07T00:00:00Z'
               schema:
                 $ref: '#/components/schemas/EntitlementSudo'
-          description: The sudo Entitlement that was created.
+          description: Created
       tags:
         - entitlements
   /v1/teams/{team_name}/entitlements/sudo/{sudo_id}:
     get:
-      summary: Fetch a single sudo Entitlement
+      summary: Retrieve a sudo Entitlement
       description: |-
-        Fetches the sudo Entitlement that corresponds to the provided ID
+        Retrieves the specified sudo Entitlement
 
-        This endpoint requires one of the following roles: `security_admin`, `access_admin`, or `resource_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: GetEntitlementsSudo
       parameters:
         - description: The name of your Team
@@ -540,15 +538,15 @@ paths:
                 updated_at: '2018-04-07T00:00:00Z'
               schema:
                 $ref: '#/components/schemas/EntitlementSudo'
-          description: The sudo Entitlement that was requested.
+          description: OK
       tags:
         - entitlements
     put:
-      summary: Update a single sudo Entitlement
+      summary: Update a sudo Entitlement
       description: |-
-        Updates the sudo Entitlement that corresponds to the provided ID.
+        Updates the specified sudo Entitlement
 
-        This endpoint requires one of the following roles: `access_admin`, or `resource_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: UpdateEntitlementsSudo
       parameters:
         - description: The name of your Team
@@ -592,19 +590,18 @@ paths:
               updated_at: '2018-04-07T00:00:00Z'
             schema:
               $ref: '#/components/schemas/EntitlementSudo'
-        description: The sudo Entitlement with to update
         required: true
       responses:
         '204':
-          description: The sudo Entitlement was updated successfully.
+          description: No Content
       tags:
         - entitlements
     delete:
-      summary: Delete a single sudo Entitlement
+      summary: Delete a sudo Entitlement
       description: |-
-        Deletes the sudo Entitlement that corresponds to the provided ID. The Entitlement must not be assigned to any Project in order to be deleted.
+        Deletes the specified sudo Entitlement. You can't delete an Entitlement that is assigned to a Project.
 
-        This endpoint requires one of the following roles: `resource_admin`, or `access_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: RemoveEntitlementsSudo
       parameters:
         - description: The name of your Team
@@ -621,16 +618,446 @@ paths:
             type: string
       responses:
         '204':
-          description: The sudo Entitlement was deleted successfully.
+          description: No Content
       tags:
         - entitlements
+  /v1/teams/{team_name}/gateway_setup_tokens:
+    get:
+      summary: List all Gateway Setup Tokens
+      description: |-
+        Lists all Gateway Setup Tokens for your Team
+
+        This endpoint requires the `access_admin` role.
+      operationId: ListGatewaySetupTokens
+      parameters:
+        - description: The UUID of the object used as an offset for pagination
+          in: query
+          name: offset
+          schema:
+            type: string
+        - description: The number of objects per page
+          in: query
+          name: count
+          schema:
+            type: number
+        - description: The object order
+          in: query
+          name: descending
+          schema:
+            type: boolean
+        - description: The direction of paging
+          in: query
+          name: prev
+          schema:
+            type: boolean
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                list:
+                  - id: 22f7c8ee-074c-45ac-92c4-6649b606a733
+                    registration_type: gateway-agent
+                    description: Example gateway setup token request
+                    details: null
+                    created_at: '0001-01-01T00:00:00Z'
+                  - id: f0b350d3-8940-4049-86ae-ef43c222edd4
+                    registration_type: gateway-agent
+                    description: Example gateway setup token request 2
+                    details: null
+                    created_at: '0001-01-01T00:00:00Z'
+              schema:
+                properties:
+                  list:
+                    items:
+                      $ref: '#/components/schemas/RegistrationPolicy'
+                    type: array
+                type: object
+          description: OK
+          headers:
+            Link:
+              description: |-
+                Link Header defined by RFC 8288.
+
+                A Link header with rel="next" indicates that a subsequent page is available and contains the URL which should be used to fetch it.
+
+                A Link header with rel="prev" indicates that a previous page is available and contains the URL which should be used to fetch it.
+              schema:
+                type: string
+      tags:
+        - gateways
+    post:
+      summary: Create a Gateway Setup Token
+      description: |-
+        Creates a Gateway Setup Token for your Team
+
+        This endpoint requires the `access_admin` role.
+      operationId: CreateGatewaySetupToken
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              labels:
+                env: dev
+                region: us-west-2
+            schema:
+              $ref: '#/components/schemas/GatewayAgentPolicyDetails'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              example:
+                created_at: '0001-01-01T00:00:00Z'
+                description: Example gateway setup token request
+                details: null
+                id: 22f7c8ee-074c-45ac-92c4-6649b606a733
+                registration_type: gateway-agent
+              schema:
+                $ref: '#/components/schemas/RegistrationPolicy'
+          description: Created
+      tags:
+        - gateways
+  /v1/teams/{team_name}/gateway_setup_tokens/{gateway_setup_token_id}:
+    get:
+      summary: Retrieve a Gateway Setup Token
+      description: |-
+        Retrieves the specified Gateway Setup Token
+
+        This endpoint requires the `access_admin` role.
+      operationId: FetchGatewaySetupToken
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+        - description: The UUID of the Gateway Setup Token
+          in: path
+          name: gateway_setup_token_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created_at: '0001-01-01T00:00:00Z'
+                description: Example gateway setup token request
+                details: null
+                id: 22f7c8ee-074c-45ac-92c4-6649b606a733
+                registration_type: gateway-agent
+              schema:
+                $ref: '#/components/schemas/RegistrationPolicy'
+          description: OK
+      tags:
+        - gateways
+    delete:
+      summary: Delete a Gateway Setup Token
+      description: |-
+        Deletes the specified Gateway Setup Token
+
+        This endpoint requires the `access_admin` role.
+      operationId: DeleteGatewaySetupToken
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+        - description: The UUID of the Gateway Setup Token
+          in: path
+          name: gateway_setup_token_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+      tags:
+        - gateways
+  /v1/teams/{team_name}/gateway_setup_tokens/{gateway_setup_token_id}/token:
+    get:
+      summary: Retrieve a Gateway Setup Token
+      description: |-
+        Retrieves the specified Gateway Setup Token
+
+        This endpoint requires the `access_admin` role.
+      operationId: FetchGatewaySetupTokenAsAgentToken
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+        - description: The UUID of the Gateway Setup Token
+          in: path
+          name: gateway_setup_token_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                created_at: '0001-01-01T00:00:00Z'
+                description: Example gateway setup token request
+                details: null
+                id: 22f7c8ee-074c-45ac-92c4-6649b606a733
+                registration_type: gateway-agent
+              schema:
+                $ref: '#/components/schemas/RegistrationPolicy'
+          description: OK
+      tags:
+        - gateways
+  /v1/teams/{team_name}/gateways:
+    get:
+      summary: List all Gateways
+      description: |-
+        Lists all Gateways for your Team
+
+        This endpoint requires the `access_admin` role.
+      operationId: ListGateways
+      parameters:
+        - description: The UUID of the object used as an offset for pagination
+          in: query
+          name: offset
+          schema:
+            type: string
+        - description: The number of objects per page
+          in: query
+          name: count
+          schema:
+            type: number
+        - description: The object order
+          in: query
+          name: descending
+          schema:
+            type: boolean
+        - description: The direction of paging
+          in: query
+          name: prev
+          schema:
+            type: boolean
+        - description: If a value is provided, the results are filtered to only contain ASA Gateways whose name contains that value.
+          in: query
+          name: contains
+          schema:
+            type: string
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                list:
+                  - id: 6fb14279-52cb-467d-b8d4-adba377e04eb
+                    name: Production gateway
+                    access_address: null
+                    default_address: null
+                    description: Gateway used for production env
+                    cloud_provider: null
+                    refuse_connections: false
+                    labels: null
+                  - id: 878e59c5-64bb-453a-8db2-7f50c46f63ad
+                    name: Dev gateway
+                    access_address: null
+                    default_address: null
+                    description: Gateway used for dev env
+                    cloud_provider: null
+                    refuse_connections: false
+                    labels: null
+              schema:
+                properties:
+                  list:
+                    items:
+                      $ref: '#/components/schemas/GatewayAgent'
+                    type: array
+                type: object
+          description: OK
+          headers:
+            Link:
+              description: |-
+                Link Header defined by RFC 8288.
+
+                A Link header with rel="next" indicates that a subsequent page is available and contains the URL which should be used to fetch it.
+
+                A Link header with rel="prev" indicates that a previous page is available and contains the URL which should be used to fetch it.
+              schema:
+                type: string
+      tags:
+        - gateways
+  /v1/teams/{team_name}/gateways/{gateway_id}:
+    get:
+      summary: Retrieve a Gateway
+      description: |-
+        Retrieves the properties of a specified Gateway
+
+        This endpoint requires the `access_admin` role.
+      operationId: GetGatewayInstance
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+        - description: The UUID of the Gateway
+          in: path
+          name: gateway_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                access_address: null
+                cloud_provider: null
+                default_address: null
+                description: Gateway used for production env
+                id: 6fb14279-52cb-467d-b8d4-adba377e04eb
+                labels: null
+                name: Production gateway
+                refuse_connections: false
+              schema:
+                $ref: '#/components/schemas/GatewayAgent'
+          description: OK
+      tags:
+        - gateways
+    put:
+      summary: Update a Gateway
+      description: |-
+        Updates a specified Gateway
+
+        This endpoint requires the `access_admin` role.
+      operationId: UpdateGatewayInstance
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+        - description: The UUID of the Gateway
+          in: path
+          name: gateway_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              access_address: null
+              cloud_provider: null
+              default_address: null
+              description: New description for production gateway
+              id: 6fb14279-52cb-467d-b8d4-adba377e04eb
+              labels: null
+              name: New name for production gateway
+              refuse_connections: true
+            schema:
+              $ref: '#/components/schemas/GatewayAgent'
+        required: true
+      responses:
+        '204':
+          description: No Content
+      tags:
+        - gateways
+    delete:
+      summary: Delete a Gateway
+      description: |-
+        Deletes the specified Gateway from your Team
+
+        This endpoint requires the `access_admin` role.
+      operationId: DeleteGatewayInstance
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+        - description: The UUID of the Gateway
+          in: path
+          name: gateway_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+      tags:
+        - gateways
+  /v1/teams/{team_name}/gateways/{gateway_id}/status:
+    get:
+      summary: Retrieve a status report for a Gateway
+      description: |-
+        Retrieve a status report for the specified Gateway
+
+        This endpoint requires the `access_admin` role.
+      operationId: GetGatewayStatusReport
+      parameters:
+        - description: The name of your Team
+          in: path
+          name: team_name
+          required: true
+          schema:
+            type: string
+        - description: The UUID of the Gateway
+          in: path
+          name: gateway_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                active_connections: 2
+                gateway_id: cb069f5a-3663-4d86-bd4c-5fc907717c2b
+                status: ONLINE
+                total_storage_bytes: 4096
+                updated_at: '0001-01-01T00:00:00Z'
+                used_storage_bytes: 2048
+              schema:
+                $ref: '#/components/schemas/GatewayStatusReport'
+          description: OK
+      tags:
+        - gateways
   /v1/teams/{team_name}/groups:
     get:
-      summary: List the ASA Groups for a Team
+      summary: List all Groups for a Team
       description: |-
-        Lists the ASA Groups for a Team
+        Lists all Groups for your Team
 
-        This endpoint requires one of the following roles: `security_admin`, `access_admin`, `access_user`, `reporting_user`, `pam_admin`, or `resource_admin`.
+        This endpoint requires one of the following roles: `access_admin`, `access_user`, or `reporting_user`.
       operationId: ListGroups
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -679,6 +1106,12 @@ paths:
           name: id
           schema:
             type: string
+        - description: Ignore groups with the give name(s). This is case sensitive.
+          explode: true
+          in: query
+          name: ignore
+          schema:
+            type: string
         - description: The name of your Team
           in: path
           name: team_name
@@ -691,7 +1124,7 @@ paths:
             application/json:
               example:
                 list:
-                  - id: 7c868d24-7094-49a9-91e7-3291cfb14e6b
+                  - id: a944e332-eb45-483b-96d1-f24f3e519a8b
                     name: compsons
                     roles:
                       - access_user
@@ -700,7 +1133,7 @@ paths:
                     federated_from_team: william-faulkner
                     federation_approved_at: '2018-04-07T00:00:00Z'
                     deleted_at: '0001-01-01T00:00:00Z'
-                  - id: 44ef91a4-a046-4856-b65a-b222448eccff
+                  - id: 76cfb913-90b0-488f-9dd1-20950dafcbf0
                     name: compsons
                     roles:
                       - access_user
@@ -716,7 +1149,7 @@ paths:
                       $ref: '#/components/schemas/Group'
                     type: array
                 type: object
-          description: List of ASA Groups.
+          description: OK
           headers:
             Link:
               description: |-
@@ -730,11 +1163,11 @@ paths:
       tags:
         - groups
     post:
-      summary: Create an ASA Group
+      summary: Create a Group
       description: |-
-        Creates an ASA Group. You can add users to the ASA Group and also assign the Group to Projects to manage access.
+        Creates a Group for your Team. Groups allow you to assign RBAC roles to users and manage user access to Projects.
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: CreateGroup
       parameters:
         - description: The name of your Team
@@ -758,7 +1191,6 @@ paths:
                 - access_admin
             schema:
               $ref: '#/components/schemas/Group'
-        description: ASA Group to create.
         required: true
       responses:
         '201':
@@ -768,7 +1200,7 @@ paths:
                 deleted_at: '0001-01-01T00:00:00Z'
                 federated_from_team: null
                 federation_approved_at: null
-                id: 44ef91a4-a046-4856-b65a-b222448eccff
+                id: 76cfb913-90b0-488f-9dd1-20950dafcbf0
                 name: compsons
                 roles:
                   - access_user
@@ -776,16 +1208,16 @@ paths:
                   - access_admin
               schema:
                 $ref: '#/components/schemas/Group'
-          description: The ASA Group that was created.
+          description: Created
       tags:
         - groups
   /v1/teams/{team_name}/groups/{group_name}:
     get:
-      summary: Fetch a single ASA Group
+      summary: Retrieve a Group
       description: |-
-        Fetches details regarding a single ASA Group
+        Retrieves a specified Group
 
-        This endpoint requires one of the following roles: `pam_admin`, `resource_admin`, `security_admin`, `access_admin`, `access_user`, or `reporting_user`.
+        This endpoint requires one of the following roles: `access_admin`, `access_user`, or `reporting_user`.
       operationId: GetGroup
       parameters:
         - description: The name of your Team
@@ -808,7 +1240,7 @@ paths:
                 deleted_at: '0001-01-01T00:00:00Z'
                 federated_from_team: null
                 federation_approved_at: null
-                id: 44ef91a4-a046-4856-b65a-b222448eccff
+                id: 76cfb913-90b0-488f-9dd1-20950dafcbf0
                 name: compsons
                 roles:
                   - access_user
@@ -816,15 +1248,15 @@ paths:
                   - access_admin
               schema:
                 $ref: '#/components/schemas/Group'
-          description: The ASA Group that was requested.
+          description: OK
       tags:
         - groups
     put:
-      summary: Update an ASA Group
+      summary: Update a Group
       description: |-
-        Updates the access privileges of a single ASA Group
+        Updates the access privileges of the specified Group
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: UpdateGroup
       parameters:
         - description: The name of your Team
@@ -849,19 +1281,18 @@ paths:
                 - access_admin
             schema:
               $ref: '#/components/schemas/GroupUpdate'
-        description: Roles to update.
         required: true
       responses:
         '204':
-          description: The ASA Group was updated successfully.
+          description: No Content
       tags:
         - groups
     delete:
-      summary: Remove an ASA Group from a Team
+      summary: Remove a Group from a Team
       description: |-
-        Removes an ASA Group from the Team and also from any associated Projects
+        Removes a Group from your Team. This also removes the Group from any associated Projects.
 
-        This endpoint requires one of the following roles: `pam_admin`, or `access_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: RemoveGroup
       parameters:
         - description: The name of your Team
@@ -878,16 +1309,16 @@ paths:
             type: string
       responses:
         '204':
-          description: The ASA Group was removed successfully.
+          description: No Content
       tags:
         - groups
   /v1/teams/{team_name}/groups/{group_name}/attributes:
     get:
-      summary: List Group Attributes
+      summary: List all Attributes for a Group
       description: |-
-        Lists the Attributes for an ASA Group
+        Lists all Attributes for a specified Group
 
-        This endpoint requires one of the following roles: `access_admin`, `access_user`, `reporting_user`, `resource_admin`, or `security_admin`.
+        This endpoint requires one of the following roles: `access_admin`, `access_user`, or `reporting_user`.
       operationId: ListGroupAttributes
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -948,7 +1379,7 @@ paths:
                       $ref: '#/components/schemas/TeamGroupAttribute'
                     type: array
                 type: object
-          description: List of Attributes.
+          description: OK
           headers:
             Link:
               description: |-
@@ -963,11 +1394,11 @@ paths:
         - attributes
   /v1/teams/{team_name}/groups/{group_name}/attributes/{attribute_id}:
     get:
-      summary: Fetch a Group Attribute
+      summary: Retrieve a Group Attribute
       description: |-
-        Fetches the details of an Attribute for an ASA Group
+        Retrieves an Attribute for a Group
 
-        This endpoint requires one of the following roles: `access_admin`, `access_user`, `reporting_user`, `resource_admin`, or `security_admin`.
+        This endpoint requires one of the following roles: `access_user`, `reporting_user`, or `access_admin`.
       operationId: FetchGroupAttribute
       parameters:
         - description: The name of your Team
@@ -999,15 +1430,15 @@ paths:
                 managed: false
               schema:
                 $ref: '#/components/schemas/TeamGroupAttribute'
-          description: The Attribute that was requested.
+          description: OK
       tags:
         - attributes
     put:
       summary: Update a Group Attribute
       description: |-
-        Updates an Attribute for an ASA Group
+        Updates an Attribute for a Group
 
-        This endpoint requires one of the following roles: `access_admin`, or `resource_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: UpdateGroupAttribute
       parameters:
         - description: The name of your Team
@@ -1036,20 +1467,19 @@ paths:
               attribute_value: new_name
             schema:
               $ref: '#/components/schemas/UpdateGroupAttribute'
-        description: Attribute to update
         required: true
       responses:
         '204':
-          description: The Group Attribute was updated successfully.
+          description: No Content
       tags:
         - attributes
   /v1/teams/{team_name}/groups/{group_name}/disconnected_mode:
     get:
-      summary: Update an ASA Group
+      summary: Update a Group
       description: |-
-        Updates the access privileges of a single ASA Group
+        Updates the access privileges of the specified Group
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: GetDmGroupDetails
       parameters:
         - description: The name of your Team
@@ -1074,20 +1504,19 @@ paths:
                 - access_admin
             schema:
               $ref: '#/components/schemas/GroupUpdate'
-        description: Roles to update.
         required: true
       responses:
         '204':
-          description: The ASA Group was updated successfully.
+          description: No Content
       tags:
         - groups
   /v1/teams/{team_name}/groups/{group_name}/users:
     get:
-      summary: List ASA Users of an ASA Group
+      summary: List all Users for a Group
       description: |-
-        Lists all of the ASA Users in an ASA Group
+        Lists all Users in a specified Group
 
-        This endpoint requires one of the following roles: `pam_admin`, `resource_admin`, `security_admin`, `access_user`, `access_admin`, or `reporting_user`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: ListUsersInGroup
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -1150,7 +1579,7 @@ paths:
               example:
                 list:
                   - team_name: william-faulkner
-                    id: 593a4540-3d82-4fb0-98d4-8f62be094eda
+                    id: 39cbf8d4-9e1c-4b5d-8ff1-d9f24a6a68f4
                     name: Benjy.Compson
                     status: DISABLED
                     details:
@@ -1159,8 +1588,6 @@ paths:
                       full_name: Benjy Compson
                       email: benjy.compson@example.com
                     user_type: human
-                    oauth_client_application_id: null
-                    role_grants: null
                     deleted_at: null
               schema:
                 properties:
@@ -1169,7 +1596,7 @@ paths:
                       $ref: '#/components/schemas/User'
                     type: array
                 type: object
-          description: List of ASA Users.
+          description: OK
           headers:
             Link:
               description: |-
@@ -1183,11 +1610,11 @@ paths:
       tags:
         - groups
     post:
-      summary: Add an ASA User to an ASA Group
+      summary: Add a User to a Group
       description: |-
-        Adds an ASA User to an ASA Group
+        Adds a User to a Group
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: AddUserToGroup
       parameters:
         - description: The name of your Team
@@ -1212,29 +1639,26 @@ paths:
                 first_name: Jason
                 full_name: Jason Compson IV
                 last_name: Compson
-              id: 505587bb-e600-442d-91b5-28675f8e34e4
+              id: daa7fcac-2e15-4c1e-9be7-d5b11b82772f
               name: Jason.Compson.IV
-              oauth_client_application_id: null
-              role_grants: null
               status: ACTIVE
               team_name: william-faulkner
               user_type: human
             schema:
               $ref: '#/components/schemas/User'
-        description: ASA User to add
         required: true
       responses:
         '204':
-          description: The ASA User was added to the ASA Group successfully.
+          description: No Content
       tags:
         - groups
   /v1/teams/{team_name}/groups/{group_name}/users/{user_name}:
     delete:
-      summary: Remove an ASA User from an ASA Group
+      summary: Remove a User from a Group
       description: |-
-        Removes an ASA User from an ASA Group
+        Removes a User from a Group
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: RemoveUserFromGroup
       parameters:
         - description: The name of your Team
@@ -1257,121 +1681,14 @@ paths:
             type: string
       responses:
         '204':
-          description: The ASA User was removed from the ASA Group successfully.
-      tags:
-        - groups
-  /v1/teams/{team_name}/groups/{group_name}/users_not_in_group:
-    get:
-      summary: List ASA Users of a Team not assigned to an ASA Group
-      description: |-
-        Lists ASA Users of a Team not assigned to an ASA Group
-
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `reporting_user`, `pam_admin`, `resource_admin`, or `security_admin`.
-      operationId: ListUsersNotInGroup
-      parameters:
-        - description: The UUID of the object used as an offset for pagination
-          in: query
-          name: offset
-          schema:
-            type: string
-        - description: The number of objects per page
-          in: query
-          name: count
-          schema:
-            type: number
-        - description: The object order
-          in: query
-          name: descending
-          schema:
-            type: boolean
-        - description: The direction of paging
-          in: query
-          name: prev
-          schema:
-            type: boolean
-        - description: Includes ASA Users with name that begins with the value
-          in: query
-          name: starts_with
-          schema:
-            type: string
-        - description: 'Includes ASA Users with specified statuses. Valid statuses: ''ACTIVE'', ''DISABLED'', and ''DELETED''.'
-          explode: true
-          in: query
-          name: status
-          schema:
-            type: string
-        - description: Includes ASA Users with name that contains the value
-          in: query
-          name: contains
-          schema:
-            type: string
-        - description: Include Service Users in the results
-          in: query
-          name: include_service_users
-          schema:
-            type: string
-        - description: Include only users with the given ID(s)
-          explode: true
-          in: query
-          name: id
-          schema:
-            type: string
-        - description: The name of your Team
-          in: path
-          name: team_name
-          required: true
-          schema:
-            type: string
-        - description: The ASA Group name
-          in: path
-          name: group_name
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              example:
-                list:
-                  - team_name: william-faulkner
-                    id: 505587bb-e600-442d-91b5-28675f8e34e4
-                    name: Jason.Compson.IV
-                    status: ACTIVE
-                    details:
-                      first_name: Jason
-                      last_name: Compson
-                      full_name: Jason Compson IV
-                      email: jason.compson@example.com
-                    user_type: human
-                    oauth_client_application_id: null
-                    role_grants: null
-                    deleted_at: null
-              schema:
-                properties:
-                  list:
-                    items:
-                      $ref: '#/components/schemas/User'
-                    type: array
-                type: object
-          description: List of ASA Users.
-          headers:
-            Link:
-              description: |-
-                Link Header defined by RFC 8288.
-
-                A Link header with rel="next" indicates that a subsequent page is available and contains the URL which should be used to fetch it.
-
-                A Link header with rel="prev" indicates that a previous page is available and contains the URL which should be used to fetch it.
-              schema:
-                type: string
+          description: No Content
       tags:
         - groups
   /v1/teams/{team_name}/integrations/ad_connections:
     get:
-      summary: List AD Connections for a Team
+      summary: List all AD Connections
       description: |-
-        Lists AD Connections for a Team
+        Lists all AD Connections for your Team
 
         This endpoint requires the `access_admin` role.
       operationId: ListADConnections
@@ -1432,7 +1749,7 @@ paths:
                       $ref: '#/components/schemas/ListADConnectionResponse'
                     type: array
                 type: object
-          description: List of AD Connections.
+          description: OK
           headers:
             Link:
               description: |-
@@ -1473,7 +1790,6 @@ paths:
               service_account_username: admin
             schema:
               $ref: '#/components/schemas/ADConnectionRequest'
-        description: AD Connection to create
         required: true
       responses:
         '201':
@@ -1490,14 +1806,14 @@ paths:
                 service_account_username: admin
               schema:
                 $ref: '#/components/schemas/ADConnection'
-          description: The AD Connection that was created.
+          description: Created
       tags:
         - ad-connections
   /v1/teams/{team_name}/integrations/ad_connections/{ad_connection_id}:
     get:
-      summary: Fetch an AD Connection
+      summary: Retrieve an AD Connection
       description: |-
-        Fetches details regarding a specific AD Connection
+        Retrieves the properties of a specified AD Connection
 
         This endpoint requires the `access_admin` role.
       operationId: GetADConnectionByID
@@ -1531,12 +1847,15 @@ paths:
                 service_account_username: admin
               schema:
                 $ref: '#/components/schemas/ADConnectionWithGatewayName'
-          description: The AD Connection that was requested.
+          description: OK
       tags:
         - ad-connections
     put:
-      summary: Updates details of a specific AD Connection
-      description: This endpoint requires the `access_admin` role.
+      summary: Update an AD Connection
+      description: |-
+        Updates the properties of a specified AD Connection
+
+        This endpoint requires the `access_admin` role.
       operationId: UpdateADConnection
       parameters:
         - description: The name of your Team
@@ -1568,13 +1887,13 @@ paths:
         required: true
       responses:
         '204':
-          description: The AD Connection was updated successfully.
+          description: No Content
       tags:
         - ad-connections
     delete:
       summary: Delete an AD Connection
       description: |-
-        Deletes an AD Connection
+        Deletes a specified AD Connection
 
         This endpoint requires the `access_admin` role.
       operationId: DeleteADConnection
@@ -1593,16 +1912,16 @@ paths:
             type: string
       responses:
         '204':
-          description: The AD Connection was deleted successfully.
+          description: No Content
       tags:
         - ad-connections
   /v1/teams/{team_name}/projects:
     get:
-      summary: List Projects for a Team
+      summary: List all Projects
       description: |-
-        Lists Projects for a Team
+        Lists all Projects for your Team
 
-        This endpoint requires one of the following roles: `authenticated_client`, `client`, `reporting_user`, `resource_admin`, `access_user`, or `access_admin`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, `authenticated_client`, `client`, or `reporting_user`.
       operationId: ListProjects
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -1640,6 +1959,11 @@ paths:
           name: traffic_forwarding
           schema:
             type: boolean
+        - description: 'If ''true'', the projects under resource group will also return the #of resources for each project.'
+          in: query
+          name: include_resource_count
+          schema:
+            type: boolean
         - description: The name of your Team
           in: path
           name: team_name
@@ -1653,7 +1977,7 @@ paths:
               example:
                 list:
                   - name: the-sound-and-the-fury
-                    id: 47a33228-f927-465e-a43a-13449be48139
+                    id: a616e50c-cc2e-4432-8b73-00356b586ec4
                     team: william-faulkner
                     force_shared_ssh_users: false
                     shared_admin_user_name: null
@@ -1669,7 +1993,7 @@ paths:
                     ssh_session_recording: true
                     rdp_session_recording: true
                   - name: the-sound-and-the-fury
-                    id: 47a33228-f927-465e-a43a-13449be48139
+                    id: a616e50c-cc2e-4432-8b73-00356b586ec4
                     team: william-faulkner
                     force_shared_ssh_users: false
                     shared_admin_user_name: null
@@ -1691,7 +2015,7 @@ paths:
                       $ref: '#/components/schemas/Project'
                     type: array
                 type: object
-          description: List of Projects.
+          description: OK
           headers:
             Link:
               description: |-
@@ -1707,9 +2031,9 @@ paths:
     post:
       summary: Create a Project
       description: |-
-        Creates a Project
+        Creates a Project for your Team
 
-        This endpoint requires one of the following roles: `access_admin`, or `resource_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: CreateProject
       parameters:
         - description: The name of your Team
@@ -1740,7 +2064,6 @@ paths:
               user_on_demand_period: null
             schema:
               $ref: '#/components/schemas/Project'
-        description: Project to create
         required: true
       responses:
         '201':
@@ -1752,7 +2075,7 @@ paths:
                 force_shared_ssh_users: false
                 forward_traffic: true
                 gateway_selector: env in (dev,prod),region=us-west-2,release notin (canary,stable)
-                id: 47a33228-f927-465e-a43a-13449be48139
+                id: a616e50c-cc2e-4432-8b73-00356b586ec4
                 name: the-sound-and-the-fury
                 next_unix_gid: 63001
                 next_unix_uid: 60001
@@ -1765,16 +2088,16 @@ paths:
                 user_on_demand_period: 0
               schema:
                 $ref: '#/components/schemas/Project'
-          description: The Project that was created.
+          description: Created
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}:
     get:
-      summary: Fetch a Project
+      summary: Retrieve a Project
       description: |-
-        Fetches details regarding a specific Project 
+        Retrieves the details of a Project
 
-        This endpoint requires one of the following roles: `authenticated_client`, `client`, `reporting_user`, `resource_admin`, `access_user`, or `access_admin`.
+        This endpoint requires one of the following roles: `authenticated_client`, `client`, `reporting_user`, `access_user`, or `access_admin`.
       operationId: FetchProject
       parameters:
         - description: The name of your Team
@@ -1799,7 +2122,7 @@ paths:
                 force_shared_ssh_users: false
                 forward_traffic: true
                 gateway_selector: env in (dev,prod),region=us-west-2,release notin (canary,stable)
-                id: 47a33228-f927-465e-a43a-13449be48139
+                id: a616e50c-cc2e-4432-8b73-00356b586ec4
                 name: the-sound-and-the-fury
                 next_unix_gid: 63001
                 next_unix_uid: 60001
@@ -1812,12 +2135,12 @@ paths:
                 user_on_demand_period: 0
               schema:
                 $ref: '#/components/schemas/Project'
-          description: The Project that was requested.
+          description: OK
       tags:
         - projects
     put:
-      summary: Updates details of a specific Project
-      description: 'This endpoint requires one of the following roles: `access_admin`, or `resource_admin`.'
+      summary: Updates the details of a Project
+      description: This endpoint requires the `access_admin` role.
       operationId: UpdateProject
       parameters:
         - description: The name of your Team
@@ -1852,13 +2175,13 @@ paths:
         required: true
       responses:
         '204':
-          description: The Project was updated successfully.
+          description: No Content
       tags:
         - projects
     delete:
       summary: Delete a Project
       description: |-
-        Deletes a Project
+        Deletes a specified Project
 
         This endpoint requires the `access_admin` role.
       operationId: RemoveProject
@@ -1877,14 +2200,14 @@ paths:
             type: string
       responses:
         '204':
-          description: The Project was deleted successfully.
+          description: No Content
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/client_config_options:
     get:
-      summary: List Client Configuration Options for a Project
+      summary: List all Client Configuration Options
       description: |-
-        Lists Client Configuration Options for a Project. Use Client Configuration Options to automatically pass settings to any Client sign in to a server in this Project.
+        Lists all Client Configuration Options for a specified Project
 
         This endpoint requires one of the following roles: `access_user`, or `access_admin`.
       operationId: ListClientConfigOptions
@@ -1907,10 +2230,10 @@ paths:
             application/json:
               example:
                 list:
-                  - id: 5e734a0f-82ff-4606-8a45-6ad8da7e8811
+                  - id: 00978771-e296-4d27-859b-fae294803a30
                     config_key: ssh.insecure_forward_agent
                     config_value: host
-                  - id: 427f8218-e092-42ec-9093-e4db286eb36f
+                  - id: 70a5c280-f38b-4244-949a-85fe343b0300
                     config_key: ssh.port_forward_method
                     config_value: netcat
               schema:
@@ -1920,7 +2243,7 @@ paths:
                       $ref: '#/components/schemas/ClientConfigOption'
                     type: array
                 type: object
-          description: '200'
+          description: OK
           headers:
             Link:
               description: |-
@@ -1934,9 +2257,9 @@ paths:
       tags:
         - projects
     post:
-      summary: Add Client Configuration Options to a Project
+      summary: Add a Client Configuration Option
       description: |-
-        Adds Client Configuration Options to a Project
+        Adds a Client Configuration Option to a Project. Use Client Configuration Options to automatically pass settings to any Client that accesses a Server within the Project.
 
         This endpoint requires the `access_admin` role.
       operationId: CreateClientConfigOption
@@ -1962,7 +2285,6 @@ paths:
               id: ''
             schema:
               $ref: '#/components/schemas/ClientConfigOption'
-        description: The Client Configuration Option to create
         required: true
       responses:
         '200':
@@ -1971,17 +2293,17 @@ paths:
               example:
                 config_key: ssh.insecure_forward_agent
                 config_value: host
-                id: 5e734a0f-82ff-4606-8a45-6ad8da7e8811
+                id: 00978771-e296-4d27-859b-fae294803a30
               schema:
                 $ref: '#/components/schemas/ClientConfigOption'
-          description: The Client Configuration Option was created
+          description: OK
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/client_config_options/{client_config_options_id}:
     delete:
-      summary: Delete a Client Configuration Option from a Project
+      summary: Delete a Client Configuration Option
       description: |-
-        Deletes Client Configuration Option from a Project
+        Deletes a Client Configuration Option from a Project
 
         This endpoint requires the `access_admin` role.
       operationId: RemoveClientConfigOption
@@ -2006,14 +2328,14 @@ paths:
             type: string
       responses:
         '204':
-          description: The Client Configuration Option was successfully deleted
+          description: No Content
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/cloud_accounts:
     get:
-      summary: List Cloud Accounts in a Project
+      summary: List all Cloud Accounts
       description: |-
-        Lists Cloud Accounts in a Project
+        Lists all Cloud Accounts for a specified Project
 
         This endpoint requires one of the following roles: `access_user`, or `reporting_user`.
       operationId: ListAllCloudAccountsForProject
@@ -2036,12 +2358,12 @@ paths:
             application/json:
               example:
                 list:
-                  - id: 9806b286-b700-46d9-ac74-3bd0452b7e24
+                  - id: 2f5faa5c-648c-471a-9a28-126b5edd22e1
                     project_name: the-sound-and-the-fury
                     provider: aws
                     account_id: '123456789012'
                     description: Dev AWS account
-                  - id: 87de47e5-1b17-44bd-847d-b6c5022c0ed4
+                  - id: df93e838-c5c8-4e9e-9784-cb65dba26cec
                     project_name: the-sound-and-the-fury
                     provider: gce
                     account_id: '630225935076'
@@ -2053,7 +2375,7 @@ paths:
                       $ref: '#/components/schemas/ProjectCloudAccount'
                     type: array
                 type: object
-          description: List of Cloud Accounts in a Project
+          description: OK
           headers:
             Link:
               description: |-
@@ -2067,9 +2389,9 @@ paths:
       tags:
         - projects
     post:
-      summary: Add a Cloud Account to a Project
+      summary: Add a Cloud Account
       description: |-
-        Adds a Cloud Account to a Project, which allows servers created in that account to register with Okta Advanced Server Access without using a Server Enrollment Token. This is only possible on Cloud providers that expose cryptographically signed instance metadata, so currently only Amazon Web Services and Google Compute Engine are supported.
+        Adds a Cloud Account to a specified Project. Servers created with this Cloud Account are automatically discovered and enrolled in the associated Project. Currently only Amazon Web Services (AWS) and Google Compute Engine (GCE) are supported.
 
         This endpoint requires the `access_admin` role.
       operationId: AddCloudAccountToProject
@@ -2093,19 +2415,19 @@ paths:
               example:
                 account_id: '123456789012'
                 description: Dev AWS account
-                id: 9806b286-b700-46d9-ac74-3bd0452b7e24
+                id: 2f5faa5c-648c-471a-9a28-126b5edd22e1
                 project_name: the-sound-and-the-fury
                 provider: aws
               schema:
                 $ref: '#/components/schemas/ProjectCloudAccount'
-          description: Cloud Account that was added to the Project
+          description: OK
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/cloud_accounts/{cloud_account_uuid}:
     get:
-      summary: Fetch Cloud Account in a Project
+      summary: Retrieve a Cloud Account
       description: |-
-        Fetches a Cloud Accounts in a Project
+        Retrieves a Cloud Account for a Project
 
         This endpoint requires one of the following roles: `access_user`, or `reporting_user`.
       operationId: GetProjectCloudAccount
@@ -2135,18 +2457,18 @@ paths:
               example:
                 account_id: '123456789012'
                 description: Dev AWS account
-                id: 9806b286-b700-46d9-ac74-3bd0452b7e24
+                id: 2f5faa5c-648c-471a-9a28-126b5edd22e1
                 project_name: the-sound-and-the-fury
                 provider: aws
               schema:
                 $ref: '#/components/schemas/ProjectCloudAccount'
-          description: Cloud Account that is in a Project
+          description: OK
       tags:
         - projects
     put:
-      summary: Update an existing Project Cloud Account
+      summary: Update a Cloud Account
       description: |-
-        Update an existing Project Cloud Account.
+        Updates a Cloud Account for a Project
 
         This endpoint requires the `access_admin` role.
       operationId: UpdateCloudAccountToProject
@@ -2176,16 +2498,16 @@ paths:
               example:
                 account_id: '123456789012'
                 description: Dev AWS account
-                id: 9806b286-b700-46d9-ac74-3bd0452b7e24
+                id: 2f5faa5c-648c-471a-9a28-126b5edd22e1
                 project_name: the-sound-and-the-fury
                 provider: aws
               schema:
                 $ref: '#/components/schemas/ProjectCloudAccount'
-          description: Cloud Account that was updated
+          description: OK
       tags:
         - projects
     delete:
-      summary: Remove a Cloud Account from a Project
+      summary: Remove a Cloud Account
       description: |-
         Removes a Cloud Account from a Project
 
@@ -2212,14 +2534,14 @@ paths:
             type: string
       responses:
         '204':
-          description: The Cloud Account was removed successfully.
+          description: No Content
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/cloud_provider/{cloud_provider}/accounts/{cloud_account_id}:
     get:
-      summary: Fetch Cloud Account in a Project
+      summary: Retrieve a Cloud Account
       description: |-
-        Fetches a Cloud Accounts in a Project
+        Retrieves a Cloud Account for a Project
 
         This endpoint requires one of the following roles: `access_user`, or `reporting_user`.
       operationId: GetProjectCloudAccountByProviderAndAccountID
@@ -2255,21 +2577,21 @@ paths:
               example:
                 account_id: '123456789012'
                 description: Dev AWS account
-                id: 9806b286-b700-46d9-ac74-3bd0452b7e24
+                id: 2f5faa5c-648c-471a-9a28-126b5edd22e1
                 project_name: the-sound-and-the-fury
                 provider: aws
               schema:
                 $ref: '#/components/schemas/ProjectCloudAccount'
-          description: Cloud Account that is in a Project
+          description: OK
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/groups:
     get:
-      summary: List all the ASA Groups in a Project
+      summary: List all Groups in a Project
       description: |-
-        Lists all the ASA Groups in a Project
+        Lists all Groups in a specified Project
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `reporting_user`, `resource_admin`, or `security_admin`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: ListProjectGroups
       parameters:
         - description: The name of your Team
@@ -2294,7 +2616,7 @@ paths:
                     group: compsons
                     project: the-sound-and-the-fury
                     name: compsons
-                    group_id: f65a2207-4d2b-4ea7-8d9c-b13effdc6f95
+                    group_id: 4aff9e01-1de2-4fc8-9e42-260021641c04
                     server_access: false
                     server_admin: true
                     create_server_group: true
@@ -2313,7 +2635,7 @@ paths:
                       $ref: '#/components/schemas/ProjectGroup'
                     type: array
                 type: object
-          description: List of ASA Groups in the specified Project
+          description: OK
           headers:
             Link:
               description: |-
@@ -2327,11 +2649,11 @@ paths:
       tags:
         - projects
     post:
-      summary: Add an ASA Group to a Project
+      summary: Add a Group to a Project
       description: |-
-        Adds a pre-existing ASA Group to the Project, which enables server access with either User or admin permissions and the option to sync an ASA Group to the servers in the Project.
+        Adds a Group to a Project
 
-        This endpoint requires one of the following roles: `security_admin`, or `access_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: AddGroupToProject
       parameters:
         - description: The name of your Team
@@ -2363,20 +2685,19 @@ paths:
               unix_gid: null
             schema:
               $ref: '#/components/schemas/ProjectGroup'
-        description: An ASA Group, with relevant Project settings
         required: true
       responses:
         '204':
-          description: The ASA Group was successfully added to the Project.
+          description: No Content
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/groups/{group_name}:
     get:
-      summary: Retrieve ASA Group details for a single Project
+      summary: Retrieve a Group in a Project
       description: |-
-        Returns details for an ASA Group on a Project.
+        Retrieve the Project-level details for a specified Group
 
-        This endpoint requires one of the following roles: `security_admin`, `access_user`, `access_admin`, `reporting_user`, or `resource_admin`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: GetProjectGroup
       parameters:
         - description: The name of your Team
@@ -2405,7 +2726,7 @@ paths:
                 create_server_group: true
                 deleted_at: null
                 group: compsons
-                group_id: f65a2207-4d2b-4ea7-8d9c-b13effdc6f95
+                group_id: 4aff9e01-1de2-4fc8-9e42-260021641c04
                 id: ''
                 name: compsons
                 profile_attributes:
@@ -2420,15 +2741,15 @@ paths:
                 unix_gid: null
               schema:
                 $ref: '#/components/schemas/ProjectGroupWithProfileAttributes'
-          description: The Project Group requested
+          description: OK
       tags:
         - projects
     put:
-      summary: Change the Project properties of an ASA Project Group
+      summary: Update a Group in a Project
       description: |-
-        Updates the Project-level details for an ASA Project Group
+        Updates the Project-level details for a specified Group
 
-        This endpoint requires one of the following roles: `access_admin`, or `security_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: UpdateProjectGroup
       parameters:
         - description: The name of your Team
@@ -2466,19 +2787,18 @@ paths:
               unix_gid: null
             schema:
               $ref: '#/components/schemas/ProjectGroup'
-        description: An ASA Project Group and relevant Project settings
         required: true
       responses:
         '204':
-          description: The ASA Project Group was successfully updated in the Project.
+          description: No Content
       tags:
         - projects
     delete:
-      summary: Remove an ASA Group from a Project
+      summary: Remove a Group from a Project
       description: |-
-        Removes an ASA Group from a Project. This doesn't delete the ASA Group.
+        Removes a Group from a Project. This doesn't delete the Group from the Team.
 
-        This endpoint requires one of the following roles: `access_admin`, or `security_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: RemoveGroupFromProject
       parameters:
         - description: The name of your Team
@@ -2501,14 +2821,14 @@ paths:
             type: string
       responses:
         '204':
-          description: The ASA Group was successfully removed from the Project.
+          description: No Content
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/preauthorizations:
     get:
-      summary: Fetch a Preauthorization
+      summary: Retrieve a Preauthorization
       description: |-
-        Fetches a Preauthorization. A Preauthorization is a time-limited grant for an ASA User to access resources in a specific Project.
+        Retrieves a Preauthorization for a specified project
 
         This endpoint requires one of the following roles: `access_admin`, or `preauthorization`.
       operationId: ListPreauthorizationsForProject
@@ -2539,15 +2859,15 @@ paths:
                 user_name: jason.compson
               schema:
                 $ref: '#/components/schemas/Preauthorization'
-          description: The Preauthorization requested
+          description: OK
       tags:
         - projects
     post:
       summary: Create a Preauthorization
       description: |-
-        Creates a Preauthorization.
+        Creates a Preauthorization for a Project. A Preauthorization is a time-limited grant for a User to access resources in a specific Project.
 
-        This endpoint requires one of the following roles: `preauthorization`, or `access_admin`.
+        This endpoint requires one of the following roles: `access_admin`, or `preauthorization`.
       operationId: CreatePreauthorization
       parameters:
         - description: The name of your Team
@@ -2575,20 +2895,19 @@ paths:
               user_name: jason.compson
             schema:
               $ref: '#/components/schemas/Preauthorization'
-        description: The Preauthorization to create
         required: true
       responses:
         '204':
-          description: The Preauthorization was created successfully.
+          description: Created
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/preauthorizations/{authorization_id}:
     get:
-      summary: List the Preauthorizations for a Project
+      summary: List all Preauthorizations
       description: |-
-        Lists the Preauthorizations for a Project
+        Lists all Preauthorizations for a specified Project
 
-        This endpoint requires one of the following roles: `access_admin`, or `preauthorization`.
+        This endpoint requires one of the following roles: `preauthorization`, or `access_admin`.
       operationId: GetPreauthorization
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -2659,7 +2978,7 @@ paths:
                       $ref: '#/components/schemas/Preauthorization'
                     type: array
                 type: object
-          description: List of Preauthorizations
+          description: OK
           headers:
             Link:
               description: |-
@@ -2674,7 +2993,10 @@ paths:
         - projects
     put:
       summary: Update a Preauthorization
-      description: 'This endpoint requires one of the following roles: `preauthorization`, or `access_admin`.'
+      description: |-
+        Update a Preauthorization for a Project
+
+        This endpoint requires one of the following roles: `access_admin`, or `preauthorization`.
       operationId: UpdatePreauthorization
       parameters:
         - description: The name of your Team
@@ -2708,7 +3030,6 @@ paths:
               user_name: jason.compson
             schema:
               $ref: '#/components/schemas/Preauthorization'
-        description: The updated Preauthorization
         required: true
       responses:
         '200':
@@ -2724,16 +3045,16 @@ paths:
                 user_name: jason.compson
               schema:
                 $ref: '#/components/schemas/Preauthorization'
-          description: The updated Preauthorization
+          description: OK
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/server_enrollment_tokens:
     get:
-      summary: List Server Enrollment Tokens within a Project
+      summary: List all Server Enrollment Tokens
       description: |-
-        Lists Server Enrollment Tokens within a Project
+        Lists all Server Enrollment Tokens for a specified Project
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `server_enrollment_token_viewer`, or `resource_admin`.
+        This endpoint requires one of the following roles: `access_admin`, `server_enrollment_token_viewer`, or `access_user`.
       operationId: ListServerEnrollmentTokens
       parameters:
         - description: The name of your Team
@@ -2759,7 +3080,7 @@ paths:
                       $ref: '#/components/schemas/ServerEnrollmentToken'
                     type: array
                 type: object
-          description: List of Server Enrollment Tokens in the Project
+          description: OK
           headers:
             Link:
               description: |-
@@ -2773,11 +3094,11 @@ paths:
       tags:
         - projects
     post:
-      summary: Create a Server Enrollment Token for a Project
+      summary: Create a Server Enrollment Token
       description: |-
-        Creates a Server Enrollment Token to be used with a Project. These tokens are used to enroll a Server in a specific Project.
+        Creates a Server Enrollment Token for a specified Project. These tokens are used to enroll a Server in the Project.
 
-        This endpoint requires one of the following roles: `access_admin`, `server_enrollment_token_creator`, `resource_admin`, or `access_user`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `server_enrollment_token_creator`.
       operationId: CreateServerEnrollmentToken
       parameters:
         - description: The name of your Team
@@ -2797,7 +3118,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ServerEnrollmentToken'
-        description: Token to create
         required: true
       responses:
         '201':
@@ -2805,16 +3125,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServerEnrollmentToken'
-          description: Server Enrollment Token was successfully created
+          description: Created
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/server_enrollment_tokens/{server_enrollment_token_id}:
     get:
-      summary: Fetch a Server Enrollment Token from a Project
+      summary: Retrieve a Server Enrollment Token
       description: |-
-        Fetches a Server Enrollment Token from a Project
+        Retrieves a Server Enrollment Token from a Project
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `server_enrollment_token_viewer`, or `resource_admin`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `server_enrollment_token_viewer`.
       operationId: FetchServerEnrollmentToken
       parameters:
         - description: The name of your Team
@@ -2841,15 +3161,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServerEnrollmentToken'
-          description: Server Enrollment Token that was requested
+          description: OK
       tags:
         - projects
     delete:
-      summary: Delete a Server Enrollment Token from a Project
+      summary: Delete a Server Enrollment Token
       description: |-
         Deletes a Server Enrollment Token from a Project
 
-        This endpoint requires one of the following roles: `access_admin`, or `resource_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: RemoveServerEnrollmentToken
       parameters:
         - description: The name of your Team
@@ -2872,14 +3192,14 @@ paths:
             type: string
       responses:
         '204':
-          description: Server Enrollment Token was successfully deleted
+          description: No Content
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/server_users:
     get:
-      summary: List Server Users in a Project
+      summary: List all Server Users for a Project
       description: |-
-        List all the Server Users in a Project. A Server User is a representation of a given ASA User that is created on an end server.
+        List all Server Users for a specified Project. A Server User is a representation of a User that is created on an enrolled Server.
 
         This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: ListServerUsersForProject
@@ -2910,7 +3230,7 @@ paths:
                     unix_gid: 63001
                     admin: true
                     windows_server_user_name: benjy
-                    id: 141ccfae-8c03-4550-82e5-b6dc76b32cff
+                    id: 4c311a25-18c8-4b6e-8f52-e47e85d884a7
                   - user_name: quentincompson
                     server_user_name: quentin
                     status: DELETED
@@ -2919,7 +3239,7 @@ paths:
                     unix_gid: 63002
                     admin: false
                     windows_server_user_name: quentin
-                    id: 508c2106-2b37-43d5-bd9b-215bc3905fbf
+                    id: 1e66cc17-c7c4-4c13-b3f1-5e0c9ffbf13d
               schema:
                 properties:
                   list:
@@ -2942,11 +3262,11 @@ paths:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/server_users/{user_name}:
     get:
-      summary: Fetch Server User for a Project
+      summary: Retrieve a Server User for a Project
       description: |-
-        Fetches a specific Server User for a Project
+        Retrieves a Server User for a Project
 
-        This endpoint requires one of the following roles: `access_admin`, `reporting_user`, or `access_user`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: GetServerUserForProject
       parameters:
         - description: The name of your Team
@@ -2981,7 +3301,7 @@ paths:
                   unix_gid: 63001
                   admin: true
                   windows_server_user_name: benjy
-                  id: 141ccfae-8c03-4550-82e5-b6dc76b32cff
+                  id: 4c311a25-18c8-4b6e-8f52-e47e85d884a7
               schema:
                 properties:
                   list:
@@ -3004,9 +3324,9 @@ paths:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/servers:
     get:
-      summary: List Servers in a Project
+      summary: List all Servers in a Project
       description: |-
-        Lists the Servers enrolled in this Project
+        Lists all Servers enrolled in a specified Project
 
         This endpoint requires one of the following roles: `access_user`, `access_admin`, or `server_admin`.
       operationId: ListServersForProject
@@ -3030,8 +3350,7 @@ paths:
               example:
                 list:
                   - team_name: william-faulkner
-                    id: 9cb841c5-c1ee-4240-bbc6-460fa12d48c4
-                    project_name: the-sound-and-the-fury
+                    id: b652e391-9c66-46da-9ce4-e6080fd33a43
                     hostname: harvard
                     alt_names: null
                     bastion: null
@@ -3054,8 +3373,7 @@ paths:
                     deleted_at: '0001-01-01T00:00:00Z'
                     instance_id: null
                   - team_name: william-faulkner
-                    id: 20ffd99d-fdfd-47b0-8a14-a5ce4d94867c
-                    project_name: the-sound-and-the-fury
+                    id: 68dcdeac-cd39-4203-aef4-b2c987f6ca0d
                     hostname: jefferson
                     alt_names: null
                     bastion: null
@@ -3084,7 +3402,7 @@ paths:
                       $ref: '#/components/schemas/Server'
                     type: array
                 type: object
-          description: List of Servers
+          description: OK
           headers:
             Link:
               description: |-
@@ -3100,7 +3418,7 @@ paths:
     post:
       summary: Add an Unmanaged Server to a Project
       description: |-
-        Adds an unmanaged Server to a Project. Unmanaged Servers don't use Advanced Server Access for authentication, but still receive Client Configuration Options. Create an Unmanaged Server to control connection options such port and agent forwarding for your users without requiring `sftd` to manage the Server..
+        Adds an unmanaged Server to a specified Project. Unmanaged Servers don't use Advanced Server Access for authentication, but still receive Client Configuration Options. Create an Unmanaged Server to control connection options such as port and agent forwarding for Users without requiring `sftd` to manage the Server.
 
         This endpoint requires one of the following roles: `access_admin`, or `server_admin`.
       operationId: CreateServer
@@ -3130,7 +3448,6 @@ paths:
               ssh_host_keys: null
             schema:
               $ref: '#/components/schemas/CreateServerBody'
-        description: Server information
         required: true
       responses:
         '200':
@@ -3145,14 +3462,13 @@ paths:
                 cloud_provider: null
                 deleted_at: '0001-01-01T00:00:00Z'
                 hostname: bastion.dev.com
-                id: fa5b7f7e-cb4f-4f8b-b040-ebced103449b
+                id: b22f75fe-496c-4b6b-b816-3125d2c53ec8
                 instance_details: null
                 instance_id: null
                 last_seen: '0001-01-01T00:00:00Z'
                 managed: false
                 os: ''
                 os_type: null
-                project_name: the-sound-and-the-fury
                 registered_at: '0001-01-01T00:00:00Z'
                 services: []
                 sftd_version: null
@@ -3161,12 +3477,12 @@ paths:
                 team_name: william-faulkner
               schema:
                 $ref: '#/components/schemas/Server'
-          description: The created Unmanaged Server.
+          description: OK
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/servers/{server_id}:
     get:
-      summary: Fetches the details of a Server in a Project
+      summary: Retrieves the details of a specified Server
       description: 'This endpoint requires one of the following roles: `access_user`, `access_admin`, or `server_admin`.'
       operationId: FetchServer
       parameters:
@@ -3201,14 +3517,13 @@ paths:
                 cloud_provider: null
                 deleted_at: '0001-01-01T00:00:00Z'
                 hostname: harvard
-                id: 9cb841c5-c1ee-4240-bbc6-460fa12d48c4
+                id: b652e391-9c66-46da-9ce4-e6080fd33a43
                 instance_details: null
                 instance_id: null
                 last_seen: '0001-01-01T00:00:00Z'
                 managed: true
                 os: Ubuntu 16.04
                 os_type: linux
-                project_name: the-sound-and-the-fury
                 registered_at: '0001-01-01T00:00:00Z'
                 services:
                   - broker
@@ -3219,13 +3534,13 @@ paths:
                 team_name: william-faulkner
               schema:
                 $ref: '#/components/schemas/Server'
-          description: The server object requested
+          description: OK
       tags:
         - projects
     put:
-      summary: Update a Server on a Project
+      summary: Update a Server for a Project
       description: |-
-        Update a Server on a Project. This endpoint is only available with the PolicySync feature, which is currently in EA
+        Updates a Server for a specified Project. This operation is intended for use with the PolicySync feature, see [PolicySync: Attribute-Based Access Control](https://help.okta.com/okta_help.htm?type=asa&id=ext-asa-policysync).
 
         This endpoint requires one of the following roles: `access_admin`, or `server_admin`.
       operationId: UpdateServer
@@ -3259,13 +3574,13 @@ paths:
         required: true
       responses:
         '204':
-          description: The Server has been updated.
+          description: No Content
       tags:
         - projects
     delete:
       summary: Remove a Server from a Project
       description: |-
-        Removes a Server from a Project
+        Removes a Server from a specified Project
 
         This endpoint requires one of the following roles: `access_admin`, or `server_admin`.
       operationId: RemoveServer
@@ -3290,16 +3605,16 @@ paths:
             type: string
       responses:
         '204':
-          description: The Server has been removed.
+          description: No Content
       tags:
         - projects
   /v1/teams/{team_name}/projects/{project_name}/servers/{server_id}/services:
     get:
-      summary: List Services available for a Server
+      summary: List all Services for a Server
       description: |-
-        Lists Services available for a Server
+        Lists all Services available for a specified Server
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `server_admin`, or `reporting_user`.
+        This endpoint requires one of the following roles: `access_admin`, `server_admin`, `reporting_user`, or `access_user`.
       operationId: ListServicesForServer
       parameters:
         - description: The name of your Team
@@ -3343,7 +3658,7 @@ paths:
                       $ref: '#/components/schemas/ServiceWithUserName'
                     type: array
                 type: object
-          description: List of Services on the Server
+          description: OK
           headers:
             Link:
               description: |-
@@ -3357,9 +3672,9 @@ paths:
       tags:
         - services
     post:
-      summary: Create a Service for a Server
+      summary: Create a Service
       description: |-
-        Creates a Service for a Server
+        Creates a Service that allows Service Users to access the specified Server
 
         This endpoint requires the `access_admin` role.
       operationId: CreateServiceForServer
@@ -3390,7 +3705,6 @@ paths:
               service_user_id: aa225c16-af6e-4ab4-9150-456fd472e2d7
             schema:
               $ref: '#/components/schemas/CreateServiceBody'
-        description: The Service to be created
         required: true
       responses:
         '201':
@@ -3403,14 +3717,14 @@ paths:
                 service_user_id: aa225c16-af6e-4ab4-9150-456fd472e2d7
               schema:
                 $ref: '#/components/schemas/Service'
-          description: The created Service
+          description: Created
       tags:
         - services
   /v1/teams/{team_name}/projects/{project_name}/servers/{server_id}/services/{service_id}:
     delete:
       summary: Delete a Service from a Server
       description: |-
-        Deletes a Service from a Server, preventing a Service User to authenticate against the specified Server using the deleted Service
+        Deletes a Service from a Server. This prevents Service Users from accessing the Server with the deleted Service.
 
         This endpoint requires the `access_admin` role.
       operationId: RemoveServiceForServer
@@ -3441,16 +3755,16 @@ paths:
             type: string
       responses:
         '204':
-          description: The Service has been deleted
+          description: No Content
       tags:
         - services
   /v1/teams/{team_name}/servers:
     get:
-      summary: List Servers for a Team
+      summary: List all Servers for a Team
       description: |-
-        Lists all the Servers enrolled in a Team that the requesting ASA User has access to
+        Lists all Servers in your Team. This only returns Servers available to the requesting User.
 
-        This endpoint requires one of the following roles: `reporting_user`, `server_admin`, `end_user`, `access_user`, `access_admin`, or `authenticated_client`.
+        This endpoint requires one of the following roles: `authenticated_client`, `reporting_user`, `server_admin`, `access_user`, or `access_admin`.
       operationId: ListServers
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -3520,7 +3834,7 @@ paths:
           name: state
           schema:
             type: string
-        - description: Server selectors. Same syntax as k8s
+        - description: Server selectors. Syntax is selector=key1=value1,key2=value2
           in: query
           name: selector
           schema:
@@ -3564,8 +3878,7 @@ paths:
               example:
                 list:
                   - team_name: william-faulkner
-                    id: 9cb841c5-c1ee-4240-bbc6-460fa12d48c4
-                    project_name: the-sound-and-the-fury
+                    id: b652e391-9c66-46da-9ce4-e6080fd33a43
                     hostname: harvard
                     alt_names: null
                     bastion: null
@@ -3588,8 +3901,7 @@ paths:
                     deleted_at: '0001-01-01T00:00:00Z'
                     instance_id: null
                   - team_name: william-faulkner
-                    id: 20ffd99d-fdfd-47b0-8a14-a5ce4d94867c
-                    project_name: the-sound-and-the-fury
+                    id: 68dcdeac-cd39-4203-aef4-b2c987f6ca0d
                     hostname: jefferson
                     alt_names: null
                     bastion: null
@@ -3618,7 +3930,7 @@ paths:
                       $ref: '#/components/schemas/Server'
                     type: array
                 type: object
-          description: List of servers.
+          description: OK
           headers:
             Link:
               description: |-
@@ -3633,9 +3945,9 @@ paths:
         - teams
   /v1/teams/{team_name}/servers/{server_id}:
     put:
-      summary: Update a Server
+      summary: Update a Server for a Team
       description: |-
-        Update a Server. This endpoint is only available with the PolicySync feature, which is currently in EA
+        Updates a Server for your Team. This is used by the PolicySync feature, see [PolicySync: Attribute-Based Access Control](https://help.okta.com/okta_help.htm?type=asa&id=ext-asa-policysync).
 
         This endpoint requires one of the following roles: `access_admin`, or `server_admin`.
       operationId: UpdateServer
@@ -3663,7 +3975,7 @@ paths:
         required: true
       responses:
         '204':
-          description: The Server has been updated.
+          description: No Content
       tags:
         - teams
   /v1/teams/{team_name}/service_token:
@@ -3671,7 +3983,7 @@ paths:
       summary: Issue a Service User token
       description: |-
         Most calls to the Okta Advanced Server Access API require an HTTP Authorization header with a value of `Bearer ${AUTH_TOKEN}`.
-        To retrieve an auth token, you need to [create a Service User and API key](https://help.okta.com/en/prod/okta_help_CSH.htm#ext_asa_service_users), then pass the API key information to this endpoint.
+        To retrieve an auth token, you need to [create a Service User and API key](https://help.okta.com/okta_help.htm?type=asa&id=ext_asa_service_users), then pass the API key information to this endpoint.
         Auth tokens may expire at any time, so code that uses them should be prepared to handle a 401 response code by creating a new auth token.
       operationId: IssueServiceToken
       parameters:
@@ -3689,7 +4001,6 @@ paths:
               key_secret: uF0SoVBVQP/hJmQSLUZdM2a7ArYzjD8ykzvG7n4tKaOEfSErcwMUUDWpEf4Q42/HaVKPZUfILkzy/bsQFv7WRg==
             schema:
               $ref: '#/components/schemas/IssueServiceTokenRequestBody'
-        description: API key ID and secret
         required: true
       responses:
         '200':
@@ -3701,16 +4012,16 @@ paths:
                 team_name: scaleft
               schema:
                 $ref: '#/components/schemas/AuthTokenResponse'
-          description: On success, the call will return a JSON object with the bearer token and its expiration date.
+          description: OK
       tags:
         - service-users
   /v1/teams/{team_name}/service_users:
     get:
-      summary: Lists the Service Users for a Team
+      summary: List all Service Users for a Team
       description: |-
-        Lists all the Service Users for a Team
+        Lists all Service Users for your Team
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: ListServiceUsers
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -3778,8 +4089,6 @@ paths:
                     status: ACTIVE
                     details: null
                     user_type: service
-                    oauth_client_application_id: null
-                    role_grants: null
                     deleted_at: null
                   - team_name: william-faulkner
                     id: 6b69de4e-90be-4016-9085-d54bf5815da1
@@ -3787,8 +4096,6 @@ paths:
                     status: DISABLED
                     details: null
                     user_type: service
-                    oauth_client_application_id: null
-                    role_grants: null
                     deleted_at: null
               schema:
                 properties:
@@ -3797,7 +4104,7 @@ paths:
                       $ref: '#/components/schemas/User'
                     type: array
                 type: object
-          description: List of Service Users.
+          description: OK
           headers:
             Link:
               description: |-
@@ -3831,7 +4138,6 @@ paths:
               name: shreve
             schema:
               $ref: '#/components/schemas/CreateServiceUserBody'
-        description: Service User to create
         required: true
       responses:
         '201':
@@ -3842,23 +4148,21 @@ paths:
                 details: null
                 id: aa225c16-af6e-4ab4-9150-456fd472e2d7
                 name: shreve
-                oauth_client_application_id: null
-                role_grants: null
                 status: ACTIVE
                 team_name: william-faulkner
                 user_type: service
               schema:
                 $ref: '#/components/schemas/User'
-          description: The Service User that was created.
+          description: Created
       tags:
         - service-users
   /v1/teams/{team_name}/service_users/{user_name}:
     get:
-      summary: Fetch a Service User
+      summary: Retrieve a Service User
       description: |-
-        Fetches information regarding a specific Service User
+        Retrieve a specified Service User
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: GetServiceUser
       parameters:
         - description: The name of your Team
@@ -3882,20 +4186,18 @@ paths:
                 details: null
                 id: 6b69de4e-90be-4016-9085-d54bf5815da1
                 name: dilsey.gibson
-                oauth_client_application_id: null
-                role_grants: null
                 status: ACTIVE
                 team_name: william-faulkner
                 user_type: service
               schema:
                 $ref: '#/components/schemas/User'
-          description: The Service User that was requested.
+          description: OK
       tags:
         - service-users
     put:
-      summary: Update the status of a Service User
+      summary: Update a Service User
       description: |-
-        Updates information about a specific Service User
+        Updates a specified Service User
 
         This endpoint requires the `access_admin` role.
       operationId: ServiceUserUpdate
@@ -3920,14 +4222,11 @@ paths:
               details: null
               id: 6b69de4e-90be-4016-9085-d54bf5815da1
               name: dilsey.gibson
-              oauth_client_application_id: null
-              role_grants: null
               status: DISABLED
               team_name: william-faulkner
               user_type: service
             schema:
               $ref: '#/components/schemas/User'
-        description: Service User to update
         required: true
       responses:
         '200':
@@ -3938,21 +4237,19 @@ paths:
                 details: null
                 id: 6b69de4e-90be-4016-9085-d54bf5815da1
                 name: dilsey.gibson
-                oauth_client_application_id: null
-                role_grants: null
                 status: DISABLED
                 team_name: william-faulkner
                 user_type: service
               schema:
                 $ref: '#/components/schemas/User'
-          description: The Service User that was updated.
+          description: OK
       tags:
         - service-users
   /v1/teams/{team_name}/service_users/{user_name}/keys:
     get:
-      summary: List the API keys for a Service User
+      summary: List all API keys
       description: |-
-        Lists the API keys that belong to a specific Service User. The corresponding secret for each key isn't provided.
+        Lists all API keys for a specified Service User. This doesn't return the corresponding secret for each API key.
 
         This endpoint requires the `access_admin` role.
       operationId: ListServiceUserKeys
@@ -3990,7 +4287,7 @@ paths:
                       $ref: '#/components/schemas/ServiceUserKey'
                     type: array
                 type: object
-          description: List of Service User keys.
+          description: OK
           headers:
             Link:
               description: |-
@@ -4004,9 +4301,9 @@ paths:
       tags:
         - service-users
     post:
-      summary: Rotate API keys for a Service User
+      summary: Rotate all API keys
       description: |-
-        Rotates API keys for a Service User. Rotating an API key automatically sets an expiration date for the rest of the API keys that a Service User has.
+        Rotates all API keys for a specified Service User. This also sets an expiration date for the existing API keys.
 
         This endpoint requires the `access_admin` role.
       operationId: RotateServiceUserKey
@@ -4035,14 +4332,14 @@ paths:
                 secret: NOvsvBg0g9mFXdHbLxEJcEFpu+LZjQSKsYezqMALq5WbGZTpUsxoS4vBqqHOO9O3xrhOq03B+oLf7bSTShbudw==
               schema:
                 $ref: '#/components/schemas/ServiceUserKeyWithSecret'
-          description: The new API key and secret.
+          description: OK
       tags:
         - service-users
   /v1/teams/{team_name}/service_users/{user_name}/keys/{key_id}:
     delete:
-      summary: Delete an API key for a Service User
+      summary: Delete an API key
       description: |-
-        Deletes an API key and prevents its future use
+        Deletes an API key for a Service User. The Service User can no longer authenticate with this API key.
 
         This endpoint requires the `access_admin` role.
       operationId: DeleteServiceUserKey
@@ -4067,14 +4364,14 @@ paths:
             type: string
       responses:
         '204':
-          description: API key has been successfully deleted.
+          description: No Content
       tags:
         - service-users
   /v1/teams/{team_name}/services:
     get:
-      summary: List Services for a Team
+      summary: List all Services for a Team
       description: |-
-        Lists Services available for a Team
+        Lists all Services available for your Team
 
         This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: ListServices
@@ -4108,7 +4405,7 @@ paths:
                       $ref: '#/components/schemas/ServiceWithUserName'
                     type: array
                 type: object
-          description: List of Services on a Team
+          description: OK
           headers:
             Link:
               description: |-
@@ -4123,9 +4420,9 @@ paths:
         - services
   /v1/teams/{team_name}/services/{service_id}:
     get:
-      summary: Fetch a Service
+      summary: Retrieve a Service
       description: |-
-        Fetches a Service
+        Retrieves the properties of a specified Service
 
         This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: GetService
@@ -4153,13 +4450,13 @@ paths:
                 service_user_id: aa225c16-af6e-4ab4-9150-456fd472e2d7
               schema:
                 $ref: '#/components/schemas/Service'
-          description: The requested Service
+          description: OK
       tags:
         - services
     delete:
-      summary: Delete a Service
+      summary: Delete a Service from a Team
       description: |-
-        Deletes a Service. This endpoint provides the same functionality as [Delete a Service from a Server](#delete-a-service-from-a-server), but without the need to supply Project and Server information
+        Deletes a Service from your Team. This prevents Service Users from accessing the associated Server with the deleted Service.
 
         This endpoint requires the `access_admin` role.
       operationId: RemoveService
@@ -4178,16 +4475,16 @@ paths:
             type: string
       responses:
         '204':
-          description: The Service has been deleted
+          description: No Content
       tags:
         - services
   /v1/teams/{team_name}/settings:
     get:
-      summary: Fetch Team settings
+      summary: Retrieve settings for a Team
       description: |-
-        Fetches Team-level settings for a specific Team, such as authentication and enrollment details
+        Retrieves Team-level settings for your Team
 
-        This endpoint requires one of the following roles: `end_user`, `resource_admin`, `access_user`, `access_admin`, or `instance_admin`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `instance_admin`.
       operationId: GetTeamSettings
       parameters:
         - description: The name of your Team
@@ -4212,15 +4509,15 @@ paths:
                 web_session_duration: 36000
               schema:
                 $ref: '#/components/schemas/TeamSettings'
-          description: The Team settings requested
+          description: OK
       tags:
         - teams
     put:
-      summary: Update Team settings
+      summary: Update settings for a Team
       description: |-
-        Updates Team-level settings. Partial updates are permitted. To unset a previous setting, set its value tto `null`.
+        Updates Team-level settings for your Team. Partial updates are permitted. To disable a setting, set the value to `null`.
 
-        This endpoint requires one of the following roles: `resource_admin`, `access_admin`, or `instance_admin`.
+        This endpoint requires one of the following roles: `access_admin`, or `instance_admin`.
       operationId: UpdateTeamSettings
       parameters:
         - description: The name of your Team
@@ -4247,16 +4544,16 @@ paths:
         required: true
       responses:
         '204':
-          description: The Team settings was successfully updated.
+          description: No Content
       tags:
         - teams
   /v1/teams/{team_name}/team_stats:
     get:
-      summary: Fetch statistics for a Team
+      summary: Retrieve statistics for a Team
       description: |-
-        Fetches general statistics about a Team
+        Retrieves statistics about your Team
 
-        This endpoint requires one of the following roles: `access_admin`, `resource_admin`, or `security_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: FetchStatsForTeam
       parameters:
         - description: The name of your Team
@@ -4281,16 +4578,16 @@ paths:
                 num_service_users: 0
               schema:
                 $ref: '#/components/schemas/TeamStats'
-          description: The statistics for the Team
+          description: OK
       tags:
         - teams
   /v1/teams/{team_name}/users:
     get:
-      summary: List the ASA Users for a team
+      summary: List all Users for a Team
       description: |-
-        Lists the ASA Users for an ASA Team
+        Lists all Users for your Team
 
-        This endpoint requires one of the following roles: `resource_admin`, `security_admin`, `access_user`, `access_admin`, `reporting_user`, or `pam_admin`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: ListUsers
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -4353,7 +4650,7 @@ paths:
               example:
                 list:
                   - team_name: william-faulkner
-                    id: 505587bb-e600-442d-91b5-28675f8e34e4
+                    id: daa7fcac-2e15-4c1e-9be7-d5b11b82772f
                     name: Jason.Compson.IV
                     status: ACTIVE
                     details:
@@ -4362,11 +4659,9 @@ paths:
                       full_name: Jason Compson IV
                       email: jason.compson@example.com
                     user_type: human
-                    oauth_client_application_id: null
-                    role_grants: null
                     deleted_at: null
                   - team_name: william-faulkner
-                    id: 593a4540-3d82-4fb0-98d4-8f62be094eda
+                    id: 39cbf8d4-9e1c-4b5d-8ff1-d9f24a6a68f4
                     name: Benjy.Compson
                     status: DISABLED
                     details:
@@ -4375,11 +4670,9 @@ paths:
                       full_name: Benjy Compson
                       email: benjy.compson@example.com
                     user_type: human
-                    oauth_client_application_id: null
-                    role_grants: null
                     deleted_at: null
                   - team_name: william-faulkner
-                    id: 5e7e7650-d896-4dec-9814-ae0ccda15c08
+                    id: 7f37883d-f086-4531-9a18-64ceab1c0286
                     name: Quentin.Compson.III
                     status: DELETED
                     details:
@@ -4388,8 +4681,6 @@ paths:
                       full_name: Quentin Compson III
                       email: quentin.compson@example.com
                     user_type: human
-                    oauth_client_application_id: null
-                    role_grants: null
                     deleted_at: '1910-06-10T00:00:00Z'
               schema:
                 properties:
@@ -4398,7 +4689,7 @@ paths:
                       $ref: '#/components/schemas/User'
                     type: array
                 type: object
-          description: List of ASA Users.
+          description: OK
           headers:
             Link:
               description: |-
@@ -4413,11 +4704,11 @@ paths:
         - users
   /v1/teams/{team_name}/users/{user_name}:
     get:
-      summary: Fetch an ASA User
+      summary: Retrieve a User
       description: |-
-        Fetches information about a specific ASA User
+        Retrieves a User from your Team
 
-        This endpoint requires one of the following roles: `resource_admin`, `security_admin`, `end_user`, `access_user`, `access_admin`, `reporting_user`, or `pam_admin`.
+        This endpoint requires one of the following roles: `access_admin`, `reporting_user`, or `access_user`.
       operationId: GetUser
       parameters:
         - description: The name of your Team
@@ -4443,24 +4734,22 @@ paths:
                   first_name: Jason
                   full_name: Jason Compson IV
                   last_name: Compson
-                id: 505587bb-e600-442d-91b5-28675f8e34e4
+                id: daa7fcac-2e15-4c1e-9be7-d5b11b82772f
                 name: Jason.Compson.IV
-                oauth_client_application_id: null
-                role_grants: null
                 status: ACTIVE
                 team_name: william-faulkner
                 user_type: human
               schema:
                 $ref: '#/components/schemas/User'
-          description: The ASA User that was requested.
+          description: OK
       tags:
         - users
     put:
-      summary: Update an ASA User
+      summary: Update a User
       description: |-
-        Updates a specific ASA User
+        Updates a User from your Team
 
-        This endpoint requires one of the following roles: `access_admin`, or `pam_admin`.
+        This endpoint requires the `access_admin` role.
       operationId: UpdateUser
       parameters:
         - description: The name of your Team
@@ -4485,27 +4774,24 @@ paths:
                 first_name: James
                 full_name: James Compson IV
                 last_name: Compson
-              id: 505587bb-e600-442d-91b5-28675f8e34e4
+              id: daa7fcac-2e15-4c1e-9be7-d5b11b82772f
               name: James.Compson.IV
-              oauth_client_application_id: null
-              role_grants: null
               status: ACTIVE
               team_name: william-faulkner
               user_type: human
             schema:
               $ref: '#/components/schemas/User'
-        description: The ASA User with updated details
         required: true
       responses:
         '204':
-          description: The ASA User was updated successfully.
+          description: No Content
       tags:
         - users
   /v1/teams/{team_name}/users/{user_name}/attributes:
     get:
-      summary: List the Attributes for a User
+      summary: List all Attributes for a User
       description: |-
-        Lists the Attributes for an ASA User
+        Lists all Attributes for a specified user
 
         This endpoint requires one of the following roles: `access_admin`, `access_user`, or `reporting_user`.
       operationId: ListUserAttributes
@@ -4576,7 +4862,7 @@ paths:
                       $ref: '#/components/schemas/TeamUserAttribute'
                     type: array
                 type: object
-          description: List of User Attributes.
+          description: OK
           headers:
             Link:
               description: |-
@@ -4591,9 +4877,9 @@ paths:
         - attributes
   /v1/teams/{team_name}/users/{user_name}/attributes/{attribute_id}:
     get:
-      summary: Fetch a User Attribute
+      summary: Retrieve a User Attribute
       description: |-
-        Fetches the details of an Attribute for an ASA User
+        Retrieves an Attribute for a User
 
         This endpoint requires one of the following roles: `access_admin`, `access_user`, or `reporting_user`.
       operationId: FetchUserAttribute
@@ -4627,13 +4913,13 @@ paths:
                 managed: true
               schema:
                 $ref: '#/components/schemas/TeamUserAttribute'
-          description: The User Attribute that was requested.
+          description: OK
       tags:
         - attributes
     put:
-      summary: Update a single Attribute for a User
+      summary: Update a User Attribute
       description: |-
-        Updates an Attribute for an ASA User
+        Updates an Attribute for a User
 
         This endpoint requires the `access_admin` role.
       operationId: UpdateUserAttribute
@@ -4667,16 +4953,16 @@ paths:
         required: true
       responses:
         '204':
-          description: The Attribute was updated successfully.
+          description: No Content
       tags:
         - attributes
   /v1/teams/{team_name}/users/{user_name}/groups:
     get:
-      summary: List ASA Groups that a specific ASA User is a member of
+      summary: List all Groups for a User
       description: |-
-        Lists the Groups that a specific ASA User belongs to
+        Lists all Groups for a specified User
 
-        This endpoint requires one of the following roles: `access_user`, `access_admin`, `reporting_user`, `pam_admin`, `resource_admin`, or `security_admin`.
+        This endpoint requires one of the following roles: `access_user`, `access_admin`, or `reporting_user`.
       operationId: ListUserGroups
       parameters:
         - description: The UUID of the object used as an offset for pagination
@@ -4725,6 +5011,12 @@ paths:
           name: id
           schema:
             type: string
+        - description: Ignore groups with the give name(s). This is case sensitive.
+          explode: true
+          in: query
+          name: ignore
+          schema:
+            type: string
         - description: The name of your Team
           in: path
           name: team_name
@@ -4743,7 +5035,7 @@ paths:
             application/json:
               example:
                 list:
-                  - id: 44ef91a4-a046-4856-b65a-b222448eccff
+                  - id: 76cfb913-90b0-488f-9dd1-20950dafcbf0
                     name: compsons
                     roles:
                       - access_user
@@ -4759,7 +5051,7 @@ paths:
                       $ref: '#/components/schemas/Group'
                     type: array
                 type: object
-          description: List of Groups.
+          description: OK
           headers:
             Link:
               description: |-
@@ -4778,31 +5070,31 @@ components:
       type: object
       properties:
         domain:
-          description: The domain against which to query.
+          description: The domain to query
           maxLength: 255
           type: string
         domain_controllers:
-          description: A comma-separated list of the specific domain controller(s) that should be used to query the domain. Can be specified as a hostname or IP.
+          description: A comma-separated list of domain controllers used to query the domain. Can use a hostname or IP address.
           items:
             description: hostname or IP address
             type: string
           type: array
         gateway_id:
-          description: The UUID of the Gateway with which this AD Connection is associated.
+          description: The UUID of a Gateway
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           type: string
         id:
-          description: The ID of the AD Connection.
+          description: The ID of the AD Connection
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           type: string
         name:
-          description: The name of the AD Connection.
+          description: The name of the AD Connection
           maxLength: 255
           type: string
         service_account_username:
-          description: The username of the service account that can be used to query the domain.
+          description: The username of a service account used to query the domain
           maxLength: 255
           type: string
       required:
@@ -4816,31 +5108,31 @@ components:
       type: object
       properties:
         domain:
-          description: The domain against which to query.
+          description: The domain to query
           type: string
         domain_controllers:
-          description: (Optional) A comma-separated list of the specific domain controller(s) that should be used to query the domain. Can be specified as a hostname or IP.
+          description: (Optional) A comma-separated list of domain controllers used to query the domain. Can use a hostname or IP address.
           items:
             description: hostname or IP address
             type: string
           nullable: true
           type: array
         gateway_id:
-          description: The UUID of the Gateway with which to associate this AD Connection.
+          description: The UUID of a Gateway
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           type: string
         name:
-          description: The name of the AD Connection.
+          description: The name of the AD Connection
           maxLength: 255
           type: string
         service_account_password:
-          description: The password to the service account.
+          description: The password of the service account
           maxLength: 255
           nullable: true
           type: string
         service_account_username:
-          description: The username of the service account that can be used to query the domain.
+          description: The username of a service account used to query the domain
           maxLength: 255
           nullable: true
           type: string
@@ -4852,40 +5144,40 @@ components:
       type: object
       properties:
         active_task_settings_id:
-          description: The UUID of the currently active AD Task Settings.
+          description: The UUID of the currently active AD Task Settings
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           type: string
         domain:
-          description: The domain against which to query.
+          description: The domain to query
           maxLength: 255
           type: string
         domain_controllers:
-          description: A comma-separated list of the specific domain controller(s) that should be used to query the domain. Can be specified as a hostname or IP.
+          description: A comma-separated list of domain controllers used to query the domain. Can use a hostname or IP address.
           items:
             description: hostname or IP address
             type: string
           type: array
         gateway_id:
-          description: The UUID of the Gateway with which this AD Connection is associated.
+          description: The UUID of a Gateway
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           type: string
         gateway_name:
-          description: The name of the Gateway with which this AD Connection is associated.
+          description: The name of a Gateway
           maxLength: 255
           type: string
         id:
-          description: The ID of the AD Connection.
+          description: The ID of the AD Connection
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           type: string
         name:
-          description: The name of the AD Connection.
+          description: The name of the AD Connection
           maxLength: 255
           type: string
         service_account_username:
-          description: The username of the service account that can be used to query the domain.
+          description: The username of a service account used to query the domain
           maxLength: 255
           type: string
       required:
@@ -4901,51 +5193,51 @@ components:
       type: object
       properties:
         admin:
-          description: True if Server User has sudo permissions
+          description: If `true`, indicates that the Server User has sudo permissions
           readOnly: true
           type: boolean
         id:
-          description: UUID of Server User API object
+          description: The UUID of Server User API object
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         server_user_name:
-          description: The username that is used on Unix servers
+          description: The username used on Unix servers
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         status:
-          description: Status of the Server User
+          description: The status of the Server User
           maxLength: 32
           minLength: 1
           readOnly: true
           type: string
         type:
-          description: Whether this is a Service or human user
+          description: Indicates if the account is a Service User or human user
           maxLength: 32
           minLength: 1
           readOnly: true
           type: string
         unix_gid:
-          description: Unix GID of the Server User
+          description: The Unix GID of the Server User
           maximum: 4294967295
           readOnly: true
           type: number
         unix_uid:
-          description: Unix UID of the Server User
+          description: The Unix UID of the Server User
           maximum: 4294967295
           readOnly: true
           type: number
         user_name:
-          description: The username of the corresponding ASA User
+          description: The username of the related User
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         windows_server_user_name:
-          description: The username that is used on Windows servers
+          description: The username used on Windows servers
           maxLength: 255
           minLength: 1
           readOnly: true
@@ -4983,18 +5275,18 @@ components:
       type: object
       properties:
         bearer_token:
-          description: The JSON Web Token used to authenticate against the ASA API
+          description: The JSON Web Token used to authenticate against the API
           maxLength: 4096
           minLength: 1
           readOnly: true
           type: string
         expires_at:
-          description: The time at which the token expires, formatted in accordance with [RFC 3339](https://tools.ietf.org/html/rfc3339)
+          description: A timestamp for when the token expires. Formatted in accordance with [RFC 3339](https://tools.ietf.org/html/rfc3339).
           format: date-time
           readOnly: true
           type: string
         team_name:
-          description: The name of the Team this token is for
+          description: The name of the associated Team
           maxLength: 4096
           minLength: 1
           readOnly: true
@@ -5007,46 +5299,46 @@ components:
       type: object
       properties:
         deleted_at:
-          description: The time the ASA Client was deleted
+          description: The date the Client was deleted
           format: date-time
           readOnly: true
           type: string
         description:
-          description: A description of the ASA Client
+          description: A description of the Client
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         encrypted:
-          description: A boolean that reflects whether `sft` was able to determine that the ASA Client was encrypted
+          description: If `true`, the Client has detected that the local device is encrypted
           readOnly: true
           type: boolean
         hostname:
-          description: The hostname of the ASA Client
+          description: The hostname of the local device running the Client
           maxLength: 256
           minLength: 1
           readOnly: true
           type: string
         id:
-          description: The UUID of the ASA Client
+          description: The UUID of the Client
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         os:
-          description: The operating system (OS) of the ASA Client device
+          description: The OS of the local device running the Client
           maxLength: 256
           minLength: 1
           readOnly: true
           type: string
         state:
-          description: 'The state of the ASA Client: `ACTIVE`, `PENDING`, or `DELETED`'
+          description: 'The state of the Client: `ACTIVE`, `PENDING`, or `DELETED`'
           maxLength: 255
           nullable: true
           readOnly: true
           type: string
         user_name:
-          description: The ASA User to whom this ASA Client belongs
+          description: The User associated with the Client
           maxLength: 32
           minLength: 1
           nullable: true
@@ -5065,14 +5357,14 @@ components:
       type: object
       properties:
         config_key:
-          description: The Client Configuration Option to change
+          description: The name of the Client Configuration Option
           enum:
             - ssh.insecure_forward_agent
             - ssh.port_forward_method
             - forward_client_trust.enable
           type: string
         config_value:
-          description: The value to be applied to the Client configurations
+          description: The value of the Client Configuration Option
           discriminator:
             mapping:
               forward_client_trust.enable: '#/components/schemas/forward_client_trust.enable'
@@ -5080,12 +5372,12 @@ components:
               ssh.port_forward_method: '#/components/schemas/ssh.port_forward_method'
             propertyName: ConfigKey
           oneOf:
-            - $ref: '#/components/schemas/ssh.insecure_forward_agent'
             - $ref: '#/components/schemas/ssh.port_forward_method'
             - $ref: '#/components/schemas/forward_client_trust.enable'
+            - $ref: '#/components/schemas/ssh.insecure_forward_agent'
           type: object
         id:
-          description: (Optional) The UUID of the Client Configuration Option
+          description: The UUID of a Client Configuration Option
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
@@ -5098,12 +5390,12 @@ components:
       type: object
       properties:
         state:
-          description: The state of the ASA Client:`ACTIVE`, `PENDING`, or `DELETED`
+          description: 'The state of the Client: `ACTIVE`, `PENDING`, or `DELETED`'
           maxLength: 255
           nullable: true
           type: string
         user_name:
-          description: The ASA User to whom this ASA Client belongs
+          description: The User associated with the Client
           maxLength: 255
           nullable: true
           type: string
@@ -5130,12 +5422,12 @@ components:
       type: object
       properties:
         server_uid:
-          description: The UID of the user on the Server that the Service User uses
+          description: The UID of the Server User associated with the Service User
           maxLength: 255
           minLength: 1
           type: string
         service_user_id:
-          description: The UUID of the Service User that uses the Service
+          description: The UUID of the Service User associated with the Service
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           type: string
@@ -5179,7 +5471,7 @@ components:
           readOnly: true
           type: string
         name:
-          description: A name for the Entitlement
+          description: The name of the Entitlement
           format: regex
           maxLength: 255
           minLength: 1
@@ -5190,11 +5482,11 @@ components:
           nullable: true
           type: boolean
         opt_no_passwd:
-          description: Whether or not to require a password when sudo is run (should generally not be used, as ASA accounts don't require a password)
+          description: Whether to require a password when sudo is run. This should generally not be used as Users don't require a password.
           nullable: true
           type: boolean
         opt_run_as:
-          description: A non-root User to run commands as
+          description: A non-root user account used to run the command
           format: regex
           maxLength: 64
           minLength: 1
@@ -5269,38 +5561,114 @@ components:
       required:
         - id
         - name
+    GatewayAgent:
+      type: object
+      properties:
+        description:
+          description: (Optional) The description of the Gateway
+          maxLength: 1024
+          minLength: 1
+          nullable: true
+          type: string
+        id:
+          description: The ID of the Gateway
+          format: regex
+          pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+          readOnly: true
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: The labels associated with the Gateway. Used by Projects to select Gateways.
+          type: object
+        name:
+          description: The name for the Gateway
+          format: regex
+          maxLength: 255
+          minLength: 1
+          pattern: ^[\w\-_.]+$
+          type: string
+        refuse_connections:
+          description: (Optional) Whether or not the Gateway should refuse (new?) connections. Defaults to `False`.
+          readOnly: true
+          type: boolean
+      required:
+        - id
+        - name
+        - refuse_connections
+        - labels
+    GatewayAgentPolicyDetails:
+      type: object
+      properties:
+        labels:
+          additionalProperties:
+            type: string
+          description: (Optional) The labels for this Gateway. The Gateway is assigned to all Projects with the same labels.
+          nullable: true
+          type: object
+    GatewayStatusReport:
+      type: object
+      properties:
+        active_connections:
+          description: The number of Clients actively connected to the Gateway
+          maximum: 2147483647
+          type: number
+        gateway_id:
+          description: The ID of the Gateway ID
+          maxLength: 255
+          minLength: 1
+          nullable: true
+          readOnly: true
+          type: string
+        status:
+          description: The status of the Gateway
+          maxLength: 255
+          nullable: true
+          type: string
+        total_storage_bytes:
+          description: The total amount in bytes of storage space available for use by the Gateway
+          maximum: 9223372036854776000
+          type: number
+        used_storage_bytes:
+          description: The amount in bytes of storage space used by the Gateway
+          maximum: 9223372036854776000
+          type: number
+      required:
+        - total_storage_bytes
+        - used_storage_bytes
+        - active_connections
     Group:
       type: object
       properties:
         deleted_at:
-          description: The time at which the ASA Group was deleted
+          description: A timestamp indicating when the Group was deleted
           format: date-time
           readOnly: true
           type: string
         federated_from_team:
-          description: (Optional) The name of the Team from which to federate the ASA Group
+          description: (Optional) The name of the Team from which to federate the Group
           maxLength: 1024
           minLength: 1
           nullable: true
           type: string
         federation_approved_at:
-          description: (Optional) The time when the ASA Group had its federation approved
+          description: (Optional) A timestamp indicating when federation was approved for the Group
           format: date-time
           readOnly: true
           type: string
         id:
-          description: The UUID of the ASA Group
+          description: The UUID of the Group
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         name:
-          description: The name of the ASA Group
+          description: The name of the Group
           maxLength: 255
           minLength: 1
           type: string
         roles:
-          description: A list of roles for the ASA Group. Options are `access_user`, `access_admin`, and `reporting_user`.
+          description: 'The roles assigned to the Group. Possible values: `access_user`, `access_admin`, and `reporting_user`.'
           items:
             maxLength: 64
             minLength: 1
@@ -5316,7 +5684,7 @@ components:
       type: object
       properties:
         roles:
-          description: A list of Roles for the ASA Group. Options are `access_user`, `access_admin` and `reporting_user`.
+          description: 'The roles assigned to the Group. Possible values: `access_user`, `access_admin` and `reporting_user`.'
           items:
             maxLength: 64
             minLength: 1
@@ -5344,31 +5712,31 @@ components:
       type: object
       properties:
         domain:
-          description: The domain against which to query.
+          description: The domain to query
           maxLength: 255
           readOnly: true
           type: string
         domain_controllers:
-          description: A comma-separated list of the specific domain controller(s) that should be used to query the domain. Can be specified as a hostname or IP.
+          description: A comma-separated list of domain controllers used to query the domain. Can use a hostname or IP address.
           items:
             description: hostname or IP address
             type: string
           readOnly: true
           type: array
         gateway_id:
-          description: The UUID of the Gateway with which to associate this AD Connection.
+          description: The UUID of a Gateway
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         id:
-          description: The ID of the AD Connection.
+          description: The ID of the AD Connection
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         name:
-          description: The name of the AD Connection.
+          description: The name of the AD Connection
           maxLength: 255
           readOnly: true
           type: string
@@ -5382,10 +5750,10 @@ components:
       type: object
       properties:
         disabled:
-          description: '`true` if the Preauthorization is disabled'
+          description: Indicates the status of the Preauthorization. If `true`, the Preauthorization is disabled.
           type: boolean
         expires_at:
-          description: The Preauthorization ceases to work after the `expires_at` date
+          description: A timestamp indicating when the Preauthorization expires
           format: date-time
           type: string
         id:
@@ -5395,14 +5763,14 @@ components:
           readOnly: true
           type: string
         projects:
-          description: The Projects that the Preauthorization is valid for
+          description: The Project associated with the Preauthorization
           items:
             maxLength: 255
             minLength: 1
             type: string
           type: array
         servers:
-          description: The Servers that the Preauthorization is valid for
+          description: The Servers accessed using the Preauthorization
           items:
             maxLength: 255
             minLength: 1
@@ -5410,7 +5778,7 @@ components:
           nullable: true
           type: array
         user_name:
-          description: The username of the ASA User that the Preauthorization is for
+          description: The User associated with the Preauthorization
           maxLength: 255
           minLength: 1
           type: string
@@ -5424,21 +5792,17 @@ components:
       type: object
       properties:
         create_server_users:
-          description: (Optional) Whether to create Server Users for ASA Users in this Project. Defaults to `false`. If left `false`, the ASA User is responsible for ensuring that users that match the names of the Server Users in ASA exist on the server.
+          description: (Optional) Whether to create Server Users for Users in this Project. Defaults to `false`. If `false`, you must ensure that accounts exist on the Server for each User.
           nullable: true
           type: boolean
         deleted_at:
-          description: The time this Project was deleted
+          description: A timestamp indicating when the Project was deleted
           format: date-time
           nullable: true
           readOnly: true
           type: string
-        force_shared_ssh_users:
-          description: (Optional) If `true`, new Server Users will not be created for each ASA User in the Project. Instead they share a single standard user and a single admin user. Default is `false`.
-          nullable: true
-          type: boolean
         forward_traffic:
-          description: Whether to require that all traffic in the Project be forwarded through selected Gateways. Default is `false`. **Warning:** Requires a feature flag to be enabled.
+          description: If `true`, forwards traffic to all Servers in the Project through a specified Gateway. Default is `false`.
           nullable: true
           type: boolean
         id:
@@ -5455,50 +5819,38 @@ components:
           pattern: ^[\w\-_.]+$
           type: string
         next_unix_gid:
-          description: (Optional) The GID to use when creating a new server user.
+          description: (Optional) The GID used when creating a Server User
           format: double
           maximum: 65535
           minimum: 100
           nullable: true
           type: number
         next_unix_uid:
-          description: (Optional) The UID to use when creating a new server user.
+          description: (Optional) The UID used when creating a Server User
           maximum: 65535
           minimum: 100
           nullable: true
           type: number
         rdp_session_recording:
-          description: (Optional) Whether to enable remote desktop protocol (rdp) recording on all Servers in this Project. Default is `false`. **Warning:** Requires a feature flag to be enabled.
+          description: (Optional) If `true`, enables recording of all RDP sessions to Servers in this Project. Default is `false`. This feature is currently in EA.
           nullable: true
           type: boolean
         require_preauth_for_creds:
-          description: (Optional) Whether to require preauthorization before an ASA User can retrieve credentials to sign in. Default is `false`.
+          description: (Optional) If `true`, the Project requires preauthorization before a User can access a Server. Default is `false`.
           nullable: true
           type: boolean
-        shared_admin_user_name:
-          description: (Optional) The name for a shared admin user on Servers in this Project. If `force_shared_ssh_users` is `true`, this must be provided.
-          maxLength: 32
-          minLength: 1
-          nullable: true
-          type: string
-        shared_standard_user_name:
-          description: (Optional) The name for a shared standard user on Servers in this Project. If `force_shared_ssh_users` is `true`, this must be provided.
-          maxLength: 32
-          minLength: 1
-          nullable: true
-          type: string
         ssh_certificate_type:
-          description: (Optional) The SSH certificate type used by access requests.
+          description: '(Optional) The type of signature algorithm used for authentication keys. Possible values: `CERT_TYPE_ED25519_01`, `CERT_TYPE_RSA_01`, `CERT_TYPE_ECDSA_521_01`, `CERT_TYPE_ECDSA_384_01`, `CERT_TYPE_ECDSA_256_01`. Default is `CERT_TYPE_ED25519_01`.'
           maxLength: 255
           minLength: 1
           nullable: true
           type: string
         ssh_session_recording:
-          description: (Optional) Whether to enable ssh recording on all Servers in this Project. Default is `false`. **Warning:** Requires a feature flag to be enabled.
+          description: (Optional) If `true`, enables recording of all SSH sessions to Servers in this Project. Default is `false`.
           nullable: true
           type: boolean
         team:
-          description: The ASA Team of the Project
+          description: The Team associated with the Project
           format: regex
           maxLength: 255
           minLength: 1
@@ -5506,7 +5858,7 @@ components:
           readOnly: true
           type: string
         user_on_demand_period:
-          description: (Optional) The time period in seconds that an on-demand user account exists on the server following an access request. By default the feature is off.
+          description: (Optional) The time period in seconds before an on-demand user account expires and is removed from a Server. `0` if disabled. This is the default,
           format: double
           maximum: 4294967295
           nullable: true
@@ -5519,7 +5871,7 @@ components:
       type: object
       properties:
         account_details:
-          description: Provider-specific account details
+          description: The provider-specific account details
           discriminator:
             mapping:
               aws: '#/components/schemas/aws'
@@ -5530,56 +5882,56 @@ components:
             - $ref: '#/components/schemas/gce'
           type: object
         account_id:
-          description: Provider-specific account ID
+          description: The provider-specific account ID
           maxLength: 32
           minLength: 1
           type: string
         client_id:
-          description: Client ID used for the EventBridge connection authorization
+          description: The Client ID used to authorize the EventBridge connection
           maxLength: 64
           nullable: true
           readOnly: true
           type: string
         client_secret:
-          description: Client secret used for the EventBridge connection authorization
+          description: The Client secret used to authorize the EventBridge connection
           maxLength: 128
           nullable: true
           readOnly: true
           type: string
         deleted_at:
-          description: Time of deletion. `null` if not deleted.
+          description: A timestamp indicating when the Cloud Account was deleted. `null` if not deleted.
           format: date-time
           readOnly: true
           type: string
         description:
-          description: (optional) Human-readable description of the Cloud Account
+          description: (Optional) The human-readable description of the Cloud Account
           maxLength: 64
           nullable: true
           type: string
         id:
-          description: UUID of the Cloud Account
+          description: The UUID of the Cloud Account
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         project_name:
-          description: Name of associated Project
+          description: The name of the associated Project
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         provider:
-          description: 'A cloud provider: `aws` or `gce`'
+          description: 'A cloud provider. Possible values: `aws` or `gce`.'
           maxLength: 32
           minLength: 1
           type: string
         secret_last_rotated:
-          description: Time of last secret rotation. `null` if unrotated.
+          description: A timestamp indicating when the secret was last rotated. `null` if unrotated.
           format: date-time
           readOnly: true
           type: string
         updated_at:
-          description: Time of last update
+          description: A timestamp indicating when the Cloud Account was last updated
           format: date-time
           readOnly: true
           type: string
@@ -5598,60 +5950,60 @@ components:
       type: object
       properties:
         create_server_group:
-          description: True if you want `sftd` to create a corresponding local (unix or windows) group on the end server. Server Users are still created as long as `create_server_users` is set to `true` for the Project.
+          description: If `true`, a local (unix or windows) group is created on the Server and all relevant users are added to the local group. This does not impact user creation. Server Users are always created as long as `create_server_users` is set to `true` for the Project.
           nullable: true
           type: boolean
         deleted_at:
-          description: Time of deletion from the Project. `null` if not deleted.
+          description: A timestamp indicating when the Group was deleted from the Project. `null` if not deleted.
           format: date-time
           readOnly: true
           type: string
         group:
-          description: The name of the ASA Group
+          description: The name of the Group
           maxLength: 255
           minLength: 1
           type: string
         group_id:
-          description: The UUID that corresponds to the ASA Group
+          description: The UUID of the Group
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         id:
-          description: The UUID that corresponds to the ASA Project Group
+          description: The UUID of the Group
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         name:
-          description: The name of the ASA Group. A non-editable duplicate of `group`.
+          description: The name of the Group. A non-editable duplicate of the `group` param.
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         removed_at:
-          description: Time of removal from the Project. `null` if not removed.
+          description: A timestamp indicating when the Group was removed from the Project. `null` if not removed.
           format: date-time
           readOnly: true
           type: string
         server_access:
-          description: True if members of this ASA Group have access to the Project Servers
+          description: If `true`, members of this Group have access to the Servers in the Project
           type: boolean
         server_admin:
-          description: True if members of this ASA Group have sudo permissions on the Project Servers
+          description: If `true`, members of this Group have sudo or Administrator permissions on the Project Servers
           type: boolean
         server_group_name:
-          description: If `create_server_group` is `true`, the name of the server group
+          description: If `create_server_group` is `true`, indicates the name of the associated Server Group
           maxLength: 255
           minLength: 1
           nullable: true
           type: string
         servers_selector:
-          description: (Optional) Kubernetes-style selector for servers in a Project
+          description: (Optional) Kubernetes-style selector for Servers in the Project. Members of this Group can only access Servers that are assigned this selector.
           nullable: true
           type: string
         unix_gid:
-          description: If `create_server_group` is `true`, the GID of the server group created
+          description: If `create_server_group` is `true`, indicates the GID of the associated Server Group
           format: double
           maximum: 4294967295
           nullable: true
@@ -5669,71 +6021,71 @@ components:
       type: object
       properties:
         create_server_group:
-          description: True if you want `sftd` to create a corresponding local (unix or windows) group on the end server. Server Users are still created as long as `create_server_users` is set to `true` for the Project.
+          description: If `true`, a local (unix or windows) group is created on the Server and all relevant users are added to the local group. This does not impact user creation. Server Users are always created as long as `create_server_users` is set to `true` for the Project.
           nullable: true
           type: boolean
         deleted_at:
-          description: Time of deletion from the Project. `null` if not deleted.
+          description: A timestamp indicating when the Group was deleted from the Project. `null` if not deleted.
           format: date-time
           readOnly: true
           type: string
         group:
-          description: The name of the ASA Group
+          description: The name of the Group
           maxLength: 255
           minLength: 1
           type: string
         group_id:
-          description: The UUID that corresponds to the ASA Group
+          description: The UUID of the Group
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         id:
-          description: The UUID that corresponds to the ASA Project Group
+          description: The UUID of the Project Group
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         name:
-          description: The name of the ASA Group. A non-editable duplicate of `group`.
+          description: The name of the Group. A non-editable duplicate of the `group` param.
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         profile_attributes:
-          description: If `create_server_group` is `true`, the Attributes that will be synced to the server
+          description: If `create_server_group` is `true`, indicates the Attributes to sync with the Server
           maxLength: 255
           nullable: true
           type: string
         project:
-          description: The Project this Project Group belongs to.
+          description: The Project associated with this Project Group
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         removed_at:
-          description: Time of removal from the project. `null` if not removed.
+          description: A timestamp indicating when the Group was removed from the Project. `null` if not removed.
           format: date-time
           readOnly: true
           type: string
         server_access:
-          description: True if members of this ASA Group have access to the Project Servers
+          description: If `true`, members of this Group have access to the Servers in the Project
           type: boolean
         server_admin:
-          description: True if members of this ASA Group have sudo permissions on the Project Servers
+          description: If `true`, members of this Group have sudo or Administrator permissions on the Project Servers
           type: boolean
         server_group_name:
-          description: If `create_server_group` is `true`, the name of the server group
+          description: If `create_server_group` is `true`, indicates the name of the associated Server Group
           maxLength: 255
           minLength: 1
           nullable: true
           type: string
         servers_selector:
-          description: (Optional) Kubernetes-style selector for servers in a Project
+          description: (Optional) Kubernetes-style selector for Servers in the Project. Members of this Group can only access Servers that are assigned this selector.
           nullable: true
           type: string
         unix_gid:
-          description: If `create_server_group` is `true`, the GID of the server group created
+          description: If `create_server_group` is `true`, indicates the GID of the associated Server Group
           maximum: 4294967295
           nullable: true
           type: number
@@ -5751,51 +6103,84 @@ components:
       type: object
       properties:
         create_server_users:
-          description: (Optional) Whether to create Server Users for ASA Users in this Project. Defaults to `false`. If left `false`, the ASA User is responsible for ensuring that Users that match the Server User names in ASA exist on the server.
+          description: (Optional) Whether to create Server Users for Users in this Project. Defaults to `false`. If `false`, you must ensure that accounts exist on the Server for each User.
           nullable: true
           type: boolean
         forward_traffic:
-          description: Whether to require that all traffic in the Project be forwarded through selected Gateways. Default is `false`. **Warning:** Requires a feature flag to be enabled.
+          description: If `true`, forwards traffic to all Servers in the Project through a specified Gateway. Default is `false`.
           nullable: true
           type: boolean
         next_unix_gid:
-          description: (Optional) The GID to use when creating a new server user.
+          description: (Optional) The GID used when creating a Server User
           format: double
           maximum: 65535
           minimum: 100
           nullable: true
           type: number
         next_unix_uid:
-          description: (Optional) The UID to use when creating a new server user.
+          description: (Optional) The UID used when creating a Server User
           format: double
           maximum: 65535
           minimum: 100
           nullable: true
           type: number
         rdp_session_recording:
-          description: Whether to enable remote desktop protocol (rdp) recording on all Servers in this Project. Default is `false`. **Warning:** Requires a feature flag to be enabled.
+          description: (Optional) If `true`, enables recording of all RDP sessions to Servers in this Project. Default is `false`. This feature is currently in EA.
           nullable: true
           type: boolean
         require_preauth_for_creds:
-          description: (Optional) Whether to require preauthorization before an ASA User can retrieve credentials to sign in. Default is `false`.
+          description: (Optional) If `true`, the Project requires preauthorization before a User can access a Server. Default is `false`.
           nullable: true
           type: boolean
         ssh_certificate_type:
-          description: (Optional) The SSH certificate type used by access requests.
+          description: '(Optional) The type of signature algorithm used for authentication keys. Possible values: `CERT_TYPE_ED25519_01`, `CERT_TYPE_RSA_01`, `CERT_TYPE_ECDSA_521_01`, `CERT_TYPE_ECDSA_384_01`, `CERT_TYPE_ECDSA_256_01`. Default is `CERT_TYPE_ED25519_01`.'
           maxLength: 32
           minLength: 1
           nullable: true
           type: string
         ssh_session_recording:
-          description: Whether to enable ssh recording on all Servers in this Project. Default is `false`. **Warning:** Requires a feature flag to be enabled.
+          description: (Optional) If `true`, enables recording of all SSH sessions to Servers in this Project. Default is `false`.
           nullable: true
           type: boolean
         user_on_demand_period:
-          description: (Optional) The time period in seconds that an on-demand user account exists on the server following an access request. By default the feature is off.
+          description: (Optional) The time period in seconds before an on-demand user account expires and is removed from a Server. `0` if disabled. This is the default,
           format: double
           maximum: 4294967295
           nullable: true
           type: number
+    RegistrationPolicy:
+      type: object
+      properties:
+        description:
+          description: (Optional) The description for the registration policy
+          maxLength: 1024
+          minLength: 1
+          nullable: true
+          type: string
+        details:
+          description: (Optional) Details about the registration policy
+          discriminator:
+            mapping:
+              gateway-agent: '#/components/schemas/gateway-agent'
+            propertyName: Type
+          oneOf:
+            - $ref: '#/components/schemas/gateway-agent'
+          type: object
+        id:
+          description: The ID of the registration policy
+          format: regex
+          pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+          readOnly: true
+          type: string
+        registration_type:
+          description: The type of registration policy
+          enum:
+            - gateway-agent
+          type: string
+      required:
+        - id
+        - registration_type
+        - details
     Server:
       type: object
       properties:
@@ -5812,25 +6197,25 @@ components:
           readOnly: true
           type: array
         bastion:
-          description: Specifies the bastion host that Clients automatically use when connecting to this host
+          description: The bastion host that Clients automatically use when connecting to this host
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         canonical_name:
-          description: Specifies the name that Clients should use/see when connecting to this host. Overrides the name found with hostname.
+          description: The name that Clients should use when connecting to this Server. Overrides the name found with hostname.
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         cloud_provider:
-          description: The cloud provider of the Server, if one exists
+          description: If available, the name of cloud provider used by the Server
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         deleted_at:
-          description: The time the Server was deleted from the Project
+          description: A timestamp indicating when the Server was deleted from the Project
           format: date-time
           readOnly: true
           type: string
@@ -5841,13 +6226,13 @@ components:
           readOnly: true
           type: string
         id:
-          description: The UUID corresponding to the Server
+          description: The UUID of the Server
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         instance_details:
-          description: Information that the cloud provider provides about the Server, if one exists
+          description: If available, details about the Server provided by the cloud provider
           discriminator:
             mapping:
               aws: '#/components/schemas/aws'
@@ -5863,42 +6248,42 @@ components:
         labels:
           additionalProperties:
             type: string
-          description: (Optional) The labels for this server. Only available with the PolicySync feature, which is currently in EA.
+          description: '(Optional) The labels for this Server. Used by the PolicySync feature, see [PolicySync: Attribute-Based Access Control](https://help.okta.com/okta_help.htm?type=asa&id=ext-asa-policysync).'
           type: object
         last_seen:
-          description: The last time that the Server made a request to the ASA platform
+          description: A timestamp indicating when the Server was last seen
           format: date-time
           readOnly: true
           type: string
         managed:
-          description: True if the Server is managed by 'sftd'. Unmanaged Servers are used in configurations where users may have a bastion, for example, that they don't want/can't connect to through 'sftd'. With an Unmanaged Server record to represent this box, ASA knows that it exists and to use it as a bastion hop.
+          description: If `true`, the Server is managed by 'sftd'.
           readOnly: true
           type: boolean
         os:
-          description: The particular OS of the Server, such as CentOS 6 or Debian 9.13
+          description: The OS version of the Server, such as CentOS 6 or Debian 9.13
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         os_type:
-          description: The OS family where the Server is running. Can be either Linux or Windows.
+          description: 'The OS family of the Server. Possible values: `linux` or `windows`.'
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         project_name:
-          description: The Project that the Server belongs to
+          description: The name of the Project where the Server is enrolled
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         registered_at:
-          description: The time that the Server was registered to the Project
+          description: A timestamp indicating when the Server was enrolled in the Project
           format: date-time
           readOnly: true
           type: string
         services:
-          description: The service that Clients use to connect to the Server. Can either be `ssh` or `rdp`.
+          description: 'The service that Clients use to connect to the Server. Possible values: `ssh` or `rdp`.'
           items:
             maxLength: 64
             minLength: 1
@@ -5906,7 +6291,7 @@ components:
           readOnly: true
           type: array
         sftd_version:
-          description: The version of 'sftd' that the Server is running
+          description: The version of 'sftd' running on the Server
           maxLength: 255
           minLength: 1
           readOnly: true
@@ -5920,13 +6305,13 @@ components:
           readOnly: true
           type: array
         state:
-          description: 'State of the Server: `ACTIVE` or `INACTIVE`'
+          description: 'The state of the Server. Possible values: `ACTIVE` or `INACTIVE`.'
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         team_name:
-          description: The name of the Team
+          description: The name of the associated Team
           format: regex
           maxLength: 255
           minLength: 1
@@ -5959,31 +6344,31 @@ components:
       type: object
       properties:
         created_by_user:
-          description: The ASA User that created this Server Enrollment Token
+          description: The User that created this Server Enrollment Token
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         description:
-          description: A human-readable description of why this Server Enrollment Token was created
+          description: A human-readable description of the purpose of this Server Enrollment Token
           maxLength: 512
           minLength: 1
           type: string
         id:
-          description: The UUID that corresponds to the Server Enrollment Token
+          description: The UUID of a Server Enrollment Token
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         issued_at:
-          description: Time of creation
+          description: A timestamp indicating when the Server Enrollment Token was created
           format: date-time
           readOnly: true
           type: string
         token:
           additionalProperties:
             type: string
-          description: A token used to enroll an ASA Server
+          description: A token used to enroll a Server
           readOnly: true
           type: object
       required:
@@ -6002,19 +6387,19 @@ components:
           readOnly: true
           type: string
         server_id:
-          description: The UUID of the Server that the Service provides authentication to
+          description: The UUID of the Server associated with the Service
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         server_uid:
-          description: The UID of the user on the Server that the Service User uses
+          description: The UID of the Server User associated with the Service User
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         service_user_id:
-          description: The UUID of the Service User that uses the Service
+          description: The UUID of the Service User associated with the Service
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
@@ -6028,7 +6413,7 @@ components:
       type: object
       properties:
         expires_at:
-          description: The expiration time of the key
+          description: A timestamp for when the API key expires
           format: date-time
           readOnly: true
           type: string
@@ -6039,12 +6424,12 @@ components:
           readOnly: true
           type: string
         issued_at:
-          description: The time at which the key was issued
+          description: A timestamp for when the API key was issued
           format: date-time
           readOnly: true
           type: string
         last_used:
-          description: The last time the key was used against Advanced Server Access
+          description: A timestamp for when the API key was last used
           format: date-time
           readOnly: true
           type: string
@@ -6057,7 +6442,7 @@ components:
       type: object
       properties:
         expires_at:
-          description: The expiration time of the key
+          description: A timestamp for when the API key expires
           format: date-time
           readOnly: true
           type: string
@@ -6068,17 +6453,17 @@ components:
           readOnly: true
           type: string
         issued_at:
-          description: The time at which the key was issued
+          description: A timestamp for when the API key was issued
           format: date-time
           readOnly: true
           type: string
         last_used:
-          description: The last time the key was used against Advanced Server Access
+          description: A timestamp for when the API key was last used
           format: date-time
           readOnly: true
           type: string
         secret:
-          description: The secret of the API key. This is used to authenticate the Service User. Don't share.
+          description: The secret associated with the API key and used to authenticate the Service User. Don't share.
           maxLength: 255
           minLength: 1
           readOnly: true
@@ -6099,25 +6484,25 @@ components:
           readOnly: true
           type: string
         server_id:
-          description: The UUID of the Server that the Service provides authentication to
+          description: The UUID of the Server associated with the Service
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         server_uid:
-          description: The UID of the user on the Server that the Service User uses
+          description: The UID of the Server User associated with the Service User
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         service_user_id:
-          description: The UUID of the Service User that uses the Service
+          description: The UUID of the Service User associated with the Service
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         service_user_name:
-          description: The username of the Service User that uses the Service
+          description: The username of the Service User associated with the Service
           maxLength: 255
           minLength: 1
           readOnly: true
@@ -6132,15 +6517,15 @@ components:
       type: object
       properties:
         attribute_name:
-          description: 'Accepted values: `unix_group_name`, `unix_gid`, or `windows_group_name`'
+          description: The type of attribute
           enum:
-            - windows_group_name
             - unix_gid
             - unix_group_name
+            - windows_group_name
           readOnly: true
           type: string
         attribute_value:
-          description: Accepted values for `unix_group_name` and `windows_group_name` are strings with a character length between 0 and 255. Accepted value for `unix_gid` is a number between 100 and 2147483647.
+          description: 'The value of the attribute. Possible values depend on the `attribute_name` param: `unix_group_name` and `windows_group_name` accept strings of 0 – 255 characters. `unix_gid` accepts a number from 100 - 2147483647.'
           discriminator:
             mapping:
               unix_gid: '#/components/schemas/unix_gid'
@@ -6159,7 +6544,7 @@ components:
           readOnly: true
           type: string
         managed:
-          description: Whether this attribute is being managed through SCIM or SAML
+          description: Indicates if the attribute is managed through SCIM or SAML
           readOnly: true
           type: boolean
       required:
@@ -6171,47 +6556,47 @@ components:
       type: object
       properties:
         approve_device_without_interaction:
-          description: If enabled, ASA auto-approves devices for ASA Users that are authenticated into this Team.
+          description: If `true`, devices are automatically approved for authenticated Users
           nullable: true
           type: boolean
         client_session_duration:
-          description: Defines the Client session duration. Value should be in hours between 1 hour and 25 hours.
+          description: The maximum time before a Client session expires. The duration can be from 3600 – 90000 seconds.
           format: double
           maximum: 90000
           minimum: 3600
           nullable: true
           type: number
         post_device_enrollment_url:
-          description: If post device enrollment is configured, this is the URL that an ASA User is directed to after enrolling a device in ASA.
+          description: If specified, redirects a User to the URL after they enroll a device
           maxLength: 8096
           nullable: true
           type: string
         post_login_url:
-          description: If post login is configured, this is the URL that an ASA User who hasn't recently been authenticated is directed to after being validated by their IdP.
+          description: If specified, redirects a User to the URL after they authenticate through the IdP
           maxLength: 8096
           nullable: true
           type: string
         post_logout_url:
-          description: If post logout is configured, this is the URL that an ASA User is redirected to after signing out.
+          description: If specified, redirects a User to the URL after they sign out
           maxLength: 8096
           nullable: true
           type: string
         reactivate_users_via_idp:
-          description: If a disabled or deleted ASA User is able to authenticate through the IdP, their ASA User is re-enabled.
+          description: If `true`, previously deleted or disabled Users are reenabled if they authenticate through the IdP
           nullable: true
           type: boolean
         team:
-          description: The name of the Team that is configured with the provided settings.
+          description: The name of the Team
           maxLength: 255
           minLength: 1
           readOnly: true
           type: string
         user_provisioning_exact_username:
-          description: If true, ASA has ASA Users configured through SCIM to maintain the exact username that is specified.
+          description: If `true`, Users maintain the exact username specified via SCIM
           nullable: true
           type: boolean
         web_session_duration:
-          description: Defines the duration of the web session. Configure the web session to be between 30 minutes and 25 hours.
+          description: The maximum time before a web session expires. The duration can be from 1800 – 90000 seconds.
           format: double
           maximum: 90000
           minimum: 1800
@@ -6223,37 +6608,37 @@ components:
       type: object
       properties:
         num_clients:
-          description: The number of Clients in a Team.
+          description: The number of Clients in a Team
           maximum: 60000
           readOnly: true
           type: number
         num_gateways:
-          description: The number of Gateways in a Team.
+          description: The number of Gateways in a Team
           maximum: 60000
           readOnly: true
           type: number
         num_groups:
-          description: The number of ASA Groups in a Team.
+          description: The number of Groups in a Team
           maximum: 60000
           readOnly: true
           type: number
         num_human_users:
-          description: The number of human ASA Users in a Team.
+          description: The number of Users in a Team
           maximum: 60000
           readOnly: true
           type: number
         num_projects:
-          description: The number of Projects in a Team.
+          description: The number of Projects in a Team
           maximum: 60000
           readOnly: true
           type: number
         num_servers:
-          description: The number of Servers in a Team.
+          description: The number of Servers in a Team
           maximum: 60000
           readOnly: true
           type: number
         num_service_users:
-          description: The number of service ASA Users in a Team.
+          description: The number of Service Users in a Team
           maximum: 60000
           readOnly: true
           type: number
@@ -6269,21 +6654,21 @@ components:
       type: object
       properties:
         attribute_name:
-          description: 'Accepted values: `unix_user_name`, `unix_uid`, `unix_gid`, or `windows_user_name`.'
+          description: The type of attribute
           enum:
+            - user_home_dir
             - gecos_field
-            - active_directory_identity
-            - active_directory_passwordless_identity
+            - unix_user_name
             - windows_user_name
             - unix_uid
+            - active_directory_passwordless_identity
             - unix_gid
             - user_shell
-            - unix_user_name
-            - user_home_dir
+            - active_directory_identity
           readOnly: true
           type: string
         attribute_value:
-          description: Accepted values for `unix_user_name` and `windows_user_name` are strings with a character length between 0 and 255. Accepted values for `unix_uid` and `unix_gid` are a number between 100 and 2147483647.
+          description: 'The value of the attribute. Possible values depend on the `attribute_name` param: `unix_user_name` and `windows_user_name` accept strings of 0 – 255 characters. `unix_uid` and `unix_gid` accept numbers from 100 - 2147483647.'
           discriminator:
             mapping:
               active_directory_identity: '#/components/schemas/active_directory_identity'
@@ -6297,15 +6682,15 @@ components:
               windows_user_name: '#/components/schemas/windows_user_name'
             propertyName: AttributeName
           oneOf:
+            - $ref: '#/components/schemas/unix_user_name'
             - $ref: '#/components/schemas/windows_user_name'
             - $ref: '#/components/schemas/unix_uid'
+            - $ref: '#/components/schemas/user_home_dir'
+            - $ref: '#/components/schemas/gecos_field'
             - $ref: '#/components/schemas/unix_gid'
             - $ref: '#/components/schemas/user_shell'
-            - $ref: '#/components/schemas/gecos_field'
             - $ref: '#/components/schemas/active_directory_identity'
             - $ref: '#/components/schemas/active_directory_passwordless_identity'
-            - $ref: '#/components/schemas/unix_user_name'
-            - $ref: '#/components/schemas/user_home_dir'
           type: object
         id:
           description: The unique identifier for the attribute
@@ -6314,7 +6699,7 @@ components:
           readOnly: true
           type: string
         managed:
-          description: Whether this attribute is being managed through SCIM or SAML
+          description: Indicates if the attribute is managed through SCIM or SAML
           readOnly: true
           type: boolean
       required:
@@ -6326,20 +6711,20 @@ components:
       type: object
       properties:
         attribute_name:
-          description: 'Accepted values: `unix_group_name`, `unix_gid`, or `windows_group_name`'
+          description: The type of attribute
           enum:
-            - gecos_field
-            - active_directory_identity
-            - active_directory_passwordless_identity
-            - windows_user_name
-            - unix_uid
             - unix_gid
             - user_shell
+            - active_directory_identity
+            - active_directory_passwordless_identity
             - unix_user_name
+            - windows_user_name
+            - unix_uid
             - user_home_dir
+            - gecos_field
           type: string
         attribute_value:
-          description: Accepted values for `unix_group_name` and `windows_group_name` are strings with a character length between 0 and 255. Accepted value for `unix_gid` is a number between 100 and 2147483647.
+          description: 'The value of the attribute. Possible values depend on the `attribute_name` param: `unix_user_name` and `windows_user_name` accept strings of 0 – 255 characters. `unix_gid` accepts a number from 100 – 2147483647.'
           discriminator:
             mapping:
               active_directory_identity: '#/components/schemas/active_directory_identity'
@@ -6353,15 +6738,15 @@ components:
               windows_user_name: '#/components/schemas/windows_user_name'
             propertyName: AttributeName
           oneOf:
-            - $ref: '#/components/schemas/unix_uid'
             - $ref: '#/components/schemas/unix_gid'
             - $ref: '#/components/schemas/user_shell'
-            - $ref: '#/components/schemas/gecos_field'
             - $ref: '#/components/schemas/active_directory_identity'
             - $ref: '#/components/schemas/active_directory_passwordless_identity'
-            - $ref: '#/components/schemas/windows_user_name'
-            - $ref: '#/components/schemas/user_home_dir'
+            - $ref: '#/components/schemas/gecos_field'
             - $ref: '#/components/schemas/unix_user_name'
+            - $ref: '#/components/schemas/windows_user_name'
+            - $ref: '#/components/schemas/unix_uid'
+            - $ref: '#/components/schemas/user_home_dir'
           type: object
       required:
         - attribute_name
@@ -6372,9 +6757,9 @@ components:
         attribute_name:
           description: Accepted names include `unix_group_name`, `windows_group_name`, and `unix_gid`.
           enum:
-            - unix_gid
             - unix_group_name
             - windows_group_name
+            - unix_gid
           type: string
         attribute_value:
           description: Accepted values for `unix_group_name` and `windows_group_name` are strings of length 0 to 255 and for `unix_gid`, a number between 100 to 2147483647.
@@ -6398,19 +6783,19 @@ components:
         labels:
           additionalProperties:
             type: string
-          description: (Optional) A map of key value pairs. These labels will overwrite all labels previously supplied via the API for this server. Labels from any other source can only be updated using that source. The prefix 'api.' will be automatically prepended if not supplied.
+          description: (Optional) A map of key value pairs. These labels overwrite all labels previously supplied through the API for this server. You can only update labels from other sources using that source. If you don't supply the prefix 'api.', it is automatically prepended.
           nullable: true
           type: object
     User:
       type: object
       properties:
         deleted_at:
-          description: The time at which the ASA User was deleted
+          description: A timestamp indicating when the User was deleted
           format: date-time
           readOnly: true
           type: string
         details:
-          description: 'An object with the following keys, the values of which are all strings: `first_name`, `last_name`, `full_name`, and `email`'
+          description: The details of the User
           nullable: true
           properties:
             email:
@@ -6437,25 +6822,25 @@ components:
               type: string
           type: object
         id:
-          description: The UUID of the ASA User
+          description: The UUID of the User
           format: regex
           pattern: (?i)^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
           readOnly: true
           type: string
         name:
-          description: The username of the ASA User
+          description: The username of the User
           maxLength: 255
           minLength: 1
           type: string
         oauth_client_application_id:
-          description: The ID of the ASA User provided by OAuth, if it exists
+          description: If present, indicates the OAuth Client Application ID tied to a Service User. Only available when the user was created as part of an OAuth approval flow.
           maxLength: 255
           minLength: 1
           nullable: true
           readOnly: true
           type: string
         role_grants:
-          description: The permission roles available to the ASA User
+          description: The permission roles available to the User
           items:
             maxLength: 64
             minLength: 1
@@ -6463,10 +6848,10 @@ components:
           readOnly: true
           type: array
         status:
-          description: 'Status of the ASA User: `ACTIVE`, `DISABLED`, or `DELETED`. ASA Users can''t disable or delete their own ASA User.'
+          description: 'The status of the User: `ACTIVE`, `DISABLED`, or `DELETED`. Users can''t disable or delete their own account.'
           type: string
         user_type:
-          description: 'The type of ASA User: `service` or `human`'
+          description: 'The type of User. Possible values: `service` or `human`.'
           maxLength: 255
           minLength: 1
           readOnly: true

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Okta OpenID Connect & OAuth 2.0
-  version: 2.0.0
+  version: 2.2.0
   description: OAuth 2.0 Protocol APIs
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -280,7 +280,7 @@ paths:
         - OrgAS
       x-okta-lifecycle:
         isCorsEnabled: true
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -1310,7 +1310,7 @@ paths:
         - CustomAS
       x-okta-lifecycle:
         isCorsEnabled: true
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -3099,7 +3099,7 @@ components:
           items:
             $ref: '#/components/schemas/SigningAlgorithm'
           x-okta-lifecycle:
-            lifecycle: EA
+            lifecycle: LIMITED_GA
             isGenerallyAvailable: false
             SKUs:
               - Okta Identity Engine
@@ -3109,7 +3109,7 @@ components:
           items:
             $ref: '#/components/schemas/TokenDeliveryMode'
           x-okta-lifecycle:
-            lifecycle: EA
+            lifecycle: LIMITED_GA
             isGenerallyAvailable: false
             SKUs:
               - Okta Identity Engine
@@ -3125,6 +3125,21 @@ components:
             $ref: '#/components/schemas/CodeChallengeMethod'
         device_authorization_endpoint:
           type: string
+        dpop_signing_alg_values_supported:
+          description: A list of signing algorithms supported by this authorization server for Demonstrating Proof-of-Possession (DPoP) JWTs.
+          type: array
+          items:
+            type: string
+            enum:
+              - ES256
+              - ES384
+              - ES512
+              - RS256
+              - RS384
+              - RS512
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: true
         end_session_endpoint:
           description: URL of the authorization server's logout endpoint.
           type: string
@@ -3381,7 +3396,7 @@ components:
               type: string
               description: The value is what was returned from `/bc/authorize`.
               x-okta-lifecycle:
-                lifecycle: EA
+                lifecycle: LIMITED_GA
                 isGenerallyAvailable: false
                 SKUs:
                   - Okta Identity Engine

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: MyAccount Management
-  version: 2.0.0
+  version: 2.2.0
   description: APIs for managing a user's own emails, phones, profile, and app authenticators.
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -23,14 +23,19 @@ servers:
     variables:
       yourOktaDomain:
         default: subdomain.okta.com
-        description: The domain of your organization. This can be a provided subdomain of an official okta domain (okta.com, oktapreview.com, etc) or one of your configured custom domains.
+        description: The domain of your organization. This can be an official Okta domain (okta.com, oktapreview.com, etc) or one of your configured custom domains.
 tags:
   - name: AppAuthenticator
     x-displayName: App Authenticators
-    description: The My Account App Authenticators API provides operations to enroll, update and delete an app authenticator enrollment. The API also allows a user to view and verify pending notification challenges. Current support of the API is only applicable to custom authenticators. See the [Custom authenticator integration guide](https://developer.okta.com/docs/guides/authenticators-custom-authenticator/android/main/).
+    description: The MyAccount App Authenticators API provides operations to enroll, update, and delete an app authenticator. The API also allows users to view and verify pending notification challenges. The API only supports custom authenticators. See the [Custom authenticator integration guide](https://developer.okta.com/docs/guides/authenticators-custom-authenticator/android/main/).
   - name: Email
+    description: The MyAccount Email API provides operations to enroll, update, and delete emails. The API also provides utilities to create, view, and answer verification challenges.
+  - name: Password
+    description: The MyAccount Password API provides operations to enroll, update, and delete passwords.
   - name: Phone
+    description: The MyAccount Phone API provides operations to enroll, update, and delete phone numbers. The API also provides utilities to create, view, and answer verification challenges.
   - name: Profile
+    description: The MyAccount Profile API provides operations to enroll, and update profile fields. The API also allows viewing of all allowed profile fields.
 paths:
   /idp/myaccount/app-authenticators:
     post:
@@ -39,11 +44,11 @@ paths:
       operationId: createAppAuthenticatorEnrollment
       requestBody:
         content:
-          application/json:
+          application/json, okta-version=1.0.0:
             schema:
               $ref: '#/components/schemas/AppAuthenticatorEnrollmentRequest'
             examples:
-              Create App Authenticator Enrollment:
+              Create-App-Authenticator-Enrollment:
                 $ref: '#/components/examples/CreateAppAuthenticatorEnrollment'
       responses:
         '200':
@@ -82,7 +87,7 @@ paths:
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -95,7 +100,7 @@ paths:
       operationId: verifyAppAuthenticatorPushNotificationChallenge
       requestBody:
         content:
-          application/json:
+          application/json;okta-version=1.0.0:
             schema:
               $ref: '#/components/schemas/PushNotificationVerification'
             examples:
@@ -123,11 +128,24 @@ paths:
       - $ref: '#/components/parameters/appAuthenticatorEnrollmentId'
     patch:
       summary: Update an app authenticator enrollment
-      description: 'Updates an app authenticator enrollment. Allowed operations: update the user verification key, remove the user verification key, update the push token, and updating the push method transaction types.'
+      description: |-
+        Updates an app authenticator enrollment
+
+        The following update operations are allowed:
+        * Update the user verification key
+        * Remove the user verification key
+        * Update the push token
+        * Update the push method transaction types
+
+        > **Note:** The following higher risk update operations require a stronger `okta.myAccount.appAuthenticator.manage` scope:
+        * Update the user verification key
+        * Remove the user verification key
+
+        For more information, see [Access token management](https://developer.okta.com/docs/guides/authenticators-custom-authenticator/android/main/#access-token-management) in the Custom authenticator integration guide.
       operationId: updateAppAuthenticatorEnrollment
       requestBody:
         content:
-          application/json:
+          application/merge-patch+json;okta-version=1.0.0:
             schema:
               $ref: '#/components/schemas/UpdateAppAuthenticatorEnrollmentRequest'
             examples:
@@ -145,9 +163,9 @@ paths:
         '200':
           description: OK
           content:
-            application/merge-patch+json;okta-version=1.0.0:
+            application/json;okta-version=1.0.0:
               schema:
-                $ref: '#/components/schemas/UpdateAppAuthenticatorEnrollmentRequest'
+                $ref: '#/components/schemas/AppAuthenticatorEnrollment'
         '401':
           description: Unauthorized
           content:
@@ -168,11 +186,11 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - oauth2:
-            - okta.myAccount.appAuthenticator.manage
+            - okta.myAccount.appAuthenticator.maintenance.manage
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -207,7 +225,7 @@ paths:
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -234,20 +252,24 @@ paths:
                   $ref: '#/components/examples/GetPendingNotificationsJWTHeader'
                 JWT Payload:
                   $ref: '#/components/examples/GetPendingNotificationsJWTPayload'
+        '401':
+          $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
       security:
         - oauth2:
-            - okta.myAccount.appAuthenticator.read
+            - okta.myAccount.appAuthenticator.maintenance.read
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
   /idp/myaccount/emails:
     get:
       summary: List all Emails
-      description: Lists all emails
+      description: |-
+        Lists all of the current user's email information: a collection of links for each email that describe the acceptable operations.
+         > **Note:** Admin users can't make POST requests to the `/idp/myaccount/emails` endpoint.
       operationId: listEmails
       responses:
         '200':
@@ -264,7 +286,9 @@ paths:
         isGenerallyAvailable: true
     post:
       summary: Create an Email
-      description: Creates a new email
+      description: |-
+        Creates a primary or secondary email address for the user's account. The new email address has an `UNVERIFIED` status.
+         > **Note:** Admin users can't make POST requests to the `/idp/myaccount/emails` endpoint.
       operationId: createEmail
       requestBody:
         content:
@@ -274,6 +298,7 @@ paths:
               properties:
                 profile:
                   type: object
+                  description: Defines the email address on the profile
                   required:
                     - email
                   properties:
@@ -285,12 +310,12 @@ paths:
                 sendEmail:
                   type: boolean
                   default: true
-                  description: Specifies whether Okta should send an email to the end-user or whether the application will handle this itself.
+                  description: Specifies whether Okta or the application sends an email to the end user
                 state:
                   type: string
                   example: JPcFLTwOq7UvoFtmRd3EnyQwsR0PbDSI
                   description: |
-                    Any application state that the client wishes to persist across the email challenge flow and receive back at the callback URL defined in the OIDC app configuration. This param is REQUIRED as a mechanism to prove back to the client that the email link was verified.
+                    Any application state that the client wishes to persist across the email challenge flow, and receive at the callback URL. Define the callback URL in the OIDC app configuration. This parameter proves to the client that the email link is verified.
                   writeOnly: true
                 role:
                   type: string
@@ -302,7 +327,7 @@ paths:
               required:
                 - profile
             examples:
-              New Email:
+              New-Email:
                 value:
                   profile:
                     email: saml.jackson@example.com
@@ -334,12 +359,15 @@ paths:
       - schema:
           type: string
           example: 69dca29c2d8dbb0dca14395ccdb92317
+          description: |-
+            The email ID
+             Use `GET /idp/myaccount/emails` or `POST /idp/myaccount/emails` operations to obtain the email ID when adding a new email address. 
         name: id
         in: path
         required: true
     get:
       summary: Retrieve an Email
-      description: Retrieves an email by email id
+      description: 'Retrieves the current user''s email information by ID: a collection of links that describe the acceptable email operations'
       operationId: getEmail
       responses:
         '200':
@@ -356,7 +384,9 @@ paths:
         isGenerallyAvailable: true
     delete:
       summary: Delete an Email
-      description: Deletes an email by email id
+      description: |-
+        Deletes the current user's email information by ID. You can only delete unverified primary and secondary emails.
+         > **Note:** Admin users can't make DELETE requests to the `/idp/myaccount/emails/{id}/` endpoint.
       operationId: deleteEmail
       parameters: []
       responses:
@@ -385,12 +415,17 @@ paths:
       - schema:
           type: string
           example: 00T196qTp3LIMZQ0L0g3
+          description: |-
+            The email ID
+             Use the `GET /idp/myaccount/emails` or `POST /idp/myaccount/emails` operations when adding a new email address. 
         name: id
         in: path
         required: true
     post:
       summary: Send an Email Challenge
-      description: Sends a challenge on an email
+      description: |-
+        Sends a "Confirm email address change" email to the user with a one-time passcode for verification. Also, the user receives a "Notice of pending email address change" email. After the challenge is verified, the email becomes active. 
+          > **Note:** Admin users can't make POST requests to the `/idp/myaccount/emails/{id}/challenge` endpoint.
       operationId: sendEmailChallenge
       requestBody:
         content:
@@ -402,10 +437,11 @@ paths:
                   type: string
                   example: JPcFLTwOq7UvoFtmRd3EnyQwsR0PbDSI
                   writeOnly: true
+                  description: (Optional) The state parameter that contains the state of the client
               required:
                 - state
             examples:
-              Challenge Example:
+              Challenge-Example:
                 value:
                   state: JPcFLTwOq7UvoFtmRd3EnyQwsR0PbDSI
       responses:
@@ -501,7 +537,7 @@ paths:
                   - profile
                   - _links
               examples:
-                challenge created response:
+                Challenge-Created-Response:
                   value:
                     id: myaccount.2wdtXPtmS0WpKq4bnjlYIw
                     status: UNVERIFIED
@@ -538,6 +574,9 @@ paths:
       - schema:
           type: string
           example: 00T196qTp3LIMZQ0L0g3
+          description: |-
+            The email ID
+             Use the `GET /idp/myaccount/emails` or `POST /idp/myaccount/emails` operations to obtain the ID when adding a new email address. 
         name: id
         in: path
         required: true
@@ -545,11 +584,14 @@ paths:
           type: string
           example: x1MDGzUb
         name: challengeId
+        description: |-
+          The challengeId of the email
+           Use the `POST /idp/myaccount/emails/{id}/challenge/` operation to obtain the `challengeId` when creating a new challenge. 
         in: path
         required: true
     get:
       summary: Poll the Challenge for Email Magic Link
-      description: Polls for challenge status for an email
+      description: Polls for the email challenge's status
       operationId: pollChallengeForEmailMagicLink
       responses:
         '200':
@@ -643,7 +685,7 @@ paths:
                   - profile
                   - _links
               examples:
-                Polling Response Example:
+                Polling-Response-Example:
                   value:
                     id: myaccount.DDvNA6XORA2dIfB894o32g
                     status: UNVERIFIED
@@ -678,17 +720,26 @@ paths:
       - schema:
           type: string
           example: 00T196qTp3LIMZQ0L0g3
+          description: |-
+            The email ID
+             Use `GET /idp/myaccount/emails` or `POST /idp/myaccount/emails` operations to obtain the email ID when adding a new email address. 
         name: id
         in: path
         required: true
       - schema:
           type: string
+          description: |-
+            The challengeId of the email
+             Use the `POST /idp/myaccount/emails/{id}/challenge` operation to obtain the `challengeId` when creating a new challenge. 
+          example: x1MDGzUb
         name: challengeId
         in: path
         required: true
     post:
       summary: Verify an Email OTP
-      description: Verifies a OTP for an email challenge
+      description: |-
+        Verifies the email challenge with the code that the user receives from the "Confirm email address change" email. Once verified, the email is active.
+          > **Note:** Admin users can't make POST requests to the `/idp/myaccount/emails/{id}/challenge/{challengeId}/verify` endpoint.
       operationId: verifyEmailOtp
       requestBody:
         content:
@@ -701,10 +752,11 @@ paths:
                   example: '498560'
                   format: password
                   writeOnly: true
+                  description: A six-digit verification code sent to the user in the "Confirm email address change" email
               required:
                 - verificationCode
             examples:
-              OTP Example:
+              OTP-Example:
                 value:
                   verificationCode: '456058'
       responses:
@@ -726,10 +778,149 @@ paths:
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: true
+  /idp/myaccount/password:
+    get:
+      summary: Retrieve a Password
+      description: |-
+        Retrieves the current user's password status
+         > **Note:** This only returns information about the password, not the password itself
+      operationId: getPassword
+      responses:
+        '200':
+          $ref: '#/components/responses/Password-Enrolled-Response'
+        '401':
+          $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+      security:
+        - oauth2:
+            - okta.myAccount.password.read
+      tags:
+        - Password
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: true
+    post:
+      summary: Create a Password
+      description: |-
+        Creates and enrolls a password for the current user.
+         > **Note:** Admin users can't make POST requests to the `/idp/myaccount/password` endpoint.
+      operationId: createPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile:
+                  type: object
+                  description: Defines the password on the profile
+                  required:
+                    - password
+                  properties:
+                    password:
+                      type: string
+                      example: Abcd12345
+                      writeOnly: true
+              required:
+                - profile
+            examples:
+              New-Password:
+                value:
+                  profile:
+                    password: Abcd1234
+        description: New password
+      responses:
+        '201':
+          $ref: '#/components/responses/Password-Enrolled-Response'
+        '400':
+          $ref: '#/components/responses/Error-InvalidPassword-Reponse-400'
+        '401':
+          $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '403':
+          $ref: '#/components/responses/Error-PasswordConflict-Response-409'
+      security:
+        - oauth2:
+            - okta.myAccount.password.manage
+      tags:
+        - Password
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: true
+    put:
+      summary: Replace a Password
+      description: |-
+        Replaces the password for the current user.
+         > **Note:** Admin users can't make PUT requests to the `/idp/myaccount/password` endpoint.
+      operationId: replacePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile:
+                  type: object
+                  description: Defines the password on the profile
+                  required:
+                    - password
+                  properties:
+                    password:
+                      type: string
+                      example: Abcd12345
+                      writeOnly: true
+              required:
+                - profile
+            examples:
+              New-Password:
+                value:
+                  profile:
+                    password: Abcd1234
+        description: New password
+      responses:
+        '201':
+          $ref: '#/components/responses/Password-Enrolled-Response'
+        '400':
+          $ref: '#/components/responses/Error-InvalidPassword-Reponse-400'
+        '401':
+          $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '403':
+          $ref: '#/components/responses/Error-Email-Response-403'
+      security:
+        - oauth2:
+            - okta.myAccount.password.manage
+      tags:
+        - Password
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: true
+    delete:
+      summary: Delete a Password
+      description: |-
+        Deletes the current user's enrolled password.
+         > **Note:** Admin users can't make DELETE requests to the `/idp/myaccount/password` endpoint.
+      operationId: deletePassword
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json;okta-version=1.0.0: {}
+        '401':
+          $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '403':
+          $ref: '#/components/responses/Error-NoAccessForAdminUser-Response-403'
+        '404':
+          $ref: '#/components/responses/Error-PasswordResourceNotFound-Response-404'
+      security:
+        - oauth2:
+            - okta.myAccount.password.manage
+      tags:
+        - Password
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: true
   /idp/myaccount/phones:
     get:
       summary: List all Phones
-      description: Lists all my phones
+      description: Lists the current user's phone information for all phones. Includes a collection of links for each phone describing the acceptable operations.
       operationId: listPhones
       responses:
         '200':
@@ -746,7 +937,7 @@ paths:
         isGenerallyAvailable: true
     post:
       summary: Create a Phone
-      description: Creates a new phone
+      description: Creates an `UNVERIFIED` status phone for either the SMS or CALL method to the user's MyAccount setting
       operationId: createPhone
       requestBody:
         content:
@@ -756,6 +947,7 @@ paths:
               properties:
                 profile:
                   type: object
+                  description: The Profile object defines the phone number on the profile.
                   properties:
                     phoneNumber:
                       type: string
@@ -763,6 +955,7 @@ paths:
                 sendCode:
                   type: boolean
                   default: true
+                  description: Whether to send a challenge to the newly added phone.
                 method:
                   type: string
                   enum:
@@ -770,6 +963,9 @@ paths:
                     - CALL
                   example: SMS
                   writeOnly: true
+                  description: The method of the challenge sent to the newly added phone. Applicable when sendCode is true.
+              required:
+                - profile
             examples:
               Okta-Sends-Challenge:
                 value:
@@ -803,12 +999,13 @@ paths:
       - schema:
           type: string
           example: sms10ltpSdwXJCem80g4
+          description: ID of the phone. Obtain the ID of the phone through `GET /idp/myaccount/phones` or `POST /idp/myaccount/phones` when adding a new phone.
         name: id
         in: path
         required: true
     get:
       summary: Retrieve a Phone
-      description: Retrieves a phone given a phone id
+      description: Retrieves the current user's phone information by ID. Along with a collection of links describing the operations that can be performed to the phone.
       operationId: getPhone
       responses:
         '200':
@@ -827,7 +1024,9 @@ paths:
         isGenerallyAvailable: true
     delete:
       summary: Delete a Phone
-      description: Deletes a phone given a phone id
+      description: |-
+        Deletes the current user's phone information by ID.
+         > **Note:** Admin users aren't allowed to make a DELETE request to the `/idp/myaccount/phones/{id}` endpoint.
       operationId: deletePhone
       responses:
         '204':
@@ -853,12 +1052,20 @@ paths:
       - schema:
           type: string
           example: sms18vtfKgzqDhNqP0g4
+          description: ID of the phone. Obtain the ID of the phone through `GET /idp/myaccount/phones` or `POST /idp/myaccount/phones` when adding a new phone.
         name: id
         in: path
         required: true
     post:
       summary: Send a Phone Challenge
-      description: Sends a phone challenge
+      description: |-
+        Sends a phone challenge using one of two methods: `SMS` or `CALL`. This request can also handle a resend challenge (retry).
+
+        Upon a successful challenge, the user receives a verification code by `SMS` or `CALL`. Send a `POST` request to the `/idp/myaccount/phones/{id}/verify` endpoint to use the verification code to verify the phone number. The verification code expires in five minutes.
+
+        > **Note:** Sending requests to the `/idp/myaccount/phones/{id}/challenge` endpoint more often than once every 30 seconds, or at a rate that exceeds the rate limit rule configured by the admin, returns a 429 (Too Many Requests) error.
+
+        > **Note:** Admin users aren't allowed to make POST requests to the `/idp/myaccount/phones/{id}/challenge` endpoint. 
       operationId: sendPhoneChallenge
       requestBody:
         content:
@@ -869,12 +1076,14 @@ paths:
                 method:
                   type: string
                   example: SMS
+                  description: The method with which the challenge should be sent.
                   enum:
                     - SMS
                     - CALL
                   writeOnly: true
                 retry:
                   type: boolean
+                  description: indicates whether this is a normal challenge or retry
                   default: false
               required:
                 - method
@@ -911,12 +1120,17 @@ paths:
       - schema:
           type: string
           example: sms18vtfKgzqDhNqP0g4
+          description: The phone ID. Obtain the ID of the phone through `GET /idp/myaccount/phones` or `POST /idp/myaccount/phones` when adding a new phone.
         name: id
         in: path
         required: true
     post:
       summary: Verify a Phone Challenge
-      description: Verifies a phone challenge
+      description: |-
+        Verifies the phone number with the verification code that the user receives through `SMS` or `CALL`. The phone number is active upon a successful verification.
+        > **Note:** Sending requests to the `/idp/myaccount/phones/{id}/verify` endpoint at a rate that exceeds the rate limit rule configured by the admin returns a 429 (Too Many Requests) error.
+
+        > **Note:** Admin users aren't allowed to send a POST request to the `/idp/myaccount/phones/{id}/verify` endpoint. 
       operationId: verifyPhoneChallenge
       requestBody:
         content:
@@ -928,6 +1142,7 @@ paths:
                   type: string
                   example: '492592'
                   format: password
+                  description: A six-digit verification code that the user receives through SMS or CALL
                   writeOnly: true
               required:
                 - verificationCode
@@ -961,7 +1176,7 @@ paths:
   /idp/myaccount/profile:
     get:
       summary: Retrieve my Profile
-      description: Retrieves my profile
+      description: Retrieves the caller's Okta User Profile, without attributes excluded by the [Get My User Profile Schema](/openapi/okta-myaccount/myaccount/tag/Profile/#tag/Profile/operation/getProfileSchema)
       operationId: getProfile
       responses:
         '200':
@@ -971,7 +1186,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
               examples:
-                Success Response:
+                Success-Response:
                   value:
                     createdAt: '2020-01-14T20:05:32.000Z'
                     modifiedAt: '2020-01-14T20:05:32.000Z'
@@ -997,8 +1212,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
-      summary: Replace my Profile
-      description: Replaces my profile
+      summary: Replace my Profile My User Profile
+      description: |-
+        Replaces the caller's User Profile
+
+        > **Note:** This API differs from the the existing [Users API](https://developer.okta.com/docs/reference/api/users/) in that only the PUT operation is supported.  Partial updates (PATCH requests) aren't available. All values returned by fetching a User Profile must pass to the MyAccount API, or the update doesn't pass validation. This applies even if the omitted schema property is optional. To ensure an optional property passes, enter a value of 'null'. 
       operationId: replaceProfile
       requestBody:
         content:
@@ -1008,8 +1226,9 @@ paths:
               properties:
                 profile:
                   type: object
+                  description: The properties defined in the schema
             examples:
-              Update Profile:
+              Update-Profile:
                 value:
                   profile:
                     customBoolean: true
@@ -1025,7 +1244,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
               examples:
-                Success Response:
+                Success-Response:
                   value:
                     createdAt: '2020-01-14T20:05:32.000Z'
                     modifiedAt: '2020-01-14T20:05:32.000Z'
@@ -1057,7 +1276,10 @@ paths:
   /idp/myaccount/profile/schema:
     get:
       summary: Retrieve my Profile Schema
-      description: Retrieves my profile schema
+      description: |-
+        Retrieves the appropriate User Profile Schema for the caller's [User Type](https://developer.okta.com/docs/reference/api/user-types/)
+
+        > **Note:** If a property's value isn't visible to an end user (because it's hidden or [sensitive](https://help.okta.com/okta_help.htm?id=ext-hide-sensitive-attributes)), then the property's definition is also hidden in the output of the MyAccount API. 
       operationId: getProfileSchema
       responses:
         '200':
@@ -1067,7 +1289,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Schema'
               examples:
-                Success Response:
+                Success-Response:
                   value:
                     properties:
                       customBoolean:
@@ -1140,7 +1362,7 @@ components:
           udid: 4956095A-D99E-4A4E-A6DC-9E63E5978722
         methods:
           push:
-            apsEnvironment: development
+            apsEnvironment: DEVELOPMENT
             pushToken: 667b773e90871f014805f45f770c90d161b84b609d167039b2c388c7bacfdaa1
             keys:
               proofOfPossession:
@@ -1194,6 +1416,7 @@ components:
           appInstanceName: Okta Dashboard
           method: push
           methodEnrollmentId: opf6aeq9U2hoM8aqO0w5
+          authorizationServerId: aus1k3lsbNOta5rds0g5
           userMediation: REQUIRED
           userVerification: PREFERRED
           authenticatorEnrollmentId": pfd7rzcmvlhmE0Y1w0g4
@@ -1321,7 +1544,7 @@ components:
           schema:
             $ref: '#/components/schemas/Email'
           examples:
-            Success Response:
+            Success-Response:
               value:
                 id: 69dca29c2d8dbb0dca14395ccdb92317
                 status: VERIFIED
@@ -1347,7 +1570,7 @@ components:
           schema:
             $ref: '#/components/schemas/Email'
           examples:
-            Success Response:
+            Success-Response:
               value:
                 id: e2a84ed3cc538f75457596faa74a4532
                 status: UNVERIFIED
@@ -1386,7 +1609,7 @@ components:
             items:
               $ref: '#/components/schemas/Email'
           examples:
-            Success Response:
+            Success-Response:
               value:
                 - id: 69dca29c2d8dbb0dca14395ccdb92317
                   status: VERIFIED
@@ -1442,7 +1665,7 @@ components:
             items:
               $ref: '#/components/schemas/Phone'
           examples:
-            Success Response:
+            Success-Response:
               value:
                 - id: sms10ltpSdwXJCem80g4
                   status: VERIFIED
@@ -1488,7 +1711,7 @@ components:
           schema:
             $ref: '#/components/schemas/Phone'
           examples:
-            Success Response:
+            Success-Response:
               value:
                 id: sms18vtfKgzqDhNqP0g4
                 status: UNVERIFIED
@@ -1518,7 +1741,7 @@ components:
           schema:
             $ref: '#/components/schemas/Phone'
           examples:
-            Success Response:
+            Success-Response:
               value:
                 id: sms10ltpSdwXJCem80g4
                 status: VERIFIED
@@ -1565,7 +1788,7 @@ components:
                             items:
                               type: string
           examples:
-            Success Response:
+            Success-Response:
               value:
                 _links:
                   verify:
@@ -1573,6 +1796,27 @@ components:
                     hints:
                       allow:
                         - POST
+    Password-Enrolled-Response:
+      description: Example response
+      content:
+        application/json;okta-version=1.0.0:
+          schema:
+            $ref: '#/components/schemas/PasswordResponse'
+          examples:
+            Success-Response:
+              value:
+                id: 00T196qTp3LIMZQ0L0g3
+                status: ACTIVE
+                created: '2020-01-14T20:05:32.000Z'
+                lastUpdated: '2020-01-14T20:05:32.000Z'
+                _links:
+                  self:
+                    href: https://example.okta.com/idp/myaccount/password
+                    hints:
+                      allow:
+                        - GET
+                        - DELETE
+                        - PUT
     Error-InvalidFactorId-Response-404:
       description: Not Found
       content:
@@ -1580,7 +1824,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Phone Factor Id - 404:
+            Invalid-Phone-Factor-Id-404:
               value:
                 errorCode: E0000008
                 errorSummary: The requested path was not found
@@ -1595,7 +1839,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            No Access For Admin User - 403:
+            No-Access-For-Admin-User-403:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -1610,7 +1854,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Failed To Send Out Of Band Challenge - 500:
+            Failed-To-Send-Out-Of-Band-Challenge-500:
               value:
                 errorCode: E0000138
                 errorSummary: There was an internal error with call provider(s).
@@ -1625,7 +1869,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Transaction - 409:
+            Invalid-Transaction-409:
               value:
                 errorCode: E0000157
                 errorSummary: 'Another authenticator with key: transactionHandle is already active.'
@@ -1640,7 +1884,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Email Update From Profile:
+            Invalid-Email-Update-From-Profile:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: forUpdate'
@@ -1648,7 +1892,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: You cannot update email attributes using the profile endpoint. Use the emails endpoint to make any required changes.
-            Invalid Value Type For Property:
+            Invalid-Value-Type-For-Property:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: forUpdate'
@@ -1656,7 +1900,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid value data type for property 'some-property'
-            Missing Property Value For Self Update:
+            Missing-Property-Value-For-Self-Update:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: forUpdate'
@@ -1664,7 +1908,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Property 'some-property' needs a value passed.  To unset it, explicitly set it to null.
-            Read Only Property Changed For Self Update:
+            Read-Only-Property-Changed-For-Self-Update:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: forUpdate'
@@ -1672,7 +1916,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Property 'some-property' is read only.  The value supplied must exactly match the existing value.
-            Corrupt Profile Prevents Self Update:
+            Corrupt-Profile-Prevents-Self-Update:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: forUpdate'
@@ -1680,7 +1924,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Your profile is corrupt in a way that requires administrative intervention.  Please contact support.
-            Concealed Or Unknown Property For Self Update:
+            Concealed-Or-Unknown-Property-For-Self-Update:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: forUpdate'
@@ -1695,7 +1939,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Phone Number Exists - 409:
+            Phone-Number-Exists-409:
               value:
                 errorCode: E0000157
                 errorSummary: 'Another authenticator with key: +14161111111 is already active.'
@@ -1710,7 +1954,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Email Deletion - 400:
+            Invalid-Email-Deletion-400:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Email'
@@ -1725,7 +1969,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Email - 400:
+            Invalid-Email-400:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Email'
@@ -1740,7 +1984,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Email Conflict - 409:
+            Email-Conflict-409:
               value:
                 errorCode: E0000157
                 errorSummary: 'Another authenticator with key: Email is already active.'
@@ -1755,7 +1999,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Email Resource Not Found - 404:
+            Email-Resource-Not-Found-404:
               value:
                 errorCode: E0000007
                 errorSummary: 'Not found: Resource not found: 796bc844c1802c5ad5a65e1dbd26c30a (UserProfileEmail)'
@@ -1769,7 +2013,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Email Challenge Resource Not Found - 404:
+            Email-Challenge-Resource-Not-Found-404:
               value:
                 errorCode: E0000007
                 errorSummary: 'Not found: Resource not found: myaccount.WJLzOhehQwSVUFLVTy2ywb (IdpMyAccountChallenge)'
@@ -1783,7 +2027,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            No Access For Admin User:
+            No-Access-For-Admin-User:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -1791,7 +2035,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: This operation couldn't be completed as requested due to an access restriction.
-            Secondary Email:
+            Secondary-Email:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -1806,7 +2050,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Method:
+            Invalid-Method:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Method'
@@ -1814,7 +2058,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid method some_invalid_method in the request.
-            Not A Number:
+            Not-A-Number:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Error type: NOT_A_NUMBER. The string supplied did not seem to be a phone number.'
@@ -1822,7 +2066,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid phone number.
-            Invalid Country Code:
+            Invalid-Country-Code:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Error type: INVALID_COUNTRY_CODE. Could not interpret numbers after plus-sign.'
@@ -1830,7 +2074,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid phone number.
-            Too Long:
+            Too-Long:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Error type: TOO_LONG. The string supplied is too long to be a phone number.'
@@ -1838,7 +2082,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid phone number.
-            Invalid Transaction Data Type:
+            Invalid-Transaction-Data-Type:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Transaction'
@@ -1846,7 +2090,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid transaction.
-            Cardinality Max Reached:
+            Cardinality-Max-Reached:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Exceeded cardinality max'
@@ -1861,7 +2105,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Method:
+            Invalid-Method:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Method'
@@ -1869,7 +2113,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid method some_invalid_method in the request.
-            Invalid Transaction Data Type:
+            Invalid-Transaction-Data-Type:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Transaction'
@@ -1884,7 +2128,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            Invalid Method:
+            Invalid-Method:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Method'
@@ -1892,7 +2136,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid method some_invalid_method in the request.
-            Invalid Transaction Data Type:
+            Invalid-Transaction-Data-Type:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: Transaction'
@@ -1900,7 +2144,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Invalid transaction.
-            Invalid Phone Factor Id:
+            Invalid-Phone-Factor-Id:
               value:
                 errorCode: E0000001
                 errorSummary: 'Api validation failed: factorId and/or verificationCode'
@@ -1915,7 +2159,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            IDP MyAccount not enabled - 401:
+            IDP-MyAccount-not-enabled-401:
               value:
                 errorCode: E0000015
                 errorSummary: You do not have permission to access the feature you are requesting
@@ -1929,14 +2173,14 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            IDP MyAccount not enabled - 401:
+            IDP-MyAccount-not-enabled-401:
               value:
                 errorCode: E0000015
                 errorSummary: You do not have permission to access the feature you are requesting
                 errorLink: E0000015
                 errorId: oaeStOuPPxDRUm3PJhf-tL7bQ
                 errorCauses: []
-            Unauthorized User - 401:
+            Unauthorized-User-401:
               value:
                 errorCode: E0000004
                 errorSummary: Authentication failed
@@ -1944,7 +2188,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: User is not authorized.
-            User Failed To Answer Challenge - 401:
+            User-Failed-To-Answer-Challenge-401:
               value:
                 errorCode: E0000004
                 errorSummary: Authentication failed
@@ -1959,7 +2203,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            No Access For Admin User:
+            No-Access-For-Admin-User:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -1967,7 +2211,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: This operation couldn't be completed as requested due to an access restriction.
-            Phone Authenticator Disabled:
+            Phone-Authenticator-Disabled:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -1975,7 +2219,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Phone authenticator is not enabled for your org.
-            Invalid Authentication Method Type:
+            Invalid-Authentication-Method-Type:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -1990,7 +2234,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            No Access For Admin User:
+            No-Access-For-Admin-User:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -1998,7 +2242,7 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: This operation couldn't be completed as requested due to an access restriction.
-            Phone Authenticator Disabled:
+            Phone-Authenticator-Disabled:
               value:
                 errorCode: E0000038
                 errorSummary: This operation is not allowed in the user's current status.
@@ -2006,6 +2250,50 @@ components:
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
                   - errorSummary: Phone authenticator is not enabled for your org.
+    Error-InvalidPassword-Reponse-400:
+      description: Bad Request
+      content:
+        application/json;okta-version=1.0.0:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            Invalid-Password-400:
+              value:
+                errorCode: E0000001
+                errorSummary: 'Api validation failed: Password'
+                errorLink: E0000001
+                errorId: oaejUwz8U5FQ_SyggQwz1kC3w
+                errorCauses:
+                  - errorSummary: Invalid password.
+    Error-PasswordConflict-Response-409:
+      description: Conflict
+      content:
+        application/json;okta-version=1.0.0:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            Password-Conflict-409:
+              value:
+                errorCode: E0000157
+                errorSummary: This account already has a password set as an authenticator.
+                errorLink: E0000157
+                errorId: oaejUwz8U5FQ_SyggQwz1kC3w
+                errorCauses:
+                  - errorSummary: This account already has a password set as an authenticator.
+    Error-PasswordResourceNotFound-Response-404:
+      description: Not Found
+      content:
+        application/json;okta-version=1.0.0:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            Password-Resource-Not-Found-404:
+              value:
+                errorCode: E0000007
+                errorSummary: 'Not found: Resource not found: 796bc844c1802c5ad5a65e1dbd26c30a (UserProfilePassword)'
+                errorLink: E0000007
+                errorId: oaejUwz8U5FQ_SyggQwz1kC3w
+                errorCauses: []
   schemas:
     AppAuthenticatorEnrollment:
       description: App authenticator enrollment object
@@ -2068,6 +2356,33 @@ components:
           properties:
             push:
               type: object
+              properties:
+                id:
+                  type: string
+                createdDate:
+                  type: string
+                  format: date-time
+                lastUpdated:
+                  type: string
+                  format: date-time
+                links:
+                  type: object
+                  properties:
+                    pending:
+                      type: object
+                      properties:
+                        href:
+                          type: string
+                          minLength: 1
+                        hints:
+                          type: object
+                          properties:
+                            allow:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                  - GET
         user:
           type: object
           properties:
@@ -2197,6 +2512,7 @@ components:
           type: string
           minLength: 1
           readOnly: true
+          description: '`VERIFIED` OR `UNVERIFIED`'
         _links:
           type: object
           properties:
@@ -2352,6 +2668,39 @@ components:
         - kty
         - okta:kpr
         - kid
+    PasswordResponse:
+      description: Password Reponse Object
+      type: object
+      properties:
+        created:
+          type: string
+          description: If password is `ACTIVE`, returns the date when password was first enrolled
+        id:
+          type: string
+          minLength: 1
+          readOnly: true
+        lastUpdated:
+          type: string
+          description: If password is `ACTIVE`, returns the date when password was last updated
+        status:
+          type: string
+          description: '`ACTIVE`, `EXPIRED`, `SUSPENDED`, `NOT_ENROLLED`'
+        _links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                  minLength: 1
+                hints:
+                  type: object
+                  properties:
+                    allow:
+                      type: array
+                      items:
+                        type: string
     Phone:
       description: Phone Object
       type: object
@@ -2372,6 +2721,7 @@ components:
           type: string
           minLength: 1
           readOnly: true
+          description: '`VERIFIED` OR `UNVERIFIED`'
         _links:
           type: object
           properties:
@@ -2526,10 +2876,14 @@ components:
           authorizationUrl: /oauth2/v1/authorize
           tokenUrl: /oauth2/v1/token
           scopes:
+            okta.myAccount.appAuthenticator.maintenance.manage: Write access to non-sensitive attributes of user app authenticator enrollments
+            okta.myAccount.appAuthenticator.maintenance.read: Read access to non-sensitive attributes of user app authenticator enrollments
             okta.myAccount.appAuthenticator.manage: Write access to user app authenticator enrollments
             okta.myAccount.appAuthenticator.read: Read access to user app authenticator enrollments
             okta.myAccount.email.manage: Write access to user emails
             okta.myAccount.email.read: Read access to user emails
+            okta.myAccount.password.manage: Write access to user password
+            okta.myAccount.password.read: Read access to user password metadata
             okta.myAccount.phone.manage: Write access to user phones
             okta.myAccount.phone.read: Read access to user phones
             okta.myAccount.profile.manage: Write access to user profile and schema
