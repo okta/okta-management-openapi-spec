@@ -219,71 +219,6 @@ paths:
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: true
-  /oauth2/v1/bc/authorize:
-    post:
-      summary: /bc/authorize
-      description: |-
-        This endpoint returns a unique identifier (`auth_req_id`) that identifies the authentication flow while it tries to authenticate the user in the background. This `auth_req_id` value is used in subsequent token requests to the `/token` endpoint.
-
-        > **Note:** The `/bc/authorize` endpoint requires client authentication. The method is configured per client application. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/) for more information.
-      operationId: bcAuthorize
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/BackchannelAuthorizeRequest'
-            examples:
-              Request with `login_hint`:
-                $ref: '#/components/examples/BCAuthorizeRequestLoginHintExample'
-              Request with `id_token_hint`:
-                $ref: '#/components/examples/BCAuthorizeRequestIdTokenHintExample'
-              Request with signed `request`:
-                $ref: '#/components/examples/BCAuthorizeSignedRequestExample'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackchannelAuthorizeResponse'
-              examples:
-                Back Response:
-                  $ref: '#/components/examples/BackchannelAuthorizeResponseExample'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OAuthError'
-              examples:
-                Multiple Client Credentials Provided:
-                  $ref: '#/components/examples/OAuthError400InvalidRequest_MultipleClientCreds'
-                Missing Scopes:
-                  $ref: '#/components/examples/OAuthError400InvalidScope_MissingScopes'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OAuthError'
-              examples:
-                Missing Client Credentials:
-                  $ref: '#/components/examples/OAuthError401InvalidClient_NoCreds'
-        '429':
-          $ref: '#/components/responses/ErrorTooManyRequests429'
-      security:
-        - Client authentication `client_secret_basic`: []
-        - Client authentication `client_secret_post`: []
-        - Client authentication `client_secret_jwt`: []
-        - Client authentication `private_key_jwt`: []
-      tags:
-        - OrgAS
-      x-okta-lifecycle:
-        isCorsEnabled: true
-        lifecycle: EA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
   /oauth2/v1/clients:
     get:
       summary: List all Client Applications
@@ -942,6 +877,14 @@ paths:
                 $ref: '#/components/examples/TokenRequestSamlBearerExample'
               Resource Owner Password Flow:
                 $ref: '#/components/examples/TokenRequestPassword'
+              directAuthOtpPrimaryAuth:
+                $ref: '#/components/examples/TokenRequestDirectAuthOtpExample'
+              directAuthMfaOtp:
+                $ref: '#/components/examples/TokenRequestDirectAuthMfaOtpExample'
+              directAuthOobPrimaryAuth:
+                $ref: '#/components/examples/TokenRequestDirectAuthOobExample'
+              directAuthMfaOob:
+                $ref: '#/components/examples/TokenRequestDirectAuthMfaOobExample'
       responses:
         '200':
           description: Based on the scopes requested. Generally speaking, the scopes specified in a request are included in the access token in the response.
@@ -1250,70 +1193,9 @@ paths:
   /oauth2/{authorizationServerId}/v1/bc/authorize:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
-    post:
-      summary: /bc/authorize
-      description: |-
-        This endpoint returns a unique identifier (`auth_req_id`) that identifies the authentication flow while it tries to authenticate the user in the background. This `auth_req_id` value is used in subsequent token requests to the `/token` endpoint.
-
-        > **Note:** The `/bc/authorize` endpoint requires client authentication. The method is configured per client application. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/) for more information.
-      operationId: bcAuthorizeCustomAS
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/BackchannelAuthorizeRequest'
-            examples:
-              Request with `login_hint`:
-                $ref: '#/components/examples/BCAuthorizeRequestLoginHintExample'
-              Request with `id_token_hint`:
-                $ref: '#/components/examples/BCAuthorizeRequestIdTokenHintExample'
-              Request with signed `request`:
-                $ref: '#/components/examples/BCAuthorizeSignedRequestExample'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackchannelAuthorizeResponse'
-              examples:
-                Back Response:
-                  $ref: '#/components/examples/BackchannelAuthorizeResponseExample'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OAuthError'
-              examples:
-                Multiple Client Credentials Provided:
-                  $ref: '#/components/examples/OAuthError400InvalidRequest_MultipleClientCreds'
-                Missing Scopes:
-                  $ref: '#/components/examples/OAuthError400InvalidScope_MissingScopes'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OAuthError'
-              examples:
-                Missing Client Credentials:
-                  $ref: '#/components/examples/OAuthError401InvalidClient_NoCreds'
-        '429':
-          $ref: '#/components/responses/ErrorTooManyRequests429'
-      security:
-        - Client authentication `client_secret_basic`: []
-        - Client authentication `client_secret_post`: []
-        - Client authentication `client_secret_jwt`: []
-        - Client authentication `private_key_jwt`: []
-      tags:
-        - CustomAS
-      x-okta-lifecycle:
-        isCorsEnabled: true
-        lifecycle: EA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
+  /oauth2/{authorizationServerId}/v1/challenge:
+    parameters:
+      - $ref: '#/components/parameters/pathAuthorizationServerId'
   /oauth2/{authorizationServerId}/v1/device/authorize:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
@@ -1507,6 +1389,9 @@ paths:
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: true
+  /oauth2/{authorizationServerId}/v1/oob-authenticate:
+    parameters:
+      - $ref: '#/components/parameters/pathAuthorizationServerId'
   /oauth2/{authorizationServerId}/v1/par:
     options:
       summary: /par
@@ -1745,6 +1630,14 @@ paths:
                 $ref: '#/components/examples/TokenRequestSamlBearerExample'
               Resource Owner Password Flow:
                 $ref: '#/components/examples/TokenRequestPassword'
+              directAuthOtpPrimaryAuth:
+                $ref: '#/components/examples/TokenRequestDirectAuthOtpExample'
+              directAuthMfaOtp:
+                $ref: '#/components/examples/TokenRequestDirectAuthMfaOtpExample'
+              directAuthOobPrimaryAuth:
+                $ref: '#/components/examples/TokenRequestDirectAuthOobExample'
+              directAuthMfaOob:
+                $ref: '#/components/examples/TokenRequestDirectAuthMfaOobExample'
       responses:
         '200':
           description: Based on the scopes requested. Generally speaking, the scopes specified in a request are included in the access token in the response.
@@ -1861,6 +1754,34 @@ components:
         auth_req_id: ftJwF5ZwW2SGPPoTQEKtAr_U8_Ek3RvWyR
         expires_in: 300
         interval: 5
+    ChallengeErrorInvalidChallengeType:
+      summary: Invalid Challenge Type
+      value:
+        error: access_denied
+        error_description: foo is not supported as a 'challenge_type'. Try again with another value.
+    ChallengeErrorInvalidMfaToken:
+      summary: Invalid MFA Token
+      value:
+        error: access_denied
+        error_description: '''foo'' has expired. Use a new ''oob_code'' or ''mfa_token'' and try again.'
+    ChallengeRequestExample:
+      summary: Initiate challenge
+      value:
+        mfa_token: Qwk9va6QYgR3s7JMiWUm
+        challenge_types_supported: http://auth0.com/oauth/grant-type/mfa-otp http://auth0.com/oauth/grant-type/mfa-oob
+    ChallengeResponseMfaOobExample:
+      summary: Challenge Response Out-Of-Band Authenticator
+      value:
+        challenge_type: http://auth0.com/oauth/grant-type/mfa-oob
+        oob_code: ftOpMH6ohWMGWoH1vgrX-lNX6tnXE6JNd9
+        channel: push
+        binding_method: none
+        expires_in: 300
+        interval: 5
+    ChallengeResponseMfaOtpExample:
+      summary: Challenge Response One-Time Passcode Authenticator
+      value:
+        challenge_type: http://auth0.com/oauth/grant-type/mfa-otp
     ClientRequestServiceJwks:
       value:
         client_name: Example Service Client
@@ -2429,6 +2350,49 @@ components:
             kid: h5Sr3LXcpQiQlAUVPdhrdLFoIvkhRTAVs_h39bQnxlU
             kty: RSA
             use: sig
+    OobAuthenticateErrorAuthenticatorCannotBeUsed:
+      summary: No authenticator associated with the grant type can be used
+      value:
+        error: access_denied
+        error_description: The required authenticator cannot be used to sign-in. Check if it is included in the authentication policy and the user is enrolled in the authenticator and try again.
+    OobAuthenticateErrorGrantTypeDisabled:
+      summary: Grant Type Not Enabled For Client
+      value:
+        error: unauthorized_client
+        error_description: 'The client is not authorized to use the provided grant type. Configured grant types: [urn:okta:params:oauth:grant-type:otp, authorization_code]'
+    OobAuthenticateErrorInvalidChannelHint:
+      summary: Invalid Channel Hint
+      value:
+        error: invalid_request
+        error_description: '''foo'' is not supported as a ''channel_hint''. Try again with another value.'
+    OobAuthenticateErrorInvalidClientSecret:
+      summary: Invalid Client Secret
+      value:
+        error: invalid_client
+        error_description: The client secret supplied for a confidential client is invalid.
+    OobAuthenticateErrorRateLimit:
+      summary: Too Many Requests
+      value:
+        error: invalid_grant
+        error_description: API call exceeded rate limit due to too many requests.
+    OobAuthenticateErrorUserNotAssignedApp:
+      summary: User Not Assigned Client Application
+      value:
+        error: access_denied
+        error_description: User is not assigned to the client application.
+    OobAuthenticateRequestExample:
+      summary: Initiate out-of-band primary authentication
+      value:
+        login_hint: testuser@example.com
+        channel_hint: push
+    OobAuthenticateResponseExample:
+      summary: Initiate out-of-band primary authentication response
+      value:
+        oob_code: ftOpMH6ohWMGWoH1vgrX-lNX6tnXE6JNd9
+        channel: push
+        binding_method: none
+        expires_in: 300
+        interval: 5
     OrgASOidcMetadata:
       value:
         issuer: https://{yourOktaDomain}
@@ -2546,6 +2510,36 @@ components:
         grant_type: authorization_code
         redirect_uri: https://www.example.com/oauth2/redirectUri
         code: QnowT-aeawtOJKp-MtkH&
+    TokenRequestDirectAuthMfaOobExample:
+      summary: Direct Authentication out-of-band authenticator as a multifactor authenticator
+      value:
+        grant_type: http://auth0.com/oauth/grant-type/mfa-oob
+        scope: openid offline_access
+        mfa_token: Qwk9va6QYgR3s7JMiWUm
+        oob_code: ftOpMH6ohWMGWoH1vgrX-lNX6tnXE6JNd9
+    TokenRequestDirectAuthMfaOtpExample:
+      summary: Direct Authentication one-time passcode as a multifactor authenticator
+      value:
+        grant_type: http://auth0.com/oauth/grant-type/mfa-otp
+        scope: openid offline_access
+        mfa_token: Qwk9va6QYgR3s7JMiWUm
+        otp: 123456
+        grant_types_supported: http://auth0.com/oauth/grant-type/mfa-otp urn:okta:params:oauth:grant-type:oob
+    TokenRequestDirectAuthOobExample:
+      summary: Direct Authentication out-of-band authenticator as a primary factor
+      value:
+        grant_type: urn:okta:params:oauth:grant-type:oob
+        scope: openid offline_access
+        oob_code: ftOpMH6ohWMGWoH1vgrX-lNX6tnXE6JNd9
+        grant_types_supported: http://auth0.com/oauth/grant-type/mfa-otp http://auth0.com/oauth/grant-type/mfa-oob
+    TokenRequestDirectAuthOtpExample:
+      summary: Direct Authentication one-time passcode as a primary authenticator
+      value:
+        grant_type: urn:okta:params:oauth:grant-type:otp
+        scope: openid offline_access
+        login_hint: testuser@example.com
+        otp: 123456
+        grant_types_supported: http://auth0.com/oauth/grant-type/mfa-otp http://auth0.com/oauth/grant-type/mfa-oob
     TokenRequestPassword:
       value:
         grant_type: password
@@ -2788,6 +2782,21 @@ components:
         interval:
           type: integer
           description: The minimum amount of time in seconds that the client should wait between polling requests to the token endpoint.
+    BindingMethod:
+      description: 'The method used to bind the out-of-band channel with the primary channel. Supported value: ''none''.'
+      type: string
+      enum:
+        - none
+    ChallengeType:
+      type: string
+      enum:
+        - http://auth0.com/oauth/grant-type/mfa-oob
+        - http://auth0.com/oauth/grant-type/mfa-otp
+    Channel:
+      description: 'The out-of-band channel for use with authentication. Supported value: ''push'' for Okta Verify push.'
+      type: string
+      enum:
+        - push
     Claim:
       type: string
     Client:
@@ -3093,26 +3102,6 @@ components:
         authorization_endpoint:
           type: string
           description: URL of the authorization server's authorization endpoint.
-        backchannel_authentication_request_signing_alg_values_supported:
-          description: A list of signing algorithms that this authorization server supports for signed requests.
-          type: array
-          items:
-            $ref: '#/components/schemas/SigningAlgorithm'
-          x-okta-lifecycle:
-            lifecycle: EA
-            isGenerallyAvailable: false
-            SKUs:
-              - Okta Identity Engine
-        backchannel_token_delivery_modes_supported:
-          description: The delivery modes that this authorization server supports for Client-Initiated Backchannel Authentication.
-          type: array
-          items:
-            $ref: '#/components/schemas/TokenDeliveryMode'
-          x-okta-lifecycle:
-            lifecycle: EA
-            isGenerallyAvailable: false
-            SKUs:
-              - Okta Identity Engine
         claims_supported:
           description: A list of the claims supported by this authorization server.
           type: array
@@ -3376,15 +3365,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/TokenRequest'
         - type: object
-          properties:
-            auth_req_id:
-              type: string
-              description: The value is what was returned from `/bc/authorize`.
-              x-okta-lifecycle:
-                lifecycle: EA
-                isGenerallyAvailable: false
-                SKUs:
-                  - Okta Identity Engine
           required:
             - auth_req_id
     TokenRequestClientCredentials:
