@@ -9955,6 +9955,21 @@ definitions:
     x-okta-tags:
       - Application
   ApplicationSettingsApplication:
+    properties:
+      orgName:
+        type: string
+      url:
+        type: string
+      acsURL:
+        type: string
+      buttonField:
+        type: string
+      passwordField:
+        type: string
+      usernameField:
+        type: string
+      loginUrlRegex:
+        type: string      
     x-okta-tags:
       - Application
   ApplicationSettingsNotifications:
