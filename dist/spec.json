@@ -15802,6 +15802,29 @@
       ]
     },
     "ApplicationSettingsApplication": {
+      "properties": {
+        "acsURL": {
+          "type": "string"
+        },
+        "buttonField": {
+          "type": "string"
+        },
+        "loginUrlRegex": {
+          "type": "string"
+        },
+        "orgName": {
+          "type": "string"
+        },
+        "passwordField": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "usernameField": {
+          "type": "string"
+        }
+      },
       "x-okta-tags": [
         "Application"
       ]
