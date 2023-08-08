@@ -11651,6 +11651,7 @@ definitions:
       - hotp
       - push
       - question
+      - signed_nonce
       - sms
       - 'token:hardware'
       - 'token:hotp'
