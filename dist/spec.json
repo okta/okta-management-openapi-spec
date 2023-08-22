@@ -15803,7 +15803,7 @@
     },
     "ApplicationSettingsApplication": {
       "properties": {
-        "acsURL": {
+        "acsUrl": {
           "type": "string"
         },
         "buttonField": {

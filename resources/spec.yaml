@@ -9960,7 +9960,7 @@ definitions:
         type: string
       url:
         type: string
-      acsURL:
+      acsUrl:
         type: string
       buttonField:
         type: string

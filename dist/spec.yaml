@@ -10121,7 +10121,7 @@ definitions:
       - Application
   ApplicationSettingsApplication:
     properties:
-      acsURL:
+      acsUrl:
         type: string
       buttonField:
         type: string
