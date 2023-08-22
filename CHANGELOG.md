@@ -1,6 +1,10 @@
 # Changelog
 Running changelog of releases since `2.2.3`
 
+## 2.16.0
+- Added missing properties to applicationsettingsapplication
+- Added signed_nonce factor type
+
 ## 2.15.0
 
 ### Additions
