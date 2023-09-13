@@ -21122,6 +21122,7 @@
           "enum": [
             "REQUIRED",
             "IMPLICIT",
+            "FLEXIBLE",
             "ADMIN"
           ],
           "type": "string"
