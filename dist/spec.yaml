@@ -13555,6 +13555,7 @@ definitions:
         enum:
           - REQUIRED
           - IMPLICIT
+          - FLEXIBLE
           - ADMIN
         type: string
       default:
