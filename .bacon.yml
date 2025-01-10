@@ -1,15 +1,8 @@
 test_suites:
-    - name: test
-      script_path: /root/okta/okta-management-openapi-spec/scripts
-      sort_order: '2'
-      timeout: '30'
-      script_name: test
-      criteria: MERGE
-      queue_name: small
     - name: publish
       script_path: /root/okta/okta-management-openapi-spec/scripts
-      sort_order: '2'
-      timeout: '30'
+      sort_order: '0'
+      timeout: '10'
       script_name: publish
       criteria: MERGE
       queue_name: small
