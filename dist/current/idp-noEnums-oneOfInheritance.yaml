@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: MyAccount Management
-  version: 2025.01.1
+  version: 2.0.0
   description: |-
     APIs for managing a user's own emails, phones, profile, and app authenticators.
     > **Note:** The MyAccount API doesn't support [delegated authentication](https://help.okta.com/okta_help.htm?id=ext_Security_Authentication).
@@ -40,7 +40,7 @@ tags:
       SKUs: []
   - name: Authenticators
     description: |
-      <div class="x-lifecycle-container"><x-lifecycle class="lea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></div>The MyAccount Authenticators API provides operations to list all available authenticators and enrollments.
+      <div class="x-lifecycle-container"><x-lifecycle class="oie"></x-lifecycle></div>The MyAccount Authenticators API provides operations to list all available authenticators and enrollments.
 
       ### API versioning
       A valid API version in the `Accept` header is required to access the API. Current version: `1.0.0`
@@ -64,7 +64,7 @@ tags:
   - name: OktaApplications
     x-displayName: Okta Applications
     description: |
-      <div class="x-lifecycle-container"><x-lifecycle class="lea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></div>The MyAccount Profile API provides operations to view the Okta apps list. Okta creates and maintains Okta apps, or first-party apps, for example, the Admin Console and End-User Dashboard.
+      <div class="x-lifecycle-container"><x-lifecycle class="oie"></x-lifecycle></div>The MyAccount Profile API provides operations to view the Okta apps list. Okta creates and maintains Okta apps, or first-party apps, for example, the Admin Console and End-User Dashboard.
 
       ### API versioning
       A valid API version in the `Accept` header is required to access the API. Current version: `1.0.0`
@@ -78,7 +78,7 @@ tags:
         - Okta Identity Engine
   - name: Organization
     description: |
-      <div class="x-lifecycle-container"><x-lifecycle class="lea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></div>The MyAccount Profile API provides operations to view org details.
+      <div class="x-lifecycle-container"><x-lifecycle class="oie"></x-lifecycle></div>The MyAccount Profile API provides operations to view org details.
 
       ### API versioning
       A valid API version in the `Accept` header is required to access the API. Current version: `1.0.0`
@@ -182,6 +182,12 @@ paths:
             application/json;okta-version=1.0.0:
               schema:
                 $ref: '#/components/schemas/Error'
+        '406':
+          description: Not Acceptable
+          content:
+            application/json;okta-version=1.0.0:
+              schema:
+                $ref: '#/components/schemas/Error406'
       security:
         - oauth2:
             - okta.myAccount.appAuthenticator.manage
@@ -223,6 +229,8 @@ paths:
           description: User denied challenge attempt
         '400':
           description: Bad Request
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security: []
       tags:
         - AppAuthenticator
@@ -287,6 +295,12 @@ paths:
             application/json;okta-version=1.0.0:
               schema:
                 $ref: '#/components/schemas/Error'
+        '406':
+          description: Not Acceptable
+          content:
+            application/json;okta-version=1.0.0:
+              schema:
+                $ref: '#/components/schemas/Error406'
       security:
         - oauth2:
             - okta.myAccount.appAuthenticator.maintenance.manage
@@ -322,6 +336,12 @@ paths:
             application/json;okta-version=1.0.0:
               schema:
                 $ref: '#/components/schemas/Error'
+        '406':
+          description: Not Acceptable
+          content:
+            application/json;okta-version=1.0.0:
+              schema:
+                $ref: '#/components/schemas/Error406'
       security:
         - oauth2:
             - okta.myAccount.appAuthenticator.manage
@@ -357,6 +377,8 @@ paths:
                   $ref: '#/components/examples/GetPendingNotificationsJWTPayload'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.appAuthenticator.maintenance.read
@@ -385,6 +407,8 @@ paths:
           $ref: '#/components/responses/ListAuthenticatorsResponse'
         '403':
           $ref: '#/components/responses/ErrorAccessDenied403'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '429':
           $ref: '#/components/responses/ErrorTooManyRequests429'
       security:
@@ -409,6 +433,8 @@ paths:
           $ref: '#/components/responses/ErrorAccessDenied403'
         '404':
           $ref: '#/components/responses/ErrorResourceNotFound404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '429':
           $ref: '#/components/responses/ErrorTooManyRequests429'
       security:
@@ -436,6 +462,8 @@ paths:
           $ref: '#/components/responses/ErrorAccessDenied403'
         '404':
           $ref: '#/components/responses/ErrorResourceNotFound404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '429':
           $ref: '#/components/responses/ErrorTooManyRequests429'
       security:
@@ -464,6 +492,8 @@ paths:
           $ref: '#/components/responses/ErrorAccessDenied403'
         '404':
           $ref: '#/components/responses/ErrorResourceNotFound404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '429':
           $ref: '#/components/responses/ErrorTooManyRequests429'
       security:
@@ -519,6 +549,12 @@ paths:
             application/json;okta-version=1.0.0:
               schema:
                 $ref: '#/components/schemas/Error'
+        '406':
+          description: Not Acceptable (missing header)
+          content:
+            application/json;okta-version=1.0.0:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
         - oauth2:
             - okta.myAccount.authenticators.manage
@@ -540,6 +576,8 @@ paths:
           $ref: '#/components/responses/Email-Array-Response'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.email.read
@@ -607,6 +645,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '403':
           $ref: '#/components/responses/Error-Email-Response-403'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '409':
           $ref: '#/components/responses/Error-EmailConflict-Response-409'
       security:
@@ -637,6 +677,8 @@ paths:
           $ref: '#/components/responses/Verified-Email-Response'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.email.read
@@ -662,6 +704,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '404':
           $ref: '#/components/responses/Error-EmailResourceNotFound-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.email.manage
@@ -840,6 +884,8 @@ paths:
           $ref: '#/components/responses/Error-Email-Response-403'
         '404':
           $ref: '#/components/responses/Error-EmailResourceNotFound-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.email.manage
@@ -1013,6 +1059,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '404':
           $ref: '#/components/responses/Error-EmailChallengeResourceNotFound-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.email.read
@@ -1075,6 +1123,8 @@ paths:
           $ref: '#/components/responses/Error-Email-Response-403'
         '404':
           $ref: '#/components/responses/Error-EmailChallengeResourceNotFound-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.email.manage
@@ -1099,6 +1149,8 @@ paths:
           $ref: '#/components/responses/OktaApplicationsResponse'
         '400':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.oktaApplications.read
@@ -1120,6 +1172,8 @@ paths:
           $ref: '#/components/responses/OrganizationResponse'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.organization.read
@@ -1137,6 +1191,8 @@ paths:
           $ref: '#/components/responses/Password-Enrolled-Response'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.password.read
@@ -1182,6 +1238,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '403':
           $ref: '#/components/responses/Error-PasswordConflict-Response-409'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.password.manage
@@ -1192,8 +1250,9 @@ paths:
         isGenerallyAvailable: true
     put:
       summary: Replace a Password
-      description: |
-        Replaces the password for the current user
+      description: |-
+        Replaces the password for the current user by resetting it. A password reset doesn't require the user to know the existing password.
+        > **Note:** Azure Active Directory (AD) users don't have permission to reset passwords by default. You need to configure this permission through your AD instance. If you don't have this permission as an AD user, use the [Update a Password](https://developer.okta.com/docs/api/openapi/okta-myaccount/myaccount/tag/Password/#tag/Password/operation/updatePassword) operation.
       operationId: replacePassword
       requestBody:
         content:
@@ -1228,6 +1287,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '403':
           $ref: '#/components/responses/Error-Email-Response-403'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.password.manage
@@ -1250,6 +1311,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '404':
           $ref: '#/components/responses/Error-PasswordResourceNotFound-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.password.manage
@@ -1258,6 +1321,71 @@ paths:
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: true
+  /idp/myaccount/password/change-password:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
+    post:
+      summary: Update a Password
+      description: Updates a password. The user needs to know the current password to change it.
+      operationId: updatePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  example: Abcd1234
+                newPassword:
+                  type: string
+                  example: Abcd12345
+              required:
+                - oldPassword
+                - newPassword
+            examples:
+              Change-Password:
+                value:
+                  oldPassword: Abcd1234
+                  newPassword: Abcd12345
+        description: New password
+      responses:
+        '204':
+          description: No Content
+        '400':
+          $ref: '#/components/responses/Error-InvalidPassword-Reponse-400'
+        '401':
+          $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '403':
+          $ref: '#/components/responses/Error-PasswordChangeForbidden-Response-403'
+      security:
+        - oauth2:
+            - okta.myAccount.password.manage
+      tags:
+        - Password
+  /idp/myaccount/password/complexity-requirements:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
+    get:
+      summary: Retrieve the Password Complexity Requirements
+      description: Retrieves the password complexity requirements for the current user
+      operationId: getPasswordRequirements
+      responses:
+        '200':
+          $ref: '#/components/responses/PasswordRequirements-Retrieval-Response'
+        '401':
+          $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+      security:
+        - oauth2:
+            - okta.myAccount.password.read
+      tags:
+        - Password
   /idp/myaccount/phones:
     get:
       summary: List all Phones
@@ -1268,6 +1396,8 @@ paths:
           $ref: '#/components/responses/Phone-Array-Response'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.phone.read
@@ -1324,6 +1454,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '403':
           $ref: '#/components/responses/Error-CreateChallengeVerify-Phone-Response-403'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '409':
           $ref: '#/components/responses/Error-PhoneNumberExists-Response-409'
         '500':
@@ -1356,6 +1488,8 @@ paths:
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
         '404':
           $ref: '#/components/responses/Error-InvalidFactorId-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.phone.read
@@ -1379,6 +1513,8 @@ paths:
           $ref: '#/components/responses/Error-Delete-Phone-Response-403'
         '404':
           $ref: '#/components/responses/Error-InvalidFactorId-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.phone.manage
@@ -1444,6 +1580,8 @@ paths:
           $ref: '#/components/responses/Error-CreateChallengeVerify-Phone-Response-403'
         '404':
           $ref: '#/components/responses/Error-InvalidFactorId-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '500':
           $ref: '#/components/responses/Error-FailedToSendOutOfBandChallenge-Response-500'
       security:
@@ -1502,6 +1640,8 @@ paths:
           $ref: '#/components/responses/Error-CreateChallengeVerify-Phone-Response-403'
         '404':
           $ref: '#/components/responses/Error-InvalidFactorId-Response-404'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
         '409':
           $ref: '#/components/responses/Error-InvalidTransaction-Response-409'
       security:
@@ -1523,6 +1663,8 @@ paths:
           $ref: '#/components/responses/Profile-Retrieval-Response'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.profile.read
@@ -1583,6 +1725,8 @@ paths:
           $ref: '#/components/responses/Error-UpdateProfile-Response-400'
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.profile.manage
@@ -1646,6 +1790,8 @@ paths:
                         href: https://example.okta.com/idp/myaccount/profile
         '401':
           $ref: '#/components/responses/Error-IdpMyAccountNotEnabled-Response-401'
+        '406':
+          $ref: '#/components/responses/ErrorNotAcceptable406'
       security:
         - oauth2:
             - okta.myAccount.profile.read
@@ -1678,6 +1824,12 @@ paths:
             application/json;okta-version=1.0.0:
               schema:
                 $ref: '#/components/schemas/Error'
+        '406':
+          description: Not Acceptable
+          content:
+            application/json;okta-version=1.0.0:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
         - oauth2:
             - okta.myAccount.sessions.manage
@@ -1705,6 +1857,11 @@ components:
                 - GET
           enrollments:
             href: https://sampleorg.okta.com/idp/myaccount/authenticators/aut3jiaiZukD4Ta0Z0g5/enrollments
+            hints:
+              allow:
+                - GET
+          requirements:
+            href: https://sampleorg.okta.com/idp/myaccount/password/complexity-requirements
             hints:
               allow:
                 - GET
@@ -1856,6 +2013,14 @@ components:
         errorLink: E0000006
         errorId: sampleNUSD_8fdkFd8fs8SDBK
         errorCauses: []
+    ErrorNotAcceptable:
+      summary: Not Acceptable
+      value:
+        errorCode: E0000149
+        errorSummary: The HTTP request is not acceptable
+        errorLink: E0000149
+        errorId: sampleXIg7wJviL5zXm5wRCWB
+        errorCauses: []
     ErrorResourceNotFound:
       summary: Resource Not Found
       value:
@@ -1967,6 +2132,11 @@ components:
               hints:
                 allow:
                   - GET
+            requirements:
+              href: https://sampleorg.okta.com/idp/myaccount/password/complexity-requirements
+              hints:
+                allow:
+                  - GET
         - id: aut3jiaiZukD4Ta0Z0g5
           key: webauthn
           name: Security Key or Biometric
@@ -2055,6 +2225,11 @@ components:
               hints:
                 allow:
                   - GET
+            requirements:
+              href: https://sampleorg.okta.com/idp/myaccount/password/complexity-requirements
+              hints:
+                allow:
+                  - GET
           _embedded:
             enrollments:
               - id: lae9bw3rvnO03wAbx0g4
@@ -2078,6 +2253,22 @@ components:
                     hints:
                       allow:
                         - GET
+            requirements:
+              description: 'Password requirements: at least 8 characters, a lowercase letter, an uppercase letter, a number, no parts of your username. Your password cannot be any of your last 4 password(s).'
+              complexity:
+                minLength: 8
+                minLowerCase: 1
+                minUpperCase: 1
+                minNumber: 1
+                minSymbol: 0
+                excludeUsername: true
+                excludeAttributes: []
+              _links:
+                self:
+                  href: https://example.okta.com/idp/myaccount/password/complexity-requirements
+                  hints:
+                    allow:
+                      - GET
         - id: aut3jiaiZukD4Ta0Z0g5
           key: webauthn
           name: Security Key or Biometric
@@ -2340,6 +2531,15 @@ components:
           examples:
             ResourceNotFound:
               $ref: '#/components/examples/ErrorResourceNotFound'
+    ErrorNotAcceptable406:
+      description: Not Acceptable (missing header)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error406'
+          examples:
+            NotAcceptable:
+              $ref: '#/components/examples/ErrorNotAcceptable'
     ErrorTooManyRequests429:
       description: Too Many Requests
       content:
@@ -2725,6 +2925,30 @@ components:
                         - GET
                         - DELETE
                         - PUT
+    PasswordRequirements-Retrieval-Response:
+      description: Example response
+      content:
+        application/json;okta-version=1.0.0:
+          schema:
+            $ref: '#/components/schemas/PasswordResponse'
+          examples:
+            Success-Response:
+              value:
+                description: 'Password requirements: at least 8 characters, a lowercase letter, an uppercase letter, a number, no parts of your username. Your password cannot be any of your last 4 password(s).'
+                complexity:
+                  minLength: 8
+                  minLowerCase: 1
+                  minUpperCase: 1
+                  minNumber: 1
+                  minSymbol: 0
+                  excludeUsername: true
+                  excludeAttributes: []
+                _links:
+                  self:
+                    href: https://example.okta.com/idp/myaccount/password/complexity-requirements
+                    hints:
+                      allow:
+                        - GET
     Profile-Retrieval-Response:
       description: Example response
       content:
@@ -3155,7 +3379,21 @@ components:
                 errorLink: E0000001
                 errorId: oaejUwz8U5FQ_SyggQwz1kC3w
                 errorCauses:
-                  - errorSummary: Invalid password.
+                  - errorSummary: 'password: Password requirements were not met. Password requirements: at least 8 characters, a lowercase letter, an uppercase letter, a number, no parts of your username. Your password cannot be any of your last 4 password(s).'
+    Error-PasswordChangeForbidden-Response-403:
+      description: Forbidden
+      content:
+        application/json;okta-version=1.0.0:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            MFA-Assurance-Not-Satisfied:
+              value:
+                errorCode: E0000006
+                errorSummary: You do not have permission to perform the requested action
+                errorLink: E0000006
+                errorId: oaeU_LZTT_sRLq7wYflfRspDw
+                errorCauses: []
     Error-PasswordConflict-Response-409:
       description: Conflict
       content:
@@ -3634,6 +3872,30 @@ components:
           type: string
           description: A natural language explanation of the error
           example: Bad request because XYZ is missing.
+          readOnly: true
+    Error406:
+      description: Not Acceptable error object
+      type: object
+      properties:
+        errorCauses:
+          type: string
+          description: Missing or incorrect `Accept` header
+          readOnly: true
+        errorCode:
+          type: string
+          description: E0000149
+          readOnly: true
+        errorId:
+          type: string
+          description: sampleH3iLB6bpBcbnV9E09Fy
+          readOnly: true
+        errorLink:
+          type: string
+          description: E0000149
+          readOnly: true
+        errorSummary:
+          type: string
+          description: The HTTP request is not acceptable
           readOnly: true
     HrefObject:
       title: Link object

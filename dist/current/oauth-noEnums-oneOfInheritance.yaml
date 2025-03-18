@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Okta OpenID Connect & OAuth 2.0
-  version: 2025.01.1
+  version: 2.0.0
   description: OAuth 2.0 Protocol APIs
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -4075,7 +4075,7 @@ components:
           type: string
           description: URL of the authorization server's authorization endpoint.
         backchannel_authentication_request_signing_alg_values_supported:
-          description: <div class="x-lifecycle-container"><x-lifecycle class="lea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></div>A list of signing algorithms that this authorization server supports for signed requests.
+          description: <div class="x-lifecycle-container"><x-lifecycle class="oie"></x-lifecycle></div>A list of signing algorithms that this authorization server supports for signed requests.
           type: array
           items:
             $ref: '#/components/schemas/SigningAlgorithm'
@@ -4085,7 +4085,7 @@ components:
             SKUs:
               - Okta Identity Engine
         backchannel_token_delivery_modes_supported:
-          description: <div class="x-lifecycle-container"><x-lifecycle class="lea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></div>The delivery modes that this authorization server supports for Client-Initiated Backchannel Authentication.
+          description: <div class="x-lifecycle-container"><x-lifecycle class="oie"></x-lifecycle></div>The delivery modes that this authorization server supports for Client-Initiated Backchannel Authentication.
           type: array
           items:
             $ref: '#/components/schemas/TokenDeliveryMode'
@@ -4462,7 +4462,7 @@ components:
           properties:
             auth_req_id:
               type: string
-              description: <div class="x-lifecycle-container"><x-lifecycle class="lea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></div>The value is what was returned from `/bc/authorize`.
+              description: <div class="x-lifecycle-container"><x-lifecycle class="oie"></x-lifecycle></div>The value is what was returned from `/bc/authorize`.
               x-okta-lifecycle:
                 lifecycle: LIMITED_GA
                 isGenerallyAvailable: false
