@@ -40,3 +40,11 @@ All of our management SDKs must be built from this spec.
 If you notice any issues with the spec files while working with any of our
 management SDKs, please open a Github issue in the corresponding management SDK
 repo, it would be triaged from there.
+
+## Bump.sh integration
+
+Run script deploy-all.sh to populate demo hub https://bump.sh/christophedujarric/hub/okta on Bump.sh
+
+* idp-{branch}.yml -> https://bump.sh/christophedujarric/hub/okta/doc/github-idp/
+* management-{branch}.yml -> https://bump.sh/christophedujarric/hub/okta/doc/github-management/
+* oauth-{branch}.yml -> https://bump.sh/christophedujarric/hub/okta/doc/github-oauth/
