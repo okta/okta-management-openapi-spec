@@ -45,3 +45,5 @@ workflows:
               only:
                 - master
                 - main
+          context:
+            - static-analysis
