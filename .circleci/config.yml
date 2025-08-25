@@ -40,10 +40,5 @@ workflows:
             - build
       - snyk-scan:
           name: execute-snyk
-          filters:
-            branches:
-              only:
-                - master
-                - main
           context:
             - static-analysis
