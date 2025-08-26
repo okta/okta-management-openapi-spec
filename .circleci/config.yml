@@ -1,13 +1,49 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 version: 2.1
 
 orbs:
-  general-platform-helpers: okta/general-platform-helpers@1.9
+  python: circleci/python@2.1.1
+  platform-helpers-general: okta/general-platform-helpers@1.8
+  platform-helpers: okta/platform-helpers@1
+  aws-cli: circleci/aws-cli@5.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  snyk-scan:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - attach_workspace: 
+          at: ~/project 
+      - platform-helpers-general/step-load-dependencies
+      - platform-helpers-general/step-run-snyk-monitor:
+          scan-all-projects: true
+          skip-unresolved: false
+          run-on-non-main: true
 
 workflows:
-  # See OKTA-624828 
-  semgrep:
+  "Malware Scanner":
     jobs:
-      - general-platform-helpers/job-semgrep-scan:
-          name: "Scan with Semgrep"
+      - build
+      - platform-helpers/job-reversinglabs-scan:
+          context:
+            - static-analysis
+          requires:
+            - build
+      - snyk-scan:
+          name: execute-snyk
+          filters:
+            branches:
+              only:
+                - master
+                - main
           context:
             - static-analysis
