@@ -1,13 +1,5 @@
 version: 2.1
 
 orbs:
-  general-platform-helpers: okta/general-platform-helpers@1.9
 
 workflows:
-  # See OKTA-624828 
-  semgrep:
-    jobs:
-      - general-platform-helpers/job-semgrep-scan:
-          name: "Scan with Semgrep"
-          context:
-            - static-analysis
