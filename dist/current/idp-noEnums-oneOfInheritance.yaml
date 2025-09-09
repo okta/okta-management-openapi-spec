@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: MyAccount Management
-  version: 2.0.0
+  version: 2025.08.2
   description: |-
     APIs for managing a user's own emails, phones, profile, and app authenticators.
     > **Note:** The MyAccount API doesn't support [delegated authentication](https://help.okta.com/okta_help.htm?id=ext_Security_Authentication).
@@ -2155,6 +2155,8 @@ components:
         created: '2023-05-01T14:24:54.000Z'
         lastChallenged: '2023-06-01T13:44:54.000Z'
         canReset: true
+        canChangePassword: true
+        canResetPassword: true
         canUnenroll: false
         _links:
           self:
@@ -2429,6 +2431,8 @@ components:
                 created: '2023-08-10T20:11:55.000Z'
                 canUnenroll: false
                 canReset: true
+                canChangePassword: true
+                canResetPassword: false
                 links:
                   self:
                     href: https://sampleorg.okta.com/idp/myaccount/authenticators/aut3ji4zFcHpwBlic0g5/enrollments/lae9bw3rvnO03wAbx0g4
@@ -2437,11 +2441,6 @@ components:
                         - GET
                   authenticator:
                     href: https://sampleorg.okta.com/idp/myaccount/authenticators/aut3ji4zFcHpwBlic0g5
-                    hints:
-                      allow:
-                        - GET
-                  modify:
-                    href: https://sampleorg.okta.com/idp/authenticators/aut3ji4zFcHpwBlic0g5/modify
                     hints:
                       allow:
                         - GET
@@ -3992,10 +3991,18 @@ components:
       description: Authenticator enrollment of the current user
       type: object
       properties:
+        canChangePassword:
+          type: boolean
+          description: Whether the user has permission to perform a password change operation as determined by their password policy
+          readOnly: true
         canReset:
           type: boolean
           description: Whether the authenticator enrollment can be reset
           readOnly: true
+          deprecated: true
+        canResetPassword:
+          type: boolean
+          description: Whether the user has permission to perform a password reset operation, as determined by their password policy and password source. If `canResetPassword` is false, the [`modify`](https://developer.okta.com/docs/api/openapi/okta-myaccount/myaccount/tag/Authenticators/#tag/Authenticators/operation/listAuthenticators!c=200&path=_embedded/enrollments/_links/modify&t=response) object isn't returned in the `_links` object.
         canUnenroll:
           type: boolean
           description: Whether the authenticator can be unenrolled
