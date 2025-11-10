@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: MyAccount Management
-  version: 2.0.0
+  version: 2025.11.0
   description: |-
     APIs for managing a user's own emails, phones, profile, and app authenticators.
     > **Note:** The MyAccount API doesn't support [delegated authentication](https://help.okta.com/okta_help.htm?id=ext_Security_Authentication).
@@ -163,7 +163,10 @@ paths:
   /idp/myaccount/app-authenticators:
     post:
       summary: Create an App Authenticator Enrollment
-      description: Creates an app authenticator enrollment
+      description: |-
+        Creates an app authenticator enrollment
+
+        > **Note:** The `okta.myAccount.appAuthenticator.manage` scope always enforces the Okta account management policy, regardless of whether end users have selected Keep me signed in (KMSI). This means that your Okta account management policy always applies to app authenticators that are created with this scope.
       operationId: createAppAuthenticatorEnrollment
       requestBody:
         content:
@@ -2155,6 +2158,8 @@ components:
         created: '2023-05-01T14:24:54.000Z'
         lastChallenged: '2023-06-01T13:44:54.000Z'
         canReset: true
+        canChangePassword: true
+        canResetPassword: true
         canUnenroll: false
         _links:
           self:
@@ -2350,7 +2355,7 @@ components:
                 allow:
                   - GET
     ListAuthenticatorsExpandExample:
-      summary: List all authenticators with embedded enrollments using the `expand=enrollments` query parameter
+      summary: List all authenticators with embedded enrollments using the `expand=enrollments,requirements` query parameter
       value:
         - id: aut3ji50IyerHHpCa0g5
           key: okta_email
@@ -2429,6 +2434,8 @@ components:
                 created: '2023-08-10T20:11:55.000Z'
                 canUnenroll: false
                 canReset: true
+                canChangePassword: true
+                canResetPassword: false
                 links:
                   self:
                     href: https://sampleorg.okta.com/idp/myaccount/authenticators/aut3ji4zFcHpwBlic0g5/enrollments/lae9bw3rvnO03wAbx0g4
@@ -2437,11 +2444,6 @@ components:
                         - GET
                   authenticator:
                     href: https://sampleorg.okta.com/idp/myaccount/authenticators/aut3ji4zFcHpwBlic0g5
-                    hints:
-                      allow:
-                        - GET
-                  modify:
-                    href: https://sampleorg.okta.com/idp/authenticators/aut3ji4zFcHpwBlic0g5/modify
                     hints:
                       allow:
                         - GET
@@ -2700,10 +2702,23 @@ components:
     queryExpandAuthenticator:
       name: expand
       in: query
-      description: Optional additional items to return in the `_embedded` object. Currently supports the value `enrollments`.
+      description: Includes associated authenticator details in the `_embedded` attribute
       schema:
         type: string
         example: enrollments
+        enum:
+          - enrollments
+          - requirements
+        x-enumDescriptions:
+          enrollments: Returns the list of authenticator enrollments associated with the authenticator
+          requirements: Returns the list of password requirements associated with the authenticator
+      examples:
+        AuthenticatorEnrollmentDetails:
+          summary: Expand to include authenticator enrollment details
+          value: enrollments
+        AuthenticatorPasswordRequirements:
+          summary: Expand to include password requirements
+          value: requirements
     webauthnEnrollmentId:
       name: id
       in: path
@@ -3992,10 +4007,18 @@ components:
       description: Authenticator enrollment of the current user
       type: object
       properties:
+        canChangePassword:
+          type: boolean
+          description: Whether the user has permission to perform a password change operation as determined by their password policy
+          readOnly: true
         canReset:
           type: boolean
           description: Whether the authenticator enrollment can be reset
           readOnly: true
+          deprecated: true
+        canResetPassword:
+          type: boolean
+          description: Whether the user has permission to perform a password reset operation, as determined by their password policy and password source. If `canResetPassword` is false, the [`modify`](https://developer.okta.com/docs/api/openapi/okta-myaccount/myaccount/tag/Authenticators/#tag/Authenticators/operation/listAuthenticators!c=200&path=_embedded/enrollments/_links/modify&t=response) object isn't returned in the `_links` object.
         canUnenroll:
           type: boolean
           description: Whether the authenticator can be unenrolled
