@@ -22676,7 +22676,7 @@ paths:
 
         A subset of users can be returned that match a supported filter expression or search criteria. Different results are returned depending on specified queries in the request.
 
-        > **Notes:** 
+        > **Notes:**
         >  * This operation omits users that have a status of `DEPROVISIONED` in the response. To return all users, use a filter or search query instead.
         >  * The `search` parameter results are sourced from an eventually consistent datasource and may not reflect the latest information.
       operationId: listUsers
@@ -81627,7 +81627,7 @@ components:
           description: |-
             The ID of the user type. Add this value if you want to create a user with a non-default [User Type](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/).
             The user type determines which [schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After a user has been created, the user can
-            only be assigned a different user type by an admin through a full replacement (`PUT`) operation. 
+            only be assigned a different user type by an admin through a full replacement (`PUT`) operation.
           properties:
             id:
               type: string
@@ -84009,7 +84009,7 @@ components:
         _links:
           $ref: '#/components/schemas/LinksSelf'
     WebAuthnRpId:
-      description: The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: false

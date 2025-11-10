@@ -26723,6 +26723,22 @@ components:
       example: 00gsl4xM9ys8TdnbZ0g4 or GROUPEXT123456784C2IF
       schema:
         type: string
+    pathIdentitySourceExternalId:
+      name: externalId
+      in: path
+      required: true
+      description: The external ID of the identity source group
+      example: GROUPEXT123456784C2IF
+      schema:
+        type: string
+    pathIdentitySourceGroupOrExternalId:
+      name: groupOrExternalId
+      in: path
+      required: true
+      description: The Okta group ID or external ID of the identity source group
+      example: 00gsl4xM9ys8TdnbZ0g4 or GROUPEXT123456784C2IF
+      schema:
+        type: string
     pathIdentitySourceId:
       name: identitySourceId
       in: path
@@ -50508,7 +50524,7 @@ components:
           description: |-
             The ID of the user type. Add this value if you want to create a user with a non-default [User Type](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/).
             The user type determines which [schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After a user has been created, the user can
-            only be assigned a different user type by an admin through a full replacement (`PUT`) operation. 
+            only be assigned a different user type by an admin through a full replacement (`PUT`) operation.
           properties:
             id:
               type: string

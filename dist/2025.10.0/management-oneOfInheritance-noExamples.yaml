@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 2025.11.0
+  version: 2025.10.0
   x-logo:
     url: logo.svg
     backgroundColor: transparent
@@ -130,13 +130,13 @@ tags:
         * SSO and provisioning
   - name: AssociatedDomainCustomizations
     x-okta-lifecycle:
-      lifecycle: LIMITED_GA
+      lifecycle: EA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
     x-displayName: Associated Domain Customizations
     description: |-
-      <x-lifecycle-container><x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>The Associated Domain Customizations API provides operations to manage associated domain customizations in your org. You can create associations between your custom domains and three well-known endpoints:
+      <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>The Associated Domain Customizations API provides operations to manage associated domain customizations in your org. You can create associations between your custom domains and three well-known endpoints:
       * `/.well-known/apple-app-site-association`
       * `/.well-known/assetlinks.json`
       * `/.well-known/webauthn`
@@ -348,8 +348,8 @@ tags:
   - name: GovernanceBundle
     x-displayName: IAM Governance Bundles
     description: |-
-      The IAM Governance Bundle API provides operations for managing governance entitlement bundles, including roles and resources associated with the bundles, for the Admin Console.
-      For details on governance bundles for the Admin Console, see [Govern Okta admin roles](https://help.okta.com/okta_help.htm?type=oie&id=csh-governance-admin-roles) and [Entitlement Management](https://help.okta.com/okta_help.htm?type=oie&id=ext-entitlement-mgt).
+      These APIs allow you to manage governance bundles for the Admin Console, and manage roles and resources associated with the bundles.
+      For details on how governance bundles are supported from the Resource Management Access Platform (RAMP), see [Entitlement Management](https://help.okta.com/oie/en-us/content/topics/identity-governance/em/entitlement-mgt.htm).
   - name: Group
     x-displayName: Groups
     description: The Groups API provides operations to manage Okta groups and their user members in your org.
@@ -897,7 +897,7 @@ tags:
       If you're not sure which solution you're using, check the footer on any page of the Admin Console. The version number is appended with E for Identity Engine orgs and C for Classic Engine orgs.
   - name: User
     x-displayName: Users
-    description: "The Users API provides operations to manage users in your organization.\n> **Note:** Some of the curl code examples on this page include SSWS API token authentication. However, Okta recommends using scoped OAuth 2.0 and OIDC access tokens to authenticate with Okta management APIs.\n> OAuth 2.0 and OIDC access tokens provide fine-grain control over the bearer's actions on specific endpoints. See [Okta API authentication methods](https://developer.okta.com/docs/api/openapi/okta-oauth/guides/overview/).\n\n### User status\nThe following diagram shows the flow of user status:\n![STAGED, PROVISIONED, ACTIVE, RECOVERY, LOCKED_OUT, PASSWORD_EXPIRED, or DEPROVISIONED](../../../../../images/users/okta-user-status.png)\n\n### User creation scenarios\n\n The following table describes the user experience and expectation of user status and welcome screen, depending on which options (security question and answer, password, and activate query) are defined during user creation.\n\n  **User creation details and outcomes**\n\n  | Security Q & A   | Password   | Activate Query Parameter   | User Status                | Login Credential                | Welcome Screen   |\n  |     -----        |  --------  |  ------------------------  |  -------------             |  ----------------------         |  --------------  |\n  |                  |            | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  | X                |            | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  |                  | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  | X          | TRUE                       | `ACTIVE`                   | Password                        | X                |\n  | X                | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                | X          | TRUE                       | `ACTIVE`                   | Password                        |                  |\n\nCreating users with a `FEDERATION` or `SOCIAL` provider sets the user status to either `ACTIVE` or `STAGED` based on the `activate` query parameter since these two providers don't support a `password` or `recovery_question` credential.\n\nMore information about the use cases are in the following sections and in the examples for [Create a user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/createUser).\n\n#### Create user with optional password\n\nWhen making the password optional, the user status following user creation can be affected by the enrollment policy. See [Create an authenticator enrollment policy](https://help.okta.com/okta_help.htm?type=oie&id=ext-create-mfa-policy).\n\nBased on the group memberships that are specified when the user is created, a password may or may not be required to make the user's status `ACTIVE`. The groups assigned to the user determines the enrollment policy applied to the user. If the enrollment policy has the password authenticator set to `required`, then the user's status is determined by if the user is created with a password:\n\n* Created with a password - the user status is set to `PROVISIONED` and a One-Time Token is sent to the user through email\n* Created without a password - the user status is set to `ACTIVE` and they can immediately sign in using their password authenticator\n\nIf the user doesn't have an enrolled authenticator, Okta sets the user to `PROVISIONED` and sends an activation link. The user must click the activation link before they can sign in. The activation link provides a baseline assurance that can be used to enroll in other authenticators. If the user has one or more enrolled authenticators at activation time, they're set to `ACTIVE` and can sign in directly.\n\nSee [Passwordless authentication](https://help.okta.com/okta_help.htm?type=oie&id=ext-passwordless-auth) in the help documentation.\n\n#### Create user without credentials\n\nCreates a user without a `password` or a recovery `question` and `answer`.\n\nIf appropriate, when the user is activated, an email is sent to the user with an activation token that the user can use to complete the activation process.\n\nThis is the default flow for new user registration using the Admin Console.\n\n#### Create user with recovery question\n\nCreates a user without a `password`.\n\nWhen the user is activated, an email is sent to the user with an activation token that can be used to complete the activation process.\nThis flow is useful if migrating users from an existing user store.\n\n#### Create user with password\n\nCreates a user without a recovery `question` and `answer`.\n\nThe new user is able to sign in after activation with the assigned password. This flow is common when developing a custom user registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should sign in with their assigned password.\n\n> **Note:** You can also use this scenario to create a user without sending an activation email. See this [Knowledge Base article](https://support.okta.com/help/s/article/How-to-Avoid-Sending-a-Welcome-Email?language=en_US#:~:text=For%20users%20imported%20from%20the,t%20send%20new%20user%20activation).\n\n#### Create user with imported hashed password\n\nCreates a user with a specified hashed password.\n\nThe new user is able to sign in after activation with the specified password.\n\nThis flow is common when migrating users from another data store in cases where we want to allow the users to retain their current passwords.\n> **Important:** Do not generate or send a one-time activation token when activating users with an imported password. Users should login with their imported password.\n\n#### Create user with password import inline hook\n\nCreates a user with a `Password Hook` object specifying that a password inline hook should be used to handle password verification.\n\nThe password inline hook is triggered to handle verification of the end user's password the first time the user tries to sign in, with Okta calling the password inline hook to check that the password the user supplied is valid. If the password is valid, Okta stores the hash of the password that was provided and can authenticate the user independently from then on. See [Create a password import inline hook](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/InlineHook/#tag/InlineHook/operation/createPasswordImportInlineHook) for more details.\n\nThe new user is able to sign in after activation with the valid password. This flow supports migrating users from another data store in cases where we wish to allow the users to retain their current passwords.\n> **Important:** Don't generate or send a one-time activation token when activating users with an password inline hook. Users should sign in with their existing password to be imported using the password import inline hook.\n\n#### Create user with password and recovery question\n\nCreates a new user with a password and recovery `question` and `answer`.\n\nThe new user is able to log in with the assigned password after activation. This flow is common when developing a custom user-registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should login with their assigned password.\n\n#### Create user with authentication provider\n\nCreates a new passwordless user with a `SOCIAL` or `FEDERATION` authentication provider that must be authenticated through a trusted identity provider.\n\n#### Create user in group\n\nCreates a user that is added to the specified groups upon creation.\n\nUse this in conjunction with other create operations for a group admin that's scoped to create users only in specified groups. The request can specify up to 20 group IDs. (This limit applies only when creating a user. You can add the user later to more groups.)\n\n#### Create user with non-default user type\n\nCreates a user with a specified user type. You can include the type specification with any of the above Create user operations. This example demonstrates creating a user without credentials.\nThe user type determines which [Schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After you create a user, you can assign the user a different user type using the full replacement [PUT operation](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/#tag/UserType/operation/replaceUserType).\n\n### Links object\n\nThe links object specifies link relations. See [`_links`](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers!c=200&path=_links&t=response).\n\n> **Note:** This links object is different from [linked objects](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/LinkedObject/).\n\n#### Individual users versus collection of users\n\nFor an individual user result, the links object contains a full set of link relations available for that user as determined by your policies. For a collection of users, the links object contains only the `self` link. Operations that return a collection of users include [List all users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers) and [List all member users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Group/#tag/Group/operation/listGroupUsers).\n\nThe following table shows some links that may be available on a user, as determined by your policies:\n\n|   Link Relation Type   |                                                  Description                                                                                                                        |\n|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n|self\t                   |  A self-referential link to this user                                                                                                                                               |\n|activate\t               |  Lifecycle action to [activate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/activateUser)                                           |\n|deactivate              |\tLifecycle action to [deactivate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/deactivateUser)                                       |\n|suspend                 |\tLifecycle action to [suspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/suspendUser)                                             |\n|unsuspend               |\tLifecycle action to [unsuspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unsuspendUser)                                         |\n|resetPassword           |\tLifecycle action to [trigger a password reset](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/resetPassword)                                             |\n|expirePassword          |\tLifecycle action to [expire the user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/expirePassword)                                          |\n|resetFactors            |\tLifecycle action to [reset all MFA factors](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/resetFactors)                                       |\n|unlock                  |\tLifecycle action to [unlock a locked-out user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unlockUser)                                      |\n|forgotPassword          |\t[Resets a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/forgotPassword) by validating the user's recovery credential.                  |\n|changePassword          |\t[Changes a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changePassword) validating the user's current password                        |\n|changeRecoveryQuestion  |\t[Changes a user's recovery credential](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changeRecoveryQuestion) by validating the user's current password  |"
+    description: "The Users API provides operations to manage users in your organization.\n> **Note:** Some of the curl code examples on this page include SSWS API token authentication. However, Okta recommends using scoped OAuth 2.0 and OIDC access tokens to authenticate with Okta management APIs.\n> OAuth 2.0 and OIDC access tokens provide fine-grain control over the bearer's actions on specific endpoints. See [Okta API authentication methods](https://developer.okta.com/docs/api/openapi/okta-oauth/guides/overview/).\n\n### User status\nThe following diagram shows the flow of user status:\n![STAGED, PROVISIONED, ACTIVE, RECOVERY, LOCKED_OUT, PASSWORD_EXPIRED, or DEPROVISIONED](../../../../../images/users/okta-user-status.png)\n\n### User creation scenarios\n\n The following table describes the user experience and expectation of user status and welcome screen, depending on which options (security question and answer, password, and activate query) are defined during user creation.\n\n  **User creation details and outcomes**\n\n  | Security Q & A   | Password   | Activate Query Parameter   | User Status                | Login Credential                | Welcome Screen   |\n  |     -----        |  --------  |  ------------------------  |  -------------             |  ----------------------         |  --------------  |\n  |                  |            | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  | X                |            | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  |                  | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  | X          | TRUE                       | `ACTIVE`                   | Password                        | X                |\n  | X                | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                | X          | TRUE                       | `ACTIVE`                   | Password                        |                  |\n\nCreating users with a `FEDERATION` or `SOCIAL` provider sets the user status to either `ACTIVE` or `STAGED` based on the `activate` query parameter since these two providers don't support a `password` or `recovery_question` credential.\n\nMore information about the use cases are in the following sections and in the examples for [Create a user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/createUser).\n\n#### Create user with optional password\n\nWhen making the password optional, the user status following user creation can be affected by the enrollment policy. See [Create an authenticator enrollment policy](https://help.okta.com/okta_help.htm?type=oie&id=ext-create-mfa-policy).\n\nBased on the group memberships that are specified when the user is created, a password may or may not be required to make the user's status `ACTIVE`. The groups assigned to the user determines the enrollment policy applied to the user. If the enrollment policy has the password authenticator set to `required`, then the user's status is determined by if the user is created with a password:\n\n* Created with a password - the user status is set to `PROVISIONED` and a One-Time Token is sent to the user through email\n* Created without a password - the user status is set to `ACTIVE` and they can immediately sign in using their password authenticator\n\nIf the user doesn't have an enrolled authenticator, Okta sets the user to `PROVISIONED` and sends an activation link. The user must click the activation link before they can sign in. The activation link provides a baseline assurance that can be used to enroll in other authenticators. If the user has one or more enrolled authenticators at activation time, they're set to `ACTIVE` and can sign in directly.\n\nSee [Passwordless authentication](https://help.okta.com/okta_help.htm?type=oie&id=ext-passwordless-auth) in the help documentation.\n\n#### Create user without credentials\n\nCreates a user without a `password` or a recovery `question` and `answer`.\n\nIf appropriate, when the user is activated, an email is sent to the user with an activation token that the user can use to complete the activation process.\n\nThis is the default flow for new user registration using the Admin Console.\n\n#### Create user with recovery question\n\nCreates a user without a `password`.\n\nWhen the user is activated, an email is sent to the user with an activation token that can be used to complete the activation process.\nThis flow is useful if migrating users from an existing user store.\n\n#### Create user with password\n\nCreates a user without a recovery `question` and `answer`.\n\nThe new user is able to sign in after activation with the assigned password. This flow is common when developing a custom user registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should sign in with their assigned password.\n\n> **Note:** You can also use this scenario to create a user without sending an activation email. See this [Knowledge Base article](https://support.okta.com/help/s/article/How-to-Avoid-Sending-a-Welcome-Email?language=en_US#:~:text=For%20users%20imported%20from%20the,t%20send%20new%20user%20activation).\n\n#### Create user with imported hashed password\n\nCreates a user with a specified hashed password.\n\nThe new user is able to sign in after activation with the specified password.\n\nThis flow is common when migrating users from another data store in cases where we want to allow the users to retain their current passwords.\n> **Important:** Do not generate or send a one-time activation token when activating users with an imported password. Users should login with their imported password.\n\n#### Create user with password import inline hook\n\nCreates a user with a `Password Hook` object specifying that a password inline hook should be used to handle password verification.\n\nThe password inline hook is triggered to handle verification of the end user's password the first time the user tries to sign in, with Okta calling the password inline hook to check that the password the user supplied is valid. If the password is valid, Okta stores the hash of the password that was provided and can authenticate the user independently from then on. See [Create a password import inline hook](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/InlineHook/#tag/InlineHook/operation/createPasswordImportInlineHook) for more details.\n\nThe new user is able to sign in after activation with the valid password. This flow supports migrating users from another data store in cases where we wish to allow the users to retain their current passwords.\n> **Important:** Don't generate or send a one-time activation token when activating users with an password inline hook. Users should sign in with their existing password to be imported using the password import inline hook.\n\n#### Create user with password and recovery question\n\nCreates a new user with a password and recovery `question` and `answer`.\n\nThe new user is able to log in with the assigned password after activation. This flow is common when developing a custom user-registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should login with their assigned password.\n\n#### Create user with authentication provider\n\nCreates a new passwordless user with a `SOCIAL` or `FEDERATION` authentication provider that must be authenticated through a trusted identity provider.\n\n#### Create user in group\n\nCreates a user that is added to the specified groups upon creation.\n\nUse this in conjunction with other create operations for a group admin that's scoped to create users only in specified groups. The request can specify up to 20 group IDs. (This limit applies only when creating a user. You can add the user later to more groups.)\n\n#### Create user with non-default user type\n\nCreates a user with a specified user type. See [User Types](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/). You can include the type specification with any of the above Create user operations. This example demonstrates creating a user without credentials.\nThe user type determines which [Schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After you create a user, you can assign the user a different user type using the full replacement [PUT operation](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/#tag/UserType/operation/updateUserType).\n\n### Links object\n\nThe links object specifies link relations. See [`_links`](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers!c=200&path=_links&t=response).\n\n> **Note:** This links object is different from [linked objects](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/LinkedObject/).\n\n#### Individual users versus collection of users\n\nFor an individual user result, the links object contains a full set of link relations available for that user as determined by your policies. For a collection of users, the links object contains only the `self` link. Operations that return a collection of users include [List all users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers) and [List all member users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Group/#tag/Group/operation/listGroupUsers).\n\nThe following table shows some links that may be available on a user, as determined by your policies:\n\n|   Link Relation Type   |                                                  Description                                                                                                                        |\n|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n|self\t                   |  A self-referential link to this user                                                                                                                                               |\n|activate\t               |  Lifecycle action to [activate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/activateUser)                                           |\n|deactivate              |\tLifecycle action to [deactivate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/deactivateUser)                                       |\n|suspend                 |\tLifecycle action to [suspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/suspendUser)                                             |\n|unsuspend               |\tLifecycle action to [unsuspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unsuspendUser)                                         |\n|resetPassword           |\tLifecycle action to [trigger a password reset](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/resetPassword)                                             |\n|expirePassword          |\tLifecycle action to [expire the user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/expirePassword)                                          |\n|resetFactors            |\tLifecycle action to [reset all MFA factors](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/resetFactors)                                       |\n|unlock                  |\tLifecycle action to [unlock a locked-out user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unlockUser)                                      |\n|forgotPassword          |\t[Resets a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/forgotPassword) by validating the user's recovery credential.                  |\n|changePassword          |\t[Changes a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changePassword) validating the user's current password                        |\n|changeRecoveryQuestion  |\t[Changes a user's recovery credential](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changeRecoveryQuestion) by validating the user's current password  |"
   - name: UserAuthenticatorEnrollments
     x-displayName: User Authenticator Enrollments
     description: |-
@@ -1033,7 +1033,7 @@ paths:
         - Authenticator
   /.well-known/apple-app-site-association:
     x-okta-lifecycle:
-      lifecycle: LIMITED_GA
+      lifecycle: EA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1058,7 +1058,7 @@ paths:
         - AssociatedDomainCustomizations
   /.well-known/assetlinks.json:
     x-okta-lifecycle:
-      lifecycle: LIMITED_GA
+      lifecycle: EA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1131,7 +1131,7 @@ paths:
           - Okta Identity Engine
   /.well-known/webauthn:
     x-okta-lifecycle:
-      lifecycle: LIMITED_GA
+      lifecycle: EA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1745,12 +1745,6 @@ paths:
           schema:
             type: boolean
             default: false
-        - name: alwaysIncludeVpnSettings
-          in: query
-          description: Specifies whether to include the VPN configuration for existing notifications in the result, regardless of whether VPN notifications are configured
-          schema:
-            type: boolean
-            default: false
         - name: limit
           in: query
           description: Specifies the number of results per page
@@ -1761,7 +1755,7 @@ paths:
             maximum: 200
         - name: filter
           in: query
-          description: 'Filters apps with a supported expression for a subset of properties. Filtering supports the following limited number of properties: `id`, `status`, `credentials.signing.kid`, `settings.slo.enabled`, or `name`. See [Filter](https://developer.okta.com/docs/api/#filter).'
+          description: Filters apps by `status`, `user.id`, `group.id`, `credentials.signing.kid` or `name` expression that supports the `eq` operator
           schema:
             type: string
           examples:
@@ -5132,7 +5126,7 @@ paths:
       tags:
         - Authenticator
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8680,7 +8674,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8719,7 +8713,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8757,7 +8751,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8799,7 +8793,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -9191,7 +9185,7 @@ paths:
   /api/v1/device-integrations:
     get:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs: []
       summary: List all device integrations
@@ -9223,7 +9217,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     get:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs: []
       summary: Retrieve a device integration
@@ -9253,7 +9247,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     post:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs: []
       summary: Activate a device integration
@@ -9285,7 +9279,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     post:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs: []
       summary: Deactivate a device integration
@@ -12396,8 +12390,8 @@ paths:
       isGenerallyAvailable: false
       SKUs: []
     get:
-      summary: List all governance bundles
-      description: Lists all governance bundles for the Admin Console in your org
+      summary: List all governance bundles for the Admin Console
+      description: Lists all Governance Bundles for the Admin Console in your org
       operationId: listGovernanceBundles
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -12420,8 +12414,8 @@ paths:
       tags:
         - GovernanceBundle
     post:
-      summary: Create a governance bundle
-      description: Creates a governance bundle of entitlements for the Admin Console
+      summary: Create a governance bundle for the Admin Console in RAMP
+      description: Creates a Governance Bundle for the Admin Console in RAMP
       operationId: createGovernanceBundle
       requestBody:
         content:
@@ -12456,8 +12450,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/pathBundleId'
     get:
-      summary: Retrieve a governance bundle
-      description: Retrieves a governance bundle for the Admin Console
+      summary: Retrieve a governance bundle from RAMP
+      description: Retrieves a Governance Bundle from RAMP
       operationId: getGovernanceBundle
       responses:
         '200':
@@ -12479,8 +12473,8 @@ paths:
       tags:
         - GovernanceBundle
     put:
-      summary: Replace a governance bundle
-      description: Replaces the properties of a governance bundle for the Admin Console
+      summary: Replace a governance bundle in RAMP
+      description: Replaces a Governance Bundle in RAMP
       operationId: replaceGovernanceBundle
       requestBody:
         content:
@@ -12508,8 +12502,8 @@ paths:
       tags:
         - GovernanceBundle
     delete:
-      summary: Delete a governance bundle
-      description: Deletes an Admin Console governance bundle
+      summary: Delete a governance bundle from RAMP
+      description: Deletes a Governance Bundle from RAMP
       operationId: deleteGovernanceBundle
       responses:
         '204':
@@ -12533,7 +12527,7 @@ paths:
       - $ref: '#/components/parameters/pathBundleId'
     get:
       summary: List all entitlements for a governance bundle
-      description: Lists all entitlements specific to a governance bundle
+      description: Lists all Entitlements specific to a Governance Bundle
       operationId: listBundleEntitlements
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -12564,8 +12558,8 @@ paths:
       - $ref: '#/components/parameters/pathBundleId'
       - $ref: '#/components/parameters/pathEntitlementId'
     get:
-      summary: List all values for a governance bundle entitlement
-      description: Lists all entitlement values that are specific to a governance bundle entitlement
+      summary: List all entitlement values for a bundle entitlement
+      description: Lists all Entitlement Values specific to a Bundle Entitlement
       operationId: listBundleEntitlementValues
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -12593,8 +12587,8 @@ paths:
       isGenerallyAvailable: false
       SKUs: []
     get:
-      summary: Retrieve the Admin Console opt-in status
-      description: Retrieves the entitlement management opt-in status for the Admin Console
+      summary: Retrieve the opt-in status from RAMP
+      description: Retrieves the opt-in status of the Admin Console from RAMP
       operationId: getOptInStatus
       responses:
         '200':
@@ -12614,8 +12608,8 @@ paths:
       tags:
         - GovernanceBundle
     post:
-      summary: Opt in the Admin Console to entitlement management
-      description: Opts in the Admin Console to entitlement management
+      summary: Opt in the Admin Console to RAMP
+      description: Opts in the Admin Console to RAMP
       operationId: optIn
       responses:
         '200':
@@ -12636,8 +12630,8 @@ paths:
         - GovernanceBundle
   /api/v1/iam/governance/optOut:
     post:
-      summary: Opt out the Admin Console from entitlement management
-      description: Opts out the Admin Console from entitlement management
+      summary: Opt out the Admin Console from RAMP
+      description: Opts out the Admin Console from RAMP
       operationId: optOut
       responses:
         '200':
@@ -24701,13 +24695,6 @@ paths:
   /integrations/api/v1/submissions/{submissionId}:
     parameters:
       - $ref: '#/components/parameters/pathSubmissionId'
-  /integrations/api/v1/submissions/{submissionId}/capabilities:
-    parameters:
-      - $ref: '#/components/parameters/pathSubmissionId'
-  /integrations/api/v1/submissions/{submissionId}/capabilities/{capability}/protocols/actions:
-    parameters:
-      - $ref: '#/components/parameters/pathSubmissionId'
-      - $ref: '#/components/parameters/pathCapability'
   /integrations/api/v1/submissions/{submissionId}/submit:
     parameters:
       - $ref: '#/components/parameters/pathSubmissionId'
@@ -25676,9 +25663,6 @@ paths:
   /workload-principals/api/v1/ai-agents/{agentId}/lifecycle/deactivate:
     parameters:
       - $ref: '#/components/parameters/pathAIAgentId'
-  /workload-principals/api/v1/operations/{operationId}:
-    parameters:
-      - $ref: '#/components/parameters/operationId'
 x-webhooks:
   CreateTelephonyInlineHook:
     post:
@@ -26618,14 +26602,6 @@ components:
       schema:
         type: string
         example: who8vt36qfNpCGz9H1e6
-    pathExternalUserId:
-      name: externalId
-      in: path
-      required: true
-      description: The external ID of the user
-      example: 00u7m9p9ZT8k2S2EX1f7
-      schema:
-        type: string
     pathFactorId:
       name: factorId
       description: ID of an existing user factor
@@ -26723,22 +26699,6 @@ components:
       example: 00gsl4xM9ys8TdnbZ0g4 or GROUPEXT123456784C2IF
       schema:
         type: string
-    pathIdentitySourceExternalId:
-      name: externalId
-      in: path
-      required: true
-      description: The external ID of the identity source group
-      example: GROUPEXT123456784C2IF
-      schema:
-        type: string
-    pathIdentitySourceGroupOrExternalId:
-      name: groupOrExternalId
-      in: path
-      required: true
-      description: The Okta group ID or external ID of the identity source group
-      example: 00gsl4xM9ys8TdnbZ0g4 or GROUPEXT123456784C2IF
-      schema:
-        type: string
     pathIdentitySourceId:
       name: identitySourceId
       in: path
@@ -26761,14 +26721,6 @@ components:
       required: true
       description: The ID of the identity source session
       example: aps1qqonvr2SZv6o70h8
-      schema:
-        type: string
-    pathIdentitySourceUserId:
-      name: appUserId
-      in: path
-      required: true
-      description: The ID of the user in the identity source
-      example: 00u7m9p9ZT8k2S2EX1f7
       schema:
         type: string
     pathIdpCsrId:
@@ -28180,7 +28132,7 @@ components:
           $ref: '#/components/schemas/VerificationMethod'
     AccessPolicyRuleApplicationSignOnAccess:
       type: string
-      x-okta-known-values:
+      enum:
         - ALLOW
         - DENY
     AccessPolicyRuleConditions:
@@ -28216,7 +28168,7 @@ components:
         lifecycle: EA
         isGenerallyAvailable: true
       type: string
-      x-okta-known-values:
+      enum:
         - RSA-OAEP-256
         - RSA-OAEP-384
         - RSA-OAEP-512
@@ -28259,11 +28211,11 @@ components:
     ActionProviderPayloadType:
       description: Type of action provider
       type: string
-      x-okta-known-values:
+      enum:
         - WORKFLOWS
     ActionProviderType:
       type: string
-      x-okta-known-values:
+      enum:
         - workflows
     Actions:
       description: Action to apply to a user
@@ -28274,14 +28226,14 @@ components:
     ActiveDirectoryGroupScope:
       description: The scope of the group in Active Directory
       type: string
-      x-okta-known-values:
+      enum:
         - DOMAIN_LOCAL
         - GLOBAL
         - UNIVERSAL
     ActiveDirectoryGroupType:
       description: The type of the group in Active Directory
       type: string
-      x-okta-known-values:
+      enum:
         - DISTRIBUTION
         - SECURITY
     AdminConsoleSettings:
@@ -28676,7 +28628,7 @@ components:
     AgentType:
       description: Agent types that are being monitored
       type: string
-      x-okta-known-values:
+      enum:
         - AD
         - IWA
         - LDAP
@@ -28687,7 +28639,7 @@ components:
     AgentUpdateInstanceStatus:
       description: Status for one agent regarding the status to auto-update that agent
       type: string
-      x-okta-known-values:
+      enum:
         - Cancelled
         - Failed
         - InProgress
@@ -28697,7 +28649,7 @@ components:
     AgentUpdateJobStatus:
       description: Overall state for the auto-update job from the admin perspective
       type: string
-      x-okta-known-values:
+      enum:
         - Cancelled
         - Failed
         - InProgress
@@ -28711,7 +28663,7 @@ components:
     AllowedForEnum:
       description: The allowed types of uses for the authenticator
       type: string
-      x-okta-known-values:
+      enum:
         - any
         - none
         - recovery
@@ -28908,7 +28860,7 @@ components:
     AppAndInstanceType:
       description: Type of app
       type: string
-      x-okta-known-values:
+      enum:
         - APP
         - APP_TYPE
     AppConfig:
@@ -28945,7 +28897,7 @@ components:
     AppConfigType:
       description: The type of the app configuration
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE_DIRECTORY
     AppConnectionUserProvisionJWKList:
       properties:
@@ -29007,11 +28959,11 @@ components:
     AppInstanceContainerStatus:
       description: Current status of the application instance
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - DELETED
         - INACTIVE
+      readOnly: true
     AppInstanceOrn:
       description: The [ORN](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#okta-resource-name-orn) of the app instance
       type: string
@@ -29337,6 +29289,20 @@ components:
       description: Status of an application user
       example: ACTIVE
       type: string
+      enum:
+        - ACTIVE
+        - APPROVED
+        - DEPROVISIONED
+        - IMPLICIT
+        - IMPORTED
+        - INACTIVE
+        - MATCHED
+        - PENDING
+        - PROVISIONED
+        - REVOKED
+        - STAGED
+        - SUSPENDED
+        - UNASSIGNED
       x-enumDescriptions:
         ACTIVE: The application user is provisioned and is enabled to use the app. This status also occurs if the app has the `IMPORT_PROFILE_UPDATES` feature enabled and user import is confirmed, or if the app doesn't have provisioning enabled.
         INACTIVE: The application user is provisioned, but isn't enabled to use the app. Application users in this status can be reactivated with a password reset or permanently deleted.
@@ -29352,20 +29318,6 @@ components:
         PROVISIONED: The background provisioning operation completed and the application user was assigned an `externalId` successfully.
         DEPROVISIONED: The user was removed by the provisioning operation and the `externalId` property is unassigned.
       readOnly: true
-      x-okta-known-values:
-        - ACTIVE
-        - APPROVED
-        - DEPROVISIONED
-        - IMPLICIT
-        - IMPORTED
-        - INACTIVE
-        - MATCHED
-        - PENDING
-        - PROVISIONED
-        - REVOKED
-        - STAGED
-        - SUSPENDED
-        - UNASSIGNED
     AppUserSyncState:
       description: |-
         The synchronization state for the application user.
@@ -29374,6 +29326,12 @@ components:
         > **Note:** User provisioning currently must be configured through the Admin Console.
       example: SYNCHRONIZED
       type: string
+      enum:
+        - DISABLED
+        - ERROR
+        - OUT_OF_SYNC
+        - SYNCHRONIZED
+        - SYNCING
       x-enumDescriptions:
         DISABLED: The provisioning feature is disabled for the app (`PROFILE_MASTERING` feature is disabled).
         OUT_OF_SYNC: The Application User has changes that haven't been pushed to the target app.
@@ -29381,12 +29339,6 @@ components:
         SYNCHRONIZED: All changes to the application user profile have successfully been synchronized with the target app.
         ERROR: A background provisioning operation failed to update the user's profile in the target app. You must resolve the provisioning task in the Admin Console before you retry the operation.
       readOnly: true
-      x-okta-known-values:
-        - DISABLED
-        - ERROR
-        - OUT_OF_SYNC
-        - SYNCHRONIZED
-        - SYNCING
     AppUserUpdateRequest:
       oneOf:
         - $ref: '#/components/schemas/AppUserCredentialsRequestPayload'
@@ -29588,7 +29540,7 @@ components:
     ApplicationCapability:
       description: Capabilities supported by the app
       type: string
-      x-okta-known-values:
+      enum:
         - PROVISIONING
         - SSO
         - UNIVERSAL_LOGOUT
@@ -29637,18 +29589,18 @@ components:
       description: |
         Apps with `BASIC_AUTH`, `BROWSER_PLUGIN`, or `SECURE_PASSWORD_STORE` sign-on modes have credentials vaulted by Okta and can be configured with the following schemes.
       type: string
+      enum:
+        - ADMIN_SETS_CREDENTIALS
+        - EDIT_PASSWORD_ONLY
+        - EDIT_USERNAME_AND_PASSWORD
+        - EXTERNAL_PASSWORD_SYNC
+        - SHARED_USERNAME_AND_PASSWORD
       x-enumDescriptions:
         ADMIN_SETS_CREDENTIALS: Admin sets username and password
         EDIT_PASSWORD_ONLY: Admin sets username, user sets password
         EDIT_USERNAME_AND_PASSWORD: User sets username and password
         EXTERNAL_PASSWORD_SYNC: Admin sets username, password is the same as user's Okta password
         SHARED_USERNAME_AND_PASSWORD: Users share a single username and password set by the admin
-      x-okta-known-values:
-        - ADMIN_SETS_CREDENTIALS
-        - EDIT_PASSWORD_ONLY
-        - EDIT_USERNAME_AND_PASSWORD
-        - EXTERNAL_PASSWORD_SYNC
-        - SHARED_USERNAME_AND_PASSWORD
     ApplicationCredentialsSigning:
       description: |
         App signing key properties
@@ -29678,7 +29630,7 @@ components:
     ApplicationCredentialsSigningUse:
       description: Specifies the intended use of the key
       type: string
-      x-okta-known-values:
+      enum:
         - sig
     ApplicationCredentialsUsernameTemplate:
       description: The template used to generate the username when the app is assigned through a group or directly to a user
@@ -29782,7 +29734,7 @@ components:
         Select the feature:
       example: USER_PROVISIONING
       type: string
-      x-okta-known-values:
+      enum:
         - USER_PROVISIONING
         - INBOUND_PROVISIONING
     ApplicationGroupAssignment:
@@ -29889,11 +29841,11 @@ components:
     ApplicationLifecycleStatus:
       description: App instance status
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - DELETED
         - INACTIVE
+      readOnly: true
     ApplicationLinks:
       description: Discoverable resources related to the app
       properties:
@@ -30032,7 +29984,7 @@ components:
 
         Select the `signOnMode` for your custom app:
       type: string
-      x-okta-known-values:
+      enum:
         - AUTO_LOGIN
         - BASIC_AUTH
         - BOOKMARK
@@ -30045,7 +29997,7 @@ components:
     ApplicationType:
       description: 'The type of client application. Default value: `web`.'
       type: string
-      x-okta-known-values:
+      enum:
         - browser
         - native
         - service
@@ -30213,7 +30165,7 @@ components:
               description: The duration after which the user must re-authenticate, regardless of user activity. Keep in mind that the re-authentication intervals for constraints take precedent over this value. Use the ISO 8601 period format for recurring time intervals (for example, PT2H, PT0S, PT43800H, and so on).
     AssuranceMethodFactorMode:
       type: string
-      x-okta-known-values:
+      enum:
         - 1FA
         - 2FA
     AttackProtectionAuthenticatorSettings:
@@ -30291,7 +30243,7 @@ components:
         - authType
     AuthType:
       type: string
-      x-okta-known-values:
+      enum:
         - BASIC
         - CUSTOM
         - OAUTH2
@@ -30407,6 +30359,13 @@ components:
     AuthenticationProviderType:
       description: The type of authentication provider
       type: string
+      enum:
+        - ACTIVE_DIRECTORY
+        - FEDERATION
+        - IMPORT
+        - LDAP
+        - OKTA
+        - SOCIAL
       x-enumDescriptions:
         ACTIVE_DIRECTORY: Specifies the Microsoft Active Directory instance name as the `name` property
         FEDERATION: Specifies a federated identity provider (such as an SAML IdP) that validates the user's password credentials. Doesn't support a `password` or `recovery question` credential. The user must authenticate through a trusted identity provider.
@@ -30415,16 +30374,16 @@ components:
         OKTA: Specifies the Okta identity provider
         SOCIAL: Specifies an OIDC or third-party social identity provider. Doesn't support a `password` or `recovery question` credential. The user must authenticate through a trusted identity provider.
       readOnly: true
-      x-okta-known-values:
+    AuthenticationProviderTypeWritable:
+      description: The type of authentication provider
+      type: string
+      enum:
         - ACTIVE_DIRECTORY
         - FEDERATION
         - IMPORT
         - LDAP
         - OKTA
         - SOCIAL
-    AuthenticationProviderTypeWritable:
-      description: The type of authentication provider
-      type: string
       x-enumDescriptions:
         ACTIVE_DIRECTORY: Specifies a Microsoft Active Directory instance name as the `name` property
         FEDERATION: Specifies a federated identity provider (such as a SAML IdP) that validates the user's password credentials. Doesn't support a `password` or `recovery question` credential. The user must authenticate through a trusted identity provider.
@@ -30432,13 +30391,6 @@ components:
         LDAP: Specifies the LDAP directory instance name as the `name` property
         OKTA: Specifies the Okta identity provider
         SOCIAL: Specifies an OIDC or third-party social identity provider. Doesn't support a `password` or `recovery question` credential. The user must authenticate through a trusted identity provider.
-      x-okta-known-values:
-        - ACTIVE_DIRECTORY
-        - FEDERATION
-        - IMPORT
-        - LDAP
-        - OKTA
-        - SOCIAL
     AuthenticationProviderWritable:
       description: Specifies the authentication provider that validates the user password credential. The user's current provider is managed by the **Delegated Authentication** settings in your org. See [Create user with authentication provider](/openapi/okta-management/management/tag/User/#create-user-with-authentication-provider).
       type: object
@@ -30580,14 +30532,14 @@ components:
       description: Requirements for the user-initiated enrollment
       default: NOT_ALLOWED
       type: string
-      x-okta-known-values:
+      enum:
         - NOT_ALLOWED
         - OPTIONAL
         - REQUIRED
     AuthenticatorEnrollmentPolicyAuthenticatorType:
       description: A label that identifies the authenticator
       type: string
-      x-okta-known-values:
+      enum:
         - custom_app
         - custom_otp
         - duo
@@ -30691,7 +30643,7 @@ components:
         <x-lifecycle class="oie"></x-lifecycle> The `type` property in the policy `settings` is only applicable to the authenticator enrollment policy available in Identity Engine.
       default: FACTORS
       type: string
-      x-okta-known-values:
+      enum:
         - AUTHENTICATORS
         - FACTORS
     AuthenticatorIdentity:
@@ -30794,7 +30746,7 @@ components:
     AuthenticatorKeyEnum:
       description: A human-readable string that identifies the authenticator
       type: string
-      x-okta-known-values:
+      enum:
         - custom_app
         - duo
         - external_idp
@@ -30955,7 +30907,7 @@ components:
                 - $ref: '#/components/schemas/HrefObject'
     AuthenticatorMethodAlgorithm:
       type: string
-      x-okta-known-values:
+      enum:
         - ES256
         - RS256
     AuthenticatorMethodBase:
@@ -31006,7 +30958,7 @@ components:
               $ref: '#/components/schemas/OtpTotpTimeIntervalInSeconds'
     AuthenticatorMethodProperty:
       type: string
-      x-okta-known-values:
+      enum:
         - DEVICE_BOUND
         - HARDWARE_PROTECTED
         - PHISHING_RESISTANT
@@ -31081,13 +31033,13 @@ components:
                   $ref: '#/components/schemas/OtpTotpPassCodeLength'
     AuthenticatorMethodTransactionType:
       type: string
-      x-okta-known-values:
+      enum:
         - CIBA
         - LOGIN
     AuthenticatorMethodType:
       description: The type of authenticator method
       type: string
-      x-okta-known-values:
+      enum:
         - cert
         - duo
         - email
@@ -31105,7 +31057,7 @@ components:
     AuthenticatorMethodTypeWebAuthn:
       description: The type of authenticator method
       type: string
-      x-okta-known-values:
+      enum:
         - webauthn
     AuthenticatorMethodWebAuthn:
       allOf:
@@ -31193,7 +31145,7 @@ components:
     AuthenticatorType:
       description: The type of authenticator
       type: string
-      x-okta-known-values:
+      enum:
         - app
         - email
         - federated
@@ -31269,7 +31221,7 @@ components:
     AuthorizationServerCredentialsRotationMode:
       description: The Key rotation mode for the authorization server
       type: string
-      x-okta-known-values:
+      enum:
         - AUTO
         - MANUAL
     AuthorizationServerCredentialsSigningConfig:
@@ -31296,7 +31248,7 @@ components:
     AuthorizationServerCredentialsUse:
       description: How the key is used
       type: string
-      x-okta-known-values:
+      enum:
         - sig
     AuthorizationServerJsonWebKey:
       type: object
@@ -31619,7 +31571,7 @@ components:
     AwsRegion:
       description: The destination AWS region where your event source is located
       type: string
-      x-okta-known-values:
+      enum:
         - ap-northeast-1
         - ap-northeast-2
         - ap-northeast-3
@@ -31958,7 +31910,7 @@ components:
             - velocityKph
     BehaviorRuleType:
       type: string
-      x-okta-known-values:
+      enum:
         - ANOMALOUS_DEVICE
         - ANOMALOUS_IP
         - ANOMALOUS_LOCATION
@@ -31974,7 +31926,7 @@ components:
     BindingMethod:
       description: The method used to bind the out-of-band channel with the primary channel.
       type: string
-      x-okta-known-values:
+      enum:
         - none
         - prompt
         - transfer
@@ -32225,51 +32177,43 @@ components:
               profile:
                 $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     BundleEntitlement:
-      description: An entitlement in a governance bundle
       type: object
       properties:
         description:
           type: string
-          description: The description of the role
         id:
           type: string
-          description: Entitlement ID
         name:
           type: string
-          description: The name of the role
         role:
           type: string
-          description: The role key
         _links:
-          type: object
-          description: Link relations available
-          properties:
-            values:
-              allOf:
-                - $ref: '#/components/schemas/HrefObject'
-                - description: Link to the entitlement values resource
+          allOf:
+            - properties:
+                values:
+                  $ref: '#/components/schemas/HrefObject'
     BundleEntitlementsResponse:
-      description: Entitlement list for a governance bundle
       type: object
       properties:
         entitlements:
           type: array
-          description: List of bundle entitlements
           items:
             $ref: '#/components/schemas/BundleEntitlement'
         _links:
-          allOf:
-            - $ref: '#/components/schemas/LinksSelf'
-            - readOnly: true
-            - properties:
-                next:
-                  $ref: '#/components/schemas/HrefObjectNextLink'
-                bundle:
-                  $ref: '#/components/schemas/BundleLink'
-    BundleLink:
-      allOf:
-        - $ref: '#/components/schemas/HrefObject'
-        - description: Link to the bundle resource
+          type: object
+          description: Specifies link relations (see [Web Linking](https://www.rfc-editor.org/rfc/rfc8288)) available using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06) specification
+          readOnly: true
+          properties:
+            next:
+              allOf:
+                - $ref: '#/components/schemas/HrefObject'
+                - description: Link to the next resource
+            self:
+              $ref: '#/components/schemas/HrefObjectSelfLink'
+            bundle:
+              allOf:
+                - $ref: '#/components/schemas/HrefObject'
+                - description: Link to the bundle resource
     ByDateTimeAuthenticatorGracePeriodExpiry:
       allOf:
         - $ref: '#/components/schemas/EnrollmentPolicyAuthenticatorGracePeriod'
@@ -32316,7 +32260,7 @@ components:
     CAPTCHAType:
       description: The type of CAPTCHA provider
       type: string
-      x-okta-known-values:
+      enum:
         - HCAPTCHA
         - RECAPTCHA_V2
     CSRLinks:
@@ -32636,7 +32580,7 @@ components:
           $ref: '#/components/schemas/ProfileSettingObject'
     Capability:
       type: string
-      x-okta-known-values:
+      enum:
         - ENTITLEMENTS
         - PROVISIONING
         - SSO
@@ -32644,12 +32588,12 @@ components:
     CapabilityType:
       description: Capability type
       type: string
+      enum:
+        - PROVISIONING
+        - SSO
       x-enumDescriptions:
         SSO: Express setup enabled for SSO
         PROVISIONING: Express setup enabled for provisioning
-      x-okta-known-values:
-        - PROVISIONING
-        - SSO
     CatalogApplication:
       description: An app in the OIN catalog
       type: object
@@ -32715,12 +32659,12 @@ components:
     CatalogApplicationStatus:
       description: App status
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - INACTIVE
     ChallengeType:
       type: string
-      x-okta-known-values:
+      enum:
         - http://auth0.com/oauth/grant-type/mfa-oob
         - http://auth0.com/oauth/grant-type/mfa-otp
     ChangeEnum:
@@ -32728,7 +32672,7 @@ components:
       default: KEEP_EXISTING
       example: CHANGE
       type: string
-      x-okta-known-values:
+      enum:
         - CHANGE
         - KEEP_EXISTING
     ChangePasswordRequest:
@@ -32745,7 +32689,7 @@ components:
     Channel:
       description: The out-of-band channel for use with authentication. Required for all `/oob-authenticate` requests and any `/challenge` request with an out-of-band authenticator.
       type: string
-      x-okta-known-values:
+      enum:
         - push
         - sms
         - voice
@@ -32853,12 +32797,12 @@ components:
     ClassificationType:
       description: The type of user classification
       type: string
+      enum:
+        - LITE
+        - STANDARD
       x-enumDescriptions:
         LITE: Lite
         STANDARD: Standard
-      x-okta-known-values:
-        - LITE
-        - STANDARD
     Client:
       type: object
       properties:
@@ -32957,7 +32901,7 @@ components:
           example: true
     CodeChallengeMethod:
       type: string
-      x-okta-known-values:
+      enum:
         - S256
     Compliance:
       type: object
@@ -32976,25 +32920,25 @@ components:
     ConnectionType:
       description: Type of connection authentication method
       type: string
+      enum:
+        - IDENTITY_ASSERTION_APP_INSTANCE
+        - IDENTITY_ASSERTION_CUSTOM_AS
+        - STS_SERVICE_ACCOUNT
+        - STS_VAULT_SECRET
       x-enumDescriptions:
         IDENTITY_ASSERTION_APP_INSTANCE: Identity assertion connection for app instances
         IDENTITY_ASSERTION_CUSTOM_AS: Identity assertion connection for custom authorization servers
         STS_VAULT_SECRET: Security Token Service connection for vaulted secrets
         STS_SERVICE_ACCOUNT: Security Token Service connection for service accounts
-      x-okta-known-values:
-        - IDENTITY_ASSERTION_APP_INSTANCE
-        - IDENTITY_ASSERTION_CUSTOM_AS
-        - STS_SERVICE_ACCOUNT
-        - STS_VAULT_SECRET
     ConnectionsSigningRotationMode:
       description: The signing key rotation setting for the provisioning connection
       type: string
+      enum:
+        - AUTO
+        - MANUAL
       x-enumDescriptions:
         AUTO: Okta manages key rotation for the provisioning connection. Use the [Retrieve a JWKS for the default provisioning connection](/openapi/okta-management/management/tag/ApplicationConnections/#tag/ApplicationConnections/operation/getUserProvisioningConnectionJWKS) endpoint for the latest key credentials.
         MANUAL: You need to rotate the keys for your provisioning connection manually based on your own schedule. See [Key rotation](https://developer.okta.com/docs/concepts/key-rotation/).
-      x-okta-known-values:
-        - AUTO
-        - MANUAL
     ContentSecurityPolicySetting:
       type: object
       properties:
@@ -33260,17 +33204,17 @@ components:
     CredentialSyncState:
       description: Current credential sync status of the privileged resource
       type: string
+      enum:
+        - NOT_SYNCED
+        - SYNCED
+        - SYNCING
+        - SYNC_FAILED
       x-enumDescriptions:
         NOT_SYNCED: Credentials are not yet synced
         SYNCING: Credentials are currently being synced
         SYNCED: Credentials are successfully synced
         SYNC_FAILED: Credential sync failed
       readOnly: true
-      x-okta-known-values:
-        - NOT_SYNCED
-        - SYNCED
-        - SYNCING
-        - SYNC_FAILED
     Csr:
       type: object
       properties:
@@ -33394,7 +33338,7 @@ components:
     CustomAppUserVerificationEnum:
       description: User verification setting
       type: string
-      x-okta-known-values:
+      enum:
         - PREFERRED
         - REQUIRED
     CustomAuthSettings:
@@ -33541,12 +33485,12 @@ components:
     DNSRecordTypeAuthenticators:
       example: TXT
       type: string
-      x-okta-known-values:
+      enum:
         - TXT
     DNSRecordTypeDomains:
       example: TXT
       type: string
-      x-okta-known-values:
+      enum:
         - CNAME
         - TXT
     DRStatusItem:
@@ -33658,13 +33602,6 @@ components:
       description: Google Chrome Device Trust Connector provider
       type: object
       properties:
-        antivirusEnabled:
-          x-okta-lifecycle:
-            lifecycle: EA
-            isGenerallyAvailable: false
-            SKUs: []
-          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Indicates whether antivirus software is enabled
-          type: boolean
         browserVersion:
           $ref: '#/components/schemas/ChromeBrowserVersion'
         builtInDnsClientEnabled:
@@ -33793,7 +33730,7 @@ components:
           $ref: '#/components/schemas/_embedded'
     DetectedRiskEvents:
       type: string
-      x-okta-known-values:
+      enum:
         - ADMIN_REPORTED_USER_RISK
         - BRUTE_FORCE_ATTACK
         - ENTITY_CRITICAL_ACTION_FROM_HIGH_THREAT_IP
@@ -34147,7 +34084,7 @@ components:
     DeviceIntegrationsName:
       description: The namespace of the device integration
       type: string
-      x-okta-known-values:
+      enum:
         - com.android.zero.trust
         - com.crowdstrike.zta
         - com.google.dtc
@@ -34157,7 +34094,7 @@ components:
         - com.okta.workspaceone
     DeviceIntegrationsPlatform:
       type: string
-      x-okta-known-values:
+      enum:
         - ANDROID
         - CHROMEOS
         - IOS
@@ -34166,20 +34103,20 @@ components:
     DeviceIntegrationsStatus:
       description: The status of the device integration
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - DEACTIVATED
     DeviceIntegrity:
       description: Indicates how well a device can enforce app integrity
       type: string
+      enum:
+        - MEETS_BASIC_INTEGRITY
+        - MEETS_DEVICE_INTEGRITY
+        - MEETS_STRONG_INTEGRITY
       x-enumDescriptions:
         MEETS_BASIC_INTEGRITY: The app is running on a device that passes basic system integrity checks. The device may not meet Android compatibility requirements and may not be approved to run Google Play services.
         MEETS_DEVICE_INTEGRITY: The app is running on an Android-powered device with Google Play services. The device passes system integrity checks and meets Android compatibility requirements.
         MEETS_STRONG_INTEGRITY: The app is running on an Android-powered device with Google Play services. It has a strong guarantee of system integrity such as a hardware-backed proof of boot integrity. The device passes system integrity checks and meets Android compatibility requirements.
-      x-okta-known-values:
-        - MEETS_BASIC_INTEGRITY
-        - MEETS_DEVICE_INTEGRITY
-        - MEETS_STRONG_INTEGRITY
     DeviceList:
       allOf:
         - $ref: '#/components/schemas/Device'
@@ -34197,20 +34134,20 @@ components:
     DevicePlatform:
       description: OS platform of the device
       type: string
-      x-okta-known-values:
+      enum:
         - ANDROID
         - IOS
         - MACOS
         - WINDOWS
     DevicePolicyMDMFramework:
       type: string
-      x-okta-known-values:
+      enum:
         - AFW
         - NATIVE
         - SAFE
     DevicePolicyPlatformType:
       type: string
-      x-okta-known-values:
+      enum:
         - ANDROID
         - IOS
         - OSX
@@ -34248,7 +34185,7 @@ components:
             $ref: '#/components/schemas/DevicePolicyPlatformType'
     DevicePolicyTrustLevel:
       type: string
-      x-okta-known-values:
+      enum:
         - ANY
         - TRUSTED
     DevicePostureCheck:
@@ -34325,12 +34262,12 @@ components:
     DevicePostureChecksMappingType:
       description: Represents how the device posture check is rendered in device assurance policies
       type: string
-      x-okta-known-values:
+      enum:
         - CHECKBOX
         - TEXTBOX
     DevicePostureChecksPlatform:
       type: string
-      x-okta-known-values:
+      enum:
         - MACOS
         - WINDOWS
     DevicePostureChecksRemediationSettings:
@@ -34361,15 +34298,15 @@ components:
               example: It is our company policy that all devices must have a firewall enabled.
     DevicePostureChecksType:
       type: string
-      x-okta-known-values:
+      enum:
         - BUILTIN
         - CUSTOM
     DevicePostureIdP:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs: []
-      description: <x-lifecycle-container><x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>Device Posture IdP provider
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Device Posture IdP provider
       type: object
       properties:
         compliant:
@@ -34504,16 +34441,16 @@ components:
     DeviceStatus:
       description: The state object of the device
       type: string
+      enum:
+        - ACTIVE
+        - DEACTIVATED
+        - SUSPENDED
+        - UNSUSPENDED
       x-enumDescriptions:
         ACTIVE: Use activated devices to create and delete device user links
         DEACTIVATED: Deactivation causes a device to lose all device user links. Set the device status to `DEACTIVATED` before deleting it.
         SUSPENDED: Use suspended devices to create and delete device user links. You can only unsuspend or deactivate suspended devices.
         UNSUSPENDED: Returns a suspended device to `ACTIVE`.
-      x-okta-known-values:
-        - ACTIVE
-        - DEACTIVATED
-        - SUSPENDED
-        - UNSUSPENDED
     DeviceUser:
       type: object
       properties:
@@ -34541,12 +34478,12 @@ components:
     DigestAlgorithm:
       description: Algorithm used to generate the key. Only required for the PBKDF2 algorithm.
       type: string
-      x-okta-known-values:
+      enum:
         - SHA256_HMAC
         - SHA512_HMAC
     DiskEncryptionTypeAndroid:
       type: string
-      x-okta-known-values:
+      enum:
         - FULL
         - USER
     DiskEncryptionTypeDef:
@@ -34554,21 +34491,21 @@ components:
         Type of encryption used on the device
         > **Note:** The following values map to Disk Encryption ON: `FULL`, `USER`, `ALL_INTERNAL_VOLUMES`. All other values map to Disk Encryption OFF.
       type: string
+      enum:
+        - ALL_INTERNAL_VOLUMES
+        - FULL
+        - NONE
+        - SYSTEM_VOLUME
+        - USER
       x-enumDescriptions:
         NONE: No encryption has been set.
         FULL: Disk is fully encrypted. Only applicable to `IOS` and `ANDROID` platforms.
         USER: Encryption key is tied to the user or profile. Only applicable to `ANDROID` platform.
         ALL_INTERNAL_VOLUMES: All internal disks are encrypted. Only applicable to `WINDOWS` and `MACOS` platforms.
         SYSTEM_VOLUME: Only the system volume is encrypted. Only applicable to `WINDOWS` and `MACOS` platforms.
-      x-okta-known-values:
-        - ALL_INTERNAL_VOLUMES
-        - FULL
-        - NONE
-        - SYSTEM_VOLUME
-        - USER
     DiskEncryptionTypeDesktop:
       type: string
-      x-okta-known-values:
+      enum:
         - ALL_INTERNAL_VOLUMES
     DomainCertificate:
       description: Defines the properties of the certificate
@@ -34612,13 +34549,13 @@ components:
     DomainCertificateSourceType:
       description: Certificate source type that indicates whether the certificate is provided by the user or Okta.
       type: string
-      x-okta-known-values:
+      enum:
         - MANUAL
         - OKTA_MANAGED
     DomainCertificateType:
       description: Certificate type
       type: string
-      x-okta-known-values:
+      enum:
         - PEM
     DomainLinks:
       allOf:
@@ -34693,7 +34630,7 @@ components:
       description: Status of the domain
       example: VERIFIED
       type: string
-      x-okta-known-values:
+      enum:
         - COMPLETED
         - IN_PROGRESS
         - NOT_STARTED
@@ -34880,7 +34817,7 @@ components:
           type: string
     EmailDomainDNSRecordType:
       type: string
-      x-okta-known-values:
+      enum:
         - CNAME
         - TXT
     EmailDomainResponse:
@@ -34917,7 +34854,7 @@ components:
           readOnly: true
     EmailDomainStatus:
       type: string
-      x-okta-known-values:
+      enum:
         - DELETED
         - ERROR
         - NOT_STARTED
@@ -35036,12 +34973,12 @@ components:
         Variant for email templates. You can publish a theme for email templates with different combinations of assets. Variants are preset combinations of those assets.
       default: OKTA_DEFAULT
       type: string
+      enum:
+        - FULL_THEME
+        - OKTA_DEFAULT
       x-enumDescriptions:
         FULL_THEME: Uses the Okta logo and Okta colors in email templates
         OKTA_DEFAULT: Uses the logo from the theme. Uses `primaryColorHex` as the background color for buttons.
-      x-okta-known-values:
-        - FULL_THEME
-        - OKTA_DEFAULT
     EmailTestAddresses:
       type: object
       properties:
@@ -35063,7 +35000,7 @@ components:
     EnabledStatus:
       description: Setting status
       type: string
-      x-okta-known-values:
+      enum:
         - DISABLED
         - ENABLED
     EndUserDashboardTouchPointVariant:
@@ -35071,20 +35008,20 @@ components:
         Variant for the Okta End-User Dashboard. You can publish a theme for end-user dashboard with different combinations of assets. Variants are preset combinations of those assets.
       default: OKTA_DEFAULT
       type: string
+      enum:
+        - FULL_THEME
+        - LOGO_ON_FULL_WHITE_BACKGROUND
+        - OKTA_DEFAULT
+        - WHITE_LOGO_BACKGROUND
       x-enumDescriptions:
         FULL_THEME: Uses the logo and favicon from the theme. Uses `primaryColorHex` for the logo and the side navigation bar background color.
         LOGO_ON_FULL_WHITE_BACKGROUND: Uses the logo and favicon from the theme. Uses white background color for the logo and the side navigation bar background color.
         OKTA_DEFAULT: Uses the Okta logo and favicon. Uses a white background color for the logo and the side navigation bar background color.
         WHITE_LOGO_BACKGROUND: Uses the logo and favicon from the theme, with a white background color for the logo. Uses `primaryColorHex` for the side navigation bar background color.
-      x-okta-known-values:
-        - FULL_THEME
-        - LOGO_ON_FULL_WHITE_BACKGROUND
-        - OKTA_DEFAULT
-        - WHITE_LOGO_BACKGROUND
     EndpointAuthMethod:
       description: Requested authentication method for OAuth 2.0 endpoints.
       type: string
-      x-okta-known-values:
+      enum:
         - client_secret_basic
         - client_secret_jwt
         - client_secret_post
@@ -35262,13 +35199,10 @@ components:
       properties:
         id:
           type: string
-          description: Entitlement value ID
         name:
           type: string
-          description: The entitlement value resource name
         value:
           type: string
-          description: The entitlement value resource [ORN](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#okta-resource-name-orn)
         _links:
           type: object
           description: Specifies link relations (see [Web Linking](https://www.rfc-editor.org/rfc/rfc8288)) available using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06) specification
@@ -35285,23 +35219,17 @@ components:
       properties:
         entitlementValues:
           type: array
-          description: List of entitlement values for a bundle entitlement
           items:
             $ref: '#/components/schemas/EntitlementValue'
         _links:
-          allOf:
+          anyOf:
             - $ref: '#/components/schemas/LinksSelf'
+            - $ref: '#/components/schemas/LinksNext'
             - properties:
                 bundle:
-                  $ref: '#/components/schemas/BundleLink'
+                  $ref: '#/components/schemas/HrefObject'
                 entitlements:
-                  $ref: '#/components/schemas/EntitlementsLink'
-                next:
-                  $ref: '#/components/schemas/HrefObjectNextLink'
-    EntitlementsLink:
-      allOf:
-        - $ref: '#/components/schemas/HrefObject'
-        - description: Link to the entitlements resource
+                  $ref: '#/components/schemas/HrefObject'
     EntityRiskPolicy:
       allOf:
         - $ref: '#/components/schemas/Policy'
@@ -35462,14 +35390,14 @@ components:
         Variant for the error page. You can publish a theme for error page with different combinations of assets. Variants are preset combinations of those assets.
       default: OKTA_DEFAULT
       type: string
+      enum:
+        - BACKGROUND_IMAGE
+        - BACKGROUND_SECONDARY_COLOR
+        - OKTA_DEFAULT
       x-enumDescriptions:
         BACKGROUND_IMAGE: Uses the logo, favicon, and background image from the theme
         BACKGROUND_SECONDARY_COLOR: Uses the logo and favicon from the theme. Uses `secondaryColorHex` as the background color for the error page.
         OKTA_DEFAULT: Uses the Okta logo, favicon, and background color
-      x-okta-known-values:
-        - BACKGROUND_IMAGE
-        - BACKGROUND_SECONDARY_COLOR
-        - OKTA_DEFAULT
     EventHook:
       type: object
       properties:
@@ -35582,7 +35510,7 @@ components:
     EventHookChannelConfigAuthSchemeType:
       description: The authentication scheme type. Currently only supports `HEADER`.
       type: string
-      x-okta-known-values:
+      enum:
         - HEADER
     EventHookChannelConfigHeader:
       nullable: true
@@ -35597,7 +35525,7 @@ components:
     EventHookChannelType:
       description: The channel type. Currently supports `HTTP`.
       type: string
-      x-okta-known-values:
+      enum:
         - HTTP
     EventHookFilterMap:
       description: The object that maps the filter to the event type
@@ -35650,14 +35578,14 @@ components:
     EventHookVerificationStatus:
       description: Verification status of the event hook. `UNVERIFIED` event hooks won't receive any events.
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - UNVERIFIED
         - VERIFIED
+      readOnly: true
     EventSubscriptionType:
       description: The events object type. Currently supports `EVENT_TYPE`.
       type: string
-      x-okta-known-values:
+      enum:
         - EVENT_TYPE
     EventSubscriptions:
       type: object
@@ -35771,7 +35699,7 @@ components:
     FeatureLifecycle:
       example: ENABLE
       type: string
-      x-okta-known-values:
+      enum:
         - DISABLE
         - ENABLE
     FeatureStage:
@@ -35790,19 +35718,19 @@ components:
     FeatureStageState:
       description: Indicates the release state of the feature
       type: string
-      x-okta-known-values:
+      enum:
         - CLOSED
         - OPEN
     FeatureStageValue:
       description: Current release stage of the feature
       type: string
-      x-okta-known-values:
+      enum:
         - BETA
         - EA
     FeatureType:
       description: Type of feature
       type: string
-      x-okta-known-values:
+      enum:
         - self-service
     FederatedClaim:
       type: object
@@ -35850,7 +35778,7 @@ components:
           example: role
     FipsEnum:
       type: string
-      x-okta-known-values:
+      enum:
         - OPTIONAL
         - REQUIRED
     ForgotPasswordResponse:
@@ -35958,77 +35886,56 @@ components:
       properties:
         description:
           type: string
-          description: Description of the governance bundle
         id:
           type: string
-          description: Governance bundle ID
         name:
           type: string
-          description: Name of the governance bundle
         orn:
           type: string
-          description: The governance bundle resource, in [ORN format](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#okta-resource-name-orn)
         status:
           type: string
-          description: Status of the governance bundle
         _links:
-          type: object
-          description: Link relations available
-          properties:
-            entitlements:
-              $ref: '#/components/schemas/EntitlementsLink'
-            self:
-              $ref: '#/components/schemas/HrefObjectSelfLink'
+          allOf:
+            - properties:
+                entitlements:
+                  $ref: '#/components/schemas/HrefObject'
     GovernanceBundleCreateRequest:
-      description: Request to create a governance bundle
       type: object
       properties:
         description:
           type: string
-          description: Description of the governance bundle
         entitlements:
           type: array
-          description: List of entitlements to include in the governance bundle
           items:
             $ref: '#/components/schemas/IAMBundleEntitlement'
         name:
           type: string
-          description: Name of the governance bundle
     GovernanceBundleUpdateRequest:
-      description: Request to update a governance bundle
       type: object
       properties:
         description:
           type: string
-          description: Description of the governance bundle
         entitlements:
           type: array
-          description: List of entitlements to include in the governance bundle
           items:
             $ref: '#/components/schemas/IAMBundleEntitlement'
         name:
           type: string
-          description: Name of the governance bundle
     GovernanceBundlesResponse:
       type: object
       properties:
         bundles:
           type: array
-          description: List of governance bundles
           items:
             $ref: '#/components/schemas/GovernanceBundle'
         _links:
-          allOf:
+          anyOf:
             - $ref: '#/components/schemas/LinksSelf'
-            - readOnly: true
-            - type: object
-              properties:
-                next:
-                  $ref: '#/components/schemas/HrefObjectNextLink'
+            - $ref: '#/components/schemas/LinksNext'
     GovernanceSourceType:
       description: The grant type
       type: string
-      x-okta-known-values:
+      enum:
         - CUSTOM
         - ENTITLEMENT-BUNDLE
     GracePeriod:
@@ -36057,10 +35964,10 @@ components:
       description: Status
       example: ACTIVE
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - REVOKED
+      readOnly: true
     GrantResourcesHrefObject:
       type: object
       properties:
@@ -36071,7 +35978,7 @@ components:
     GrantType:
       description: Determines the mechanism Okta uses to authorize the creation of the tokens.
       type: string
-      x-okta-known-values:
+      enum:
         - authorization_code
         - client_credentials
         - implicit
@@ -36220,13 +36127,13 @@ components:
     GroupOwnerOriginType:
       description: The source where group ownership is managed
       type: string
-      x-okta-known-values:
+      enum:
         - APPLICATION
         - OKTA_DIRECTORY
     GroupOwnerType:
       description: The entity type of the owner
       type: string
-      x-okta-known-values:
+      enum:
         - GROUP
         - USER
     GroupPolicyRuleCondition:
@@ -36311,20 +36218,20 @@ components:
     GroupPushMappingStatus:
       description: The status of the group push mapping
       type: string
+      enum:
+        - ACTIVE
+        - ERROR
+        - INACTIVE
       x-enumDescriptions:
         ACTIVE: The group push mapping is active and Okta pushes membership changes to the target group
         INACTIVE: The group push mapping is inactive and Okta doesn't push membership changes to the target group
         ERROR: The group push mapping is in an error state and Okta doesn't push membership changes to the target group
-      x-okta-known-values:
-        - ACTIVE
-        - ERROR
-        - INACTIVE
     GroupPushMappingStatusUpsert:
       description: The status of the group push mapping
       title: GroupPushMappingStatus
       default: ACTIVE
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - INACTIVE
     GroupRule:
@@ -36412,7 +36319,7 @@ components:
     GroupRuleStatus:
       description: Status of group rule. You can't update the status of a rule from `INACTIVE` to `ACTIVE`. You must use the activate and deactivate lifecycle operations.
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - INACTIVE
         - INVALID
@@ -36634,14 +36541,14 @@ components:
     GroupType:
       description: Determines how a group's profile and memberships are managed
       type: string
+      enum:
+        - APP_GROUP
+        - BUILT_IN
+        - OKTA_GROUP
       x-enumDescriptions:
         APP_GROUP: Group profile and memberships are imported and must be managed within the app (such as Active Directory or LDAP) that imported the group
         BUILT_IN: Group profile and memberships are managed by Okta and can't be modified
         OKTA_GROUP: Group profile and memberships are directly managed in Okta via static assignments or indirectly through group rules
-      x-okta-known-values:
-        - APP_GROUP
-        - BUILT_IN
-        - OKTA_GROUP
     GroupsLink:
       allOf:
         - $ref: '#/components/schemas/HrefObject'
@@ -36730,7 +36637,7 @@ components:
         - type
     HostedPageType:
       type: string
-      x-okta-known-values:
+      enum:
         - EXTERNALLY_HOSTED
         - OKTA_DEFAULT
     HrefCsrPublishLink:
@@ -36931,30 +36838,24 @@ components:
         - description: Link to the user resource
     HttpMethod:
       type: string
-      x-okta-known-values:
+      enum:
         - DELETE
         - GET
         - POST
         - PUT
     IAMBundleEntitlement:
-      description: An entitlement in a governance bundle
       type: object
       properties:
         resourceSets:
           type: array
-          description: List of resource set IDs for the custom role
           items:
             type: string
-            description: Resource set ID
         role:
           type: string
-          description: The role
         targets:
           type: array
-          description: List of target resource IDs to scope the entitlement with the role
           items:
             type: string
-            description: Target resource (app or group ID)
     IDVAuthorizationEndpoint:
       description: IDV authorization endpoint
       type: object
@@ -37065,7 +36966,7 @@ components:
     IPServiceCategory:
       description: An IP service offered by a provider, such as a proxy or VPN
       type: string
-      x-okta-known-values:
+      enum:
         - ABCPROXY_PROXY
         - ALL_ANONYMIZERS
         - ALL_ANONYMIZERS_EXCEPT_TOR
@@ -37241,7 +37142,7 @@ components:
         lifecycle: EA
         isGenerallyAvailable: true
       type: string
-      x-okta-known-values:
+      enum:
         - RSA-OAEP-256
         - RSA-OAEP-384
         - RSA-OAEP-512
@@ -37547,14 +37448,14 @@ components:
       description: Indicates whether Okta uses the original Okta org domain URL or a custom domain URL in the request to the social IdP
       default: DYNAMIC
       type: string
+      enum:
+        - CUSTOM_URL
+        - DYNAMIC
+        - ORG_URL
       x-enumDescriptions:
         ORG_URL: In the authorize request to the social IdP, Okta uses the Okta org's original domain URL (`https://${yourOktaDomain}`) as the domain in the `redirect_uri`.
         CUSTOM_URL: In the authorize request to the social IdP, Okta uses the custom domain URL as the domain in the `redirect_uri`. You can set `issuerMode` to `CUSTOM_URL` only if you have a custom URL domain configured.
         DYNAMIC: In the authorize request to the social IdP, Okta uses the custom domain URL as the domain in the `redirect_uri` if the request was made from the custom domain URL. Otherwise, Okta uses the Okta org's original domain URL if the request was made from the Okta org domain.
-      x-okta-known-values:
-        - CUSTOM_URL
-        - DYNAMIC
-        - ORG_URL
     IdentityProviderPolicy:
       description: |-
         Policy settings for the IdP.
@@ -37579,7 +37480,7 @@ components:
               $ref: '#/components/schemas/PolicySubject'
     IdentityProviderPolicyProvider:
       type: string
-      x-okta-known-values:
+      enum:
         - ANY
         - OKTA
         - SPECIFIC_IDP
@@ -37682,7 +37583,7 @@ components:
         | `YAHOOJP`          | [Yahoo Japan](https://login.yahoo.co.jp/config/login)&nbsp;as the IdP                                                                   | OpenID Connect         | `openid`, `profile`, `email`                                          |
         | `OKTA_INTEGRATION`             | IdP that supports the [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html) Org2Org IdP                                               | OpenID Connect         | `openid`, `email`, `profile`                                          |
       type: string
-      x-okta-known-values:
+      enum:
         - AMAZON
         - APPLE
         - DISCORD
@@ -37791,6 +37692,14 @@ components:
     IdentitySourceSessionStatus:
       description: The current status of the identity source session
       type: string
+      enum:
+        - CLOSED
+        - COMPLETED
+        - CREATED
+        - ERROR
+        - EXPIRED
+        - IN_PROGRESS
+        - TRIGGERED
       x-enumDescriptions:
         CREATED: This is a new identity source session that hasn't been processed. You can upload bulk data in this stage.
         IN_PROGRESS: The bulk data is being uploaded to Okta.
@@ -37799,14 +37708,6 @@ components:
         CLOSED: The identity source session was canceled and isn't available for further activity.
         EXPIRED: This identity source session had the `CREATED` status and timed-out after 24 hours of inactivity.
         ERROR: The processing of import data in the session encountered an error. You need to open a new session to upload the data again.
-      x-okta-known-values:
-        - CLOSED
-        - COMPLETED
-        - CREATED
-        - ERROR
-        - EXPIRED
-        - IN_PROGRESS
-        - TRIGGERED
     IdentitySourceUserProfileForDelete:
       type: object
       properties:
@@ -37935,12 +37836,12 @@ components:
     IdpSelectionType:
       description: Determines whether the rule should use expression language or a specific IdP
       type: string
-      x-okta-known-values:
+      enum:
         - DYNAMIC
         - SPECIFIC
     IframeEmbedScopeAllowedApps:
       type: string
-      x-okta-known-values:
+      enum:
         - OKTA_ENDUSER
     ImageUploadResponse:
       type: object
@@ -38187,7 +38088,7 @@ components:
               $ref: '#/components/schemas/InlineHookOAuthChannelConfigCreate'
     InlineHookChannelType:
       type: string
-      x-okta-known-values:
+      enum:
         - HTTP
         - OAUTH
     InlineHookCreate:
@@ -38426,13 +38327,13 @@ components:
             $ref: '#/components/schemas/InlineHookResponseCommandValue'
     InlineHookStatus:
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - INACTIVE
     InlineHookType:
       description: One of the inline hook types
       type: string
-      x-okta-known-values:
+      enum:
         - com.okta.import.transform
         - com.okta.oauth2.tokens.transform
         - com.okta.saml.tokens.transform
@@ -38441,7 +38342,7 @@ components:
         - com.okta.user.pre-registration
     IssuerMode:
       type: string
-      x-okta-known-values:
+      enum:
         - CUSTOM_URL
         - DYNAMIC
         - ORG_URL
@@ -38503,18 +38404,18 @@ components:
     JsonWebKeyStatus:
       description: The status of the public key
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - INACTIVE
     JsonWebKeyType:
       description: The type of public key
       type: string
-      x-okta-known-values:
+      enum:
         - RSA
     JsonWebKeyUse:
       description: The intended use of the public key
       type: string
-      x-okta-known-values:
+      enum:
         - enc
     JwkUse:
       type: object
@@ -38524,7 +38425,7 @@ components:
     JwkUseType:
       description: Purpose of the certificate. The only supported value is `sig`.
       type: string
-      x-okta-known-values:
+      enum:
         - sig
     KeepCurrent:
       type: object
@@ -38567,22 +38468,22 @@ components:
       description: Represents the attestation strength used by the Chrome Verified Access API
       example: CHROME_BROWSER_HW_KEY
       type: string
+      enum:
+        - CHROME_BROWSER_HW_KEY
+        - CHROME_BROWSER_OS_KEY
       x-enumDescriptions:
         CHROME_BROWSER_HW_KEY: Identity of the device was attested using a key pair that is OS encapsulated by a hardware layer
         CHROME_BROWSER_OS_KEY: Identity of the device was attested using a key pair that is simply stored on the device but not in any specific hardware layer
-      x-okta-known-values:
-        - CHROME_BROWSER_HW_KEY
-        - CHROME_BROWSER_OS_KEY
     KeyTrustLevelOSMode:
       description: Represents the attestation strength used by the Chrome Verified Access API
       example: CHROME_OS_VERIFIED_MODE
       type: string
+      enum:
+        - CHROME_OS_DEVELOPER_MODE
+        - CHROME_OS_VERIFIED_MODE
       x-enumDescriptions:
         CHROME_OS_VERIFIED_MODE: Identity of the device was attested using an enterprise-emitted certificate, and the device is in Verified mode
         CHROME_OS_DEVELOPER_MODE: Identity of the device was attested using an enterprise-emitted certificate, and the device is in Developer mode
-      x-okta-known-values:
-        - CHROME_OS_DEVELOPER_MODE
-        - CHROME_OS_VERIFIED_MODE
     KnowledgeConstraint:
       allOf:
         - $ref: '#/components/schemas/AccessPolicyConstraint'
@@ -38622,7 +38523,7 @@ components:
           type: string
     LifecycleStatus:
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - INACTIVE
     LinkedHrefObject:
@@ -38668,10 +38569,10 @@ components:
     LinkedObjectDetailsType:
       description: The object type for this relationship
       type: string
+      enum:
+        - USER
       x-enumDescriptions:
         USER: Specifies the type of object
-      x-okta-known-values:
-        - USER
     LinkedObjectLinksSelf:
       description: Specifies link relations (see [Web Linking](https://www.rfc-editor.org/rfc/rfc8288)) available for the current status of an application using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06) specification. This object is used for dynamic discovery of related resources and lifecycle operations.
       type: object
@@ -38941,15 +38842,15 @@ components:
         Variant for the Okta loading page. You can publish a theme for Okta loading page with different combinations of assets. Variants are preset combinations of those assets.
       default: OKTA_DEFAULT
       type: string
+      enum:
+        - NONE
+        - OKTA_DEFAULT
       x-enumDescriptions:
         NONE: Uses no loading page animation during the redirect
         OKTA_DEFAULT: Uses the default Okta loading page animation during the redirect
-      x-okta-known-values:
-        - NONE
-        - OKTA_DEFAULT
     LocationGranularity:
       type: string
-      x-okta-known-values:
+      enum:
         - CITY
         - COUNTRY
         - LAT_LONG
@@ -39023,7 +38924,7 @@ components:
     LogAuthenticationProvider:
       description: The system that proves the identity of an actor using the credentials provided to it
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE_DIRECTORY
         - FACTOR_PROVIDER
         - FEDERATION
@@ -39057,7 +38958,7 @@ components:
     LogCredentialProvider:
       description: A credential provider is a software service that manages identities and their associated credentials. When authentication occurs through credentials provided by a credential provider, the credential provider is recorded here.
       type: string
-      x-okta-known-values:
+      enum:
         - DUO
         - GOOGLE
         - OKTA_AUTHENTICATION_PROVIDER
@@ -39068,7 +38969,7 @@ components:
     LogCredentialType:
       description: The underlying technology/scheme used in the credential
       type: string
-      x-okta-known-values:
+      enum:
         - ASSERTION
         - CERTIFICATE
         - DEVICE_UDID
@@ -39152,7 +39053,7 @@ components:
           readOnly: true
     LogDiskEncryptionType:
       type: string
-      x-okta-known-values:
+      enum:
         - ALL_INTERNAL_VALUES
         - FULL
         - NONE
@@ -39319,7 +39220,7 @@ components:
             $ref: '#/components/schemas/LogIpAddress'
     LogScreenLockType:
       type: string
-      x-okta-known-values:
+      enum:
         - BIOMETRIC
         - NONE
         - PASSCODE
@@ -39360,7 +39261,7 @@ components:
     LogSeverity:
       description: Indicates how severe the event is
       type: string
-      x-okta-known-values:
+      enum:
         - DEBUG
         - ERROR
         - INFO
@@ -39598,7 +39499,7 @@ components:
 
         Select the provider type to see provider-specific configurations in the `settings` property:
       type: string
-      x-okta-known-values:
+      enum:
         - aws_eventbridge
         - splunk_cloud_logstreaming
     LogTarget:
@@ -39705,7 +39606,7 @@ components:
           readOnly: true
     MDMEnrollmentPolicyEnrollment:
       type: string
-      x-okta-known-values:
+      enum:
         - ANY_OR_NONE
         - OMM
     MDMEnrollmentPolicyRuleCondition:
@@ -39843,12 +39744,12 @@ components:
     ManagedConnectionStatus:
       description: The status of the connection
       type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
       x-enumDescriptions:
         ACTIVE: The agent connection is active
         INACTIVE: The agent connection is inactive
-      x-okta-known-values:
-        - ACTIVE
-        - INACTIVE
     ManagedConnectionVaultedSecret:
       description: Secret for the managed connection
       type: object
@@ -39946,7 +39847,7 @@ components:
       deprecated: true
       example: CRL
       type: string
-      x-okta-known-values:
+      enum:
         - CRL
         - DELTA_CRL
         - OCSP
@@ -40010,7 +39911,7 @@ components:
     NetworkZoneAddressType:
       description: Format of the IP addresses
       type: string
-      x-okta-known-values:
+      enum:
         - CIDR
         - RANGE
     NetworkZoneAsns:
@@ -40044,39 +39945,26 @@ components:
     NetworkZoneStatus:
       description: Network Zone status
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - INACTIVE
     NetworkZoneType:
       description: The type of Network Zone
       type: string
-      x-okta-known-values:
+      enum:
         - DYNAMIC
         - IP
         - DYNAMIC_V2
     NetworkZoneUsage:
       description: The usage of the Network Zone
       type: string
-      x-okta-known-values:
+      enum:
         - BLOCKLIST
         - POLICY
     NotificationType:
       description: The type of notification
       type: string
-      x-enumDescriptions:
-        AD_AGENT: System notification sent when an AD agent disconnects or reconnects
-        AGENT_AUTO_UPDATE_NOTIFICATION: System notification sent when an agent automatically updates
-        APP_IMPORT: System notification sent with the status of an app user import
-        CONNECTOR_AGENT: System notification sent when an on-premises provisioning or Okta on-prem MFA agent disconnects or reconnects
-        IWA_AGENT: System notification sent when an IGA agent disconnects or reconnects
-        LDAP_AGENT: System notification sent when an LDAP agent disconnects or reconnects
-        OKTA_ANNOUNCEMENT: Okta communication sent for announcements and release notes
-        OKTA_UPDATE: Okta communication sent for scheduled system updates
-        RATELIMIT_NOTIFICATION: System notification sent when an org reaches rate limit warning or violation thresholds
-        REPORT_SUSPICIOUS_ACTIVITY: System notification sent when a user reports suspicious activity
-        USER_DEPROVISION: System notification sent when a user is deprovisioned from apps
-        USER_LOCKED_OUT: System notification sent when a user is locked out from logging in to Okta
-      x-okta-known-values:
+      enum:
         - AD_AGENT
         - AGENT_AUTO_UPDATE_NOTIFICATION
         - AGENT_AUTO_UPDATE_NOTIFICATION_LDAP
@@ -40090,6 +39978,19 @@ components:
         - REPORT_SUSPICIOUS_ACTIVITY
         - USER_DEPROVISION
         - USER_LOCKED_OUT
+      x-enumDescriptions:
+        AD_AGENT: System notification sent when an AD agent disconnects or reconnects
+        AGENT_AUTO_UPDATE_NOTIFICATION: System notification sent when an agent automatically updates
+        APP_IMPORT: System notification sent with the status of an app user import
+        CONNECTOR_AGENT: System notification sent when an on-premises provisioning or Okta on-prem MFA agent disconnects or reconnects
+        IWA_AGENT: System notification sent when an IGA agent disconnects or reconnects
+        LDAP_AGENT: System notification sent when an LDAP agent disconnects or reconnects
+        OKTA_ANNOUNCEMENT: Okta communication sent for announcements and release notes
+        OKTA_UPDATE: Okta communication sent for scheduled system updates
+        RATELIMIT_NOTIFICATION: System notification sent when an org reaches rate limit warning or violation thresholds
+        REPORT_SUSPICIOUS_ACTIVITY: System notification sent when a user reports suspicious activity
+        USER_DEPROVISION: System notification sent when a user is deprovisioned from apps
+        USER_LOCKED_OUT: System notification sent when a user is locked out from logging in to Okta
     NumberFactorChallengeEmbeddedLinks:
       description: Contains the `challenge` and `correctAnswer` objects for `push` factors that use a number matching challenge
       x-okta-lifecycle:
@@ -40168,26 +40069,26 @@ components:
 
         If you have complex filters for Groups, you can [create a Groups allowlist](https://developer.okta.com/docs/guides/customize-tokens-groups-claim/main/) to put them all in a Claim.
       type: string
+      enum:
+        - CONTAINS
+        - EQUALS
+        - REGEX
+        - STARTS_WITH
       x-enumDescriptions:
         STARTS_WITH: Group names start with `value` (not case-sensitive). For example, if `value` is `group1`, then `group123` and `Group123` are included.
         EQUALS: Group name is the same as `value` (not case-sensitive). For example, if `value` is `group1`, then `group1` and `Group1` are included, but `group123` isn't.
         CONTAINS: Group names contain `value` (not case-sensitive). For example, if `value` is `group1`, then `MyGroup123` and `group1` are included.
         REGEX: Group names match the regular expression in `value` (case-sensitive). For example if `value` is `/^[a-z0-9_-]{3,16}$/`, then any Group name that has at least three letters, no more than 16, and contains lowercase letters, a hyphen, or numbers is a match.
-      x-okta-known-values:
-        - CONTAINS
-        - EQUALS
-        - REGEX
-        - STARTS_WITH
     OAuth2ClaimType:
       description: Specifies whether the Claim is for an access token (`RESOURCE`) or an ID token (`IDENTITY`)
       type: string
-      x-okta-known-values:
+      enum:
         - IDENTITY
         - RESOURCE
     OAuth2ClaimValueType:
       description: Specifies whether the Claim is an Okta Expression Language (EL) expression (`EXPRESSION`), a set of groups (`GROUPS`), or a system claim (`SYSTEM`)
       type: string
-      x-okta-known-values:
+      enum:
         - EXPRESSION
         - GROUPS
         - SYSTEM
@@ -40875,15 +40776,15 @@ components:
       description: User type source that granted consent
       example: ADMIN
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - ADMIN
         - END_USER
+      readOnly: true
     OAuth2ScopeConsentType:
       description: Indicates whether a consent dialog is needed for the Scope
       default: IMPLICIT
       type: string
-      x-okta-known-values:
+      enum:
         - FLEXIBLE
         - IMPLICIT
         - REQUIRED
@@ -40891,7 +40792,7 @@ components:
       description: Indicates whether the Scope is included in the metadata
       default: NO_CLIENTS
       type: string
-      x-okta-known-values:
+      enum:
         - ALL_CLIENTS
         - NO_CLIENTS
     OAuth2ScopesMediationPolicyRuleCondition:
@@ -41035,7 +40936,7 @@ components:
       description: Requested authentication method for the token endpoint
       default: client_secret_basic
       type: string
-      x-okta-known-values:
+      enum:
         - client_secret_basic
         - client_secret_jwt
         - client_secret_post
@@ -41185,7 +41086,7 @@ components:
     OAuthProvisioningEnabledApp:
       description: Application name for the provisioning connection
       type: string
-      x-okta-known-values:
+      enum:
         - google
         - office365
         - slack
@@ -41201,7 +41102,7 @@ components:
     OAuthResponseType:
       description: Array of OAuth 2.0 response type strings
       type: string
-      x-okta-known-values:
+      enum:
         - code
         - id_token
         - token
@@ -41582,7 +41483,7 @@ components:
           default: false
     OidcSigningAlgorithm:
       type: string
-      x-okta-known-values:
+      enum:
         - HS256
         - HS384
         - HS512
@@ -41776,7 +41677,7 @@ components:
 
         > **Note:** Required only if `requireFactor` is set to `true`.
       type: string
-      x-okta-known-values:
+      enum:
         - ALWAYS
         - DEVICE
         - SESSION
@@ -41846,7 +41747,7 @@ components:
 
         > **Note:** Required only if `access` is set to `ALLOW`.
       type: string
-      x-okta-known-values:
+      enum:
         - PASSWORD_IDP
         - PASSWORD_IDP_ANY_FACTOR
     OktaSignOnPolicyRuleSignonSessionActions:
@@ -41868,16 +41769,16 @@ components:
     OktaSupportAccessStatus:
       description: Status of Okta Support access
       type: string
+      enum:
+        - DISABLED
+        - ENABLED
+        - NOT_REQUESTED
+        - REQUESTED
       x-enumDescriptions:
         NOT_REQUESTED: Okta Support access not requested
         REQUESTED: Okta Support access requested
         DISABLED: Okta Support access disabled
         ENABLED: Okta Support access enabled
-      x-okta-known-values:
-        - DISABLED
-        - ENABLED
-        - NOT_REQUESTED
-        - REQUESTED
     OktaSupportCase:
       type: object
       properties:
@@ -42040,12 +41941,12 @@ components:
         > * When a scope is requested during a Client Credentials grant flow and `consent` is set to `FLEXIBLE`, the scope is granted in the access token with no consent prompt. This occurs because there is no user involved in a two-legged OAuth 2.0 [Client Credentials](https://developer.okta.com/docs/guides/implement-grant-type/clientcreds/main/) grant flow.
       default: TRUSTED
       type: string
+      enum:
+        - REQUIRED
+        - TRUSTED
       x-enumDescriptions:
         TRUSTED: The client is fully trusted (for example, a first-party app). The default consent method for app instances created with a [Create an Application](/openapi/okta-management/management/tag/Application/#tag/Application/operation/createApplication) request
         REQUIRED: The client requires consent (for example, a third-party app). The default consent method for app instances created with a [Create a Client Application](/openapi/okta-oauth/oauth/tag/Client/#tag/Client/operation/createClient) request
-      x-okta-known-values:
-        - REQUIRED
-        - TRUSTED
     OpenIdConnectApplicationIdpInitiatedLogin:
       description: The type of IdP-initiated sign-in flow that the client supports
       type: object
@@ -42073,14 +41974,14 @@ components:
     OpenIdConnectApplicationIssuerMode:
       description: Indicates whether the Okta authorization server uses the original Okta org domain URL or a custom domain URL as the issuer of the ID token for this client
       type: string
+      enum:
+        - CUSTOM_URL
+        - DYNAMIC
+        - ORG_URL
       x-enumDescriptions:
         CUSTOM_URL: The issuer is returned in the appropriate OIDC token response. This is the default `issuer_mode` when you configured a custom domain for your org.
         DYNAMIC: A request for the ID token made from the custom domain has the custom URL as the issuer.  A request for the ID token made from an Okta org has the Org URL as the issuer. You can only set `issuer_mode` as DYNAMIC if the Dynamic Issuer Mode feature is enabled. Contact Okta Support to enable this feature.
         ORG_URL: The issuer is returned based on the URL of your Okta organization. This is useful when you are using Okta’s default domain and do not have a custom domain configured.
-      x-okta-known-values:
-        - CUSTOM_URL
-        - DYNAMIC
-        - ORG_URL
     OpenIdConnectApplicationNetwork:
       description: The network restrictions of the client
       x-okta-lifecycle:
@@ -42323,26 +42224,26 @@ components:
         The type of client app     
         Specific `grant_types` are valid for each `application_type`. See [Create a Client Application](/openapi/okta-oauth/oauth/tag/Client/#tag/Client/operation/createClient).
       type: string
+      enum:
+        - browser
+        - native
+        - service
+        - web
       x-enumDescriptions:
         browser: Single-Page app (SPA)
         native: Native app
         service: API service app
         web: Web app
-      x-okta-known-values:
-        - browser
-        - native
-        - service
-        - web
     OpenIdConnectRefreshTokenRotationType:
       description: The refresh token rotation mode for the OAuth 2.0 client
       example: STATIC
       type: string
+      enum:
+        - ROTATE
+        - STATIC
       x-enumDescriptions:
         ROTATE: The default rotation type for single-page apps (SPAs)
         STATIC: The default rotation type for all clients, except SPAs
-      x-okta-known-values:
-        - ROTATE
-        - STATIC
     OperationRequest:
       type: object
       properties:
@@ -42428,7 +42329,7 @@ components:
     OperationalStatus:
       description: Operational status of a given agent
       type: string
-      x-okta-known-values:
+      enum:
         - DEGRADED
         - DISRUPTED
         - INACTIVE
@@ -42438,25 +42339,16 @@ components:
       properties:
         optInStatus:
           type: string
-          description: The entitlement management opt-in status for the Admin Console
           enum:
             - OPTING_IN
             - OPTED_IN
             - OPTING_OUT
             - OPTED_OUT
-          x-enumDescriptions:
-            OPTING_IN: Okta is enabling entitlement management for the Admin Console
-            OPTED_IN: Entitlement management is enabled for the Admin Console
-            OPTING_OUT: Okta is disabling entitlement management for the Admin Console
-            OPTED_OUT: Entitlement management is disabled for the Admin Console
         _links:
-          type: object
-          description: Link relations available
-          properties:
-            optInStatus:
-              allOf:
-                - $ref: '#/components/schemas/HrefObject'
-                - description: Link to the opt-in status resource
+          allOf:
+            - properties:
+                optInStatus:
+                  $ref: '#/components/schemas/HrefObject'
     Org2OrgApplication:
       title: Org2Org
       x-tags:
@@ -42628,7 +42520,7 @@ components:
     OrgContactType:
       description: Type of contact
       type: string
-      x-okta-known-values:
+      enum:
         - BILLING
         - TECHNICAL
     OrgContactTypeObj:
@@ -42787,7 +42679,7 @@ components:
     OrgOktaSupportSetting:
       description: Status of Okta Support Settings
       type: string
-      x-okta-known-values:
+      enum:
         - DISABLED
         - ENABLED
     OrgOktaSupportSettingsObj:
@@ -42932,21 +42824,21 @@ components:
     OtpProtocol:
       description: The protocol used
       type: string
-      x-okta-known-values:
+      enum:
         - SYMANTEC
         - TOTP
         - YUBICO
     OtpTotpAlgorithm:
       description: HMAC algorithm
       type: string
-      x-okta-known-values:
+      enum:
         - HMacSHA1
         - HMacSHA256
         - HMacSHA512
     OtpTotpEncoding:
       description: The shared secret encoding
       type: string
-      x-okta-known-values:
+      enum:
         - base32
         - base64
         - hexadecimal
@@ -43073,7 +42965,7 @@ components:
     PasswordCredentialHashAlgorithm:
       description: The algorithm used to generate the hash using the password (and salt, when applicable).
       type: string
-      x-okta-known-values:
+      enum:
         - BCRYPT
         - MD5
         - PBKDF2
@@ -43195,7 +43087,7 @@ components:
           $ref: '#/components/schemas/PasswordPolicyAuthenticationProviderType'
     PasswordPolicyAuthenticationProviderType:
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE_DIRECTORY
         - ANY
         - LDAP
@@ -43482,14 +43374,14 @@ components:
       description: Indicates whether the Password Protection Warning feature is enabled
       example: PHISHING_REUSE
       type: string
+      enum:
+        - PASSWORD_PROTECTION_OFF
+        - PASSWORD_REUSE
+        - PHISHING_REUSE
       x-enumDescriptions:
         PASSWORD_PROTECTION_OFF: Password protection warning is off
         PASSWORD_REUSE: Password protection warning is triggered by password reuse
         PHISHING_REUSE: Password protection warning is triggered by password reuse on a phishing page
-      x-okta-known-values:
-        - PASSWORD_PROTECTION_OFF
-        - PASSWORD_REUSE
-        - PHISHING_REUSE
     PasswordSettingObject:
       description: Determines whether Okta creates and pushes a password in the app for each assigned user
       type: object
@@ -43528,15 +43420,15 @@ components:
     PatchAction:
       description: The operation (PATCH action)
       type: string
+      enum:
+        - remove
+        - replace
       x-enumDescriptions:
         remove: Removes the attribute in `path` if allowed
         replace: Replaces the attribute in content `path` with the content in `value`
-      x-okta-known-values:
-        - remove
-        - replace
     PerClientRateLimitMode:
       type: string
-      x-okta-known-values:
+      enum:
         - DISABLE
         - ENFORCE
         - PREVIEW
@@ -43642,15 +43534,15 @@ components:
     PipelineType:
       description: The Okta authentication pipeline of the org
       type: string
+      enum:
+        - idx
+        - v1
       x-enumDescriptions:
         idx: '[Identity Engine](https://help.okta.com/okta_help.htm?type=oie&id=ext-get-started-oie)'
         v1: '[Classic Engine](https://help.okta.com/en-us/content/index-admin.htm)'
-      x-okta-known-values:
-        - idx
-        - v1
     Platform:
       type: string
-      x-okta-known-values:
+      enum:
         - ANDROID
         - CHROMEOS
         - IOS
@@ -43681,7 +43573,7 @@ components:
           type: string
     PlatformConditionOperatingSystemVersionMatchType:
       type: string
-      x-okta-known-values:
+      enum:
         - EXPRESSION
         - SEMVER
     PlatformPolicyRuleCondition:
@@ -43699,14 +43591,14 @@ components:
     PlayProtectVerdict:
       description: Indicates if Google Play Protect is enabled on the device and whether it has found known malware
       type: string
+      enum:
+        - HIGH
+        - LOW
+        - MEDIUM
       x-enumDescriptions:
         LOW: Play Protect is turned on and didn't find any app issues on the device
         MEDIUM: Play Protect is turned on and either hasn't performed a scan yet or has found potentially harmful apps installed on the device
         HIGH: Play Protect is turned on and has either found dangerous apps installed on the device or its verdict wasn't evaluated. That is, the device isn't trustworthy enough.
-      x-okta-known-values:
-        - HIGH
-        - LOW
-        - MEDIUM
     Policy:
       type: object
       properties:
@@ -43762,7 +43654,7 @@ components:
       discriminator: *ref_15
     PolicyAccess:
       type: string
-      x-okta-known-values:
+      enum:
         - ALLOW
         - DENY
     PolicyAccountLink:
@@ -43776,12 +43668,12 @@ components:
     PolicyAccountLinkAction:
       description: Specifies the account linking action for an IdP user
       type: string
+      enum:
+        - AUTO
+        - DISABLED
       x-enumDescriptions:
         AUTO: The IdP user is automatically linked to an Okta user when the transformed IdP user matches an existing Okta user according to [subject match rules](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/IdentityProvider/#tag/IdentityProvider/operation/createIdentityProvider!path=policy/subject&t=request).
         DISABLED: Okta never attempts to link the IdP user to an existing Okta user, but may still attempt to provision a new Okta user according to the [provisioning action type](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/IdentityProvider/#tag/IdentityProvider/operation/createIdentityProvider!path=policy/provisioning/action&t=request).
-      x-okta-known-values:
-        - AUTO
-        - DISABLED
     PolicyAccountLinkFilter:
       description: Specifies filters on which users are available for account linking by an IdP
       type: object
@@ -43973,7 +43865,7 @@ components:
     PolicyMappingResourceType:
       description: Specifies the type of resource to map. You can only map an app sign-in policy to a device signal collection policy (the `policyId` path parameter).
       type: string
-      x-okta-known-values:
+      enum:
         - ACCESS_POLICY
     PolicyNetworkCondition:
       description: Specifies a network selection mode and a set of network zones to be included or excluded. If the connection parameter's data type is `ZONE`, one of the `include` or `exclude` arrays is required. Specific zone IDs to include or exclude are enumerated in the respective arrays.
@@ -43994,7 +43886,7 @@ components:
     PolicyNetworkConnection:
       description: Network selection mode
       type: string
-      x-okta-known-values:
+      enum:
         - ANYWHERE
         - ZONE
     PolicyPeopleCondition:
@@ -44010,7 +43902,7 @@ components:
         - users
     PolicyPlatformOperatingSystemType:
       type: string
-      x-okta-known-values:
+      enum:
         - ANDROID
         - ANY
         - IOS
@@ -44019,7 +43911,7 @@ components:
         - WINDOWS
     PolicyPlatformType:
       type: string
-      x-okta-known-values:
+      enum:
         - ANY
         - DESKTOP
         - MOBILE
@@ -44072,7 +43964,7 @@ components:
           $ref: '#/components/schemas/PolicyRuleActionsEnrollSelf'
     PolicyRuleActionsEnrollSelf:
       type: string
-      x-okta-known-values:
+      enum:
         - CHALLENGE
         - LOGIN
         - NEVER
@@ -44085,7 +43977,7 @@ components:
     PolicyRuleAuthContextType:
       description: Specifies how the user is authenticated
       type: string
-      x-okta-known-values:
+      enum:
         - ANY
         - LDAP_INTERFACE
         - RADIUS
@@ -44137,7 +44029,7 @@ components:
     PolicyRuleType:
       description: Rule type
       type: string
-      x-okta-known-values:
+      enum:
         - ACCESS_POLICY
         - DEVICE_SIGNAL_COLLECTION
         - ENTITY_RISK
@@ -44150,7 +44042,7 @@ components:
     PolicyRuleVerificationMethodType:
       description: Verification method type
       type: string
-      x-okta-known-values:
+      enum:
         - ASSURANCE
         - AUTH_METHOD_CHAIN
         - ID_PROOFING
@@ -44183,7 +44075,7 @@ components:
     PolicySubjectMatchType:
       description: Determines the Okta user profile attribute match conditions for account linking and authentication of the transformed IdP username
       type: string
-      x-okta-known-values:
+      enum:
         - CUSTOM_ATTRIBUTE
         - EMAIL
         - USERNAME
@@ -44194,7 +44086,7 @@ components:
         Creating or replacing a policy with the `IDP_DISCOVERY` type, the `ENTITY_RISK` type, or the `POST_AUTH_SESSION` type isn't supported.
         The following policy types are available with Identity Engine: `ACCESS_POLICY`, `PROFILE_ENROLLMENT`, `POST_AUTH_SESSION`, <x-lifecycle class="ea"></x-lifecycle> `DEVICE_SIGNAL_COLLECTION`, `ENTITY_RISK`.
       type: string
-      x-okta-known-values:
+      enum:
         - <x-lifecycle class="ea"></x-lifecycle> DEVICE_SIGNAL_COLLECTION
         - ACCESS_POLICY
         - ENTITY_RISK
@@ -44206,7 +44098,7 @@ components:
         - PROFILE_ENROLLMENT
     PolicyTypeSimulation:
       type: string
-      x-okta-known-values:
+      enum:
         - ACCESS_POLICY
         - MFA_ENROLL
         - OKTA_SIGN_ON
@@ -44225,7 +44117,7 @@ components:
           example: idpuser.subjectNameId
     PolicyUserStatus:
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVATING
         - ACTIVE
         - DELETED
@@ -44459,7 +44351,7 @@ components:
     PrincipalType:
       description: The type of principal, either an API token or an OAuth 2.0 app
       type: string
-      x-okta-known-values:
+      enum:
         - OAUTH_CLIENT
         - SSWS_TOKEN
     PrivilegedResource:
@@ -44563,6 +44455,12 @@ components:
     PrivilegedResourceStatus:
       description: Current status of the privileged resource
       type: string
+      enum:
+        - ACTIVE
+        - CREATED
+        - CREATION_FAILED
+        - INACTIVE
+        - PENDING
       x-enumDescriptions:
         CREATED: The privileged resource is created but not yet managed by OPA
         ACTIVE: The privileged resource is currently managed by OPA
@@ -44570,21 +44468,15 @@ components:
         PENDING: The privileged resource is pending creation in Okta
         CREATION_FAILED: The privileged resource creation failed
       readOnly: true
-      x-okta-known-values:
-        - ACTIVE
-        - CREATED
-        - CREATION_FAILED
-        - INACTIVE
-        - PENDING
     PrivilegedResourceType:
       description: The type of the resource
       type: string
+      enum:
+        - APP_ACCOUNT
+        - OKTA_USER_ACCOUNT
       x-enumDescriptions:
         APP_ACCOUNT: Represents a privileged resource that belongs to an app
         OKTA_USER_ACCOUNT: Represents a privileged resource that belongs to Okta
-      x-okta-known-values:
-        - APP_ACCOUNT
-        - OKTA_USER_ACCOUNT
     PrivilegedResourceUpdateRequest:
       description: Update request for a privileged resource
       type: object
@@ -44739,7 +44631,7 @@ components:
         - Having a pushStatus of `PUSH` causes properties in the target to be updated on create and update. 
         - Having a pushStatus of `DONT_PUSH` causes properties in the target to be updated only on create.
       type: string
-      x-okta-known-values:
+      enum:
         - DONT_PUSH
         - PUSH
     ProfileMappingRequest:
@@ -44810,7 +44702,7 @@ components:
             - default: DISABLED
     Protocol:
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIONS
         - GTR
         - OIDC
@@ -44820,14 +44712,14 @@ components:
       description: Specifies whether to digitally sign authorization requests to the IdP
       example: REQUEST
       type: string
-      x-okta-known-values:
+      enum:
         - NONE
         - REQUEST
     ProtocolAlgorithmResponseScope:
       description: Specifies whether to verify responses from the IdP
       example: ANY
       type: string
-      x-okta-known-values:
+      enum:
         - ANY
         - RESPONSE
         - TOKEN
@@ -44837,7 +44729,7 @@ components:
       type: string
     ProtocolEndpointBinding:
       type: string
-      x-okta-known-values:
+      enum:
         - HTTP-POST
         - HTTP-REDIRECT
     ProtocolIdVerification:
@@ -44939,15 +44831,15 @@ components:
     ProtocolType:
       description: The authentication protocol type used for the connection
       type: string
+      enum:
+        - IDENTITY_ASSERTION
+        - STS
       x-enumDescriptions:
         IDENTITY_ASSERTION: Identity assertion protocol for obtaining OAuth 2.0 access tokens
         STS: Security Token Service protocol for obtaining credentials or secrets
-      x-okta-known-values:
-        - IDENTITY_ASSERTION
-        - STS
     ProviderType:
       type: string
-      x-okta-known-values:
+      enum:
         - APNS
         - FCM
     Provisioning:
@@ -44970,12 +44862,12 @@ components:
         * If the target username isn't unique or the resulting Okta user profile is missing a required profile attribute, JIT provisioning may fail.
         * New Okta users are provisioned with either a `FEDERATION` or `SOCIAL` authentication provider depending on the IdP type.
       type: string
+      enum:
+        - AUTO
+        - DISABLED
       x-enumDescriptions:
         AUTO: The IdP user profile is transformed through defined universal directory profile mappings to an Okta user profile and automatically provisioned as an Okta user.
         DISABLED: Okta rejects the authentication request and skips provisioning of a new Okta user if the IdP user isn't linked to an existing Okta user.
-      x-okta-known-values:
-        - AUTO
-        - DISABLED
     ProvisioningConditions:
       description: Conditional behaviors for an IdP user during authentication
       type: object
@@ -44987,18 +44879,18 @@ components:
     ProvisioningConnectionAuthScheme:
       description: Defines the method of authentication
       type: string
+      enum:
+        - OAUTH2
+        - TOKEN
+        - UNKNOWN
       x-enumDescriptions:
         TOKEN: A token is used to authenticate with the app.
         OAUTH2: OAuth 2.0 is used to authenticate with the app.
         UNKNOWN: The authentication scheme used by the app isn't supported, or the app doesn't support provisioning.
-      x-okta-known-values:
-        - OAUTH2
-        - TOKEN
-        - UNKNOWN
     ProvisioningConnectionOauthAuthScheme:
       description: OAuth 2.0 is used to authenticate with the app.
       type: string
-      x-okta-known-values:
+      enum:
         - OAUTH2
     ProvisioningConnectionOauthRequest:
       title: OAuth 2.0-based connection
@@ -45038,7 +44930,7 @@ components:
       type: object
     ProvisioningConnectionRequestAuthScheme:
       type: string
-      x-okta-known-values:
+      enum:
         - OAUTH2
         - TOKEN
     ProvisioningConnectionResponse:
@@ -45070,18 +44962,18 @@ components:
       description: Provisioning connection status
       default: DISABLED
       type: string
+      enum:
+        - DISABLED
+        - ENABLED
+        - UNKNOWN
       x-enumDescriptions:
         DISABLED: The provisioning connection is disabled.
         ENABLED: The provisioning connection is enabled.
         UNKNOWN: Provisioning isn't supported by the app, or the authentication method is unknown.
-      x-okta-known-values:
-        - DISABLED
-        - ENABLED
-        - UNKNOWN
     ProvisioningConnectionTokenAuthScheme:
       description: A token is used to authenticate with the app. This property is only returned for the `TOKEN` authentication scheme.
       type: string
-      x-okta-known-values:
+      enum:
         - TOKEN
     ProvisioningConnectionTokenRequest:
       title: Token-based connection
@@ -45111,12 +45003,12 @@ components:
     ProvisioningDeprovisionedAction:
       description: Specifies the action during authentication when an IdP user is linked to a previously deprovisioned Okta user
       type: string
+      enum:
+        - NONE
+        - REACTIVATE
       x-enumDescriptions:
         NONE: Take no action. If an IdP user that matches a previously deprovisioned Okta user attempts to authenticate, authentication fails.
         REACTIVATE: If an IdP user that matches a previously deprovisioned Okta user attempts to authenticate, reactivate the matching user in Okta and allow the authentication attempt to proceed.
-      x-okta-known-values:
-        - NONE
-        - REACTIVATE
     ProvisioningDeprovisionedCondition:
       description: Behavior for a previously deprovisioned IdP user during authentication. Not supported with OIDC IdPs.
       type: object
@@ -45197,7 +45089,7 @@ components:
 
         > **Note:** Group provisioning action is processed independently from profile sourcing. You can sync group memberships through SAML with profile sourcing disabled.
       type: string
-      x-okta-known-values:
+      enum:
         - APPEND
         - ASSIGN
         - NONE
@@ -45205,12 +45097,12 @@ components:
     ProvisioningSuspendedAction:
       description: Specifies the action during authentication when an IdP user is linked to a previously suspended Okta user
       type: string
+      enum:
+        - NONE
+        - UNSUSPEND
       x-enumDescriptions:
         NONE: Take no action. If an IdP user that matches a previously suspended Okta user attempts to authenticate, authentication fails.
         UNSUSPEND: If an IdP user that matches a previously suspended Okta user attempts to authenticate, unsuspend the matching user in Okta and allow the authentication attempt to proceed.
-      x-okta-known-values:
-        - NONE
-        - UNSUSPEND
     ProvisioningSuspendedCondition:
       description: Behavior for a previously suspended IdP user during authentication. Not supported with OIDC IdPs.
       type: object
@@ -45231,7 +45123,7 @@ components:
     PushMethodKeyProtection:
       description: Indicates whether you must use a hardware key store
       type: string
-      x-okta-known-values:
+      enum:
         - ANY
         - HARDWARE
     PushProvider:
@@ -45481,7 +45373,7 @@ components:
     RegistrationInlineHookRequestType:
       description: The type of registration hook. Use either `self.service.registration` or `progressive.profile`.
       type: string
-      x-okta-known-values:
+      enum:
         - progressive.profile
         - self.service.registration
     RegistrationInlineHookResponse:
@@ -45594,7 +45486,7 @@ components:
     ReleaseChannel:
       description: Release channel for auto-update
       type: string
-      x-okta-known-values:
+      enum:
         - BETA
         - EA
         - GA
@@ -45606,7 +45498,7 @@ components:
           $ref: '#/components/schemas/ClassificationType'
     RequiredEnum:
       type: string
-      x-okta-known-values:
+      enum:
         - ALWAYS
         - HIGH_RISK_ONLY
         - NEVER
@@ -45916,6 +45808,11 @@ components:
           $ref: '#/components/schemas/LinksSelf'
     ResponseMode:
       type: string
+      enum:
+        - form_post
+        - fragment
+        - okta_post_message
+        - query
       x-enumDescriptions:
         fragment: Parameters are encoded in the URL fragment added to the `redirect_uri` when redirecting back to the client.
         query: Parameters are encoded in the query string added to the `redirect_uri` when redirecting back to the client.
@@ -45925,21 +45822,16 @@ components:
 
           `okta_post_message` is an adaptation of the [Web Message Response Mode](https://tools.ietf.org/html/draft-sakimura-oauth-wmrm-00#section-4.1).
           This value provides a secure way for a single-page application to perform a sign-in flow in a pop-up window or an iFrame and receive the ID token, access token, and/or authorization code back in the parent page without leaving the context of that page. The data object for the `postMessage` call is in the next section.
-      x-okta-known-values:
-        - form_post
-        - fragment
-        - okta_post_message
-        - query
     ResponseType:
       type: string
-      x-okta-known-values:
+      enum:
         - code
         - id_token
         - none
         - token
     ResponseTypesSupported:
       type: string
-      x-okta-known-values:
+      enum:
         - code
         - code id_token
         - code id_token token
@@ -46026,7 +45918,7 @@ components:
     RiskEventSubjectRiskLevel:
       description: The risk level associated with the IP
       type: string
-      x-okta-known-values:
+      enum:
         - HIGH
         - LOW
         - MEDIUM
@@ -46081,14 +45973,14 @@ components:
       description: Action taken by Okta during authentication attempts based on the risk events sent by this provider
       default: log_only
       type: string
+      enum:
+        - enforce_and_log
+        - log_only
+        - none
       x-enumDescriptions:
         log_only: Include risk event information in the System Log
         none: No action
         enforce_and_log: Use risk event information to evaluate risks during authentication attempts and include risk event information in the System Log
-      x-okta-known-values:
-        - enforce_and_log
-        - log_only
-        - none
     RiskScorePolicyRuleCondition:
       description: Specifies a particular level of risk to match on
       type: object
@@ -46161,14 +46053,14 @@ components:
     RoleAssignmentType:
       description: Role assignment type
       type: string
+      enum:
+        - CLIENT
+        - GROUP
+        - USER
       x-enumDescriptions:
         USER: The role is assigned to a user
         GROUP: The role is assigned to a group
         CLIENT: The role is assigned to a client app
-      x-okta-known-values:
-        - CLIENT
-        - GROUP
-        - USER
     RoleGovernance:
       description: List of all user role governance sources
       type: object
@@ -46252,6 +46144,22 @@ components:
     RoleType:
       description: Standard role type
       type: string
+      enum:
+        - ACCESS_CERTIFICATIONS_ADMIN
+        - ACCESS_REQUESTS_ADMIN
+        - API_ACCESS_MANAGEMENT_ADMIN
+        - API_ADMIN
+        - APP_ADMIN
+        - CUSTOM
+        - GROUP_MEMBERSHIP_ADMIN
+        - HELP_DESK_ADMIN
+        - MOBILE_ADMIN
+        - ORG_ADMIN
+        - READ_ONLY_ADMIN
+        - REPORT_ADMIN
+        - SUPER_ADMIN
+        - USER_ADMIN
+        - WORKFLOWS_ADMIN
       x-enumDescriptions:
         API_ACCESS_MANAGEMENT_ADMIN: Access Management Administrator
         API_ADMIN: Access Management Administrator
@@ -46268,22 +46176,6 @@ components:
         WORKFLOWS_ADMIN: Workflows Administrator
         ACCESS_CERTIFICATIONS_ADMIN: Access Certifications Administrator (predefined resource sets)
         ACCESS_REQUESTS_ADMIN: Access Requests Administrator (predefined resource sets)
-      x-okta-known-values:
-        - ACCESS_CERTIFICATIONS_ADMIN
-        - ACCESS_REQUESTS_ADMIN
-        - API_ACCESS_MANAGEMENT_ADMIN
-        - API_ADMIN
-        - APP_ADMIN
-        - CUSTOM
-        - GROUP_MEMBERSHIP_ADMIN
-        - HELP_DESK_ADMIN
-        - MOBILE_ADMIN
-        - ORG_ADMIN
-        - READ_ONLY_ADMIN
-        - REPORT_ADMIN
-        - SUPER_ADMIN
-        - USER_ADMIN
-        - WORKFLOWS_ADMIN
     RotatePasswordRequest:
       description: Rotate password request for the privileged resource
       type: object
@@ -46645,14 +46537,14 @@ components:
       description: Represents the current value of the Safe Browsing protection level
       example: ENHANCED_PROTECTION
       type: string
+      enum:
+        - ENHANCED_PROTECTION
+        - NO_SAFE_BROWSING
+        - STANDARD_PROTECTION
       x-enumDescriptions:
         NO_SAFE_BROWSING: Safe Browsing is never active
         STANDARD_PROTECTION: Safe Browsing is active in the standard mode
         ENHANCED_PROTECTION: Safe Browsing is active in the enhanced mode
-      x-okta-known-values:
-        - ENHANCED_PROTECTION
-        - NO_SAFE_BROWSING
-        - STANDARD_PROTECTION
     SalesforceApplication:
       title: Salesforce
       x-tags:
@@ -47154,7 +47046,7 @@ components:
       description: Determines whether to publish an instance-specific (trust) or organization (shared) ACS endpoint in the SAML metadata
       default: INSTANCE
       type: string
-      x-okta-known-values:
+      enum:
         - INSTANCE
         - ORG
     SamlEndpoints:
@@ -47171,7 +47063,7 @@ components:
       description: SAML 2.0 Name Identifier formats
       default: urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified
       type: string
-      x-okta-known-values:
+      enum:
         - urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
         - urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified
         - urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
@@ -47185,7 +47077,7 @@ components:
     SamlRelayStateFormat:
       description: The format used to generate the `relayState` in the SAML request. The `FROM_URL` format is used if this value is null.
       type: string
-      x-okta-known-values:
+      enum:
         - FROM_URL
         - OPAQUE
     SamlRequestAlgorithm:
@@ -47238,7 +47130,7 @@ components:
     SamlSigningAlgorithm:
       example: SHA-256
       type: string
-      x-okta-known-values:
+      enum:
         - SHA-1
         - SHA-256
     SamlSigningCredentials:
@@ -47394,7 +47286,7 @@ components:
     ScopeCondition:
       description: Determines how Okta evaluates requested scopes for the connection.
       type: string
-      x-okta-known-values:
+      enum:
         - ALL_SCOPES
         - EXCLUDE
         - INCLUDE_ONLY
@@ -47415,17 +47307,17 @@ components:
 
         **Note:** This option requires a `screenLockType.include` value.
       type: string
+      enum:
+        - HIGH
+        - LOW
+        - MEDIUM
       x-enumDescriptions:
         LOW: A pattern or PIN is set
         MEDIUM: A complex PIN, or alphabetic or alphanumeric screen lock with at least 4 digits is set
         HIGH: A complex 8-digit PIN, or 6-character alphabetic or alphanumeric screen lock is set
-      x-okta-known-values:
-        - HIGH
-        - LOW
-        - MEDIUM
     ScreenLockType:
       type: string
-      x-okta-known-values:
+      enum:
         - BIOMETRIC
         - NONE
         - PASSCODE
@@ -47796,20 +47688,20 @@ components:
       default: RANDOM
       example: OKTA
       type: string
-      x-okta-known-values:
+      enum:
         - OKTA
         - RANDOM
     SelfAssignedStatus:
       description: Okta Support access approval status for self-assigned cases
       type: string
+      enum:
+        - APPROVED
+        - NOT_REQUIRED
+        - REQUESTED
       x-enumDescriptions:
         NOT_REQUIRED: Approval isn't required because the case wasn't self-created and self-assigned by an Okta Support user
         REQUESTED: Customer approval for self-assigned case requested
         APPROVED: Okta Support access is approved by the customer for the self-assigned case
-      x-okta-known-values:
-        - APPROVED
-        - NOT_REQUIRED
-        - REQUESTED
     SelfServicePasswordResetAction:
       description: Enables or disables users to reset their own password and defines the authenticators and constraints needed to complete the reset
       type: object
@@ -47993,6 +47885,12 @@ components:
       description: Describes the current status of an app service account
       example: UNSECURED
       type: string
+      enum:
+        - ALERT
+        - ERROR
+        - INFO
+        - NO_ISSUES
+        - UNSECURED
       x-enumDescriptions:
         NO_ISSUES: The account is ready for use in Okta Privileged Access
         UNSECURED: The account needs to be assigned to a resource group and a project in Okta Privileged Access
@@ -48000,16 +47898,19 @@ components:
         ALERT: The account requires attention from an admin
         ERROR: An error is preventing Okta Privileged Access from using the account
       readOnly: true
-      x-okta-known-values:
-        - ALERT
-        - ERROR
-        - INFO
-        - NO_ISSUES
-        - UNSECURED
     ServiceAccountStatusDetail:
       description: Describes the detailed status of an app service account
       example: STAGED
       type: string
+      enum:
+        - CREATION_FAILED
+        - MISSING_PASSWORD
+        - PENDING
+        - ROTATED
+        - ROTATING
+        - ROTATION_FAILED
+        - STAGED
+        - VAULTED
       x-enumDescriptions:
         PENDING: The account is being created
         CREATION_FAILED: The account can't be created
@@ -48020,24 +47921,15 @@ components:
         VAULTED: The account is assigned to a project in Okta Privileged Access. A manually managed password is assigned to the account.
         MISSING_PASSWORD: The account is assigned to a project in Okta Privileged Access. A password isn't assigned to the account.
       readOnly: true
-      x-okta-known-values:
-        - CREATION_FAILED
-        - MISSING_PASSWORD
-        - PENDING
-        - ROTATED
-        - ROTATING
-        - ROTATION_FAILED
-        - STAGED
-        - VAULTED
     ServiceAccountType:
       description: The type of service account
       type: string
+      enum:
+        - APP_ACCOUNT
+        - OKTA_USER_ACCOUNT
       x-enumDescriptions:
         APP_ACCOUNT: SaaS app account
         OKTA_USER_ACCOUNT: Okta user account
-      x-okta-known-values:
-        - APP_ACCOUNT
-        - OKTA_USER_ACCOUNT
     Session:
       type: object
       properties:
@@ -48087,6 +47979,19 @@ components:
           $ref: '#/components/schemas/LinksSelf'
     SessionAuthenticationMethod:
       type: string
+      enum:
+        - fpt
+        - geo
+        - hwk
+        - kba
+        - mca
+        - mfa
+        - otp
+        - pwd
+        - sc
+        - sms
+        - swk
+        - tel
       x-enumDescriptions:
         pwd: Password authentication. **Inline hook value:** `PASSWORD` **Example:** Standard password-based sign-in
         swk: Proof-of-possession (PoP) of a software key. **Inline hook value:** `POP_SOFTWARE_KEY` **Example:** Okta Verify with Push
@@ -48100,19 +48005,6 @@ components:
         mfa: Multifactor authentication. **Inline hook value:** `MULTIFACTOR_AUTHENTICATION`. **Example:** This value is present whenever any MFA factor verification is performed.
         mca: Multiple-channel authentication. **Inline hook value:** `MULTIPLE_CHANNEL_AUTHENTICATION`. **Example:** Authentication requires communication over more than one channel, such as Internet and mobile network
         sc: Smart card authentication. **Inline hook value:** `SMART_CARD. **Example:** User authenticated using a smart card, such as a Personal Identity Verification (PIV) card or Common Access Card (CAC)
-      x-okta-known-values:
-        - fpt
-        - geo
-        - hwk
-        - kba
-        - mca
-        - mfa
-        - otp
-        - pwd
-        - sc
-        - sms
-        - swk
-        - tel
     SessionIdentityProvider:
       type: object
       properties:
@@ -48124,7 +48016,7 @@ components:
           $ref: '#/components/schemas/SessionIdentityProviderType'
     SessionIdentityProviderType:
       type: string
-      x-okta-known-values:
+      enum:
         - ACTIVE_DIRECTORY
         - FEDERATION
         - LDAP
@@ -48132,18 +48024,18 @@ components:
         - SOCIAL
     SessionStatus:
       type: string
+      enum:
+        - ACTIVE
+        - MFA_ENROLL
+        - MFA_REQUIRED
       x-enumDescriptions:
         ACTIVE: The Session is established and fully validated.
         MFA_REQUIRED: The Session is established, but requires second factor verification.
         MFA_ENROLL: The Session is established, but the user needs to enroll a second factor.
-      x-okta-known-values:
-        - ACTIVE
-        - MFA_ENROLL
-        - MFA_REQUIRED
     ShowSignInWithOV:
       description: Controls whether to show the Sign in with Okta Verify button on the Sign-In Widget
       type: string
-      x-okta-known-values:
+      enum:
         - ALWAYS
         - NEVER
     SignInPage:
@@ -48230,14 +48122,14 @@ components:
         Variant for the Okta sign-in page. You can publish a theme for sign-in page with different combinations of assets. Variants are preset combinations of those assets.
         > **Note:**  For a non-`OKTA_DEFAULT` variant, `primaryColorHex` is used for button background color and `primaryColorContrastHex` is used to optimize the opacity for button text.
       type: string
+      enum:
+        - BACKGROUND_IMAGE
+        - BACKGROUND_SECONDARY_COLOR
+        - OKTA_DEFAULT
       x-enumDescriptions:
         BACKGROUND_IMAGE: Uses the logo, favicon, and background image from the theme
         BACKGROUND_SECONDARY_COLOR: Uses the logo and favicon from the theme. Uses `secondaryColorHex` as the background color for the Okta sign-in page.
         OKTA_DEFAULT: Uses the Okta logo and favicon with no background image. Uses the Okta colors on the Okta sign-in page.
-      x-okta-known-values:
-        - BACKGROUND_IMAGE
-        - BACKGROUND_SECONDARY_COLOR
-        - OKTA_DEFAULT
     SignOnInlineHook:
       properties:
         id:
@@ -48245,7 +48137,7 @@ components:
           readOnly: false
     SigningAlgorithm:
       type: string
-      x-okta-known-values:
+      enum:
         - ES256
         - ES384
         - ES512
@@ -48357,7 +48249,7 @@ components:
     SimulateResultStatus:
       description: The result of this entity evaluation
       type: string
-      x-okta-known-values:
+      enum:
         - MATCH
         - NOT_MATCH
         - UNDEFINED
@@ -48493,7 +48385,7 @@ components:
       maxLength: 50
       minLength: 1
       type: string
-      x-okta-known-values:
+      enum:
         - SMS_VERIFY_CODE
     SocialAuthToken:
       description: The social authentication token object provides the tokens and associated metadata provided by social providers during social authentication.
@@ -48543,7 +48435,7 @@ components:
       description: Edition of the Splunk Cloud instance
       example: aws
       type: string
-      x-okta-known-values:
+      enum:
         - aws
         - aws_govcloud
         - gcp
@@ -48884,7 +48776,7 @@ components:
         - stream_id
     SubjectType:
       type: string
-      x-okta-known-values:
+      enum:
         - pairwise
         - public
     SubmissionAction:
@@ -49061,7 +48953,7 @@ components:
     SubscriptionStatus:
       description: The status of the subscription
       type: string
-      x-okta-known-values:
+      enum:
         - subscribed
         - unsubscribed
     SupportedMethods:
@@ -49515,7 +49407,7 @@ components:
           readOnly: false
     TokenDeliveryMode:
       type: string
-      x-okta-known-values:
+      enum:
         - poll
     TokenHookResponse:
       description: |-
@@ -50172,13 +50064,13 @@ components:
     TokenResponseTokenType:
       description: The token type in a `/token` response. The value is generally `Bearer` except for a few instances of token exchange.
       type: string
-      x-okta-known-values:
+      enum:
         - Bearer
         - N_A
     TokenType:
       description: The type of token for token exchange.
       type: string
-      x-okta-known-values:
+      enum:
         - urn:ietf:params:oauth:token-type:access_token
         - urn:ietf:params:oauth:token-type:id_token
         - urn:ietf:params:oauth:token-type:jwt
@@ -50299,7 +50191,7 @@ components:
       description: |
         The scope type. Supported values: When you use `IFRAME_EMBED` as the scope type, leave the `allowedOktaApps` property empty to allow iFrame embedding of only Okta sign-in pages. Include `OKTA_ENDUSER` as a value for the `allowedOktaApps` property to allow iFrame embedding of both Okta sign-in pages and the Okta End-User Dashboard.
       type: string
-      x-okta-known-values:
+      enum:
         - CORS
         - IFRAME_EMBED
         - REDIRECT
@@ -50361,9 +50253,7 @@ components:
           description: Specifies the button label for the `Submit` button at the bottom of the enrollment form
           default: Submit
         elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/UIElement'
+          $ref: '#/components/schemas/UIElement'
         label:
           type: string
           description: Specifies the label at the top of the enrollment form under the logo
@@ -50519,16 +50409,6 @@ components:
           type: string
           description: The ID of the realm in which the user is residing. See [Realms](/openapi/okta-management/management/tag/Realm/).
           example: guo1bfiNtSnZYILxO0g4
-        type:
-          type: object
-          description: |-
-            The ID of the user type. Add this value if you want to create a user with a non-default [User Type](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/).
-            The user type determines which [schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After a user has been created, the user can
-            only be assigned a different user type by an admin through a full replacement (`PUT`) operation.
-          properties:
-            id:
-              type: string
-              description: The ID of the user type
     User:
       type: object
       properties:
@@ -50595,7 +50475,7 @@ components:
           description: |-
             The user type that determines the schema for the user's profile. The `type` property is a map that identifies the [User Types](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/#tag/UserType).
 
-            Currently it contains a single element, `id`. It can be specified when creating a new user, and can be updated by an admin on a full replace of an existing user (but not a partial update).
+            Currently it contains a single element, `id`. It can be specified when creating a new user, and ca be updated by an admin on a full replace of an existing user (but not a partial update).
           properties:
             id:
               type: string
@@ -50835,7 +50715,7 @@ components:
     UserFactorActivatePushResult:
       description: Result of a factor activation
       type: string
-      x-okta-known-values:
+      enum:
         - CANCELLED
         - ERROR
         - TIMEOUT
@@ -50986,7 +50866,7 @@ components:
       type: string
     UserFactorProvider:
       type: string
-      x-okta-known-values:
+      enum:
         - CUSTOM
         - DUO
         - FIDO
@@ -51123,8 +51003,7 @@ components:
     UserFactorResultType:
       description: Result of a factor verification attempt
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - CANCELLED
         - CHALLENGE
         - ERROR
@@ -51135,6 +51014,7 @@ components:
         - TIMEOUT
         - TIME_WINDOW_EXCEEDED
         - WAITING
+      readOnly: true
     UserFactorSMS:
       title: sms
       allOf:
@@ -51215,8 +51095,7 @@ components:
       example: ACTIVE
       description: Status of the factor
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - DISABLED
         - ENROLLED
@@ -51224,6 +51103,7 @@ components:
         - INACTIVE
         - NOT_SETUP
         - PENDING_ACTIVATION
+      readOnly: true
     UserFactorSupported:
       type: object
       properties:
@@ -51370,7 +51250,7 @@ components:
     UserFactorType:
       description: Type of factor
       type: string
-      x-okta-known-values:
+      enum:
         - call
         - email
         - push
@@ -51544,6 +51424,16 @@ components:
     UserFactorVerifyResult:
       description: Result of a factor verification
       type: string
+      enum:
+        - CHALLENGE
+        - ERROR
+        - EXPIRED
+        - FAILED
+        - PASSCODE_REPLAYED
+        - REJECTED
+        - SUCCESS
+        - TIMEOUT
+        - TIME_WINDOW_EXCEEDED
       x-enumDescriptions:
         CANCELED: User cancelled the verification
         CHALLENGE: Okta issued a verification challenge
@@ -51555,23 +51445,13 @@ components:
         SUCCESS: User completed the verification
         TIMEOUT: Okta didn't complete the verification within the allowed time window
         TIME_WINDOW_EXCEEDED: User completed the verification outside of the allowed time window. Another verification is required.
-      x-okta-known-values:
-        - CHALLENGE
-        - ERROR
-        - EXPIRED
-        - FAILED
-        - PASSCODE_REPLAYED
-        - REJECTED
-        - SUCCESS
-        - TIMEOUT
-        - TIME_WINDOW_EXCEEDED
     UserFactorVerifyResultWaiting:
       description: Result of a factor verification
       type: string
+      enum:
+        - WAITING
       x-enumDescriptions:
         WAITING: Verification is in progress
-      x-okta-known-values:
-        - WAITING
     UserFactorWeb:
       title: web
       allOf:
@@ -51602,17 +51482,13 @@ components:
       type: object
       properties:
         authenticatorName:
-          description: |-
-            Human-readable name of the authenticator
-
-            > **Note:** This name is set from the AAGUID metadata during enrollment. It can't be changed in the Admin Console or by using any Okta APIs.
+          description: Human-readable name of the authenticator
           example: MacBook Touch ID
           type: string
         credentialId:
           description: ID for the factor credential
           example: AHoOEhwvYiMv6SSwLp7KYRNttXtg_kYgQoQiEIWPFH_T3Ztp5Vj3bQ5H0LypIFR8ka8kfiCJ3I5qVpxrsd6JTMWKcE3xNh_U2QVF0Kwlan8Fiw
           type: string
-      readOnly: true
     UserFactorWebProfile:
       type: object
       properties:
@@ -51698,7 +51574,7 @@ components:
     UserIdentifierMatchType:
       description: The type of pattern. For regex, use `EXPRESSION`.
       type: string
-      x-okta-known-values:
+      enum:
         - CONTAINS
         - EQUALS
         - EXPRESSION
@@ -51723,7 +51599,7 @@ components:
     UserIdentifierType:
       description: What to match against, either user ID or an attribute in the user's Okta profile.
       type: string
-      x-okta-known-values:
+      enum:
         - ATTRIBUTE
         - IDENTIFIER
     UserIdentityProviderLinkRequest:
@@ -51905,7 +51781,7 @@ components:
           default: false
     UserNextLogin:
       type: string
-      x-okta-known-values:
+      enum:
         - changePassword
     UserPolicyRuleCondition:
       description: Specifies a set of Users to be included or excluded
@@ -52101,15 +51977,6 @@ components:
         - properties:
             capabilities:
               $ref: '#/components/schemas/CapabilitiesObject'
-    UserRequestSchema:
-      type: object
-      properties:
-        externalId:
-          type: string
-          description: The external ID of the user in the identity source
-          maxLength: 512
-        profile:
-          $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     UserResourceHrefObject:
       type: object
       properties:
@@ -52121,30 +51988,6 @@ components:
           type: string
           description: Link name
           example: SAML Jackson
-    UserResponseSchema:
-      type: object
-      properties:
-        created:
-          type: string
-          description: The timestamp when the user was created in the identity source
-          format: date-time
-          readOnly: true
-        externalId:
-          type: string
-          description: The external ID of the user in the identity source
-          readOnly: true
-          maxLength: 255
-        id:
-          type: string
-          description: The ID of the user in the identity source
-          readOnly: true
-        lastUpdated:
-          type: string
-          description: The timestamp when the user was last updated in the identity source
-          format: date-time
-          readOnly: true
-        profile:
-          $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     UserRiskGetResponse:
       type: object
       properties:
@@ -52158,7 +52001,7 @@ components:
     UserRiskLevelAll:
       description: The risk level associated with the user
       type: string
-      x-okta-known-values:
+      enum:
         - HIGH
         - LOW
         - MEDIUM
@@ -52176,7 +52019,7 @@ components:
     UserRiskLevelPut:
       description: The risk level associated with the user
       type: string
-      x-okta-known-values:
+      enum:
         - HIGH
         - LOW
     UserRiskPutResponse:
@@ -52372,7 +52215,7 @@ components:
           description: The display label for the enumerated value
     UserSchemaAttributeFormat:
       type: string
-      x-okta-known-values:
+      enum:
         - country-code
         - date-time
         - email
@@ -52415,13 +52258,13 @@ components:
           type: string
     UserSchemaAttributeMasterType:
       type: string
-      x-okta-known-values:
+      enum:
         - OKTA
         - OVERRIDE
         - PROFILE_MASTER
     UserSchemaAttributeMutabilityString:
       type: string
-      x-okta-known-values:
+      enum:
         - IMMUTABLE
         - READ_ONLY
         - READ_WRITE
@@ -52437,12 +52280,12 @@ components:
           description: Security principal
     UserSchemaAttributeScope:
       type: string
-      x-okta-known-values:
+      enum:
         - NONE
         - SELF
     UserSchemaAttributeType:
       type: string
-      x-okta-known-values:
+      enum:
         - array
         - boolean
         - integer
@@ -52669,8 +52512,7 @@ components:
 
         The status of a user changes in response to explicit events, such as admin-driven lifecycle changes, user login, or self-service password recovery. Okta doesn't asynchronously sweep through users and update their password expiry state, for example. Instead, Okta evaluates password policy at login time, notices the password has expired, and moves the user to the expired state. When running reports, remember that the data is valid as of the last login or lifecycle event for that user.
       type: string
-      readOnly: true
-      x-okta-known-values:
+      enum:
         - ACTIVE
         - DEPROVISIONED
         - LOCKED_OUT
@@ -52679,6 +52521,7 @@ components:
         - RECOVERY
         - STAGED
         - SUSPENDED
+      readOnly: true
     UserStatusPolicyRuleCondition:
       type: object
       properties:
@@ -52780,7 +52623,7 @@ components:
     UserVerificationEnum:
       description: User verification setting. Possible values `DISCOURAGED` (the authenticator isn't asked to perform user verification, but may do so at its discretion), `PREFERRED` (the client uses an authenticator capable of user verification if possible), or `REQUIRED`(the client uses only an authenticator capable of user verification)
       type: string
-      x-okta-known-values:
+      enum:
         - DISCOURAGED
         - PREFERRED
         - REQUIRED
@@ -52788,11 +52631,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/HrefObject'
         - description: Link to the [Application Users](/openapi/okta-management/management/tag/ApplicationUsers/#tag/ApplicationUsers/operation/listApplicationUsers) resource
-    UsersUpdateRequestSchema:
-      type: object
-      properties:
-        profile:
-          $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     ValidationDetail:
       description: Validation detail
       type: object
@@ -52844,7 +52682,7 @@ components:
     WebAuthnAttachmentEnum:
       description: Method attachment
       type: string
-      x-okta-known-values:
+      enum:
         - ANY
         - BUILT_IN
         - ROAMING
@@ -52906,9 +52744,9 @@ components:
         _links:
           $ref: '#/components/schemas/LinksSelf'
     WebAuthnRpId:
-      description: The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
       x-okta-lifecycle:
-        lifecycle: GA
+        lifecycle: EA
         isGenerallyAvailable: false
         SKUs: []
       type: object
@@ -53139,7 +52977,7 @@ components:
     WidgetGeneration:
       description: The generation of the Sign-in Widget
       type: string
-      x-okta-known-values:
+      enum:
         - G2
         - G3
     WorkflowActionProvider:
@@ -53159,7 +52997,7 @@ components:
     WorkflowsValidationErrorType:
       description: Validation error type
       type: string
-      x-okta-known-values:
+      enum:
         - DUPLICATE_FLOW_NAME
         - INVALID_CHAR_IN_AUTH_PARAM_LABEL
         - INVALID_DEPENDENT_OPTIONS
@@ -53414,14 +53252,14 @@ components:
     enabledPagesType:
       title: enabledPages
       type: string
+      enum:
+        - SIGN_IN
+        - SSPR
+        - SSR
       x-enumDescriptions:
         SIGN_IN: User sign-in page
         SSPR: Self-service Password Recovery page
         SSR: Self-service Registration page
-      x-okta-known-values:
-        - SIGN_IN
-        - SSPR
-        - SSR
     entitlementTypes:
       description: List of supported entitlement types
       items:

@@ -22426,7 +22426,7 @@ paths:
 
         A subset of users can be returned that match a supported filter expression or search criteria. Different results are returned depending on specified queries in the request.
 
-        > **Notes:** 
+        > **Notes:**
         >  * This operation omits users that have a status of `DEPROVISIONED` in the response. To return all users, use a filter or search query instead.
         >  * The `search` parameter results are sourced from an eventually consistent datasource and may not reflect the latest information.
       operationId: listUsers
@@ -37082,6 +37082,103 @@ components:
     DeviceAssuranceWindowsWithDeviceTrustConnectorThirdPartySignalProvidersAndAntivirusEnabledResponse:
       x-okta-lifecycle:
         lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Windows with Device Trust Connector as third-party signal provider and antivirus enabled response
+      value:
+        id: dae3m8o4rWhwReDeM1c5
+        name: Device assurance Windows
+        lastUpdate: '2022-01-01T00:00:00.000Z'
+        createdUpdate: '2022-01-01T00:00:00.000Z'
+        lastUpdatedBy: 00u217pyf72CdUrBt1c5
+        createdBy: 00u217pyf72CdUrBt1c5
+        osVersion:
+          minimum: 12.4.5.9
+        diskEncryptionType:
+          include:
+            - ALL_INTERNAL_VOLUMES
+        platform: WINDOWS
+        screenLockType:
+          include:
+            - PASSCODE
+            - BIOMETRIC
+        secureHardwarePresent: true
+        thirdPartySignalProviders:
+          dtc:
+            osVersion:
+              minimum: 10.0.19041.1110
+            diskEncrypted: true
+            osFirewall: true
+            screenLockSecured: true
+            browserVersion:
+              minimum: 15393.27.0
+            deviceEnrollmentDomain: testDomain
+            builtInDnsClientEnabled: true
+            chromeRemoteDesktopAppBlocked: true
+            safeBrowsingProtectionLevel: ENHANCED_PROTECTION
+            siteIsolationEnabled: true
+            passwordProtectionWarningTrigger: PASSWORD_PROTECTION_OFF
+            realtimeUrlCheckMode: true
+            secureBootEnabled: true
+            windowsMachineDomain: testMachineDomain
+            windowsUserDomain: testUserDomain
+            crowdStrikeCustomerId: testCustomerId
+            crowdStrikeAgentId": testAgentId
+            keyTrustLevel: CHROME_BROWSER_HW_KEY
+            antivirusEnabled: true
+        _links:
+          self:
+            href: https://your-subdomain.okta.com/api/v1/device-assurances/dae3m8o4rWhwReDeM1c5
+            hints:
+              allow:
+                - DELETE
+                - GET
+                - PUT
+    DeviceAssuranceWindowsWithDeviceTrustConnectorThirdPartySignalProvidersAndAntivirusEnabledRequest:
+      x-okta-lifecycle:
+        lifecycle: PRODUCT_DEV
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Windows with Device Trust Connector as third-party signal provider and antivirus enabled request
+      value:
+        name: Device assurance Windows
+        osVersion:
+          minimum: 12.4.5.9
+        diskEncryptionType:
+          include:
+            - ALL_INTERNAL_VOLUMES
+        platform: WINDOWS
+        screenLockType:
+          include:
+            - PASSCODE
+            - BIOMETRIC
+        secureHardwarePresent: true
+        thirdPartySignalProviders:
+          dtc:
+            osVersion:
+              minimum: 10.0.19041.1110
+            diskEncrypted: true
+            osFirewall: true
+            screenLockSecured: true
+            browserVersion:
+              minimum: 15393.27.0
+            deviceEnrollmentDomain: testDomain
+            builtInDnsClientEnabled: true
+            chromeRemoteDesktopAppBlocked: true
+            safeBrowsingProtectionLevel: ENHANCED_PROTECTION
+            siteIsolationEnabled: true
+            passwordProtectionWarningTrigger: PASSWORD_PROTECTION_OFF
+            realtimeUrlCheckMode: true
+            secureBootEnabled: true
+            windowsMachineDomain: testMachineDomain
+            windowsUserDomain: testUserDomain
+            crowdStrikeCustomerId: testCustomerId
+            crowdStrikeAgentId": testAgentId
+            keyTrustLevel: CHROME_BROWSER_HW_KEY
+            antivirusEnabled: true
+    DeviceAssuranceWindowsWithDeviceTrustConnectorThirdPartySignalProvidersAndAntivirusEnabledResponse:
+      x-okta-lifecycle:
+        lifecycle: PRODUCT_DEV
         isGenerallyAvailable: false
         SKUs: []
       summary: Windows with Device Trust Connector as third-party signal provider and antivirus enabled response
@@ -57001,6 +57098,22 @@ components:
       description: An ID, login, or login shortname (as long as the shortname is unambiguous) of an existing Okta user
       in: path
       required: true
+      schema:
+        type: string
+    pathIdentitySourceExternalId:
+      name: externalId
+      in: path
+      required: true
+      description: The external ID of the identity source group
+      example: GROUPEXT123456784C2IF
+      schema:
+        type: string
+    pathIdentitySourceGroupOrExternalId:
+      name: groupOrExternalId
+      in: path
+      required: true
+      description: The Okta group ID or external ID of the identity source group
+      example: 00gsl4xM9ys8TdnbZ0g4 or GROUPEXT123456784C2IF
       schema:
         type: string
     pathIdentitySourceExternalId:
@@ -81368,7 +81481,7 @@ components:
           description: |-
             The ID of the user type. Add this value if you want to create a user with a non-default [User Type](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/).
             The user type determines which [schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After a user has been created, the user can
-            only be assigned a different user type by an admin through a full replacement (`PUT`) operation. 
+            only be assigned a different user type by an admin through a full replacement (`PUT`) operation.
           properties:
             id:
               type: string
@@ -83786,7 +83899,7 @@ components:
         _links:
           $ref: '#/components/schemas/LinksSelf'
     WebAuthnRpId:
-      description: The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: false
