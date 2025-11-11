@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 2025.10.0
+  version: 2025.11.0
   x-logo:
     url: logo.svg
     backgroundColor: transparent
@@ -130,13 +130,13 @@ tags:
         * SSO and provisioning
   - name: AssociatedDomainCustomizations
     x-okta-lifecycle:
-      lifecycle: EA
+      lifecycle: LIMITED_GA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
     x-displayName: Associated Domain Customizations
     description: |-
-      <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>The Associated Domain Customizations API provides operations to manage associated domain customizations in your org. You can create associations between your custom domains and three well-known endpoints:
+      <x-lifecycle-container><x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>The Associated Domain Customizations API provides operations to manage associated domain customizations in your org. You can create associations between your custom domains and three well-known endpoints:
       * `/.well-known/apple-app-site-association`
       * `/.well-known/assetlinks.json`
       * `/.well-known/webauthn`
@@ -348,8 +348,8 @@ tags:
   - name: GovernanceBundle
     x-displayName: IAM Governance Bundles
     description: |-
-      These APIs allow you to manage governance bundles for the Admin Console, and manage roles and resources associated with the bundles.
-      For details on how governance bundles are supported from the Resource Management Access Platform (RAMP), see [Entitlement Management](https://help.okta.com/oie/en-us/content/topics/identity-governance/em/entitlement-mgt.htm).
+      The IAM Governance Bundle API provides operations for managing governance entitlement bundles, including roles and resources associated with the bundles, for the Admin Console.
+      For details on governance bundles for the Admin Console, see [Govern Okta admin roles](https://help.okta.com/okta_help.htm?type=oie&id=csh-governance-admin-roles) and [Entitlement Management](https://help.okta.com/okta_help.htm?type=oie&id=ext-entitlement-mgt).
   - name: Group
     x-displayName: Groups
     description: The Groups API provides operations to manage Okta groups and their user members in your org.
@@ -897,7 +897,7 @@ tags:
       If you're not sure which solution you're using, check the footer on any page of the Admin Console. The version number is appended with E for Identity Engine orgs and C for Classic Engine orgs.
   - name: User
     x-displayName: Users
-    description: "The Users API provides operations to manage users in your organization.\n> **Note:** Some of the curl code examples on this page include SSWS API token authentication. However, Okta recommends using scoped OAuth 2.0 and OIDC access tokens to authenticate with Okta management APIs.\n> OAuth 2.0 and OIDC access tokens provide fine-grain control over the bearer's actions on specific endpoints. See [Okta API authentication methods](https://developer.okta.com/docs/api/openapi/okta-oauth/guides/overview/).\n\n### User status\nThe following diagram shows the flow of user status:\n![STAGED, PROVISIONED, ACTIVE, RECOVERY, LOCKED_OUT, PASSWORD_EXPIRED, or DEPROVISIONED](../../../../../images/users/okta-user-status.png)\n\n### User creation scenarios\n\n The following table describes the user experience and expectation of user status and welcome screen, depending on which options (security question and answer, password, and activate query) are defined during user creation.\n\n  **User creation details and outcomes**\n\n  | Security Q & A   | Password   | Activate Query Parameter   | User Status                | Login Credential                | Welcome Screen   |\n  |     -----        |  --------  |  ------------------------  |  -------------             |  ----------------------         |  --------------  |\n  |                  |            | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  | X                |            | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  |                  | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  | X          | TRUE                       | `ACTIVE`                   | Password                        | X                |\n  | X                | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                | X          | TRUE                       | `ACTIVE`                   | Password                        |                  |\n\nCreating users with a `FEDERATION` or `SOCIAL` provider sets the user status to either `ACTIVE` or `STAGED` based on the `activate` query parameter since these two providers don't support a `password` or `recovery_question` credential.\n\nMore information about the use cases are in the following sections and in the examples for [Create a user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/createUser).\n\n#### Create user with optional password\n\nWhen making the password optional, the user status following user creation can be affected by the enrollment policy. See [Create an authenticator enrollment policy](https://help.okta.com/okta_help.htm?type=oie&id=ext-create-mfa-policy).\n\nBased on the group memberships that are specified when the user is created, a password may or may not be required to make the user's status `ACTIVE`. The groups assigned to the user determines the enrollment policy applied to the user. If the enrollment policy has the password authenticator set to `required`, then the user's status is determined by if the user is created with a password:\n\n* Created with a password - the user status is set to `PROVISIONED` and a One-Time Token is sent to the user through email\n* Created without a password - the user status is set to `ACTIVE` and they can immediately sign in using their password authenticator\n\nIf the user doesn't have an enrolled authenticator, Okta sets the user to `PROVISIONED` and sends an activation link. The user must click the activation link before they can sign in. The activation link provides a baseline assurance that can be used to enroll in other authenticators. If the user has one or more enrolled authenticators at activation time, they're set to `ACTIVE` and can sign in directly.\n\nSee [Passwordless authentication](https://help.okta.com/okta_help.htm?type=oie&id=ext-passwordless-auth) in the help documentation.\n\n#### Create user without credentials\n\nCreates a user without a `password` or a recovery `question` and `answer`.\n\nIf appropriate, when the user is activated, an email is sent to the user with an activation token that the user can use to complete the activation process.\n\nThis is the default flow for new user registration using the Admin Console.\n\n#### Create user with recovery question\n\nCreates a user without a `password`.\n\nWhen the user is activated, an email is sent to the user with an activation token that can be used to complete the activation process.\nThis flow is useful if migrating users from an existing user store.\n\n#### Create user with password\n\nCreates a user without a recovery `question` and `answer`.\n\nThe new user is able to sign in after activation with the assigned password. This flow is common when developing a custom user registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should sign in with their assigned password.\n\n> **Note:** You can also use this scenario to create a user without sending an activation email. See this [Knowledge Base article](https://support.okta.com/help/s/article/How-to-Avoid-Sending-a-Welcome-Email?language=en_US#:~:text=For%20users%20imported%20from%20the,t%20send%20new%20user%20activation).\n\n#### Create user with imported hashed password\n\nCreates a user with a specified hashed password.\n\nThe new user is able to sign in after activation with the specified password.\n\nThis flow is common when migrating users from another data store in cases where we want to allow the users to retain their current passwords.\n> **Important:** Do not generate or send a one-time activation token when activating users with an imported password. Users should login with their imported password.\n\n#### Create user with password import inline hook\n\nCreates a user with a `Password Hook` object specifying that a password inline hook should be used to handle password verification.\n\nThe password inline hook is triggered to handle verification of the end user's password the first time the user tries to sign in, with Okta calling the password inline hook to check that the password the user supplied is valid. If the password is valid, Okta stores the hash of the password that was provided and can authenticate the user independently from then on. See [Create a password import inline hook](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/InlineHook/#tag/InlineHook/operation/createPasswordImportInlineHook) for more details.\n\nThe new user is able to sign in after activation with the valid password. This flow supports migrating users from another data store in cases where we wish to allow the users to retain their current passwords.\n> **Important:** Don't generate or send a one-time activation token when activating users with an password inline hook. Users should sign in with their existing password to be imported using the password import inline hook.\n\n#### Create user with password and recovery question\n\nCreates a new user with a password and recovery `question` and `answer`.\n\nThe new user is able to log in with the assigned password after activation. This flow is common when developing a custom user-registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should login with their assigned password.\n\n#### Create user with authentication provider\n\nCreates a new passwordless user with a `SOCIAL` or `FEDERATION` authentication provider that must be authenticated through a trusted identity provider.\n\n#### Create user in group\n\nCreates a user that is added to the specified groups upon creation.\n\nUse this in conjunction with other create operations for a group admin that's scoped to create users only in specified groups. The request can specify up to 20 group IDs. (This limit applies only when creating a user. You can add the user later to more groups.)\n\n#### Create user with non-default user type\n\nCreates a user with a specified user type. See [User Types](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/). You can include the type specification with any of the above Create user operations. This example demonstrates creating a user without credentials.\nThe user type determines which [Schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After you create a user, you can assign the user a different user type using the full replacement [PUT operation](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/#tag/UserType/operation/updateUserType).\n\n### Links object\n\nThe links object specifies link relations. See [`_links`](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers!c=200&path=_links&t=response).\n\n> **Note:** This links object is different from [linked objects](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/LinkedObject/).\n\n#### Individual users versus collection of users\n\nFor an individual user result, the links object contains a full set of link relations available for that user as determined by your policies. For a collection of users, the links object contains only the `self` link. Operations that return a collection of users include [List all users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers) and [List all member users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Group/#tag/Group/operation/listGroupUsers).\n\nThe following table shows some links that may be available on a user, as determined by your policies:\n\n|   Link Relation Type   |                                                  Description                                                                                                                        |\n|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n|self\t                   |  A self-referential link to this user                                                                                                                                               |\n|activate\t               |  Lifecycle action to [activate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/activateUser)                                           |\n|deactivate              |\tLifecycle action to [deactivate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/deactivateUser)                                       |\n|suspend                 |\tLifecycle action to [suspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/suspendUser)                                             |\n|unsuspend               |\tLifecycle action to [unsuspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unsuspendUser)                                         |\n|resetPassword           |\tLifecycle action to [trigger a password reset](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/resetPassword)                                             |\n|expirePassword          |\tLifecycle action to [expire the user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/expirePassword)                                          |\n|resetFactors            |\tLifecycle action to [reset all MFA factors](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/resetFactors)                                       |\n|unlock                  |\tLifecycle action to [unlock a locked-out user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unlockUser)                                      |\n|forgotPassword          |\t[Resets a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/forgotPassword) by validating the user's recovery credential.                  |\n|changePassword          |\t[Changes a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changePassword) validating the user's current password                        |\n|changeRecoveryQuestion  |\t[Changes a user's recovery credential](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changeRecoveryQuestion) by validating the user's current password  |"
+    description: "The Users API provides operations to manage users in your organization.\n> **Note:** Some of the curl code examples on this page include SSWS API token authentication. However, Okta recommends using scoped OAuth 2.0 and OIDC access tokens to authenticate with Okta management APIs.\n> OAuth 2.0 and OIDC access tokens provide fine-grain control over the bearer's actions on specific endpoints. See [Okta API authentication methods](https://developer.okta.com/docs/api/openapi/okta-oauth/guides/overview/).\n\n### User status\nThe following diagram shows the flow of user status:\n![STAGED, PROVISIONED, ACTIVE, RECOVERY, LOCKED_OUT, PASSWORD_EXPIRED, or DEPROVISIONED](../../../../../images/users/okta-user-status.png)\n\n### User creation scenarios\n\n The following table describes the user experience and expectation of user status and welcome screen, depending on which options (security question and answer, password, and activate query) are defined during user creation.\n\n  **User creation details and outcomes**\n\n  | Security Q & A   | Password   | Activate Query Parameter   | User Status                | Login Credential                | Welcome Screen   |\n  |     -----        |  --------  |  ------------------------  |  -------------             |  ----------------------         |  --------------  |\n  |                  |            | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  | X                |            | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                |            | TRUE                       | `PROVISIONED` or `ACTIVE`  | One-Time Token (Email) or Email | X                |\n  |                  | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  |                  | X          | TRUE                       | `ACTIVE`                   | Password                        | X                |\n  | X                | X          | FALSE                      | `STAGED`                   |                                 |                  |\n  | X                | X          | TRUE                       | `ACTIVE`                   | Password                        |                  |\n\nCreating users with a `FEDERATION` or `SOCIAL` provider sets the user status to either `ACTIVE` or `STAGED` based on the `activate` query parameter since these two providers don't support a `password` or `recovery_question` credential.\n\nMore information about the use cases are in the following sections and in the examples for [Create a user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/createUser).\n\n#### Create user with optional password\n\nWhen making the password optional, the user status following user creation can be affected by the enrollment policy. See [Create an authenticator enrollment policy](https://help.okta.com/okta_help.htm?type=oie&id=ext-create-mfa-policy).\n\nBased on the group memberships that are specified when the user is created, a password may or may not be required to make the user's status `ACTIVE`. The groups assigned to the user determines the enrollment policy applied to the user. If the enrollment policy has the password authenticator set to `required`, then the user's status is determined by if the user is created with a password:\n\n* Created with a password - the user status is set to `PROVISIONED` and a One-Time Token is sent to the user through email\n* Created without a password - the user status is set to `ACTIVE` and they can immediately sign in using their password authenticator\n\nIf the user doesn't have an enrolled authenticator, Okta sets the user to `PROVISIONED` and sends an activation link. The user must click the activation link before they can sign in. The activation link provides a baseline assurance that can be used to enroll in other authenticators. If the user has one or more enrolled authenticators at activation time, they're set to `ACTIVE` and can sign in directly.\n\nSee [Passwordless authentication](https://help.okta.com/okta_help.htm?type=oie&id=ext-passwordless-auth) in the help documentation.\n\n#### Create user without credentials\n\nCreates a user without a `password` or a recovery `question` and `answer`.\n\nIf appropriate, when the user is activated, an email is sent to the user with an activation token that the user can use to complete the activation process.\n\nThis is the default flow for new user registration using the Admin Console.\n\n#### Create user with recovery question\n\nCreates a user without a `password`.\n\nWhen the user is activated, an email is sent to the user with an activation token that can be used to complete the activation process.\nThis flow is useful if migrating users from an existing user store.\n\n#### Create user with password\n\nCreates a user without a recovery `question` and `answer`.\n\nThe new user is able to sign in after activation with the assigned password. This flow is common when developing a custom user registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should sign in with their assigned password.\n\n> **Note:** You can also use this scenario to create a user without sending an activation email. See this [Knowledge Base article](https://support.okta.com/help/s/article/How-to-Avoid-Sending-a-Welcome-Email?language=en_US#:~:text=For%20users%20imported%20from%20the,t%20send%20new%20user%20activation).\n\n#### Create user with imported hashed password\n\nCreates a user with a specified hashed password.\n\nThe new user is able to sign in after activation with the specified password.\n\nThis flow is common when migrating users from another data store in cases where we want to allow the users to retain their current passwords.\n> **Important:** Do not generate or send a one-time activation token when activating users with an imported password. Users should login with their imported password.\n\n#### Create user with password import inline hook\n\nCreates a user with a `Password Hook` object specifying that a password inline hook should be used to handle password verification.\n\nThe password inline hook is triggered to handle verification of the end user's password the first time the user tries to sign in, with Okta calling the password inline hook to check that the password the user supplied is valid. If the password is valid, Okta stores the hash of the password that was provided and can authenticate the user independently from then on. See [Create a password import inline hook](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/InlineHook/#tag/InlineHook/operation/createPasswordImportInlineHook) for more details.\n\nThe new user is able to sign in after activation with the valid password. This flow supports migrating users from another data store in cases where we wish to allow the users to retain their current passwords.\n> **Important:** Don't generate or send a one-time activation token when activating users with an password inline hook. Users should sign in with their existing password to be imported using the password import inline hook.\n\n#### Create user with password and recovery question\n\nCreates a new user with a password and recovery `question` and `answer`.\n\nThe new user is able to log in with the assigned password after activation. This flow is common when developing a custom user-registration experience.\n> **Important:** Don't generate or send a one-time activation token when activating users with an assigned password. Users should login with their assigned password.\n\n#### Create user with authentication provider\n\nCreates a new passwordless user with a `SOCIAL` or `FEDERATION` authentication provider that must be authenticated through a trusted identity provider.\n\n#### Create user in group\n\nCreates a user that is added to the specified groups upon creation.\n\nUse this in conjunction with other create operations for a group admin that's scoped to create users only in specified groups. The request can specify up to 20 group IDs. (This limit applies only when creating a user. You can add the user later to more groups.)\n\n#### Create user with non-default user type\n\nCreates a user with a specified user type. You can include the type specification with any of the above Create user operations. This example demonstrates creating a user without credentials.\nThe user type determines which [Schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After you create a user, you can assign the user a different user type using the full replacement [PUT operation](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/#tag/UserType/operation/replaceUserType).\n\n### Links object\n\nThe links object specifies link relations. See [`_links`](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers!c=200&path=_links&t=response).\n\n> **Note:** This links object is different from [linked objects](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/LinkedObject/).\n\n#### Individual users versus collection of users\n\nFor an individual user result, the links object contains a full set of link relations available for that user as determined by your policies. For a collection of users, the links object contains only the `self` link. Operations that return a collection of users include [List all users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers) and [List all member users](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Group/#tag/Group/operation/listGroupUsers).\n\nThe following table shows some links that may be available on a user, as determined by your policies:\n\n|   Link Relation Type   |                                                  Description                                                                                                                        |\n|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|\n|self\t                   |  A self-referential link to this user                                                                                                                                               |\n|activate\t               |  Lifecycle action to [activate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/activateUser)                                           |\n|deactivate              |\tLifecycle action to [deactivate the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/deactivateUser)                                       |\n|suspend                 |\tLifecycle action to [suspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/suspendUser)                                             |\n|unsuspend               |\tLifecycle action to [unsuspend the user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unsuspendUser)                                         |\n|resetPassword           |\tLifecycle action to [trigger a password reset](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/resetPassword)                                             |\n|expirePassword          |\tLifecycle action to [expire the user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/expirePassword)                                          |\n|resetFactors            |\tLifecycle action to [reset all MFA factors](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/resetFactors)                                       |\n|unlock                  |\tLifecycle action to [unlock a locked-out user](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserLifecycle/#tag/UserLifecycle/operation/unlockUser)                                      |\n|forgotPassword          |\t[Resets a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/forgotPassword) by validating the user's recovery credential.                  |\n|changePassword          |\t[Changes a user's password](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changePassword) validating the user's current password                        |\n|changeRecoveryQuestion  |\t[Changes a user's recovery credential](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserCred/#tag/UserCred/operation/changeRecoveryQuestion) by validating the user's current password  |"
   - name: UserAuthenticatorEnrollments
     x-displayName: User Authenticator Enrollments
     description: |-
@@ -1033,7 +1033,7 @@ paths:
         - Authenticator
   /.well-known/apple-app-site-association:
     x-okta-lifecycle:
-      lifecycle: EA
+      lifecycle: LIMITED_GA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1058,7 +1058,7 @@ paths:
         - AssociatedDomainCustomizations
   /.well-known/assetlinks.json:
     x-okta-lifecycle:
-      lifecycle: EA
+      lifecycle: LIMITED_GA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1131,7 +1131,7 @@ paths:
           - Okta Identity Engine
   /.well-known/webauthn:
     x-okta-lifecycle:
-      lifecycle: EA
+      lifecycle: LIMITED_GA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1745,6 +1745,12 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: alwaysIncludeVpnSettings
+          in: query
+          description: Specifies whether to include the VPN configuration for existing notifications in the result, regardless of whether VPN notifications are configured
+          schema:
+            type: boolean
+            default: false
         - name: limit
           in: query
           description: Specifies the number of results per page
@@ -1755,7 +1761,7 @@ paths:
             maximum: 200
         - name: filter
           in: query
-          description: Filters apps by `status`, `user.id`, `group.id`, `credentials.signing.kid` or `name` expression that supports the `eq` operator
+          description: 'Filters apps with a supported expression for a subset of properties. Filtering supports the following limited number of properties: `id`, `status`, `credentials.signing.kid`, `settings.slo.enabled`, or `name`. See [Filter](https://developer.okta.com/docs/api/#filter).'
           schema:
             type: string
           examples:
@@ -5126,7 +5132,7 @@ paths:
       tags:
         - Authenticator
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8674,7 +8680,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8713,7 +8719,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8751,7 +8757,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -8793,7 +8799,7 @@ paths:
       tags:
         - AssociatedDomainCustomizations
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
@@ -9185,7 +9191,7 @@ paths:
   /api/v1/device-integrations:
     get:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs: []
       summary: List all device integrations
@@ -9217,7 +9223,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     get:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs: []
       summary: Retrieve a device integration
@@ -9247,7 +9253,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     post:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs: []
       summary: Activate a device integration
@@ -9279,7 +9285,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     post:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs: []
       summary: Deactivate a device integration
@@ -12390,8 +12396,8 @@ paths:
       isGenerallyAvailable: false
       SKUs: []
     get:
-      summary: List all governance bundles for the Admin Console
-      description: Lists all Governance Bundles for the Admin Console in your org
+      summary: List all governance bundles
+      description: Lists all governance bundles for the Admin Console in your org
       operationId: listGovernanceBundles
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -12414,8 +12420,8 @@ paths:
       tags:
         - GovernanceBundle
     post:
-      summary: Create a governance bundle for the Admin Console in RAMP
-      description: Creates a Governance Bundle for the Admin Console in RAMP
+      summary: Create a governance bundle
+      description: Creates a governance bundle of entitlements for the Admin Console
       operationId: createGovernanceBundle
       requestBody:
         content:
@@ -12450,8 +12456,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/pathBundleId'
     get:
-      summary: Retrieve a governance bundle from RAMP
-      description: Retrieves a Governance Bundle from RAMP
+      summary: Retrieve a governance bundle
+      description: Retrieves a governance bundle for the Admin Console
       operationId: getGovernanceBundle
       responses:
         '200':
@@ -12473,8 +12479,8 @@ paths:
       tags:
         - GovernanceBundle
     put:
-      summary: Replace a governance bundle in RAMP
-      description: Replaces a Governance Bundle in RAMP
+      summary: Replace a governance bundle
+      description: Replaces the properties of a governance bundle for the Admin Console
       operationId: replaceGovernanceBundle
       requestBody:
         content:
@@ -12502,8 +12508,8 @@ paths:
       tags:
         - GovernanceBundle
     delete:
-      summary: Delete a governance bundle from RAMP
-      description: Deletes a Governance Bundle from RAMP
+      summary: Delete a governance bundle
+      description: Deletes an Admin Console governance bundle
       operationId: deleteGovernanceBundle
       responses:
         '204':
@@ -12527,7 +12533,7 @@ paths:
       - $ref: '#/components/parameters/pathBundleId'
     get:
       summary: List all entitlements for a governance bundle
-      description: Lists all Entitlements specific to a Governance Bundle
+      description: Lists all entitlements specific to a governance bundle
       operationId: listBundleEntitlements
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -12558,8 +12564,8 @@ paths:
       - $ref: '#/components/parameters/pathBundleId'
       - $ref: '#/components/parameters/pathEntitlementId'
     get:
-      summary: List all entitlement values for a bundle entitlement
-      description: Lists all Entitlement Values specific to a Bundle Entitlement
+      summary: List all values for a governance bundle entitlement
+      description: Lists all entitlement values that are specific to a governance bundle entitlement
       operationId: listBundleEntitlementValues
       parameters:
         - $ref: '#/components/parameters/queryAfter'
@@ -12587,8 +12593,8 @@ paths:
       isGenerallyAvailable: false
       SKUs: []
     get:
-      summary: Retrieve the opt-in status from RAMP
-      description: Retrieves the opt-in status of the Admin Console from RAMP
+      summary: Retrieve the Admin Console opt-in status
+      description: Retrieves the entitlement management opt-in status for the Admin Console
       operationId: getOptInStatus
       responses:
         '200':
@@ -12608,8 +12614,8 @@ paths:
       tags:
         - GovernanceBundle
     post:
-      summary: Opt in the Admin Console to RAMP
-      description: Opts in the Admin Console to RAMP
+      summary: Opt in the Admin Console to entitlement management
+      description: Opts in the Admin Console to entitlement management
       operationId: optIn
       responses:
         '200':
@@ -12630,8 +12636,8 @@ paths:
         - GovernanceBundle
   /api/v1/iam/governance/optOut:
     post:
-      summary: Opt out the Admin Console from RAMP
-      description: Opts out the Admin Console from RAMP
+      summary: Opt out the Admin Console from entitlement management
+      description: Opts out the Admin Console from entitlement management
       operationId: optOut
       responses:
         '200':
@@ -24695,6 +24701,13 @@ paths:
   /integrations/api/v1/submissions/{submissionId}:
     parameters:
       - $ref: '#/components/parameters/pathSubmissionId'
+  /integrations/api/v1/submissions/{submissionId}/capabilities:
+    parameters:
+      - $ref: '#/components/parameters/pathSubmissionId'
+  /integrations/api/v1/submissions/{submissionId}/capabilities/{capability}/protocols/actions:
+    parameters:
+      - $ref: '#/components/parameters/pathSubmissionId'
+      - $ref: '#/components/parameters/pathCapability'
   /integrations/api/v1/submissions/{submissionId}/submit:
     parameters:
       - $ref: '#/components/parameters/pathSubmissionId'
@@ -25663,6 +25676,9 @@ paths:
   /workload-principals/api/v1/ai-agents/{agentId}/lifecycle/deactivate:
     parameters:
       - $ref: '#/components/parameters/pathAIAgentId'
+  /workload-principals/api/v1/operations/{operationId}:
+    parameters:
+      - $ref: '#/components/parameters/operationId'
 x-webhooks:
   CreateTelephonyInlineHook:
     post:
@@ -26602,6 +26618,14 @@ components:
       schema:
         type: string
         example: who8vt36qfNpCGz9H1e6
+    pathExternalUserId:
+      name: externalId
+      in: path
+      required: true
+      description: The external ID of the user
+      example: 00u7m9p9ZT8k2S2EX1f7
+      schema:
+        type: string
     pathFactorId:
       name: factorId
       description: ID of an existing user factor
@@ -26699,6 +26723,22 @@ components:
       example: 00gsl4xM9ys8TdnbZ0g4 or GROUPEXT123456784C2IF
       schema:
         type: string
+    pathIdentitySourceExternalId:
+      name: externalId
+      in: path
+      required: true
+      description: The external ID of the identity source group
+      example: GROUPEXT123456784C2IF
+      schema:
+        type: string
+    pathIdentitySourceGroupOrExternalId:
+      name: groupOrExternalId
+      in: path
+      required: true
+      description: The Okta group ID or external ID of the identity source group
+      example: 00gsl4xM9ys8TdnbZ0g4 or GROUPEXT123456784C2IF
+      schema:
+        type: string
     pathIdentitySourceId:
       name: identitySourceId
       in: path
@@ -26721,6 +26761,14 @@ components:
       required: true
       description: The ID of the identity source session
       example: aps1qqonvr2SZv6o70h8
+      schema:
+        type: string
+    pathIdentitySourceUserId:
+      name: appUserId
+      in: path
+      required: true
+      description: The ID of the user in the identity source
+      example: 00u7m9p9ZT8k2S2EX1f7
       schema:
         type: string
     pathIdpCsrId:
@@ -32177,43 +32225,51 @@ components:
               profile:
                 $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     BundleEntitlement:
+      description: An entitlement in a governance bundle
       type: object
       properties:
         description:
           type: string
+          description: The description of the role
         id:
           type: string
+          description: Entitlement ID
         name:
           type: string
+          description: The name of the role
         role:
           type: string
+          description: The role key
         _links:
-          allOf:
-            - properties:
-                values:
-                  $ref: '#/components/schemas/HrefObject'
+          type: object
+          description: Link relations available
+          properties:
+            values:
+              allOf:
+                - $ref: '#/components/schemas/HrefObject'
+                - description: Link to the entitlement values resource
     BundleEntitlementsResponse:
+      description: Entitlement list for a governance bundle
       type: object
       properties:
         entitlements:
           type: array
+          description: List of bundle entitlements
           items:
             $ref: '#/components/schemas/BundleEntitlement'
         _links:
-          type: object
-          description: Specifies link relations (see [Web Linking](https://www.rfc-editor.org/rfc/rfc8288)) available using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06) specification
-          readOnly: true
-          properties:
-            next:
-              allOf:
-                - $ref: '#/components/schemas/HrefObject'
-                - description: Link to the next resource
-            self:
-              $ref: '#/components/schemas/HrefObjectSelfLink'
-            bundle:
-              allOf:
-                - $ref: '#/components/schemas/HrefObject'
-                - description: Link to the bundle resource
+          allOf:
+            - $ref: '#/components/schemas/LinksSelf'
+            - readOnly: true
+            - properties:
+                next:
+                  $ref: '#/components/schemas/HrefObjectNextLink'
+                bundle:
+                  $ref: '#/components/schemas/BundleLink'
+    BundleLink:
+      allOf:
+        - $ref: '#/components/schemas/HrefObject'
+        - description: Link to the bundle resource
     ByDateTimeAuthenticatorGracePeriodExpiry:
       allOf:
         - $ref: '#/components/schemas/EnrollmentPolicyAuthenticatorGracePeriod'
@@ -33602,6 +33658,13 @@ components:
       description: Google Chrome Device Trust Connector provider
       type: object
       properties:
+        antivirusEnabled:
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs: []
+          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Indicates whether antivirus software is enabled
+          type: boolean
         browserVersion:
           $ref: '#/components/schemas/ChromeBrowserVersion'
         builtInDnsClientEnabled:
@@ -34303,10 +34366,10 @@ components:
         - CUSTOM
     DevicePostureIdP:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: LIMITED_GA
         isGenerallyAvailable: false
         SKUs: []
-      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Device Posture IdP provider
+      description: <x-lifecycle-container><x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>Device Posture IdP provider
       type: object
       properties:
         compliant:
@@ -35199,10 +35262,13 @@ components:
       properties:
         id:
           type: string
+          description: Entitlement value ID
         name:
           type: string
+          description: The entitlement value resource name
         value:
           type: string
+          description: The entitlement value resource [ORN](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#okta-resource-name-orn)
         _links:
           type: object
           description: Specifies link relations (see [Web Linking](https://www.rfc-editor.org/rfc/rfc8288)) available using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06) specification
@@ -35219,17 +35285,23 @@ components:
       properties:
         entitlementValues:
           type: array
+          description: List of entitlement values for a bundle entitlement
           items:
             $ref: '#/components/schemas/EntitlementValue'
         _links:
-          anyOf:
+          allOf:
             - $ref: '#/components/schemas/LinksSelf'
-            - $ref: '#/components/schemas/LinksNext'
             - properties:
                 bundle:
-                  $ref: '#/components/schemas/HrefObject'
+                  $ref: '#/components/schemas/BundleLink'
                 entitlements:
-                  $ref: '#/components/schemas/HrefObject'
+                  $ref: '#/components/schemas/EntitlementsLink'
+                next:
+                  $ref: '#/components/schemas/HrefObjectNextLink'
+    EntitlementsLink:
+      allOf:
+        - $ref: '#/components/schemas/HrefObject'
+        - description: Link to the entitlements resource
     EntityRiskPolicy:
       allOf:
         - $ref: '#/components/schemas/Policy'
@@ -35886,52 +35958,73 @@ components:
       properties:
         description:
           type: string
+          description: Description of the governance bundle
         id:
           type: string
+          description: Governance bundle ID
         name:
           type: string
+          description: Name of the governance bundle
         orn:
           type: string
+          description: The governance bundle resource, in [ORN format](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#okta-resource-name-orn)
         status:
           type: string
+          description: Status of the governance bundle
         _links:
-          allOf:
-            - properties:
-                entitlements:
-                  $ref: '#/components/schemas/HrefObject'
+          type: object
+          description: Link relations available
+          properties:
+            entitlements:
+              $ref: '#/components/schemas/EntitlementsLink'
+            self:
+              $ref: '#/components/schemas/HrefObjectSelfLink'
     GovernanceBundleCreateRequest:
+      description: Request to create a governance bundle
       type: object
       properties:
         description:
           type: string
+          description: Description of the governance bundle
         entitlements:
           type: array
+          description: List of entitlements to include in the governance bundle
           items:
             $ref: '#/components/schemas/IAMBundleEntitlement'
         name:
           type: string
+          description: Name of the governance bundle
     GovernanceBundleUpdateRequest:
+      description: Request to update a governance bundle
       type: object
       properties:
         description:
           type: string
+          description: Description of the governance bundle
         entitlements:
           type: array
+          description: List of entitlements to include in the governance bundle
           items:
             $ref: '#/components/schemas/IAMBundleEntitlement'
         name:
           type: string
+          description: Name of the governance bundle
     GovernanceBundlesResponse:
       type: object
       properties:
         bundles:
           type: array
+          description: List of governance bundles
           items:
             $ref: '#/components/schemas/GovernanceBundle'
         _links:
-          anyOf:
+          allOf:
             - $ref: '#/components/schemas/LinksSelf'
-            - $ref: '#/components/schemas/LinksNext'
+            - readOnly: true
+            - type: object
+              properties:
+                next:
+                  $ref: '#/components/schemas/HrefObjectNextLink'
     GovernanceSourceType:
       description: The grant type
       type: string
@@ -36844,18 +36937,24 @@ components:
         - POST
         - PUT
     IAMBundleEntitlement:
+      description: An entitlement in a governance bundle
       type: object
       properties:
         resourceSets:
           type: array
+          description: List of resource set IDs for the custom role
           items:
             type: string
+            description: Resource set ID
         role:
           type: string
+          description: The role
         targets:
           type: array
+          description: List of target resource IDs to scope the entitlement with the role
           items:
             type: string
+            description: Target resource (app or group ID)
     IDVAuthorizationEndpoint:
       description: IDV authorization endpoint
       type: object
@@ -42339,16 +42438,25 @@ components:
       properties:
         optInStatus:
           type: string
+          description: The entitlement management opt-in status for the Admin Console
           enum:
             - OPTING_IN
             - OPTED_IN
             - OPTING_OUT
             - OPTED_OUT
+          x-enumDescriptions:
+            OPTING_IN: Okta is enabling entitlement management for the Admin Console
+            OPTED_IN: Entitlement management is enabled for the Admin Console
+            OPTING_OUT: Okta is disabling entitlement management for the Admin Console
+            OPTED_OUT: Entitlement management is disabled for the Admin Console
         _links:
-          allOf:
-            - properties:
-                optInStatus:
-                  $ref: '#/components/schemas/HrefObject'
+          type: object
+          description: Link relations available
+          properties:
+            optInStatus:
+              allOf:
+                - $ref: '#/components/schemas/HrefObject'
+                - description: Link to the opt-in status resource
     Org2OrgApplication:
       title: Org2Org
       x-tags:
@@ -50253,7 +50361,9 @@ components:
           description: Specifies the button label for the `Submit` button at the bottom of the enrollment form
           default: Submit
         elements:
-          $ref: '#/components/schemas/UIElement'
+          type: array
+          items:
+            $ref: '#/components/schemas/UIElement'
         label:
           type: string
           description: Specifies the label at the top of the enrollment form under the logo
@@ -50409,6 +50519,16 @@ components:
           type: string
           description: The ID of the realm in which the user is residing. See [Realms](/openapi/okta-management/management/tag/Realm/).
           example: guo1bfiNtSnZYILxO0g4
+        type:
+          type: object
+          description: |-
+            The ID of the user type. Add this value if you want to create a user with a non-default [User Type](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/).
+            The user type determines which [schema](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Schema/) applies to that user. After a user has been created, the user can
+            only be assigned a different user type by an admin through a full replacement (`PUT`) operation.
+          properties:
+            id:
+              type: string
+              description: The ID of the user type
     User:
       type: object
       properties:
@@ -50475,7 +50595,7 @@ components:
           description: |-
             The user type that determines the schema for the user's profile. The `type` property is a map that identifies the [User Types](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/UserType/#tag/UserType).
 
-            Currently it contains a single element, `id`. It can be specified when creating a new user, and ca be updated by an admin on a full replace of an existing user (but not a partial update).
+            Currently it contains a single element, `id`. It can be specified when creating a new user, and can be updated by an admin on a full replace of an existing user (but not a partial update).
           properties:
             id:
               type: string
@@ -51482,13 +51602,17 @@ components:
       type: object
       properties:
         authenticatorName:
-          description: Human-readable name of the authenticator
+          description: |-
+            Human-readable name of the authenticator
+
+            > **Note:** This name is set from the AAGUID metadata during enrollment. It can't be changed in the Admin Console or by using any Okta APIs.
           example: MacBook Touch ID
           type: string
         credentialId:
           description: ID for the factor credential
           example: AHoOEhwvYiMv6SSwLp7KYRNttXtg_kYgQoQiEIWPFH_T3Ztp5Vj3bQ5H0LypIFR8ka8kfiCJ3I5qVpxrsd6JTMWKcE3xNh_U2QVF0Kwlan8Fiw
           type: string
+      readOnly: true
     UserFactorWebProfile:
       type: object
       properties:
@@ -51977,6 +52101,15 @@ components:
         - properties:
             capabilities:
               $ref: '#/components/schemas/CapabilitiesObject'
+    UserRequestSchema:
+      type: object
+      properties:
+        externalId:
+          type: string
+          description: The external ID of the user in the identity source
+          maxLength: 512
+        profile:
+          $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     UserResourceHrefObject:
       type: object
       properties:
@@ -51988,6 +52121,30 @@ components:
           type: string
           description: Link name
           example: SAML Jackson
+    UserResponseSchema:
+      type: object
+      properties:
+        created:
+          type: string
+          description: The timestamp when the user was created in the identity source
+          format: date-time
+          readOnly: true
+        externalId:
+          type: string
+          description: The external ID of the user in the identity source
+          readOnly: true
+          maxLength: 255
+        id:
+          type: string
+          description: The ID of the user in the identity source
+          readOnly: true
+        lastUpdated:
+          type: string
+          description: The timestamp when the user was last updated in the identity source
+          format: date-time
+          readOnly: true
+        profile:
+          $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     UserRiskGetResponse:
       type: object
       properties:
@@ -52631,6 +52788,11 @@ components:
       allOf:
         - $ref: '#/components/schemas/HrefObject'
         - description: Link to the [Application Users](/openapi/okta-management/management/tag/ApplicationUsers/#tag/ApplicationUsers/operation/listApplicationUsers) resource
+    UsersUpdateRequestSchema:
+      type: object
+      properties:
+        profile:
+          $ref: '#/components/schemas/IdentitySourceUserProfileForUpsert'
     ValidationDetail:
       description: Validation detail
       type: object
@@ -52744,9 +52906,9 @@ components:
         _links:
           $ref: '#/components/schemas/LinksSelf'
     WebAuthnRpId:
-      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
+      description: The [RP ID](https://www.w3.org/TR/webauthn/#relying-party-identifier) object for WebAuthn configuration
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         isGenerallyAvailable: false
         SKUs: []
       type: object
