@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Okta OpenID Connect & OAuth 2.0
-  version: 2025.11.0
+  version: 2026.03.0
   description: OAuth 2.0 Protocol APIs
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -94,7 +94,7 @@ paths:
         - name: client_id
           in: query
           required: true
-          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/tag/Client/). It identifies the client and must match the value preregistered in Okta.
+          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/client). It identifies the client and must match the value preregistered in Okta.
           schema:
             type: string
         - name: code_challenge
@@ -129,6 +129,16 @@ paths:
         - name: idp
           in: query
           description: An Okta extension to the OpenID specification. The ID of the identity provider to use if there's no Okta session.
+          schema:
+            type: string
+        - name: interclient_token
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs:
+              - Okta Identity Engine
+          in: query
+          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>A token used to SSO into the client app
           schema:
             type: string
         - name: login_hint
@@ -232,7 +242,7 @@ paths:
         isGenerallyAvailable: true
       summary: /authorize
       description: |-
-        This is a starting point for browser-based OpenID Connect flows such as the implicit and authorization code flows. This endpoint method behaves the same as [`GET /oauth2/v1/authorize`](/openapi/okta-oauth/oauth/tag/OrgAS/#tag/OrgAS/operation/authorize), except that all parameters are specified in the request body and submitted through the form post. No query parameters are allowed.
+        This is a starting point for browser-based OpenID Connect flows such as the implicit and authorization code flows. This endpoint method behaves the same as [`GET /oauth2/v1/authorize`](/openapi/okta-oauth/oauth/orgas/authorize), except that all parameters are specified in the request body and submitted through the form post. No query parameters are allowed.
         > **Note:** Requests to the `/authorize` endpoint should redirect the browser (user agent) to the endpoint. You can't use AJAX with this endpoint. Example responses are intentionally omitted, but include displaying a sign-in prompt, redirecting to the client app, or displaying an error.
       operationId: authorizeWithPost
       requestBody:
@@ -547,7 +557,7 @@ paths:
       description: |-
         Replaces the settings for a client app.
 
-        > **Note:** You must specifiy all settings when you update a client app. Partial updates aren't supported. If any settings are missing when you update a client app, the update fails. The exceptions are that you can't include `client_secret_expires_at` or `client_id_issued_at` in the request, and you can omit the `client_secret`.
+        > **Note:** You must specify all settings when you update a client app. Partial updates aren't supported. If any settings are missing when you update a client app, the update fails. The exceptions are that you can't include `client_secret_expires_at` or `client_id_issued_at` in the request, and you can omit the `client_secret`.
       operationId: replaceClient
       requestBody:
         content:
@@ -802,7 +812,7 @@ paths:
       description: |-
         Returns a JSON Web Key Set (JWKS) that contains the public keys that you can use to verify the signatures of tokens that you receive from your authorization server.
 
-        > **Note:** Looking for how to obtain the `jwks_uri` for your org authorization server? See the [well-known OpenID Connect metadata endpoint](/openapi/okta-oauth/oauth/tag/OrgAS/#tag/OrgAS/operation/getWellKnownOpenIDConfiguration).
+        > **Note:** Looking for how to obtain the `jwks_uri` for your org authorization server? See the [well-known OpenID Connect metadata endpoint](/openapi/okta-oauth/oauth/customas/getwellknownopenidconfigurationcustomas).
 
         Any of the two or three keys listed are used to sign tokens. The order of keys in the result doesn't indicate which keys are used.
 
@@ -929,11 +939,14 @@ paths:
       SKUs:
         - Okta Identity Engine
     post:
+      deprecated: true
       summary: /oob-authenticate
       description: |-
         Initiates direct authentication with an out-of-band authenticator
 
         > **Note:** The `/oob-authenticate` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+
+        > **Note:** This endpoint is deprecated. Use [/primary-authenticate](//openapi/okta-oauth/oauth/customas/primary-authenticate-custom-as) instead.
       operationId: oob-authenticate
       requestBody:
         content:
@@ -1126,6 +1139,94 @@ paths:
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
+  /oauth2/v1/primary-authenticate:
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
+    post:
+      summary: /primary-authenticate
+      description: |-
+        Initiates direct authentication with an out-of-band authenticator
+
+        > **Note:** The `/primary-authenticate` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+      operationId: primary-authenticate
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OobAuthenticateRequest'
+            examples:
+              oobRequest:
+                $ref: '#/components/examples/OobAuthenticateRequestExample'
+              oobSmsRequest:
+                $ref: '#/components/examples/OobAuthenticateSmsRequestExample'
+              oobVoiceRequest:
+                $ref: '#/components/examples/OobAuthenticateVoiceRequestExample'
+      responses:
+        '200':
+          description: Out-of-band authentication has successfully been initiated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OobAuthenticateResponse'
+              examples:
+                ovPushResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseExample'
+                ovNmcResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseOktaVerifyNumberMatchChallengeExample'
+                smsResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseSmsExample'
+                voiceResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseVoiceExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                invalidChannelHint:
+                  $ref: '#/components/examples/OobAuthenticateErrorInvalidChannelHint'
+                userNotAssigned:
+                  $ref: '#/components/examples/OobAuthenticateErrorUserNotAssignedApp'
+                grantTypeDisabled:
+                  $ref: '#/components/examples/OobAuthenticateErrorGrantTypeDisabled'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                invalidClientSecret:
+                  $ref: '#/components/examples/OobAuthenticateErrorInvalidClientSecret'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                authenticatorCannotBeUsed:
+                  $ref: '#/components/examples/OobAuthenticateErrorAuthenticatorCannotBeUsed'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                userRateLimit:
+                  $ref: '#/components/examples/OobAuthenticateErrorRateLimit'
+      security:
+        - Client authentication `client_secret_basic`: []
+        - Client authentication `client_secret_post`: []
+        - Client authentication `client_secret_jwt`: []
+        - Client authentication `private_key_jwt`: []
+      tags:
+        - OrgAS
   /oauth2/v1/revoke:
     post:
       summary: /revoke
@@ -1236,32 +1337,44 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenRequest'
+              $ref: '#/components/schemas/TokenRequestOrgAs'
             examples:
               Authorization Code Flow w/ Client Credentials:
                 $ref: '#/components/examples/TokenRequestAuthorizationCodeWithCredsExample'
-              Saml Bearer:
+              SAML Bearer:
                 $ref: '#/components/examples/TokenRequestSamlBearerExample'
               Resource Owner Password Flow:
                 $ref: '#/components/examples/TokenRequestPassword'
-              directAuthOtpPrimaryAuth:
+              Direct authentication with OTP (primary factor):
                 $ref: '#/components/examples/TokenRequestDirectAuthOtpExample'
-              directAuthMfaOtp:
+              Direct authentication with OTP (MFA):
                 $ref: '#/components/examples/TokenRequestDirectAuthMfaOtpExample'
-              directAuthOobPrimaryAuth:
+              Direct authentication with OOB (primary factor):
                 $ref: '#/components/examples/TokenRequestDirectAuthOobExample'
-              directAuthMfaOob:
+              Direct authentication with OOB (MFA):
                 $ref: '#/components/examples/TokenRequestDirectAuthMfaOobExample'
+              TokenRequestAiAgentIdJagExample:
+                $ref: '#/components/examples/TokenRequestAiAgentIdJagExample'
+              TokenRequestAiAgentVaultedSecretExample:
+                $ref: '#/components/examples/TokenRequestAiAgentVaultedSecretExample'
+              TokenRequestAiAgentServiceAccountExample:
+                $ref: '#/components/examples/TokenRequestAiAgentServiceAccountExample'
       responses:
         '200':
           description: Based on the scopes requested. The scopes specified in a request are included in the access token in the response.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenResponse'
+                $ref: '#/components/schemas/TokenResponseOrgAs'
               examples:
                 Token response:
                   $ref: '#/components/examples/TokenResponseExample'
+                TokenResponseAiAgentIdJagExample:
+                  $ref: '#/components/examples/TokenResponseAiAgentIdJagExample'
+                TokenResponseAiAgentVaultedSecretExample:
+                  $ref: '#/components/examples/TokenResponseAiAgentVaultedSecretExample'
+                TokenResponseAiAgentServiceAccountExample:
+                  $ref: '#/components/examples/TokenResponseAiAgentServiceAccountExample'
         '400':
           description: Bad Request
           content:
@@ -1436,7 +1549,7 @@ paths:
         - name: client_id
           in: query
           required: true
-          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/tag/Client/). It identifies the client and must match the value preregistered in Okta.
+          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/client). It identifies the client and must match the value preregistered in Okta.
           schema:
             type: string
         - name: code_challenge
@@ -1471,6 +1584,16 @@ paths:
         - name: idp
           in: query
           description: An Okta extension to the OpenID specification. The ID of the identity provider to use if there's no Okta session.
+          schema:
+            type: string
+        - name: interclient_token
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs:
+              - Okta Identity Engine
+          in: query
+          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>A token used to SSO into the client app
           schema:
             type: string
         - name: login_hint
@@ -1574,7 +1697,7 @@ paths:
         isGenerallyAvailable: true
       summary: /authorize
       description: |-
-        This is a starting point for browser-based OpenID Connect flows such as the implicit and authorization code flows. This endpoint method behaves the same as [`GET /oauth2/{authorizationServerId}/v1/authorize`](/openapi/okta-oauth/oauth/tag/CustomAS/#tag/CustomAS/operation/authorizeCustomAS), except that all parameters are specified in the request body and submitted through the form post. No query parameters are allowed.
+        This is a starting point for browser-based OpenID Connect flows such as the implicit and authorization code flows. This endpoint method behaves the same as [`GET /oauth2/{authorizationServerId}/v1/authorize`](/openapi/okta-oauth/oauth/customas/authorizecustomas), except that all parameters are specified in the request body and submitted through the form post. No query parameters are allowed.
         > **Note:** Requests to the `/authorize` endpoint should redirect the browser (user agent) to the endpoint. You can't use AJAX with this endpoint. Example responses are intentionally omitted, but include displaying a sign-in prompt, redirecting to the client app, or displaying an error.
       operationId: authorizeCustomASWithPost
       requestBody:
@@ -1875,7 +1998,7 @@ paths:
       description: |-
         Returns a JSON Web Key Set (JWKS) that contains the public keys that you can use to verify the signatures of tokens that you receive from your authorization server.
 
-        > **Note:** Looking for how to obtain the `jwks_uri` for your custom authorization server? See the [well-known OpenID Connect metadata endpoint](/openapi/okta-oauth/oauth/tag/CustomAS/#tag/CustomAS/operation/getWellKnownOpenIDConfigurationCustomAS) and the [well-known OAuth 2.0 metadata endpoint](/openapi/okta-oauth/oauth/tag/CustomAS/#tag/CustomAS/operation/getWellKnownOAuthConfigurationCustomAS).
+        > **Note:** Looking for how to obtain the `jwks_uri` for your custom authorization server? See the [well-known OpenID Connect metadata endpoint](/openapi/okta-oauth/oauth/customas/getwellknownopenidconfigurationcustomas) and the [well-known OAuth 2.0 metadata endpoint](/openapi/okta-oauth/oauth/customas/getwellknownoauthconfigurationcustomas).
 
         Any of the two or three keys listed are used to sign tokens. The order of keys in the result doesn't indicate which keys are used.
 
@@ -1996,11 +2119,14 @@ paths:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
     post:
+      deprecated: true
       summary: /oob-authenticate
       description: |-
         Initiates direct authentication with an out-of-band authenticator
 
         > **Note:** The `/oob-authenticate` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+
+        > **Note:** This endpoint is deprecated. Use [/primary-authenticate](/openapi/okta-oauth/oauth/orgas/primary-authenticate) instead.
       operationId: oob-authenticate-custom-as
       requestBody:
         content:
@@ -2195,6 +2321,96 @@ paths:
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
+  /oauth2/{authorizationServerId}/v1/primary-authenticate:
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
+    parameters:
+      - $ref: '#/components/parameters/pathAuthorizationServerId'
+    post:
+      summary: /primary-authenticate
+      description: |-
+        Initiates direct authentication with an out-of-band authenticator
+
+        > **Note:** The `/primary-authenticate` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+      operationId: primary-authenticate-custom-as
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OobAuthenticateRequest'
+            examples:
+              oobRequest:
+                $ref: '#/components/examples/OobAuthenticateRequestExample'
+              oobSmsRequest:
+                $ref: '#/components/examples/OobAuthenticateSmsRequestExample'
+              oobVoiceRequest:
+                $ref: '#/components/examples/OobAuthenticateVoiceRequestExample'
+      responses:
+        '200':
+          description: Out-of-band authentication has successfully been initiated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OobAuthenticateResponse'
+              examples:
+                ovPushResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseExample'
+                ovNmcResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseOktaVerifyNumberMatchChallengeExample'
+                smsResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseSmsExample'
+                voiceResponse:
+                  $ref: '#/components/examples/OobAuthenticateResponseVoiceExample'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                invalidChannelHint:
+                  $ref: '#/components/examples/OobAuthenticateErrorInvalidChannelHint'
+                userNotAssigned:
+                  $ref: '#/components/examples/OobAuthenticateErrorUserNotAssignedApp'
+                grantTypeDisabled:
+                  $ref: '#/components/examples/OobAuthenticateErrorGrantTypeDisabled'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                invalidClientSecret:
+                  $ref: '#/components/examples/OobAuthenticateErrorInvalidClientSecret'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                authenticatorCannotBeUsed:
+                  $ref: '#/components/examples/OobAuthenticateErrorAuthenticatorCannotBeUsed'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+              examples:
+                userRateLimit:
+                  $ref: '#/components/examples/OobAuthenticateErrorRateLimit'
+      security:
+        - Client authentication `client_secret_basic`: []
+        - Client authentication `client_secret_post`: []
+        - Client authentication `client_secret_jwt`: []
+        - Client authentication `private_key_jwt`: []
+      tags:
+        - CustomAS
   /oauth2/{authorizationServerId}/v1/revoke:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
@@ -2309,21 +2525,23 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenRequest'
+              $ref: '#/components/schemas/TokenRequestCustomAs'
             examples:
               Authorization Code Flow w/ Client Credentials:
                 $ref: '#/components/examples/TokenRequestAuthorizationCodeWithCredsExample'
-              Saml Bearer:
+              SAML Bearer:
                 $ref: '#/components/examples/TokenRequestSamlBearerExample'
+              JWT Bearer:
+                $ref: '#/components/examples/TokenRequestJwtBearerExample'
               Resource Owner Password Flow:
                 $ref: '#/components/examples/TokenRequestPassword'
-              directAuthOtpPrimaryAuth:
+              Direct authentication with OTP (primary factor):
                 $ref: '#/components/examples/TokenRequestDirectAuthOtpExample'
-              directAuthMfaOtp:
+              Direct authentication with OTP (MFA):
                 $ref: '#/components/examples/TokenRequestDirectAuthMfaOtpExample'
-              directAuthOobPrimaryAuth:
+              Direct authentication with OOB (primary factor):
                 $ref: '#/components/examples/TokenRequestDirectAuthOobExample'
-              directAuthMfaOob:
+              Direct authentication with OOB (MFA):
                 $ref: '#/components/examples/TokenRequestDirectAuthMfaOobExample'
       responses:
         '200':
@@ -2331,7 +2549,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenResponse'
+                $ref: '#/components/schemas/TokenResponseCustomAs'
               examples:
                 Token response:
                   $ref: '#/components/examples/TokenResponseExample'
@@ -3221,6 +3439,7 @@ components:
       value:
         login_hint: testuser@example.com
         channel_hint: push
+        challenge_hint: urn:okta:params:oauth:grant-type:oob
     OobAuthenticateResponseExample:
       summary: Initiate out-of-band primary authentication response with Okta Verify
       value:
@@ -3257,11 +3476,13 @@ components:
       value:
         login_hint: testuser@example.com
         channel_hint: sms
+        challenge_hint: urn:okta:params:oauth:grant-type:oob
     OobAuthenticateVoiceRequestExample:
       summary: Initiate out-of-band primary authentication with Voice
       value:
         login_hint: testuser@example.com
         channel_hint: voice
+        challenge_hint: urn:okta:params:oauth:grant-type:oob
     OrgASOidcMetadata:
       value:
         issuer: https://{yourOktaDomain}
@@ -3372,6 +3593,37 @@ components:
       value:
         request_uri: urn:okta:Y1hIQ3ZqYjFodEZMOVJ3TUF4ZHRPZjJuNFZRV2ZWQ044MmFoX2VIT2oyNDo
         expires_in: 3600
+    TokenRequestAiAgentIdJagExample:
+      summary: Identity Assertion JWT Authorization Grant
+      value:
+        grant_type: urn:ietf:params:oauth:grant-type:token-exchange
+        requested_token_type: urn:ietf:params:oauth:token-type:id-jag
+        subject_token: <id_token_value>
+        subject_token_type: urn:ietf:params:oauth:token-type:id_token
+        client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        client_assertion: <private_key_jwt_value>
+        audience: https://{yourOktaDomain}/oauth2/aus5h1k6yB3Pr60AX0g5
+        scope: scope1 scope2
+    TokenRequestAiAgentServiceAccountExample:
+      summary: OPA service account for AI agent
+      value:
+        grant_type: urn:ietf:params:oauth:grant-type:token-exchange
+        requested_token_type: urn:okta:params:oauth:token-type:service-account
+        subject_token: <id_token_value>
+        subject_token_type: urn:ietf:params:oauth:token-type:id_token
+        client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        client_assertion: <private_key_jwt_value>
+        resource: example:resource:value
+    TokenRequestAiAgentVaultedSecretExample:
+      summary: OPA vaulted secret for AI agent
+      value:
+        grant_type: urn:ietf:params:oauth:grant-type:token-exchange
+        requested_token_type: urn:okta:params:oauth:token-type:vaulted-secret
+        subject_token: <id_token_value>
+        subject_token_type: urn:ietf:params:oauth:token-type:id_token
+        client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        client_assertion: <private_key_jwt_value>
+        resource: example:resource:value
     TokenRequestAuthorizationCodeWithCredsExample:
       value:
         client_id: 0jrabyQWm4B9zVJPbotY
@@ -3380,14 +3632,14 @@ components:
         redirect_uri: https://www.example.com/oauth2/redirectUri
         code: QnowT-aeawtOJKp-MtkH&
     TokenRequestDirectAuthMfaOobExample:
-      summary: Direct authentication out-of-band authenticator as a multifactor authenticator
+      summary: Direct authentication with OOB (MFA)
       value:
         grant_type: http://auth0.com/oauth/grant-type/mfa-oob
         scope: openid offline_access
         mfa_token: Qwk9va6QYgR3s7JMiWUm
         oob_code: ftOpMH6ohWMGWoH1vgrX-lNX6tnXE6JNd9
     TokenRequestDirectAuthMfaOtpExample:
-      summary: Direct Authentication one-time passcode as a multifactor authenticator
+      summary: Direct authentication with OTP (MFA)
       value:
         grant_type: http://auth0.com/oauth/grant-type/mfa-otp
         scope: openid offline_access
@@ -3395,20 +3647,24 @@ components:
         otp: 123456
         grant_types_supported: http://auth0.com/oauth/grant-type/mfa-otp urn:okta:params:oauth:grant-type:oob
     TokenRequestDirectAuthOobExample:
-      summary: Direct Authentication out-of-band authenticator as a primary factor
+      summary: Direct authentication with OOB (primary factor)
       value:
         grant_type: urn:okta:params:oauth:grant-type:oob
         scope: openid offline_access
         oob_code: ftOpMH6ohWMGWoH1vgrX-lNX6tnXE6JNd9
         grant_types_supported: http://auth0.com/oauth/grant-type/mfa-otp http://auth0.com/oauth/grant-type/mfa-oob
     TokenRequestDirectAuthOtpExample:
-      summary: Direct authentication one-time passcode as a primary authenticator
+      summary: Direct authentication with OTP (primary factor)
       value:
         grant_type: urn:okta:params:oauth:grant-type:otp
         scope: openid offline_access
         login_hint: testuser@example.com
         otp: 123456
         grant_types_supported: http://auth0.com/oauth/grant-type/mfa-otp http://auth0.com/oauth/grant-type/mfa-oob
+    TokenRequestJwtBearerExample:
+      value:
+        grant_type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        assertion: <json_web_token>
     TokenRequestPassword:
       value:
         grant_type: password
@@ -3420,6 +3676,31 @@ components:
         grant_type: urn:ietf:params:oauth:grant-type:saml2-bearer
         scope: openid offline_access
         assertion: <base64 SAML>
+    TokenResponseAiAgentIdJagExample:
+      summary: Identity Assertion JWT Authorization Grant
+      value:
+        token_type: N_A
+        expires_in: 300
+        issued_token_type: urn:ietf:params:oauth:token-type:id-jag
+        access_token: <id_jag_value>
+    TokenResponseAiAgentServiceAccountExample:
+      summary: OPA service account for AI agent
+      value:
+        token_type: N_A
+        expires_in: 300
+        issued_token_type: urn:okta:params:oauth:token-type:service-account
+        service_account:
+          username: exampleUsername
+          password: examplePassword
+    TokenResponseAiAgentVaultedSecretExample:
+      summary: OPA vaulted secret for AI agent
+      value:
+        token_type: N_A
+        expires_in: 300
+        issued_token_type: urn:okta:params:oauth:token-type:vaulted-secret
+        vaulted_secret:
+          key1: value1
+          key2: value2
     TokenResponseExample:
       value:
         access_token: <access_token_value>
@@ -3605,7 +3886,7 @@ components:
 
                 > **Note:** You can provide multiple space-delimited values. The authorization server chooses one and reflects the chosen value in any resulting tokens.
         client_id:
-          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/tag/Client/). It identifies the client and must match the value preregistered in Okta.
+          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/client). It identifies the client and must match the value preregistered in Okta.
           type: string
         code_challenge:
           description: A challenge for [PKCE](https://developer.okta.com/docs/guides/implement-grant-type/authcodepkce/main/). The challenge is verified in the access token request.
@@ -3772,6 +4053,11 @@ components:
         - none
         - prompt
         - transfer
+    ChallengeHint:
+      description: The type of challenge to prompt for in a `/primary-authenticate` request
+      type: string
+      x-okta-known-values:
+        - urn:okta:params:oauth:grant-type:oob
     ChallengeRequest:
       x-okta-lifecycle:
         lifecycle: LIMITED_GA
@@ -3825,7 +4111,7 @@ components:
         - http://auth0.com/oauth/grant-type/mfa-oob
         - http://auth0.com/oauth/grant-type/mfa-otp
     Channel:
-      description: The out-of-band channel for use with authentication. Required for all `/oob-authenticate` requests and any `/challenge` request with an out-of-band authenticator.
+      description: The out-of-band channel for use with authentication. Required for all `/primary-authenticate` and `/challenge` requests with an out-of-band authenticator.
       type: string
       x-okta-known-values:
         - push
@@ -3929,7 +4215,7 @@ components:
         - S256
     ContentEncryptionAlgorithm:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         isGenerallyAvailable: true
       type: string
       x-okta-known-values:
@@ -3939,7 +4225,7 @@ components:
       properties:
         client_id:
           type: string
-          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/tag/Client/). It identifies the client and must match the value preregistered in Okta.
+          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/client). It identifies the client and must match the value preregistered in Okta.
         scope:
           type: string
           description: A list of scopes that the client wants to include in the access token
@@ -4021,6 +4307,7 @@ components:
         - urn:okta:params:oauth:grant-type:oob
         - http://auth0.com/oauth/grant-type/mfa-otp
         - http://auth0.com/oauth/grant-type/mfa-oob
+        - urn:ietf:params:oauth:grant-type:jwt-bearer
     IntrospectionRequest:
       type: object
       properties:
@@ -4082,9 +4369,9 @@ components:
       title: Encryption key
       allOf:
         - $ref: '#/components/schemas/JsonWebKeyBase'
-      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>A [JSON Web Key (JWK)](https://tools.ietf.org/html/rfc7517) is a JSON representation of a cryptographic key. Okta uses these keys to encrypt an ID token JWT minted by the org authorization server or custom authorization server. Okta supports only RSA keys for encrypting tokens.
+      description: A [JSON Web Key (JWK)](https://tools.ietf.org/html/rfc7517) is a JSON representation of a cryptographic key. Okta uses these keys to encrypt an ID token JWT minted by the org authorization server or custom authorization server. Okta supports only RSA keys for encrypting tokens.
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         isGenerallyAvailable: true
       type: object
       properties:
@@ -4227,9 +4514,9 @@ components:
           type: string
           description: A short description of what caused this error. Sometimes this contains dynamically-generated information about your specific error.
     OAuthIdTokenKeyEncryptionAlgorithm:
-      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>JWE alg algorithm for encrypting the ID token issued to this client. If this is requested, the response is signed, and then encrypted with the result being a nested JWT. The default, if omitted, is that no encryption is performed.
+      description: JWE alg algorithm for encrypting the ID token issued to this client. If this is requested, the response is signed, and then encrypted with the result being a nested JWT. The default, if omitted, is that no encryption is performed.
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         isGenerallyAvailable: true
       type: string
       x-okta-known-values:
@@ -4294,8 +4581,9 @@ components:
               - RS384
               - RS512
           x-okta-lifecycle:
-            lifecycle: GA
-            isGenerallyAvailable: true
+            lifecycle: TOMBSTONE
+            isGenerallyAvailable: false
+            SKUs: []
         end_session_endpoint:
           description: URL of the authorization server's logout endpoint
           type: string
@@ -4373,20 +4661,20 @@ components:
         - type: object
           properties:
             id_token_encryption_alg_values_supported:
-              description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>JSON array that contains a list of the JWE encryption algorithms (alg values) supported for the ID token to encode the claims in a JWT
+              description: JSON array that contains a list of the JWE encryption algorithms (alg values) supported for the ID token to encode the claims in a JWT
               type: array
               items:
                 $ref: '#/components/schemas/OAuthIdTokenKeyEncryptionAlgorithm'
               x-okta-lifecycle:
-                lifecycle: EA
+                lifecycle: GA
                 isGenerallyAvailable: true
             id_token_encryption_enc_values_supported:
-              description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>JSON array that contains a list of the JWE encryption algorithms (enc values) supported for the ID token to encode the claims in a JWT
+              description: JSON array that contains a list of the JWE encryption algorithms (enc values) supported for the ID token to encode the claims in a JWT
               type: array
               items:
                 $ref: '#/components/schemas/ContentEncryptionAlgorithm'
               x-okta-lifecycle:
-                lifecycle: EA
+                lifecycle: GA
                 isGenerallyAvailable: true
             id_token_signing_alg_values_supported:
               description: A list of signing algorithms that this authorization server supports for signing ID tokens
@@ -4404,6 +4692,8 @@ components:
           - Okta Identity Engine
       type: object
       properties:
+        challenge_hint:
+          $ref: '#/components/schemas/ChallengeHint'
         channel_hint:
           $ref: '#/components/schemas/Channel'
         login_hint:
@@ -4412,6 +4702,7 @@ components:
       required:
         - login_hint
         - channel_hint
+        - challenge_hint
     OobAuthenticateResponse:
       x-okta-lifecycle:
         lifecycle: LIMITED_GA
@@ -4441,7 +4732,7 @@ components:
       type: object
       properties:
         client_id:
-          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](https://developer.okta.com/docs/api/openapi/okta-oauth/oauth/tag/Client/)
+          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](https://developer.okta.com/docs/api/openapi/okta-oauth/oauth/client)
           type: string
         code_challenge:
           description: A challenge for [PKCE](https://developer.okta.com/docs/guides/implement-grant-type/authcodepkce/main/). The challenge is verified in the access token request.
@@ -4519,8 +4810,8 @@ components:
       x-enumDescriptions:
         none: Don't prompt for authentication or consent. If an Okta session already exists, the user is silently authenticated. Otherwise, an error is returned.
         login: Always prompt the user for authentication, regardless of whether they have an Okta session.
-        consent: Depending on the [values set for consent_method in the app and consent for the scope](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Application/#tag/Application/operation/createApplication), display the Okta consent dialog, even if the user has already given consent. User consent is available for custom authorization servers (requires the API Access Management feature and the User Consent feature enabled).
-        login consent: Can also be `consent login` (order doesn't matter). The user is always prompted for authentication, and the user consent dialog appears depending on the [values set for consent_method in the app and consent on the scope](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Application/#tag/Application/operation/createApplication), even if the user has already given consent.
+        consent: Depending on the [values set for consent_method in the app and consent for the scope](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/application/other/createapplication), display the Okta consent dialog, even if the user has already given consent. User consent is available for custom authorization servers (requires the API Access Management feature and the User Consent feature enabled).
+        login consent: Can also be `consent login` (order doesn't matter). The user is always prompted for authentication, and the user consent dialog appears depending on the [values set for consent_method in the app and consent on the scope](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/application/other/createapplication), even if the user has already given consent.
         enroll_authenticator: |-
           This indicates that the intent is to enroll the user with an authenticator. The following other parameters must be used together with this value for a valid request:
 
@@ -4617,20 +4908,6 @@ components:
       properties:
         grant_type:
           $ref: '#/components/schemas/GrantType'
-      discriminator:
-        propertyName: grant_type
-        mapping:
-          authorization_code: '#/components/schemas/TokenRequestAuthorizationCode'
-          client_credentials: '#/components/schemas/TokenRequestClientCredentials'
-          password: '#/components/schemas/TokenRequestPassword'
-          refresh_token: '#/components/schemas/TokenRequestRefreshToken'
-          urn:ietf:params:oauth:grant-type:saml2-bearer: '#/components/schemas/TokenRequestSamlBearer'
-          urn:ietf:params:oauth:grant-type:token-exchange: '#/components/schemas/TokenRequestTokenExchange'
-          urn:openid:params:grant-type:ciba: '#/components/schemas/TokenRequestCiba'
-          urn:okta:params:oauth:grant-type:otp: '#/components/schemas/TokenRequestDirectAuthenticationOtp'
-          urn:okta:params:oauth:grant-type:oob: '#/components/schemas/TokenRequestDirectAuthenticationOob'
-          http://auth0.com/oauth/grant-type/mfa-otp: '#/components/schemas/TokenRequestDirectAuthenticationMfaOtp'
-          http://auth0.com/oauth/grant-type/mfa-oob: '#/components/schemas/TokenRequestDirectAuthenticationMfaOob'
     TokenRequestAuthorizationCode:
       allOf:
         - $ref: '#/components/schemas/TokenRequest'
@@ -4672,6 +4949,26 @@ components:
               description: The scopes requested
           required:
             - scope
+    TokenRequestCustomAs:
+      type: object
+      properties:
+        grant_type:
+          $ref: '#/components/schemas/GrantType'
+      discriminator:
+        propertyName: grant_type
+        mapping:
+          authorization_code: '#/components/schemas/TokenRequestAuthorizationCode'
+          client_credentials: '#/components/schemas/TokenRequestClientCredentials'
+          password: '#/components/schemas/TokenRequestPassword'
+          refresh_token: '#/components/schemas/TokenRequestRefreshToken'
+          urn:ietf:params:oauth:grant-type:saml2-bearer: '#/components/schemas/TokenRequestSamlBearer'
+          urn:ietf:params:oauth:grant-type:token-exchange: '#/components/schemas/TokenRequestTokenExchangeCustomAs'
+          urn:openid:params:grant-type:ciba: '#/components/schemas/TokenRequestCiba'
+          urn:okta:params:oauth:grant-type:otp: '#/components/schemas/TokenRequestDirectAuthenticationOtp'
+          urn:okta:params:oauth:grant-type:oob: '#/components/schemas/TokenRequestDirectAuthenticationOob'
+          http://auth0.com/oauth/grant-type/mfa-otp: '#/components/schemas/TokenRequestDirectAuthenticationMfaOtp'
+          http://auth0.com/oauth/grant-type/mfa-oob: '#/components/schemas/TokenRequestDirectAuthenticationMfaOob'
+          urn:ietf:params:oauth:grant-type:jwt-bearer: '#/components/schemas/TokenRequestJwtBearer'
     TokenRequestDirectAuthReferenceValue:
       allOf:
         - $ref: '#/components/schemas/TokenRequestDirectAuthenticationOtp'
@@ -4793,6 +5090,42 @@ components:
         isGenerallyAvailable: false
         SKUs:
           - Okta Identity Engine
+    TokenRequestJwtBearer:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequest'
+        - type: object
+          properties:
+            assertion:
+              type: string
+              description: The JSON Web Token (JWT) assertion
+            scope:
+              type: string
+              description: The scopes requested
+          required:
+            - assertion
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+    TokenRequestOrgAs:
+      type: object
+      properties:
+        grant_type:
+          $ref: '#/components/schemas/GrantType'
+      discriminator:
+        propertyName: grant_type
+        mapping:
+          authorization_code: '#/components/schemas/TokenRequestAuthorizationCode'
+          client_credentials: '#/components/schemas/TokenRequestClientCredentials'
+          password: '#/components/schemas/TokenRequestPassword'
+          refresh_token: '#/components/schemas/TokenRequestRefreshToken'
+          urn:ietf:params:oauth:grant-type:saml2-bearer: '#/components/schemas/TokenRequestSamlBearer'
+          urn:ietf:params:oauth:grant-type:token-exchange: '#/components/schemas/TokenRequestTokenExchangeOrgAs'
+          urn:openid:params:grant-type:ciba: '#/components/schemas/TokenRequestCiba'
+          urn:okta:params:oauth:grant-type:otp: '#/components/schemas/TokenRequestDirectAuthenticationOtp'
+          urn:okta:params:oauth:grant-type:oob: '#/components/schemas/TokenRequestDirectAuthenticationOob'
+          http://auth0.com/oauth/grant-type/mfa-otp: '#/components/schemas/TokenRequestDirectAuthenticationMfaOtp'
+          http://auth0.com/oauth/grant-type/mfa-oob: '#/components/schemas/TokenRequestDirectAuthenticationMfaOob'
     TokenRequestPassword:
       allOf:
         - $ref: '#/components/schemas/TokenRequest'
@@ -4850,23 +5183,45 @@ components:
             actor_token:
               type: string
               description: A security token that represents the identity of the acting party
-            actor_token_type:
-              $ref: '#/components/schemas/TokenType'
             audience:
               type: string
               description: The target audience for the requested token
             auth_req_id:
               type: string
               description: <x-lifecycle class="oie"></x-lifecycle> The value is what was returned from `/bc/authorize`.
-            requested_token_type:
-              $ref: '#/components/schemas/TokenType'
+            resource:
+              type: string
+              description: The target resource for the requested token
+            scope:
+              type: string
+              description: The scopes requested
             subject_token:
               type: string
               description: A security token that represents the identity of the party on behalf of whom the request is being made
-            subject_token_type:
-              $ref: '#/components/schemas/TokenType'
           required:
             - subject_token
+    TokenRequestTokenExchangeCustomAs:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequestTokenExchange'
+        - type: object
+          properties:
+            actor_token_type:
+              $ref: '#/components/schemas/TokenTypeCustomAs'
+            requested_token_type:
+              $ref: '#/components/schemas/TokenTypeCustomAs'
+            subject_token_type:
+              $ref: '#/components/schemas/TokenTypeCustomAs'
+    TokenRequestTokenExchangeOrgAs:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequestTokenExchange'
+        - type: object
+          properties:
+            actor_token_type:
+              $ref: '#/components/schemas/TokenTypeOrgAs'
+            requested_token_type:
+              $ref: '#/components/schemas/TokenTypeOrgAs'
+            subject_token_type:
+              $ref: '#/components/schemas/TokenTypeOrgAs'
     TokenResponse:
       type: object
       properties:
@@ -4882,8 +5237,6 @@ components:
         id_token:
           type: string
           description: An ID token. This is returned if the `openid` scope is granted.
-        issued_token_type:
-          $ref: '#/components/schemas/TokenType'
         refresh_token:
           type: string
           description: An opaque refresh token. This is returned if the `offline_access` scope is granted.
@@ -4892,15 +5245,64 @@ components:
           description: The scopes contained in the access token
         token_type:
           $ref: '#/components/schemas/TokenResponseTokenType'
+    TokenResponseCustomAs:
+      allOf:
+        - $ref: '#/components/schemas/TokenResponse'
+        - type: object
+          properties:
+            issued_token_type:
+              $ref: '#/components/schemas/TokenTypeCustomAs'
+    TokenResponseOrgAs:
+      allOf:
+        - $ref: '#/components/schemas/TokenResponse'
+        - type: object
+          properties:
+            issued_token_type:
+              $ref: '#/components/schemas/TokenTypeOrgAs'
+            service_account:
+              $ref: '#/components/schemas/TokenResponseServiceAccount'
+            vaulted_secret:
+              $ref: '#/components/schemas/TokenResponseVaultedSecret'
+    TokenResponseServiceAccount:
+      description: |-
+        <x-lifecycle class="ea"></x-lifecycle> The service account credentials. 
+        This is returned if the `issued_token_type` is `urn:okta:params:oauth:token-type:service-account`. 
+        > **Note:** This is only available if you're subscribed to Okta for AI Agents. Contact Okta Support for more information.
+      type: object
+      properties:
+        password:
+          type: string
+          description: The service account password
+        username:
+          type: string
+          description: The service account username
     TokenResponseTokenType:
       description: The token type in a `/token` response. The value is generally `Bearer` except for a few instances of token exchange.
       type: string
       x-okta-known-values:
         - Bearer
         - N_A
-    TokenType:
+    TokenResponseVaultedSecret:
+      description: |-
+        <x-lifecycle class="ea"></x-lifecycle> The vaulted secret containing key-value pairs. 
+        This is returned if the `issued_token_type` is `urn:okta:params:oauth:token-type:vaulted-secret`. 
+        > **Note:** This is only available if you're subscribed to Okta for AI Agents. Contact Okta Support for more information.
+      additionalProperties:
+        type: string
+      type: object
+    TokenTypeCustomAs:
       description: The type of token for token exchange
       type: string
+      x-enumDescriptions:
+        urn:ietf:params:oauth:token-type:access_token: OAuth 2.0 access token
+        urn:ietf:params:oauth:token-type:id_token: ID token
+        urn:ietf:params:oauth:token-type:jwt: JSON Web Token (JWT)
+        urn:ietf:params:oauth:token-type:refresh_token: OAuth 2.0 refresh token
+        urn:ietf:params:oauth:token-type:saml1: SAML 1.1 assertion
+        urn:ietf:params:oauth:token-type:saml2: SAML 2.0 assertion
+        urn:okta:oauth:token-type:web_sso_token: Web SSO token
+        urn:x-oath:params:oauth:token-type:device-secret: Device secret
+        urn:okta:params:oauth:token-type:interclient_token: <x-lifecycle class="ea"></x-lifecycle> Interclient token
       x-okta-known-values:
         - urn:ietf:params:oauth:token-type:access_token
         - urn:ietf:params:oauth:token-type:id_token
@@ -4910,6 +5312,7 @@ components:
         - urn:ietf:params:oauth:token-type:saml2
         - urn:okta:oauth:token-type:web_sso_token
         - urn:x-oath:params:oauth:token-type:device-secret
+        - urn:okta:params:oauth:token-type:interclient_token
     TokenTypeHintIntrospect:
       description: Indicates the type of `token` being passed
       type: string
@@ -4925,6 +5328,35 @@ components:
         - access_token
         - device_secret
         - refresh_token
+    TokenTypeOrgAs:
+      description: The type of token for token exchange
+      type: string
+      x-enumDescriptions:
+        urn:ietf:params:oauth:token-type:access_token: OAuth 2.0 access token
+        urn:ietf:params:oauth:token-type:id_token: ID token
+        urn:ietf:params:oauth:token-type:jwt: JSON Web Token (JWT)
+        urn:ietf:params:oauth:token-type:refresh_token: OAuth 2.0 refresh token
+        urn:ietf:params:oauth:token-type:saml1: SAML 1.1 assertion
+        urn:ietf:params:oauth:token-type:saml2: SAML 2.0 assertion
+        urn:okta:oauth:token-type:web_sso_token: Web SSO token
+        urn:x-oath:params:oauth:token-type:device-secret: Device secret
+        urn:okta:params:oauth:token-type:interclient_token: <x-lifecycle class="ea"></x-lifecycle> Interclient token
+        urn:ietf:params:oauth:token-type:id-jag: <x-lifecycle class="ea"></x-lifecycle> Identity Assertion JWT Authorization Grant (ID-JAG). This type is only available with Cross App Access or if you're subscribed to Okta for AI Agents.
+        urn:okta:params:oauth:token-type:vaulted-secret: <x-lifecycle class="ea"></x-lifecycle> OPA vaulted secret. This type is only available if you're subscribed to Okta for AI Agents.
+        urn:okta:params:oauth:token-type:service-account: <x-lifecycle class="ea"></x-lifecycle> OPA service account. This type is only available if you're subscribed to Okta for AI Agents.
+      x-okta-known-values:
+        - urn:ietf:params:oauth:token-type:access_token
+        - urn:ietf:params:oauth:token-type:id_token
+        - urn:ietf:params:oauth:token-type:jwt
+        - urn:ietf:params:oauth:token-type:refresh_token
+        - urn:ietf:params:oauth:token-type:saml1
+        - urn:ietf:params:oauth:token-type:saml2
+        - urn:okta:oauth:token-type:web_sso_token
+        - urn:x-oath:params:oauth:token-type:device-secret
+        - urn:okta:params:oauth:token-type:interclient_token
+        - urn:ietf:params:oauth:token-type:id-jag
+        - urn:okta:params:oauth:token-type:vaulted-secret
+        - urn:okta:params:oauth:token-type:service-account
     UserInfo:
       additionalProperties: true
       type: object
