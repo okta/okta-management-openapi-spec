@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: MyAccount Management
-  version: 2025.11.0
+  version: 2026.03.0
   description: |-
     APIs for managing a user's own emails, phones, profile, and app authenticators.
     > **Note:** The MyAccount API doesn't support [delegated authentication](https://help.okta.com/okta_help.htm?id=ext_Security_Authentication).
@@ -128,7 +128,7 @@ tags:
     description: |
       The MyAccount Sessions API provides operations to manage sessions.
 
-      See [sessions](/openapi/okta-management/management/tag/Session/) for more information.
+      See [sessions](/openapi/okta-myaccount/myaccount/sessions) for more information.
 
       ### API versioning
       A valid API version in the `Accept` header is required to access the API. Current version: `1.0.0`
@@ -141,6 +141,11 @@ tags:
   - name: WebAuthn
     description: |
       The MyAccount WebAuthn API provides operations to enroll, list, and delete WebAuthn enrollments.
+
+      > <x-lifecycle class="ea"></x-lifecycle>
+      > **Note:** When the **Passkeys Rebrand** self-service Early Access feature is enabled, the FIDO2 (WebAuthn) authenticator is called Passkeys (FIDO2 WebAuthn), and there are new settings and updates to the authenticator page layout.
+      >
+      > See [Configure the FIDO2 (WebAuthn) authenticator](https://help.okta.com/okta_help.htm?type=oie&id=csh-configure-webauthn) and [`settings`](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/Authenticator/#tag/Authenticator/operation/replaceAuthenticatorMethod!path=8/settings&t=request). To enable the **Passkeys Rebrand** feature, see [Enable self-service features](https://help.okta.com/okta_help.htm?id=ext_Manage_Early_Access_features).
 
       The registration for a WebAuthn authenticator (also known as the "attestation ceremony") involves a challenge request and response. When you enroll a WebAuthn authenticator, use the following endpoints in this order:
 
@@ -219,10 +224,9 @@ paths:
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
+        SKUs: []
   /idp/myaccount/app-authenticators/challenge/{challengeId}/verify:
     x-okta-lifecycle:
       lifecycle: LIMITED_GA
@@ -332,10 +336,9 @@ paths:
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
+        SKUs: []
     delete:
       summary: Delete an App Authenticator Enrollment
       description: Deletes an app authenticator enrollment
@@ -373,10 +376,9 @@ paths:
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
+        SKUs: []
   /idp/myaccount/app-authenticators/{enrollmentId}/push/notifications:
     parameters:
       - $ref: '#/components/parameters/appAuthenticatorEnrollmentId'
@@ -410,10 +412,9 @@ paths:
       tags:
         - AppAuthenticator
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
+        SKUs: []
   /idp/myaccount/authenticators:
     x-okta-lifecycle:
       lifecycle: LIMITED_GA
@@ -1348,7 +1349,7 @@ paths:
         isGenerallyAvailable: true
   /idp/myaccount/password/change-password:
     x-okta-lifecycle:
-      lifecycle: EA
+      lifecycle: LIMITED_GA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1393,7 +1394,7 @@ paths:
         - Password
   /idp/myaccount/password/complexity-requirements:
     x-okta-lifecycle:
-      lifecycle: EA
+      lifecycle: LIMITED_GA
       isGenerallyAvailable: false
       SKUs:
         - Okta Identity Engine
@@ -1680,7 +1681,7 @@ paths:
   /idp/myaccount/profile:
     get:
       summary: Retrieve my Profile
-      description: Retrieves the caller's Okta user profile, without attributes excluded by the [Get my user profile schema](/openapi/okta-myaccount/myaccount/tag/Profile/#tag/Profile/operation/getProfileSchema)
+      description: Retrieves the caller's Okta user profile, without attributes excluded by the [Get my user profile schema](/openapi/okta-myaccount/myaccount/profile/getprofileschema)
       operationId: getProfile
       responses:
         '200':
@@ -4631,8 +4632,8 @@ components:
           description: |
             JWT issued by Okta at the time of challenging for a push notification.
 
-            This based64-encoded JWT consists of a [JWT header](/openapi/okta-myaccount/myaccount/tag/AppAuthenticator/#tag/AppAuthenticator/schema/PushNotificationChallengeRequestJwtHeader)
-            and a [JWT payload](/openapi/okta-myaccount/myaccount/tag/AppAuthenticator/#tag/AppAuthenticator/schema/PushNotificationChallengeRequestJwt).
+            This based64-encoded JWT consists of a [JWT header](/openapi/okta-myaccount/myaccount/appauthenticator/pushnotificationchallengerequestjwtheader)
+            and a [JWT payload](/openapi/okta-myaccount/myaccount/appauthenticator/pushnotificationchallengerequestjwt).
         payloadVersion:
           type: string
           enum:
@@ -4960,8 +4961,8 @@ components:
           description: |
             JWT issued by the app authenticator at the time of push notification verification
 
-            This based64-encoded JWT consists of a [JWT header](/openapi/okta-myaccount/myaccount/tag/AppAuthenticator/#tag/AppAuthenticator/schema/PushNotificationChallengeResponseJwtHeader)
-            and a [JWT payload](/openapi/okta-myaccount/myaccount/tag/AppAuthenticator/#tag/AppAuthenticator/schema/PushNotificationChallengeResponseJwt).
+            This based64-encoded JWT consists of a [JWT header](/openapi/okta-myaccount/myaccount/appauthenticator/pushnotificationchallengeresponsejwtheader)
+            and a [JWT payload](/openapi/okta-myaccount/myaccount/appauthenticator/pushnotificationchallengeresponsejwt).
         method:
           type: string
           enum:
