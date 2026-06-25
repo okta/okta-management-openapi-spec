@@ -799,7 +799,10 @@ paths:
       description: |-
         Generates a summary for an access item in a security access review
 
-        > **Note:** The [`governanceAI.securityAccessReview.enabled`](https://developer.okta.com/docs/api/iga/openapi/governance.api/tag/Org-Governance-Settings/#tag/Org-Governance-Settings/operation/updateOrgSettings!path=governanceAI&t=request) org governance setting must be enabled for users to generate summaries for security access reviews.
+        > **Notes:**
+        > * The [`governanceAI.securityAccessReview.enabled`](https://developer.okta.com/docs/api/iga/openapi/governance.api/tag/Org-Governance-Settings/#tag/Org-Governance-Settings/operation/updateOrgSettings!path=governanceAI&t=request) org governance setting must be enabled for users to generate summaries for security access reviews.
+        > * This feature is excluded from the Okta for AI Agents - Core SKU, which is the version of Okta for AI Agents available to FedRAMP Moderate and FedRAMP High customers.
+        >   Okta for AI Agents - Core isn't available in Okta for US Military cells. For a current list of features that are excluded from the Okta for AI Agents - Core SKU, please refer to the [Okta US Public Sector Limitations or Exceptions](https://support.okta.com/help/s/article/okta-us-public-sector-limitations-or-exceptions?language=en_US) documentation.
       parameters:
         - $ref: '#/components/parameters/security-access-review-id'
         - $ref: '#/components/parameters/security-access-review-target-id'
@@ -1073,7 +1076,7 @@ paths:
   /governance/api/v1/my/campaigns/{campaignId}/reviews/bulk-decisions:
     post:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         features:
           - IGA_REVIEW_ML_RECOMMENDATIONS
       x-disable-permissions-audit: true
@@ -1118,7 +1121,7 @@ paths:
   /governance/api/v1/my/campaigns/{campaignId}/reviews/bulk-decisions/jobs/{jobId}:
     get:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         features:
           - IGA_REVIEW_ML_RECOMMENDATIONS
       x-disable-permissions-audit: true
@@ -1257,6 +1260,52 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/rcar-request-id'
+    field-id:
+      name: fieldId
+      in: path
+      required: true
+      description: The ID of the request field
+      schema:
+        type: string
+    choices-order-by:
+      name: orderBy
+      description: |
+        Specifies a property to sort the results. The following properties are supported:
+        - `label`
+
+        Append `desc` or `asc` to indicate the sorting direction.
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/order-by'
+      x-order-by:
+        attributes:
+          - label
+      examples:
+        OrderByLabel:
+          summary: Order by label
+          value: label asc
+    limit:
+      name: limit
+      description: The maximum number of records returned in a response
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 20
+        maximum: 200
+        minimum: 1
+    after:
+      name: after
+      description: |-
+        Specifies the pagination cursor for the next page of results.
+        Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
+      in: query
+      required: false
+      schema:
+        type: string
+        example: 00u68w6vzKLultXS97g6
     entry-user-list-filter:
       name: filter
       description: |
@@ -1279,26 +1328,6 @@ components:
           operators:
             - sw
           type: String
-    after:
-      name: after
-      description: |-
-        Specifies the pagination cursor for the next page of results.
-        Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
-      in: query
-      required: false
-      schema:
-        type: string
-        example: 00u68w6vzKLultXS97g6
-    limit:
-      name: limit
-      description: The maximum number of records returned in a response
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 20
-        maximum: 200
-        minimum: 1
     user-id:
       name: userId
       description: Unique identifier for the user
@@ -2560,6 +2589,78 @@ components:
           properties:
             riskAssessment:
               $ref: '#/components/schemas/risk-assessment'
+    request-field-values-map:
+      type: object
+      description: Previously selected field values, keyed by field ID.
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+      example:
+        ASSET: rea12fzP9nuAdHd9Z0g4
+    request-fields-query-body:
+      type: object
+      description: Request body for dynamic request field queries, providing previously selected field values.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+    order-by:
+      type: string
+      format: order-by
+      description: A property of items within the collection, optionally followed by a `%20asc` or `%20desc` suffix.
+    request-field-choices-query-body:
+      type: object
+      description: Request body for field choices queries, providing the current values of other fields to filter the available choices.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+        filter:
+          type: string
+          description: |
+            SCIM filter to narrow the returned choices. Supported attribute: `label`.
+            Supported operators: `co` (contains), `sw` (starts with).
+          example: label co "prod"
+    request-field-choice:
+      type: object
+      description: A selectable choice for a request field
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the choice. Stable across calls and used as the answer value.
+        label:
+          type: string
+          description: Display label for the choice
+        description:
+          type: string
+          description: Optional description providing additional context for the choice
+        category:
+          type: string
+          description: Optional category label for the choice.
+      required:
+        - id
+        - label
+    request-field-choices-list:
+      type: object
+      description: Paginated list of choices for a request field
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/request-field-choice'
+        _links:
+          type: object
+          required:
+            - self
+          properties:
+            self:
+              $ref: '#/components/schemas/link'
+            next:
+              $ref: '#/components/schemas/link'
+      required:
+        - data
+        - _links
     entry-user:
       type: object
       description: A limited set of properties from the user's profile
@@ -2613,10 +2714,6 @@ components:
       minLength: 24
       pattern: ^[0-9a-f]{24}$
       example: 68b0a1576dd8db837f5ee55d
-    order-by:
-      type: string
-      format: order-by
-      description: A property of items within the collection, optionally followed by a `%20asc` or `%20desc` suffix.
     okta-id:
       description: The Okta ID
       type: string
@@ -2843,6 +2940,11 @@ components:
           description: The Okta user's sign-in credentials, which is often their email address
           minLength: 1
           maxLength: 100
+        name:
+          type: string
+          description: The principal's name. This field will be populated when type is `AI_AGENT`
+          minLength: 1
+          maxLength: 255
         status:
           $ref: '#/components/schemas/principal-profile-status'
         type:
@@ -4693,7 +4795,7 @@ components:
         - MANUAL
     reviewers-reviewer-type:
       type: string
-      description: Identifies the kind of reviewer for Access Certification.
+      description: Identifies the kind of reviewer for Access Certification. Reviewers can be `USER`, `GROUP`, `RESOURCE_OWNER`
       enum:
         - USER
         - GROUP
@@ -4732,7 +4834,6 @@ components:
       description: Links available on a single review representation
       required:
         - self
-        - reassignReview
       properties:
         self:
           $ref: '#/components/schemas/link'
@@ -4869,7 +4970,6 @@ components:
         reviewerProfile:
           $ref: '#/components/schemas/principal-profile-enriched'
         reviewerType:
-          description: Specifies the type of the reviewers. Reviewers can be `USER`, `GROUP`, `RESOURCE_OWNER`
           $ref: '#/components/schemas/reviewers-reviewer-type'
         reviewerGroupProfile:
           $ref: '#/components/schemas/reviewer-group-profile'
@@ -4900,12 +5000,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/read-only-standard-properties'
         - $ref: '#/components/schemas/review-minimal-read-only-fields'
-      required:
-        - _links
-      properties:
-        _links:
-          allOf:
-            - $ref: '#/components/schemas/review-links'
     review-list-links:
       type: object
       description: Links available in review list response
@@ -4931,6 +5025,66 @@ components:
             $ref: '#/components/schemas/review-sparse'
         _links:
           $ref: '#/components/schemas/review-list-links'
+    review-action:
+      type: string
+      description: The action to apply to a review item.
+      enum:
+        - APPROVE
+        - REVOKE
+        - REASSIGN
+    review-action-item:
+      type: object
+      description: A single review item and the action to apply to it.
+      required:
+        - reviewId
+        - action
+      properties:
+        reviewId:
+          type: string
+          description: The `id` of the review item to act on.
+          minLength: 1
+        action:
+          $ref: '#/components/schemas/review-action'
+        reviewerId:
+          type: string
+          description: |
+            The Okta user `id` of the reviewer to reassign this item to.
+            Required when `action` is `REASSIGN`. All items with `action` set
+            to `REASSIGN` in a single request must specify the same `reviewerId`.
+          minLength: 1
+          maxLength: 20
+        note:
+          type: string
+          description: An optional note to justify the action taken on this review item.
+          nullable: true
+          maxLength: 300
+    review-items-action-mutable:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: |
+        The request body to submit actions for a set of review items assigned
+        to the current reviewer in a single campaign. Up to 50 items can be acted
+        on in one call. Each item carries its own `action` and optional `note`, and
+        a single request may mix `APPROVE`, `REVOKE`, and `REASSIGN` actions. When
+        an item has `action` set to `REASSIGN`, that item must include a `reviewerId`.
+        All `REASSIGN` items in a single request must target the same `reviewerId`.
+      required:
+        - reviews
+      properties:
+        reviews:
+          description: |
+            A list of review items and the action to apply to each one. Each item
+            must be currently assigned to the calling reviewer.
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/review-action-item'
+        reviewerLevel:
+          description: |
+            The reviewer level at which the actions are submitted. Required only
+            for multi-level campaigns.
+          $ref: '#/components/schemas/reviewer-level-type'
   headers:
     link:
       required: false
@@ -7518,6 +7672,253 @@ components:
             href: https://myorg.okta.com/governance/api/v1/reviews?filter%3DreviewerType%20eq%20%22GROUP%22
           next:
             href: https://myorg.okta.com/governance/api/v1/reviews?after=1&filter%3DreviewerType%20eq%20%22GROUP%22
+    review-items-action-revoke-request:
+      summary: Payload to revoke access for two review items
+      value:
+        reviews:
+          - reviewId: icraveS4pQxfJrPRa0g3
+            action: REVOKE
+            note: Reviewed during Q1 access certification
+          - reviewId: icran1tBlqTx9Qdvz0g3
+            action: REVOKE
+            note: Reviewed during Q1 access certification
+    review-items-action-reassign-request:
+      summary: Payload to reassign two review items to another reviewer
+      value:
+        reviews:
+          - reviewId: icraveS4pQxfJrPRa0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+          - reviewId: icran1tBlqTx9Qdvz0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+    review-items-action-mixed-request:
+      summary: Payload mixing REASSIGN, APPROVE, and REVOKE actions in a single request
+      value:
+        reviews:
+          - reviewId: icraveS4pQxfJrPRa0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+          - reviewId: icran1tBlqTx9Qdvz0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+          - reviewId: icran1tBlqTx9Qdfz0g3
+            action: APPROVE
+            note: Access is appropriate for this user's role
+          - reviewId: icran1tBlqTx9Qdrz0g3
+            action: REVOKE
+            note: Access is no longer needed
+    review-actions-response-01-revoke:
+      summary: Two reviews revoked
+      description: |
+        The `decision` and `decided` properties are updated after two reviews were revoked.
+      value:
+        data:
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u28w6vzKKultXP98g5
+              email: jessie.smith@example.com
+              firstName: Jessie
+              lastName: Smith
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: REVOKE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icraveS4pQxfJrPRa0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u2iudyie873
+              email: tal.gupta@example.com
+              firstName: Tal
+              lastName: Gupta
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: REVOKE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdvz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+        _links:
+          self:
+            href: https://myorg.okta.com/governance/api/v1/my/campaigns/icitdyhndQ6qstyvR8g5/reviews/actions
+    review-actions-response-02-reassign:
+      summary: Two reviews reassigned to another reviewer
+      description: |
+        After two reviews were reassigned, the `reviewerProfile` properties were updated, while the `decision` remains `UNREVIEWED`.
+      value:
+        data:
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u28w6vzKKultXP98g5
+              email: jessie.smith@example.com
+              firstName: Jessie
+              lastName: Smith
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icraveS4pQxfJrPRa0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u2iudyie873
+              email: tal.gupta@example.com
+              firstName: Tal
+              lastName: Gupta
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdvz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+        _links:
+          self:
+            href: https://myorg.okta.com/governance/api/v1/my/campaigns/icitdyhndQ6qstyvR8g5/reviews/actions
+    review-actions-response-03-mixed:
+      summary: Combination of reassigned, approved, and revoked reviews
+      description: |
+        After submitting `REASSIGN`, `APPROVE`, and `REVOKE` actions, reassigned reviews have updated `reviewerProfile` while the `decision` remains `UNREVIEWED`. Approved and revoked reviews have `decision` and `decided` properties updated.
+      value:
+        data:
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u28w6vzKKultXP98g5
+              email: jessie.smith@example.com
+              firstName: Jessie
+              lastName: Smith
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icraveS4pQxfJrPRa0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u2iudyie873
+              email: tal.gupta@example.com
+              firstName: Tal
+              lastName: Gupta
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdvz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00847dfjhgd98
+              email: juan.garcia@example.com
+              firstName: Juan
+              lastName: Garcia
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: APPROVE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdfz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u4xyzqMRUf3gkpy0g4
+              email: morgan.lee@example.com
+              firstName: Morgan
+              lastName: Lee
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: REVOKE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdrz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+        _links:
+          self:
+            href: https://myorg.okta.com/governance/api/v1/my/campaigns/icitdyhndQ6qstyvR8g5/reviews/actions
   responses:
     rcar-entries-list-success-v2:
       description: List of all entries in the resource catalog
@@ -7891,6 +8292,42 @@ components:
               $ref: '#/components/examples/request-fields-get-request-submission-allowed-example'
             WhenEntryHasRiskAssessmentWithRestrictedRequestSubmissionAndMultipleRiskRules:
               $ref: '#/components/examples/request-fields-get-request-submission-restricted-with-multiple-risk-rules-example'
+    bad-request:
+      description: A request failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    choices-list-success:
+      description: Successful response that contains a paginated list of available choices
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-field-choices-list'
+          examples:
+            ListChoicesSuccess:
+              value:
+                data:
+                  - id: ent1a2b3c4d5e6f
+                    label: ReadOnlyAccess
+                  - id: ent2b3c4d5e6f7g
+                    label: PowerUserAccess
+                  - id: ent3c4d5e6f7g8h
+                    label: AdministratorAccess
+                _links:
+                  self:
+                    href: https://example.okta.com/governance/api/v2/my/catalogs/default/entries/cen12jfA9rrhdg16j0g4/request-fields/ROLE/choices/query
+                  next:
+                    href: https://example.okta.com/governance/api/v2/my/catalogs/default/entries/cen12jfA9rrhdg16j0g4/request-fields/ROLE/choices/query?after=ent3c4d5e6f7g8h
     entry-users-list-success:
       description: List of all requesters who may be able to request the entry
       headers:
@@ -8368,3 +8805,35 @@ components:
               $ref: '#/components/examples/reviews-list-response-02-filtered-by-entitlement-bundleid'
             filter-by-entitlement-value:
               $ref: '#/components/examples/reviews-list-response-02-filtered-by-entitlement-valueid'
+    review-actions-success-response:
+      description: A successful submit-actions response
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/review-list'
+          examples:
+            review-items-action-revoke-request:
+              $ref: '#/components/examples/review-actions-response-01-revoke'
+            review-items-action-reassign-request:
+              $ref: '#/components/examples/review-actions-response-02-reassign'
+            review-items-action-mixed-request:
+              $ref: '#/components/examples/review-actions-response-03-mixed'
+    review-actions-conflict-response:
+      description: The campaign is not in an active state and can't accept review item actions.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            errorCode: E0000175
+            errorSummary: The campaign is not in an active state. Review item actions can only be submitted for active campaigns.
+            errorLink: E0000175
+            errorId: oaeWCGz73hpRCG75VHP6-YYFw
+            errorCauses: []

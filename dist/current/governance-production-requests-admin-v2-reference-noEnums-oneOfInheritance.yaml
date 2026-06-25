@@ -1799,10 +1799,10 @@ components:
         - status
         - priority
         - _links
-    groups-array-creatable:
+    groups-array-requester-settings-creatable:
       type: array
       description: |-
-        List of requestable groups
+        List of groups whose members can request access
 
         > **Note:** Both standard Okta groups and AD-sourced groups are supported in Access Requests.
         > Standard Okta groups have the `okta:user_group` value, whereas AD-sourced groups have the `okta:windows_security_principal` value in their `objectClass` property.
@@ -1825,7 +1825,7 @@ components:
             - GROUPS
         groups:
           description: Groups whose members can file an access request
-          $ref: '#/components/schemas/groups-array-creatable'
+          $ref: '#/components/schemas/groups-array-requester-settings-creatable'
       required:
         - type
         - groups
@@ -1909,6 +1909,21 @@ components:
       required:
         - type
         - entitlementBundles
+    groups-array-access-scope-creatable:
+      type: array
+      description: |-
+        List of requestable groups
+
+        > **Note:** You can specify a maximum of 500 groups as the access scope for each condition. Both standard Okta groups and AD-sourced groups are supported in Access Requests.
+        > Standard Okta groups have the `okta:user_group` value, whereas AD-sourced groups have the `okta:windows_security_principal` value in their `objectClass` property.
+      items:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/group-id'
+        required:
+          - id
+      minItems: 1
     access-scope-settings-creatable_GroupAccessScopeSettings:
       type: object
       description: Access scope settings that resource permissions are groups.
@@ -1920,7 +1935,7 @@ components:
           enum:
             - GROUPS
         groups:
-          $ref: '#/components/schemas/groups-array-creatable'
+          $ref: '#/components/schemas/groups-array-access-scope-creatable'
       required:
         - type
         - groups
@@ -3352,6 +3367,74 @@ components:
           properties:
             riskAssessment:
               $ref: '#/components/schemas/risk-assessment'
+    request-field-values-map:
+      type: object
+      description: Previously selected field values, keyed by field ID.
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+      example:
+        ASSET: rea12fzP9nuAdHd9Z0g4
+    request-fields-query-body:
+      type: object
+      description: Request body for dynamic request field queries, providing previously selected field values.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+    request-field-choices-query-body:
+      type: object
+      description: Request body for field choices queries, providing the current values of other fields to filter the available choices.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+        filter:
+          type: string
+          description: |
+            SCIM filter to narrow the returned choices. Supported attribute: `label`.
+            Supported operators: `co` (contains), `sw` (starts with).
+          example: label co "prod"
+    request-field-choice:
+      type: object
+      description: A selectable choice for a request field
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the choice. Stable across calls and used as the answer value.
+        label:
+          type: string
+          description: Display label for the choice
+        description:
+          type: string
+          description: Optional description providing additional context for the choice
+        category:
+          type: string
+          description: Optional category label for the choice.
+      required:
+        - id
+        - label
+    request-field-choices-list:
+      type: object
+      description: Paginated list of choices for a request field
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/request-field-choice'
+        _links:
+          type: object
+          required:
+            - self
+          properties:
+            self:
+              $ref: '#/components/schemas/link'
+            next:
+              $ref: '#/components/schemas/link'
+      required:
+        - data
+        - _links
     requesters-member:
       type: object
       required:
@@ -3841,6 +3924,42 @@ components:
         maxLength: 20
         minLength: 20
         example: 00ucvnr9rbONeZdRp1d7
+    field-id:
+      name: fieldId
+      in: path
+      required: true
+      description: The ID of the request field
+      schema:
+        type: string
+    choices-order-by:
+      name: orderBy
+      description: |
+        Specifies a property to sort the results. The following properties are supported:
+        - `label`
+
+        Append `desc` or `asc` to indicate the sorting direction.
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/order-by'
+      x-order-by:
+        attributes:
+          - label
+      examples:
+        OrderByLabel:
+          summary: Order by label
+          value: label asc
+    after:
+      name: after
+      description: |-
+        Specifies the pagination cursor for the next page of results.
+        Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
+      in: query
+      required: false
+      schema:
+        type: string
+        example: 00u68w6vzKLultXS97g6
     requesters-id:
       name: requesterSetId
       description: The unique `id` that represents a list of requesters for access requests
@@ -8994,6 +9113,42 @@ components:
               $ref: '#/components/examples/request-fields-get-request-submission-allowed-example'
             WhenEntryHasRiskAssessmentWithRestrictedRequestSubmissionAndMultipleRiskRules:
               $ref: '#/components/examples/request-fields-get-request-submission-restricted-with-multiple-risk-rules-example'
+    bad-request:
+      description: A request failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    choices-list-success:
+      description: Successful response that contains a paginated list of available choices
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-field-choices-list'
+          examples:
+            ListChoicesSuccess:
+              value:
+                data:
+                  - id: ent1a2b3c4d5e6f
+                    label: ReadOnlyAccess
+                  - id: ent2b3c4d5e6f7g
+                    label: PowerUserAccess
+                  - id: ent3c4d5e6f7g8h
+                    label: AdministratorAccess
+                _links:
+                  self:
+                    href: https://example.okta.com/governance/api/v2/my/catalogs/default/entries/cen12jfA9rrhdg16j0g4/request-fields/ROLE/choices/query
+                  next:
+                    href: https://example.okta.com/governance/api/v2/my/catalogs/default/entries/cen12jfA9rrhdg16j0g4/request-fields/ROLE/choices/query?after=ent3c4d5e6f7g8h
     requesters-by-id-patch-success:
       description: Requester members updated successfully response.
       headers:
@@ -9025,12 +9180,6 @@ components:
                     externalId: 00ub0oNGTSWTBKOLGLNQ
                   - type: OKTA_USER
                     externalId: 00ub0oNGTSWTBKOLGLNS
-    bad-request:
-      description: A request failed validation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
     tasks-list-success:
       description: A successful tasks list response
       headers:

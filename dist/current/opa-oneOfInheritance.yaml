@@ -37,6 +37,20 @@ tags:
       An Okta Privileged Access client corresponds to a specific device. Clients are the primary way users access Okta Privileged Access resources.
 
       See [Okta Privileged Access clients](https://help.okta.com/okta_help.htm?type=oie&id=ext-pam-clients).
+  - name: database-accounts
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    x-displayName: Database Accounts
+    description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The Database Accounts API provides operations to manage database accounts and account mapping rules.
+  - name: database-connections
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    x-displayName: Database Connections
+    description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The Database Connections API provides operations to manage database connections.
   - name: gateways
     x-displayName: Gateways
     description: |-
@@ -49,6 +63,13 @@ tags:
       An Okta Privileged Access group is a collection of users that share permissions and access to resources.
 
       See [Groups](https://help.okta.com/okta_help.htm?type=oie&id=ext-pam-groups).
+  - name: infrastructure-orchestrators
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    x-displayName: Infrastructure Orchestrators
+    description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The Infrastructure Orchestrators API provides operations to manage infrastructure orchestration. See [Create setup tokens](https://help.okta.com/okta_help.htm?type=oie&id=privileged-access-gateway-tokens).
   - name: mfa-approvals
     x-displayName: MFA Approvals
     description: The MFA Approvals API provides operations to create MFA approvals and to check the state of an approval.
@@ -124,6 +145,44 @@ tags:
     x-displayName: Workload Roles
     description: The Workload Roles API provides operations to manage workload roles for Okta Privileged Access teams.
 paths:
+  /v1/gateways/orchestrator-config:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    post:
+      summary: Retrieve an orchestrator configuration
+      description: |-
+        Retrieves the orchestrator configuration for a gateway.
+        This endpoint is called by gateway agents to obtain orchestrator connection details.
+      operationId: GetOrchestratorConfig
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrchestratorConfigRequest'
+            examples:
+              OrchestratorConfigRequest:
+                $ref: '#/components/examples/OrchestratorConfigRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrchestratorConfigResponse'
+              examples:
+                OrchestratorConfigResponse:
+                  $ref: '#/components/examples/OrchestratorConfigResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - infrastructure-orchestrators
   /v1/resolve:
     post:
       summary: Resolve resource names
@@ -384,6 +443,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActiveDirectoryAccountsRevealCredentialsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
         '401':
           description: Unauthorized
           content:
@@ -559,6 +624,7 @@ paths:
   /v1/teams/{team_name}/all_server_accounts:
     parameters:
       - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/os_type'
     get:
       x-okta-opa-roles:
         - security_admin
@@ -1132,6 +1198,559 @@ paths:
                 $ref: '#/components/schemas/NotFoundResponse'
       tags:
         - active-directory-connections
+  /v1/teams/{team_name}/connections/databases:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: List all database connections for a team
+      description: Lists all database connections for the specified team
+      operationId: ListDatabaseConnections
+      parameters:
+        - name: contains
+          in: query
+          description: Filter database connections by name containing the specified string
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/database_connection_auth_type_filter'
+        - $ref: '#/components/parameters/database_connection_status_filter'
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/prev'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/descending'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDatabaseConnectionsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - database-connections
+    post:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Create a new database connection
+      description: Creates a new database connection for the specified team
+      operationId: CreateDatabaseConnection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDatabaseConnectionRequest'
+            examples:
+              PostgresConnection:
+                $ref: '#/components/examples/PostgresDatabaseConnectionRequest'
+              MySQLConnection:
+                $ref: '#/components/examples/MySQLDatabaseConnectionRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseConnectionResponse'
+              examples:
+                PostgresConnection:
+                  $ref: '#/components/examples/PostgresDatabaseConnectionResponse'
+                MySQLConnection:
+                  $ref: '#/components/examples/MySQLDatabaseConnectionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '409':
+          description: Conflict. A connection with the same name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+      tags:
+        - database-connections
+  /v1/teams/{team_name}/connections/databases/{database_connection_id}:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Retrieve a database connection
+      description: Retrieves the details of a specific database connection
+      operationId: GetDatabaseConnection
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseConnectionResponse'
+              examples:
+                PostgresConnection:
+                  $ref: '#/components/examples/PostgresDatabaseConnectionResponse'
+                MySQLConnection:
+                  $ref: '#/components/examples/MySQLDatabaseConnectionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-connections
+    put:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Update a database connection
+      description: |-
+        Updates an existing database connection
+
+        > **Note:** Currently, you can only update the `description` field.
+      operationId: UpdateDatabaseConnection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDatabaseConnectionRequest'
+            examples:
+              PostgresConnection:
+                $ref: '#/components/examples/PostgresDatabaseConnectionUpdateRequest'
+              MySQLConnection:
+                $ref: '#/components/examples/MySQLDatabaseConnectionUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseConnectionResponse'
+              examples:
+                PostgresConnection:
+                  $ref: '#/components/examples/PostgresDatabaseConnectionResponse'
+                MySQLConnection:
+                  $ref: '#/components/examples/MySQLDatabaseConnectionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '409':
+          description: Conflict. The connection is currently being validated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+      tags:
+        - database-connections
+    delete:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Delete a database connection
+      description: Deletes a database connection
+      operationId: DeleteDatabaseConnection
+      responses:
+        '204':
+          description: No Content. The database connection was successfully deleted.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-connections
+  /v1/teams/{team_name}/connections/databases/{database_connection_id}/accounts:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: List all discovered database accounts
+      description: Lists all discovered database accounts for the specified database connection
+      operationId: ListDatabaseAccounts
+      parameters:
+        - name: contains
+          description: Only returns results that include the specified value in account name.
+          in: query
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/prev'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/descending'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDatabaseAccountsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/connections/databases/{database_connection_id}/accounts/{database_account_id}:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+      - $ref: '#/components/parameters/database_account_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Retrieve a discovered database account
+      description: |-
+        Retrieves detailed information about a database account that includes:
+        - Account and connection information
+        - Rotation history (password changes, success/failure counts)
+        - Checkout status and history
+        - Next scheduled rotation time
+        - Resource group and project assignment
+      operationId: GetDatabaseAccountByConnection
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseAccountWithPasswordAndCheckoutDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/connections/databases/{database_connection_id}/force_sync:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+    put:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Start database account force sync
+      description: |-
+        Starts database account force sync:
+          * Discovers database accounts from the connected database server
+          * Performs account matching through configured account rules
+          * Returns a conflict error if a sync is already running
+      operationId: StartDatabaseAccountForceSync
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+      tags:
+        - database-connections
+  /v1/teams/{team_name}/connections/databases/{database_connection_id}/rules:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: List all database account rules
+      description: Lists all database account rules for the specified database connection
+      operationId: ListDatabaseAccountRules
+      parameters:
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/prev'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/descending'
+        - name: contains
+          description: Filters for database account rules where the name contains the search string
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDatabaseAccountRulesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - database-accounts
+    post:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Create a new database account rule
+      description: Creates a new database account rule
+      operationId: CreateDatabaseAccountRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseAccountRuleRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseAccountRuleResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '409':
+          description: Conflict. A rule with the same name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/connections/databases/{database_connection_id}/rules/{database_account_rule_id}:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+      - $ref: '#/components/parameters/database_account_rule_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Retrieve a database account rule
+      description: Retrieves a database account rule
+      operationId: GetDatabaseAccountRule
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseAccountRuleResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+    put:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Update a database account rule
+      description: Updates a database account rule
+      operationId: UpdateDatabaseAccountRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseAccountRuleRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseAccountRuleResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+    delete:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Delete a database account rule
+      description: Deletes a database account rule
+      operationId: DeleteDatabaseAccountRule
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/connections/databases/{database_connection_id}/sync_status:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Retrieve the database account sync status
+      description: Retrieves the database account sync status for a database connection
+      operationId: GetDatabaseAccountSyncStatus
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseConnectionSyncStatusResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-connections
   /v1/teams/{team_name}/connections/saas_apps:
     x-okta-lifecycle:
       lifecycle: GA
@@ -1148,7 +1767,7 @@ paths:
       x-okta-opa-roles:
         - resource_admin
       summary: List all connected app instances for a team
-      description: List all connected app instances for a team
+      description: Lists all connected app instances for a team
       operationId: ListAppInstancesForTeam
       responses:
         '200':
@@ -1212,7 +1831,7 @@ paths:
       description: |-
         Updates the password rotation strategy for the app instance. Returns the updated app instance.
         > **Notes**:
-        > Each app instance supports only one password rotation strategy. Don't change this strategy unless you fully understand the consequences. If you misconfigure it, you make accounts inaccessible and require manual recovery.
+        > Each app instance supports only one password rotation strategy. Don't change this strategy unless you fully understand the consequences. If you misconfigure it, you make accounts inaccessible that require manual recovery.
         > For most deployments, `USING_ADMIN` is the recommended default. Use `USING_EXISTING_PASSWORD` only for on-premise apps managed by the Okta Provisioning Agent that explicitly require the previous password to set a new one.
       operationId: PatchAppInstance
       requestBody:
@@ -1244,6 +1863,7 @@ paths:
   /v1/teams/{team_name}/connections/workloads:
     x-okta-lifecycle:
       lifecycle: GA
+      isGenerallyAvailable: false
       SKUs: []
     parameters:
       - $ref: '#/components/parameters/team_name'
@@ -1423,6 +2043,7 @@ paths:
   /v1/teams/{team_name}/connections/workloads/{workload_connection_id}/status:
     x-okta-lifecycle:
       lifecycle: GA
+      isGenerallyAvailable: false
       SKUs: []
     parameters:
       - $ref: '#/components/parameters/team_name'
@@ -1501,6 +2122,211 @@ paths:
           description: OK
       tags:
         - users
+  /v1/teams/{team_name}/databases:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+    get:
+      x-okta-opa-roles:
+        - end_user
+      summary: List all database connections for the end user
+      description: Lists all database connections that the end user can access based on the security policies
+      operationId: ListDatabaseConnectionsEndUser
+      parameters:
+        - name: contains
+          description: Filters for connection name where the name contains the search string
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+        - name: auth_type
+          description: Filter database connections by authentication type
+          in: query
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/DatabaseAuthType'
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/descending'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/prev'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDatabaseConnectionsEndUserResponse'
+      tags:
+        - database-connections
+  /v1/teams/{team_name}/databases/{database_connection_id}:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+    get:
+      x-okta-opa-roles:
+        - end_user
+      summary: Retrieve a database connection for the end user
+      description: Retrieves a database connection that the end user can access
+      operationId: GetDatabaseConnectionEndUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseConnectionEndUser'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-connections
+  /v1/teams/{team_name}/databases/{database_connection_id}/accounts:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+    get:
+      x-okta-opa-roles:
+        - end_user
+      summary: List all database accounts within a connection for end user
+      description: Lists all database accounts within a connection that the end user can access
+      operationId: ListDatabaseAccountsEndUser
+      parameters:
+        - name: contains
+          description: Filters for account name where the name contains the search string
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/descending'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/prev'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDatabaseAccountsEndUserResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/databases/{database_connection_id}/accounts/{database_account_id}:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+      - $ref: '#/components/parameters/database_account_id'
+    get:
+      x-okta-opa-roles:
+        - end_user
+      summary: Retrieve a database account for the end user
+      description: Retrieves a database account that the end user can access
+      operationId: GetDatabaseAccountEndUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseAccountEndUser'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/databases/{database_connection_id}/accounts/{database_account_id}/reveal_credentials:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+      - $ref: '#/components/parameters/database_account_id'
+    post:
+      x-okta-opa-roles:
+        - end_user
+      summary: Reveal the credentials for a database account
+      description: Reveals the credentials for a database account that the end user can access
+      operationId: RevealDatabaseAccountCredentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseAccountRevealCredentialsRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseAccountRevealCredentialsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/databases/{database_connection_id}/accounts/{database_account_id}/user_access_methods:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/database_connection_id'
+      - $ref: '#/components/parameters/database_account_id'
+    get:
+      x-okta-opa-roles:
+        - end_user
+      summary: List all user access methods for a database account
+      description: Lists all user access methods for a database account based on the security policies
+      operationId: ListUAMForDatabaseAccount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUAMForDatabaseAccountResponse'
+      tags:
+        - database-accounts
   /v1/teams/{team_name}/gateway_setup_tokens:
     parameters:
       - $ref: '#/components/parameters/team_name'
@@ -1921,7 +2747,7 @@ paths:
       x-okta-opa-roles:
         - pam_admin
       summary: Delete a group from a team
-      description: Removes a group from your team. This also removes the group from any associated projects.
+      description: Deletes a group from your team. This also removes the group from any associated projects.
       operationId: RemoveGroup
       responses:
         '204':
@@ -2133,6 +2959,170 @@ paths:
           description: No Content
       tags:
         - groups
+  /v1/teams/{team_name}/infrastructure-orchestrators:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: List all infrastructure orchestrators
+      description: Lists all infrastructure orchestrators for the specified team
+      operationId: ListInfrastructureOrchestrators
+      parameters:
+        - $ref: '#/components/parameters/contains'
+        - $ref: '#/components/parameters/infrastructure_orchestrator_has_gateway_filter'
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/prev'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/descending'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListInfrastructureOrchestratorsResponse'
+              examples:
+                ListInfrastructureOrchestrators:
+                  $ref: '#/components/examples/ListInfrastructureOrchestratorsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - infrastructure-orchestrators
+  /v1/teams/{team_name}/infrastructure-orchestrators/{infrastructure_orchestrator_id}:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/infrastructure_orchestrator_id_path'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: Retrieve an infrastructure orchestrator
+      description: Retrieves a specific infrastructure orchestrator by ID. Optionally includes gateway and integration counts.
+      operationId: GetInfrastructureOrchestrator
+      parameters:
+        - $ref: '#/components/parameters/infrastructure_orchestrator_include_counts'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfrastructureOrchestratorWithCounts'
+              examples:
+                GetInfrastructureOrchestrator:
+                  $ref: '#/components/examples/InfrastructureOrchestratorWithCountsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - infrastructure-orchestrators
+  /v1/teams/{team_name}/infrastructure-orchestrators/{infrastructure_orchestrator_id}/references/gateways:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/infrastructure_orchestrator_id_path'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: List gateways for an infrastructure orchestrator
+      description: Lists all gateways associated with the specified infrastructure orchestrator.
+      operationId: ListInfrastructureOrchestratorGateways
+      parameters:
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/prev'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/descending'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListInfrastructureOrchestratorReferencesResponse'
+              examples:
+                ListGateways:
+                  $ref: '#/components/examples/ListInfrastructureOrchestratorGatewaysResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - infrastructure-orchestrators
+  /v1/teams/{team_name}/infrastructure-orchestrators/{infrastructure_orchestrator_id}/references/integrations:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/infrastructure_orchestrator_id_path'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+      summary: List integrations for an infrastructure orchestrator
+      description: Lists all database connections or integrations associated with the specified infrastructure orchestrator
+      operationId: ListInfrastructureOrchestratorIntegrations
+      parameters:
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/prev'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/descending'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListInfrastructureOrchestratorReferencesResponse'
+              examples:
+                ListIntegrations:
+                  $ref: '#/components/examples/ListInfrastructureOrchestratorIntegrationsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - infrastructure-orchestrators
   /v1/teams/{team_name}/mfa_approvals:
     parameters:
       - $ref: '#/components/parameters/team_name'
@@ -3247,6 +4237,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/team_name'
       - $ref: '#/components/parameters/resource_group_id'
+      - $ref: '#/components/parameters/os_type'
     get:
       x-okta-opa-roles:
         - security_admin
@@ -3606,6 +4597,7 @@ paths:
           schema:
             type: boolean
           required: false
+        - $ref: '#/components/parameters/database_connection_auth_type_filter'
         - $ref: '#/components/parameters/count'
         - $ref: '#/components/parameters/descending'
         - $ref: '#/components/parameters/offset'
@@ -3645,6 +4637,221 @@ paths:
       responses:
         '204':
           description: No Content
+      tags:
+        - projects
+  /v1/teams/{team_name}/resource_groups/{resource_group_id}/projects/{project_id}/database_accounts:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/resource_group_id'
+      - $ref: '#/components/parameters/project_id'
+    get:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      x-okta-opa-roles:
+        - resource_admin
+        - security_admin
+        - delegated_resource_admin
+        - delegated_security_admin
+      summary: List all database accounts in a project
+      description: Lists all database accounts in a project in a resource group
+      operationId: ListResourceGroupProjectDatabaseAccounts
+      parameters:
+        - name: contains
+          description: Returns results that only include the specified value in the database integration name or account name
+          in: query
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/database_connection_auth_type_filter'
+        - $ref: '#/components/parameters/database_account_status_filter'
+        - $ref: '#/components/parameters/database_account_settings_enabled_filter'
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/prev'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/descending'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResourceGroupProjectDatabaseAccountsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - projects
+  /v1/teams/{team_name}/resource_groups/{resource_group_id}/projects/{project_id}/database_accounts/{database_account_id}:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/resource_group_id'
+      - $ref: '#/components/parameters/project_id'
+      - $ref: '#/components/parameters/database_account_id'
+    get:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      x-okta-opa-roles:
+        - resource_admin
+        - security_admin
+        - delegated_resource_admin
+        - delegated_security_admin
+      summary: Retrieve a database account in a resource group project
+      description: |-
+        Retrieves detailed information about a database account in a resource group project including:
+        - Account and connection information
+        - Rotation history (password changes, success/failure counts)
+        - Checkout status and history
+        - Next scheduled rotation time
+        - Resource group and project assignment
+      operationId: GetDatabaseAccountDetails
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseAccountWithPasswordAndCheckoutDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+      tags:
+        - database-accounts
+  /v1/teams/{team_name}/resource_groups/{resource_group_id}/projects/{project_id}/database_checkout_settings:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/resource_group_id'
+      - $ref: '#/components/parameters/project_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+        - security_admin
+        - delegated_resource_admin
+        - delegated_security_admin
+      summary: Retrieve database checkout settings for a project
+      description: Retrieves the checkout settings configured for a resource group project that's specific to the database account
+      operationId: FetchResourceGroupDatabaseBasedProjectCheckoutSettings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceCheckoutSettings'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - projects
+    put:
+      x-okta-opa-roles:
+        - security_admin
+        - delegated_security_admin
+      summary: Update the database checkout settings for a project
+      description: Updates the checkout settings configured for a resource group project that's specific to the database account
+      operationId: UpdateResourceGroupDatabaseBasedProjectCheckoutSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCheckoutSettings'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - projects
+  /v1/teams/{team_name}/resource_groups/{resource_group_id}/projects/{project_id}/database_password_settings:
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/resource_group_id'
+      - $ref: '#/components/parameters/project_id'
+    get:
+      x-okta-opa-roles:
+        - resource_admin
+        - delegated_resource_admin
+      summary: Retrieve a project password policy for database resources
+      description: Retrieves a project password policy for database resources in a resource group
+      operationId: GetProjectPasswordPolicyForDatabaseResources
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabasePasswordPolicy'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+      tags:
+        - projects
+    put:
+      x-okta-opa-roles:
+        - resource_admin
+        - delegated_resource_admin
+      summary: Update a project password policy for database resources
+      description: Updates a project password policy for database resources in a resource group
+      operationId: UpdateProjectPasswordPolicyForDatabaseResources
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabasePasswordPolicy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabasePasswordPolicy'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
       tags:
         - projects
   /v1/teams/{team_name}/resource_groups/{resource_group_id}/projects/{project_id}/okta_universal_directory_accounts:
@@ -4294,6 +5501,19 @@ paths:
       summary: List all server accounts in a project
       description: Lists all server accounts in a resource group project
       operationId: ListServerAccountsForProject
+      parameters:
+        - name: contains
+          description: Only return server accounts whose sign-in name or hostname contains the specified string
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+          required: false
+          x-okta-lifecycle:
+            lifecycle: GA
+            isGenerallyAvailable: false
+            SKUs: []
       responses:
         '200':
           description: OK
@@ -5289,6 +6509,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PreconditionFailedResponse'
+      tags:
+        - server-accounts
+  /v1/teams/{team_name}/server_accounts/{server_account_id}/rotate_password:
+    x-okta-lifecycle:
+      lifecycle: GA
+      isGenerallyAvailable: false
+      SKUs: []
+    parameters:
+      - $ref: '#/components/parameters/team_name'
+      - $ref: '#/components/parameters/server_account_id'
+    post:
+      x-okta-opa-roles:
+        - end_user
+      summary: Rotate the password for a server account
+      description: Rotates the password for a server account that the end user has access to
+      operationId: RotateServerAccountPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerAccountsRotatePasswordRequest'
+        required: true
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAccessResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenUAMResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '409':
+          description: Conflict. The account is currently checked out by another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
       tags:
         - server-accounts
   /v1/teams/{team_name}/servers:
@@ -6924,6 +8199,57 @@ components:
                   re_auth_frequency_in_seconds: 3600
                   acr_values: urn:okta:loa:2fa:any
             security_policy_id: string
+    InfrastructureOrchestratorWithCountsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Get infrastructure orchestrator with counts response
+      value:
+        id: 550e8400-e29b-41d4-a716-446655440000
+        name: rg-1
+        gateway_count: 3
+        integration_count: 5
+    ListInfrastructureOrchestratorGatewaysResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List infrastructure orchestrator gateways response
+      value:
+        list:
+          - id: 550e8400-e29b-41d4-a716-446655440002
+            name: gateway-1
+            type: gateway
+          - id: 550e8400-e29b-41d4-a716-446655440003
+            name: gateway-2
+            type: gateway
+    ListInfrastructureOrchestratorIntegrationsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List infrastructure orchestrator integrations response
+      value:
+        list:
+          - id: 550e8400-e29b-41d4-a716-446655440004
+            name: db-connection-1
+            type: database_connection
+          - id: 550e8400-e29b-41d4-a716-446655440005
+            name: db-connection-2
+            type: database_connection
+    ListInfrastructureOrchestratorsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List infrastructure orchestrators response
+      value:
+        list:
+          - id: 550e8400-e29b-41d4-a716-446655440000
+            name: rg-1
+          - id: 550e8400-e29b-41d4-a716-446655440001
+            name: rg-2
     ListResponseSelectorsActiveDirectoryRDPAndSSHPrivilege:
       summary: Rules Selector - Active Directory RDP and SSH Privilege
       value:
@@ -7347,6 +8673,146 @@ components:
                     condition_value:
                       re_auth_frequency_in_seconds: 3600
                       acr_values: urn:okta:loa:2fa:any
+    MySQLDatabaseConnectionRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create MySQL database connection
+      value:
+        name: Production MySQL
+        description: Primary MySQL database
+        auth_type: mysql_basic_auth
+        auth_details:
+          _type: mysql_basic_auth
+          username: admin_user
+          host: mysql.example.com
+          port: 3306
+          password_jwe: eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0...
+        infrastructure_orchestrator:
+          id: 550e8400-e29b-41d4-a716-446655440001
+    MySQLDatabaseConnectionResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: MySQL database connection response
+      value:
+        id: b858b929-b5d5-5557-9b98-815327596b19
+        name: Production MySQL
+        description: Primary MySQL database
+        auth_type: mysql_basic_auth
+        auth_details:
+          _type: mysql_basic_auth
+          username: admin_user
+          host: mysql.example.com
+          port: 3306
+        status: active
+        last_status_change_at: '2024-01-15T10:30:00Z'
+        last_discovery_run_at: '2024-01-15T11:00:00Z'
+        created_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-15T10:30:00Z'
+        infrastructure_orchestrator:
+          id: 550e8400-e29b-41d4-a716-446655440001
+          name: rg-2
+    MySQLDatabaseConnectionUpdateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Update MySQL database connection (without password change)
+      value:
+        name: Production MySQL Updated
+        description: Updated primary MySQL database
+        auth_type: mysql_basic_auth
+        auth_details:
+          _type: mysql_basic_auth
+          username: admin_user
+          host: mysql.example.com
+          port: 3306
+        infrastructure_orchestrator:
+          id: 550e8400-e29b-41d4-a716-446655440001
+    OrchestratorConfigRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Orchestrator configuration request example
+      value:
+        orchestrator_version: 1.0.0
+        capabilities:
+          database_rotation: 'true'
+          credential_vaulting: 'true'
+    OrchestratorConfigResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Orchestrator config response example
+      value:
+        tenant_id: tenant-abc123
+        external_id: 550e8400-e29b-41d4-a716-446655440000
+        jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        orchestrator_url: https://api.example.com
+    PostgresDatabaseConnectionRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create PostgreSQL database connection
+      value:
+        name: Production PostgreSQL
+        description: Primary production database
+        auth_type: postgres_basic_auth
+        auth_details:
+          _type: postgres_basic_auth
+          username: admin_user
+          host: db.example.com
+          port: 5432
+          password_jwe: eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0...
+        infrastructure_orchestrator:
+          id: 550e8400-e29b-41d4-a716-446655440000
+    PostgresDatabaseConnectionResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: PostgreSQL database connection response
+      value:
+        id: a747a818-a4c4-4446-8a87-704216495a08
+        name: Production PostgreSQL
+        description: Primary production database
+        auth_type: postgres_basic_auth
+        auth_details:
+          _type: postgres_basic_auth
+          username: admin_user
+          host: db.example.com
+          port: 5432
+        status: active
+        last_status_change_at: '2024-01-15T10:30:00Z'
+        last_discovery_run_at: '2024-01-15T11:00:00Z'
+        created_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-15T10:30:00Z'
+        infrastructure_orchestrator:
+          id: 550e8400-e29b-41d4-a716-446655440000
+          name: rg-1
+    PostgresDatabaseConnectionUpdateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Update PostgreSQL database connection (without password change)
+      value:
+        name: Production PostgreSQL Updated
+        description: Updated primary production database
+        auth_type: postgres_basic_auth
+        auth_details:
+          _type: postgres_basic_auth
+          username: admin_user
+          host: db.example.com
+          port: 5432
+        infrastructure_orchestrator:
+          id: 550e8400-e29b-41d4-a716-446655440000
     RequestSelectorsActiveDirectoryRDPAndSSHPrivilege:
       summary: Rules Selector - Active Directory RDP and SSH privilege
       value:
@@ -8391,14 +9857,14 @@ components:
       name: ad_account_id
       required: true
       schema:
-        $ref: '#/components/schemas/UUID'
+        $ref: '#/components/schemas/schemas-UUID'
     ad_account_rule_id:
       description: The UUID of an Active Directory account rule
       in: path
       name: ad_account_rule_id
       required: true
       schema:
-        $ref: '#/components/schemas/UUID'
+        $ref: '#/components/schemas/schemas-UUID'
     ad_account_type:
       description: The type of Active Directory account
       in: query
@@ -8415,7 +9881,7 @@ components:
       name: ad_connection_id
       required: true
       schema:
-        $ref: '#/components/schemas/UUID'
+        $ref: '#/components/schemas/schemas-UUID'
     ad_connection_ids:
       description: The UUIDs of Active Directory connections
       in: query
@@ -8424,7 +9890,7 @@ components:
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/UUID'
+          $ref: '#/components/schemas/schemas-UUID'
     attribute_id:
       description: The UUID of an attribute
       in: path
@@ -8458,6 +9924,93 @@ components:
       schema:
         type: integer
         format: int32
+    database_account_id:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The UUID of the database account
+      in: path
+      name: database_account_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+    database_account_rule_id:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The UUID of the database account rule
+      in: path
+      name: database_account_rule_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+    database_account_settings_enabled_filter:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      name: account_settings_enabled
+      in: query
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Filter database accounts by the project-level account setting that is enabled for the account
+      required: false
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/AccountSetting'
+    database_account_status_filter:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      name: status
+      in: query
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Filter database accounts by the account status
+      required: false
+      explode: true
+      schema:
+        type: array
+    database_connection_auth_type_filter:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      name: auth_type
+      in: query
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Filter database connections by the authentication type
+      required: false
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/DatabaseAuthType'
+    database_connection_id:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The UUID of the database connection
+      in: path
+      name: database_connection_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+    database_connection_status_filter:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      name: status
+      in: query
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Filter database connections by the connection status
+      required: false
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/DatabaseConnectionStatus'
     descending:
       description: The object order
       in: query
@@ -8544,6 +10097,40 @@ components:
       name: include_user_access_methods
       schema:
         type: boolean
+    infrastructure_orchestrator_has_gateway_filter:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      name: has_gateway
+      in: query
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Filter infrastructure orchestrators by gateway association. When true, returns only infrastructure orchestrators with at least one associated gateway. When false, returns only infrastructure orchestrators without any associated gateways.
+      required: false
+      schema:
+        type: boolean
+    infrastructure_orchestrator_id_path:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      name: infrastructure_orchestrator_id
+      in: path
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The UUID of the infrastructure orchestrator.
+      required: true
+      schema:
+        $ref: '#/components/schemas/UUID'
+    infrastructure_orchestrator_include_counts:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      name: include_counts
+      in: query
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>When set to `true`, `gateway_count` and `integration_count` are included in the response
+      required: false
+      schema:
+        type: boolean
+        default: false
     key_id:
       description: The UUID of a service user key
       in: path
@@ -8735,14 +10322,14 @@ components:
       required: true
       description: The ID of the workload connection
       schema:
-        $ref: '#/components/schemas/schemas-UUID'
+        $ref: '#/components/schemas/UUID'
     workload_role_id:
       name: workload_role_id
       in: path
       required: true
       description: The ID of the workload role
       schema:
-        $ref: '#/components/schemas/schemas-UUID'
+        $ref: '#/components/schemas/UUID'
   schemas:
     ADAccountSyncStatus:
       description: The AD account sync status
@@ -8913,11 +10500,14 @@ components:
             - secret
             - service_account
             - active_directory_account
+            - database_account
         rule_ids:
           description: A list of rule IDs
           type: array
           items:
             type: string
+        server_account_action:
+          $ref: '#/components/schemas/ServerAccountUserAccessMethodAction'
       required:
         - resource_type
         - resource_id
@@ -8977,7 +10567,7 @@ components:
         INCLUDE: Only select accounts in the relevant include list
         EXCLUDE: Only select accounts in the relevant exclude list
     AccountSetting:
-      description: A project level account setting that may be enabled for an account
+      description: A project-level account setting that is enabled for an account
       type: string
       enum:
         - CHECKOUT
@@ -9056,7 +10646,7 @@ components:
           description: The User Principal Name (UPN) for the Active Directory account
           type: string
     ActiveDirectoryAccountCheckoutDetails:
-      description: Checkout details for an Active Directory account that the current user has some level of access to.
+      description: Checkout details for an Active Directory account that the current user has some level of access to
       allOf:
         - $ref: '#/components/schemas/ResourceCheckoutDetails'
       type: object
@@ -9065,7 +10655,7 @@ components:
           description: The user who last checked out this Active Directory account
           type: string
     ActiveDirectoryAccountCheckoutDetailsList:
-      description: Checkout details for an Active Directory account that the current user has some level of access to.
+      description: Checkout details for an Active Directory account that the current user has some level of access to
       allOf:
         - $ref: '#/components/schemas/ResourceCheckoutDetails'
       type: object
@@ -9080,7 +10670,7 @@ components:
             id:
               description: The UUID of the Active Directory account
               allOf:
-                - $ref: '#/components/schemas/UUID'
+                - $ref: '#/components/schemas/schemas-UUID'
               readOnly: true
             username:
               description: The username of the Active Directory account
@@ -9161,7 +10751,7 @@ components:
             id:
               description: The UUID of the Active Directory account
               allOf:
-                - $ref: '#/components/schemas/UUID'
+                - $ref: '#/components/schemas/schemas-UUID'
               readOnly: true
             username:
               description: The username of the Active Directory account
@@ -9217,7 +10807,7 @@ components:
         ad_account_id:
           description: The UUID of the Active Directory account
           allOf:
-            - $ref: '#/components/schemas/UUID'
+            - $ref: '#/components/schemas/schemas-UUID'
           readOnly: true
         force_no_match:
           type: boolean
@@ -9317,7 +10907,7 @@ components:
         id:
           description: The UUID of the Active Directory account rule
           allOf:
-            - $ref: '#/components/schemas/UUID'
+            - $ref: '#/components/schemas/schemas-UUID'
           readOnly: true
         name:
           type: string
@@ -9494,7 +11084,7 @@ components:
         id:
           description: The UUID of the Active Directory connection
           allOf:
-            - $ref: '#/components/schemas/UUID'
+            - $ref: '#/components/schemas/schemas-UUID'
           readOnly: true
         status:
           $ref: '#/components/schemas/ADConnectionStatus'
@@ -9514,7 +11104,7 @@ components:
         id:
           description: The UUID of the Active Directory domain
           allOf:
-            - $ref: '#/components/schemas/UUID'
+            - $ref: '#/components/schemas/schemas-UUID'
           readOnly: true
         okta_app_instance_id:
           description: The instance ID of the Active Directory app in your Okta org
@@ -9890,6 +11480,62 @@ components:
           description: The type of error that occurred
           enum:
             - bad_request
+    BasicAuthDetails:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Common properties for basic authentication
+      type: object
+      properties:
+        host:
+          type: string
+          description: The hostname of the database server
+        port:
+          type: integer
+          description: The port number of the database server
+          minimum: 1
+          maximum: 65535
+        username:
+          type: string
+          description: The username for the database connection
+    BasicAuthDetailsCreate:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Basic authentication details to create database connections
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetails'
+        - type: object
+          properties:
+            password_jwe:
+              type: string
+              description: The JWE-encrypted password for the database connection
+              writeOnly: true
+      type: object
+      required:
+        - username
+        - host
+        - port
+        - password_jwe
+    BasicAuthDetailsUpdate:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Basic authentication details for updating database connections (password optional)
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetails'
+        - type: object
+          properties:
+            password_jwe:
+              type: string
+              description: The JWE-encrypted password for the database connection
+              writeOnly: true
+      type: object
+      required:
+        - username
     CheckedOutResourceByAdminDetails:
       allOf:
         - $ref: '#/components/schemas/CheckedOutResourceByUserDetails'
@@ -9937,12 +11583,14 @@ components:
             - $ref: '#/components/schemas/ServerAccountCheckedOutResourceDetails'
             - $ref: '#/components/schemas/SaasAppAccountCheckedOutResourceDetails'
             - $ref: '#/components/schemas/OktaUniversalDirectoryAccountCheckedOutResourceDetails'
+            - $ref: '#/components/schemas/DatabaseAccountCheckedOutResourceDetails'
           discriminator:
             propertyName: _type
             mapping:
               server_account_password_login: '#/components/schemas/ServerAccountCheckedOutResourceDetails'
               managed_saas_app_account_password_login: '#/components/schemas/SaasAppAccountCheckedOutResourceDetails'
               okta_universal_directory_account_password_login: '#/components/schemas/OktaUniversalDirectoryAccountCheckedOutResourceDetails'
+              database_account_password_login: '#/components/schemas/DatabaseAccountCheckedOutResourceDetails'
         resource_id:
           description: The UUID of the resource
           type: string
@@ -9993,6 +11641,7 @@ components:
       description: The type of resource that was checked out
       type: string
       enum:
+        - database_account_password_login
         - managed_saas_app_account_password_login
         - okta_universal_directory_account_password_login
         - server_account_password_login
@@ -10157,7 +11806,7 @@ components:
         - urn:okta:loa:2fa:any
       x-enumDescriptions:
         urn:okta:loa:2fa:any: Any two factors. Allows two factor authentication with no requirements on which factors.
-        phr: <x-lifecycle class="oie"></x-lifecycle> Phishing-Resistant. Requires users to provide possession factors that cryptographically verify the sign-in server (the origin). Currently, only the Passkey (FIDO2 WebAuthn) authenticator satisfies this requirement. Because phishing resistance implies [device binding](https://help.okta.com/okta_help.htm?type=oie&id=ext-configure-authenticators), that constraint is selected automatically when `phr` is specified.
+        phr: <x-lifecycle class="oie"></x-lifecycle> Phishing-Resistant. Requires users to provide possession factors that cryptographically verify the sign-in server (the origin). Currently, only the Passkey (FIDO2 WebAuthn) authenticator satisfies this requirement. Because phishing resistance implies [device binding](https://help.okta.com/okta_help.htm?type=oie&id=ext-configure-authenticators), that constraint is selected automatically when `phr` is specified.'
     ConflictResponse:
       description: JSON response for a request conflicting with the current state
       type: object
@@ -10176,6 +11825,43 @@ components:
           description: The type of error that occurred
           enum:
             - conflict
+    CreateDatabaseConnectionRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Request body to create a database connection
+      type: object
+      properties:
+        auth_details:
+          description: The authentication details for the database connection. The structure depends on `auth_type`.
+          oneOf:
+            - $ref: '#/components/schemas/PostgresBasicAuthCreate'
+            - $ref: '#/components/schemas/MySQLBasicAuthCreate'
+          discriminator:
+            propertyName: _type
+            mapping:
+              postgres_basic_auth: '#/components/schemas/PostgresBasicAuthCreate'
+              mysql_basic_auth: '#/components/schemas/MySQLBasicAuthCreate'
+        auth_type:
+          $ref: '#/components/schemas/DatabaseAuthType'
+        description:
+          type: string
+          description: A description of the database connection
+          maxLength: 1000
+        infrastructure_orchestrator:
+          description: The infrastructure orchestrator to associate with this database connection
+          $ref: '#/components/schemas/NamedObject'
+        name:
+          type: string
+          description: The name for the database connection
+          minLength: 1
+          maxLength: 255
+      required:
+        - name
+        - auth_type
+        - auth_details
+        - infrastructure_orchestrator
     CreateServiceUserBody:
       type: object
       properties:
@@ -10210,6 +11896,664 @@ components:
         - team_name
         - name
         - id
+    DatabaseAccountCheckedOutResourceDetails:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        database_account:
+          description: The database account details associated with the checked out resource
+          type: object
+          readOnly: true
+          properties:
+            database_account_name:
+              description: The name of the database account associated with the resource
+              type: string
+              readOnly: true
+            database_account_id:
+              description: The UUID of the database account associated with the resource
+              readOnly: true
+              allOf:
+                - $ref: '#/components/schemas/UUID'
+        database_connection:
+          description: The database connection details associated with the checked out resource
+          type: object
+          readOnly: true
+          properties:
+            database_connection_name:
+              description: The name of the database connection associated with the resource
+              type: string
+              readOnly: true
+            database_connection_id:
+              description: The UUID of the database connection associated with the resource
+              $ref: '#/components/schemas/UUID'
+            database_auth_type:
+              description: The auth type of the database associated with the resource
+              $ref: '#/components/schemas/DatabaseAuthType'
+              readOnly: true
+        _type:
+          maxLength: 255
+          minLength: 1
+          type: string
+          readOnly: true
+          description: Type of this Resource object
+    DatabaseAccountCheckoutDetails:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Checkout details for a database account (detail view)
+      type: object
+      properties:
+        checkout_enabled:
+          type: boolean
+          description: A Boolean value that indicates whether checkout is enabled for this database account
+          readOnly: true
+        current_user_checkout_expires_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp that indicates when the checkout expires for the current user
+          readOnly: true
+        last_checked_out_by:
+          type: string
+          description: The username of the user who last checked out this database account
+          readOnly: true
+      required:
+        - checkout_enabled
+    DatabaseAccountCheckoutDetailsList:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Checkout details for a database account (list view)
+      type: object
+      properties:
+        checkout_enabled:
+          type: boolean
+          description: A Boolean value that indicates whether checkout is enabled for this database account
+          readOnly: true
+        current_user_checkout_expires_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp that indicates when the checkout expires for the current user
+          readOnly: true
+      required:
+        - checkout_enabled
+    DatabaseAccountEndUser:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>End-user view of a database account with full details
+      type: object
+      properties:
+        account:
+          type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/UUID'
+              readOnly: true
+            account_name:
+              type: string
+              description: The name of the database account
+              readOnly: true
+            brought_under_management_at:
+              type: string
+              format: date-time
+              description: A UTC timestamp that indicates when the account was brought under management
+              readOnly: true
+            availability_status:
+              $ref: '#/components/schemas/ResourceAvailabilityStatus'
+        checkout_details:
+          $ref: '#/components/schemas/DatabaseAccountCheckoutDetails'
+        database_connection:
+          type: object
+          description: The database connection this account belongs to
+          properties:
+            name:
+              type: string
+              description: The name of the database connection
+              readOnly: true
+          required:
+            - name
+        rotation:
+          $ref: '#/components/schemas/AccountPasswordChangeDetails'
+    DatabaseAccountEndUserList:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>End-user view of a database account
+      type: object
+      properties:
+        account:
+          type: object
+          properties:
+            id:
+              description: The UUID of the database account
+              readOnly: true
+              allOf:
+                - $ref: '#/components/schemas/UUID'
+            account_name:
+              type: string
+              description: The name of the database account
+              readOnly: true
+            availability_status:
+              $ref: '#/components/schemas/ResourceAvailabilityStatus'
+        checkout_details:
+          $ref: '#/components/schemas/DatabaseAccountCheckoutDetailsList'
+    DatabaseAccountInProject:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Database account within a project context
+      allOf:
+        - $ref: '#/components/schemas/DatabaseAccountResponse'
+        - type: object
+          properties:
+            account_settings_enabled:
+              description: The project level account settings enabled for this account
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountSetting'
+              readOnly: true
+            database_connection:
+              $ref: '#/components/schemas/NamedObject'
+              readOnly: true
+            database_connection_auth_type:
+              $ref: '#/components/schemas/DatabaseAuthType'
+              readOnly: true
+          required:
+            - database_connection
+            - database_connection_auth_type
+            - account_status_detail
+            - account_settings_enabled
+      type: object
+    DatabaseAccountResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for a discovered database account
+      type: object
+      properties:
+        account_name:
+          type: string
+          description: The name of the database account
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp indicating when the database account was discovered
+          readOnly: true
+        id:
+          description: The UUID of the database account
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        project:
+          $ref: '#/components/schemas/NamedObject'
+        resource_group:
+          $ref: '#/components/schemas/NamedObject'
+        updated_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp indicating when the database account was last updated
+          readOnly: true
+      required:
+        - id
+        - account_name
+        - resource_group
+        - project
+        - created_at
+        - updated_at
+    DatabaseAccountRevealCredentialsRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Request to reveal database account credentials
+      type: object
+      properties:
+        public_key:
+          $ref: '#/components/schemas/RawJSONWebKey'
+        user_access_method:
+          $ref: '#/components/schemas/UserAccessMethodWithRuleIds'
+      required:
+        - public_key
+        - user_access_method
+    DatabaseAccountRevealCredentialsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response that contains revealed database account credentials
+      type: object
+      properties:
+        database_connection_name:
+          type: string
+          description: Name of the database connection
+          readOnly: true
+        host:
+          type: string
+          description: The hostname of the database server
+          readOnly: true
+        password_jwe:
+          type: string
+          description: JWE-encrypted password for the database account
+          readOnly: true
+        port:
+          type: integer
+          description: The port number of the database server
+          minimum: 1
+          maximum: 65535
+          readOnly: true
+        username:
+          type: string
+          description: The username of the database account
+          readOnly: true
+    DatabaseAccountRuleFilter:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Filter expression for database accounts
+      type: object
+      properties:
+        field:
+          $ref: '#/components/schemas/DatabaseAccountRuleFilterField'
+        operator:
+          $ref: '#/components/schemas/DatabaseAccountRuleFilterOperator'
+        value:
+          type: string
+          description: The value compared against the `field` value using `operator`
+      required:
+        - field
+        - operator
+        - value
+    DatabaseAccountRuleFilterField:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Field name for filter expression
+      type: string
+      enum:
+        - account_name
+    DatabaseAccountRuleFilterOperator:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Filter expression operator
+      type: string
+      enum:
+        - CONTAINS
+        - ENDS_WITH
+        - EQUALS
+        - STARTS_WITH
+    DatabaseAccountRuleRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Request body to create a database account rule
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: List of conditions for the database account rule
+          items:
+            $ref: '#/components/schemas/DatabaseAccountRuleFilter'
+          minItems: 1
+          maxItems: 10
+        project:
+          description: The project to assign to database accounts that match the rule conditions
+          allOf:
+            - $ref: '#/components/schemas/NamedObject'
+        resource_group:
+          description: The resource group to assign to database accounts that match the rule conditions
+          allOf:
+            - $ref: '#/components/schemas/NamedObject'
+        rule_name:
+          type: string
+          description: The name of the database account rule
+          minLength: 1
+          maxLength: 256
+      required:
+        - rule_name
+        - conditions
+        - resource_group
+        - project
+    DatabaseAccountRuleResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for a database account rule
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: List of conditions for the database account rule
+          items:
+            $ref: '#/components/schemas/DatabaseAccountRuleFilter'
+        id:
+          description: The UUID of the database account rule
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        priority:
+          type: integer
+          description: The priority of the database account rule
+          readOnly: true
+        project:
+          description: The project to assign to database accounts that match the rule conditions
+          allOf:
+            - $ref: '#/components/schemas/NamedObject'
+        resource_group:
+          description: The resource group to assign to database accounts that match the rule conditions
+          allOf:
+            - $ref: '#/components/schemas/NamedObject'
+        rule_name:
+          type: string
+          description: The name of the database account rule
+    DatabaseAccountWithPasswordAndCheckoutDetails:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Database account with rotation and checkout details for resource admin view
+      allOf:
+        - $ref: '#/components/schemas/DatabaseAccountResponse'
+        - $ref: '#/components/schemas/AccountPasswordChangeDetails'
+        - type: object
+          properties:
+            database_connection:
+              $ref: '#/components/schemas/NamedObject'
+            host:
+              type: string
+              description: The hostname of the database server
+              readOnly: true
+            port:
+              type: integer
+              description: The port number of the database server
+              minimum: 1
+              maximum: 65535
+              readOnly: true
+            brought_under_management_at:
+              type: string
+              format: date-time
+              description: A UTC timestamp that indicates when the database account was discovered and managed
+              readOnly: true
+            resource_status:
+              allOf:
+                - $ref: '#/components/schemas/ResourceLeaseStatus'
+              description: The database account's exclusive checkout status
+            last_checked_out_by:
+              type: string
+              description: The username of the user who last accessed the database account through exclusive checkout
+              readOnly: true
+            checkout_expiry_at:
+              type: string
+              format: date-time
+              description: A UTC timestamp that indicates when a user's exclusive access to the database account expires
+              readOnly: true
+            next_scheduled_password_rotation:
+              type: string
+              format: date-time
+              description: A UTC timestamp that indicates when the next password rotation is scheduled
+              readOnly: true
+            next_scheduled_password_rotation_reason:
+              type: string
+              description: A description that indicates why the next password rotation is scheduled
+              readOnly: true
+      type: object
+    DatabaseAuthType:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The authentication type for the database connection
+      type: string
+      enum:
+        - mysql_basic_auth
+        - postgres_basic_auth
+      x-enumDescriptions:
+        postgres_basic_auth: Username and password for PostgreSQL database connection
+        mysql_basic_auth: Username and password for MySQL database connection
+    DatabaseConnectionEndUser:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>End-user view of a database connection
+      type: object
+      properties:
+        auth_type:
+          $ref: '#/components/schemas/DatabaseAuthType'
+        id:
+          description: The UUID of the database connection
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+          description: The name of the database connection
+          readOnly: true
+      required:
+        - id
+        - name
+        - auth_type
+    DatabaseConnectionResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for a database connection
+      allOf:
+        - $ref: '#/components/schemas/DatabaseConnectionResponseBase'
+        - type: object
+          properties:
+            infrastructure_orchestrator:
+              description: The infrastructure orchestrator associated with this database connection
+              readOnly: true
+              allOf:
+                - $ref: '#/components/schemas/NamedObject'
+          required:
+            - infrastructure_orchestrator
+      type: object
+    DatabaseConnectionResponseBase:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Base properties for a database connection response
+      type: object
+      properties:
+        auth_details:
+          description: The authentication details for the database connection (excluding sensitive fields like passwords).
+          oneOf:
+            - $ref: '#/components/schemas/PostgresBasicAuthResponse'
+            - $ref: '#/components/schemas/MySQLBasicAuthResponse'
+          discriminator:
+            propertyName: _type
+            mapping:
+              postgres_basic_auth: '#/components/schemas/PostgresBasicAuthResponse'
+              mysql_basic_auth: '#/components/schemas/MySQLBasicAuthResponse'
+          readOnly: true
+        auth_type:
+          $ref: '#/components/schemas/DatabaseAuthType'
+        created_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp that indicates when the database connection was created
+          readOnly: true
+        description:
+          type: string
+          description: A description of the database connection
+          readOnly: true
+        id:
+          description: The UUID of the database connection
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        last_discovery_run_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp that indicates when the last discovery scan was performed
+          readOnly: true
+          nullable: true
+        last_status_change_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp that indicates when the status was last changed
+          readOnly: true
+        name:
+          type: string
+          description: The name for the database connection
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/DatabaseConnectionStatus'
+        updated_at:
+          type: string
+          format: date-time
+          description: A UTC timestamp that indicates when the database connection was last updated
+          readOnly: true
+      required:
+        - id
+        - name
+        - auth_type
+        - auth_details
+        - status
+        - created_at
+        - updated_at
+    DatabaseConnectionStatus:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The current status of the database connection
+      type: string
+      enum:
+        - active
+        - failed
+        - marked_for_deletion
+        - warning
+      x-enumDescriptions:
+        active: The connection is healthy and operational
+        warning: The last management tasks failed with soft errors, such as temporary network or permission issues
+        failed: The connection experienced an unrecoverable error such as invalid credentials or misconfiguration
+        marked_for_deletion: The connection has been marked for deletion and is pending cleanup
+      readOnly: true
+    DatabaseConnectionSyncStatus:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The database account sync status
+      type: string
+      enum:
+        - NOT_SYNCED
+        - SYNC_COMPLETED
+        - SYNC_IN_PROGRESS
+      x-enumDescriptions:
+        NOT_SYNCED: Indicates that no sync of database accounts is in progress and no previous sync has been performed.
+        SYNC_IN_PROGRESS: Indicates that a sync of database accounts is in progress.
+        SYNC_COMPLETED: Indicates that the most recent sync of database accounts has completed successfully.
+    DatabaseConnectionSyncStatusResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for database connection sync status
+      type: object
+      properties:
+        description:
+          $ref: '#/components/schemas/DatabaseConnectionSyncStatus'
+      required:
+        - description
+    DatabaseConnectionWithRuleAndAccountCountResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for a database connection with rule count and account count
+      allOf:
+        - $ref: '#/components/schemas/DatabaseConnectionResponseBase'
+        - type: object
+          properties:
+            discovered_accounts_count:
+              type: integer
+              description: The number of discovered database accounts for this connection
+              readOnly: true
+              minimum: 0
+            rules_count:
+              type: integer
+              description: The number of database account rules configured for this connection
+              readOnly: true
+              minimum: 0
+      type: object
+    DatabasePasswordPolicy:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Password policy for database accounts
+      type: object
+      properties:
+        character_options:
+          description: The specific character rules applied to the password policy
+          type: object
+          properties:
+            upper_case:
+              type: boolean
+              description: If `true`, passwords can include one or more uppercase characters
+            lower_case:
+              type: boolean
+              description: If `true`, passwords can include one or more lowercase characters
+            digits:
+              type: boolean
+              description: If `true`, passwords can include one or more numbers
+            punctuation:
+              type: boolean
+              description: If `true`, passwords can include one or more symbols
+            exclude_certain_symbols:
+              description: Symbols to exclude from generated passwords. Each item must be a single punctuation character. This property applies only when `punctuation` is `true`.
+              type: array
+              items:
+                type: string
+        enable_periodic_rotation:
+          description: If `true`, account passwords are rotated according to the `periodic_rotation_duration_in_seconds` property
+          type: boolean
+        max_length_in_bytes:
+          description: The maximum length allowed for the generated password
+          type: integer
+        min_length_in_bytes:
+          description: The minimum length allowed for the generated password
+          type: integer
+        modified_at:
+          description: A UTC timestamp that indicates when the password policy was last modified
+          type: string
+          format: date-time
+          readOnly: true
+        periodic_rotation_account_selector_mode:
+          type: string
+          description: Controls how accounts are selected. Currently, only `ALL` is supported. All database accounts are rotated.
+          enum:
+            - ALL
+          readOnly: true
+        periodic_rotation_duration_in_seconds:
+          description: Specifies how often the Okta Privileged Access platform rotates account passwords
+          type: integer
+      required:
+        - enable_periodic_rotation
+        - min_length_in_bytes
+        - max_length_in_bytes
+        - character_options
     ForbiddenUAMResponse:
       description: JSON response for a request which contained a user access method that does not currently authorize the user to perform the requested action
       type: object
@@ -10254,6 +12598,24 @@ components:
           readOnly: true
           type: string
           example: d4f40b71-9474-41c5-94ff-3196a4fc2d03
+        infrastructure_orchestrator:
+          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The infrastructure orchestrator associated with this gateway
+          nullable: true
+          readOnly: true
+          type: object
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs: []
+          properties:
+            id:
+              description: The UUID of the infrastructure orchestrator
+              allOf:
+                - $ref: '#/components/schemas/UUID'
+            name:
+              description: The name of the infrastructure orchestrator
+              type: string
+              example: rg-1
         labels:
           additionalProperties:
             type: string
@@ -10470,6 +12832,82 @@ components:
         - pam_admin
         - resource_admin
         - security_admin
+    InfrastructureOrchestrator:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An infrastructure orchestrator for managing gateway associations
+      type: object
+      properties:
+        id:
+          description: The UUID of the infrastructure orchestrator
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        name:
+          type: string
+          description: The name of the infrastructure orchestrator
+          readOnly: true
+      required:
+        - id
+        - name
+    InfrastructureOrchestratorReference:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>A reference to a resource associated with an infrastructure orchestrator
+      type: object
+      properties:
+        id:
+          description: The UUID of the resource
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        name:
+          type: string
+          description: The name of the resource
+          readOnly: true
+        type:
+          type: string
+          description: The type of the resource (gateway or database_connection)
+          readOnly: true
+          enum:
+            - gateway
+            - database_connection
+      required:
+        - id
+        - name
+        - type
+    InfrastructureOrchestratorWithCounts:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An infrastructure orchestrator with optional gateway and integration counts
+      type: object
+      properties:
+        gateway_count:
+          type: integer
+          description: The number of gateways associated with this infrastructure orchestrator
+          readOnly: true
+        id:
+          description: The UUID of the infrastructure orchestrator
+          allOf:
+            - $ref: '#/components/schemas/UUID'
+          readOnly: true
+        integration_count:
+          type: integer
+          description: The number of database connections associated with this infrastructure orchestrator
+          readOnly: true
+        name:
+          type: string
+          description: The name of the infrastructure orchestrator
+          readOnly: true
+      required:
+        - id
+        - name
     IssueServiceTokenRequestBody:
       type: object
       properties:
@@ -10498,6 +12936,97 @@ components:
           items:
             $ref: '#/components/schemas/ActiveDirectoryAccountWithUAMs'
           maxItems: 25
+    ListDatabaseAccountRulesResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body to list database account rules
+      type: object
+      properties:
+        list:
+          type: array
+          description: List of database account rules
+          items:
+            $ref: '#/components/schemas/DatabaseAccountRuleResponse'
+    ListDatabaseAccountsEndUserResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing database accounts within a connection that the end user can access
+      type: object
+      properties:
+        list:
+          type: array
+          description: Array of database accounts accessible to the end user
+          items:
+            $ref: '#/components/schemas/DatabaseAccountEndUserList'
+    ListDatabaseAccountsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing discovered database accounts
+      type: object
+      properties:
+        list:
+          type: array
+          description: Array of discovered database accounts
+          items:
+            $ref: '#/components/schemas/DatabaseAccountResponse'
+    ListDatabaseConnectionsEndUserResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing database connections that the end user can access
+      type: object
+      properties:
+        list:
+          type: array
+          description: Array of database connections accessible to the end user
+          items:
+            $ref: '#/components/schemas/DatabaseConnectionEndUser'
+    ListDatabaseConnectionsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing database connections
+      type: object
+      properties:
+        list:
+          type: array
+          description: Database connections with their rules and account counts
+          items:
+            $ref: '#/components/schemas/DatabaseConnectionWithRuleAndAccountCountResponse'
+    ListInfrastructureOrchestratorReferencesResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing infrastructure orchestrator references
+      type: object
+      properties:
+        list:
+          type: array
+          description: Array of resource references
+          items:
+            $ref: '#/components/schemas/InfrastructureOrchestratorReference'
+    ListInfrastructureOrchestratorsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing infrastructure orchestrators
+      type: object
+      properties:
+        list:
+          type: array
+          description: Array of infrastructure orchestrators
+          items:
+            $ref: '#/components/schemas/InfrastructureOrchestrator'
     ListResourceGroup:
       type: object
       properties:
@@ -10515,6 +13044,19 @@ components:
           description: The UUID of the team associated with the resource group
           type: string
           readOnly: true
+    ListResourceGroupProjectDatabaseAccountsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing database accounts within a resource group project
+      type: object
+      properties:
+        list:
+          type: array
+          description: Array of database accounts in the resource group project
+          items:
+            $ref: '#/components/schemas/DatabaseAccountInProject'
     ListUAMForActiveDirectoryAccountResponse:
       description: List of `User Access Methods` for an Active Directory account
       type: object
@@ -10525,6 +13067,19 @@ components:
             $ref: '#/components/schemas/UserAccessMethod'
       required:
         - list
+    ListUAMForDatabaseAccountResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response body for listing user access methods for a database account
+      type: object
+      properties:
+        list:
+          type: array
+          description: Array of user access methods available for the database account
+          items:
+            $ref: '#/components/schemas/UserAccessMethod'
     ListUAMForServiceAccountResponse:
       description: List of user access methods for a service account
       type: object
@@ -10551,11 +13106,70 @@ components:
           oneOf:
             - $ref: '#/components/schemas/SecurityPolicyPasswordCheckoutSSHPrivilege'
             - $ref: '#/components/schemas/SecurityPolicyPasswordCheckoutRDPPrivilege'
+            - $ref: '#/components/schemas/SecurityPolicyRotatePasswordPrivilege'
             - $ref: '#/components/schemas/SecurityPolicyRevealPasswordPrivilege'
           discriminator:
             propertyName: _type
             mapping:
               reveal_password: '#/components/schemas/SecurityPolicyRevealPasswordPrivilege'
+    MySQLBasicAuthCreate:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: mysql_basic_auth
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>MySQL basic authentication details to create a database connection
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetailsCreate'
+        - type: object
+          properties:
+            _type:
+              type: string
+              readOnly: true
+              enum:
+                - mysql_basic_auth
+      type: object
+      required:
+        - _type
+    MySQLBasicAuthResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: mysql_basic_auth
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>MySQL basic authentication details in response
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetails'
+        - type: object
+          properties:
+            _type:
+              type: string
+              readOnly: true
+              enum:
+                - mysql_basic_auth
+      type: object
+      required:
+        - _type
+      readOnly: true
+    MySQLBasicAuthUpdate:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: mysql_basic_auth
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>MySQL basic authentication details to update a database connection
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetailsUpdate'
+        - type: object
+          properties:
+            _type:
+              type: string
+              readOnly: true
+              enum:
+                - mysql_basic_auth
+      type: object
+      required:
+        - _type
     NameResolutionResult:
       type: object
       properties:
@@ -10599,6 +13213,9 @@ components:
       enum:
         - active_directory_connection
         - active_directory_shared_account
+        - database_connection
+        - gateway
+        - infrastructure_orchestrator
         - managed_saas_app_account
         - okta_account
         - project
@@ -10759,6 +13376,49 @@ components:
           type: string
           format: date-time
           readOnly: true
+    OrchestratorConfigRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Request body for retrieving orchestrator configuration
+      type: object
+      properties:
+        capabilities:
+          type: object
+          description: Key-value pairs of orchestrator capabilities
+          additionalProperties:
+            type: string
+        orchestrator_version:
+          type: string
+          description: Version of the orchestrator/runner
+      required:
+        - orchestrator_version
+    OrchestratorConfigResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Orchestrator configuration response
+      type: object
+      properties:
+        external_id:
+          type: string
+          description: The external ID in the external orchestration system
+        jwt:
+          type: string
+          description: Bootstrap JWT token for authentication
+        orchestrator_url:
+          type: string
+          description: Base URL for the orchestrator to connect to the platform
+        tenant_id:
+          type: string
+          description: Identifier of this tenant in the external orchestration system
+      required:
+        - tenant_id
+        - external_id
+        - jwt
+        - orchestrator_url
     PasswordPolicy:
       type: object
       properties:
@@ -10783,6 +13443,14 @@ components:
               type: array
               items:
                 type: string
+        enable_initial_server_account_password_rotation:
+          description: If `true`, the initial password rotation is enabled for discovered server accounts that OPA manages
+          type: boolean
+          default: true
+          x-okta-lifecycle:
+            lifecycle: GA
+            isGenerallyAvailable: false
+            SKUs: []
         enable_periodic_rotation:
           description: If `true`, rotates account passwords after a period of time has passed. You must also set the `periodic_rotation_duration_in_seconds` parameter.
           type: boolean
@@ -10868,6 +13536,64 @@ components:
         - min_length_in_bytes
         - max_length_in_bytes
         - character_options
+    PostgresBasicAuthCreate:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: postgres_basic_auth
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>PostgreSQL basic authentication details to create a database connection
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetailsCreate'
+        - type: object
+          properties:
+            _type:
+              type: string
+              readOnly: true
+              enum:
+                - postgres_basic_auth
+      type: object
+      required:
+        - _type
+    PostgresBasicAuthResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: postgres_basic_auth
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>PostgreSQL basic authentication details in response
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetails'
+        - type: object
+          properties:
+            _type:
+              type: string
+              readOnly: true
+              enum:
+                - postgres_basic_auth
+      type: object
+      required:
+        - _type
+      readOnly: true
+    PostgresBasicAuthUpdate:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: postgres_basic_auth
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>PostgreSQL basic authentication details to update a database connection
+      allOf:
+        - $ref: '#/components/schemas/BasicAuthDetailsUpdate'
+        - type: object
+          properties:
+            _type:
+              type: string
+              readOnly: true
+              enum:
+                - postgres_basic_auth
+      type: object
+      required:
+        - _type
     PreconditionFailedResponse:
       description: JSON response for a precondition failure
       type: object
@@ -11155,7 +13881,7 @@ components:
           items:
             type: string
         include_privileged_user_access_methods:
-          description: If `true`, includes additional user access methods for managed server accounts with allowed privilege list. Requires `include_user_access_methods` to be `true`.
+          description: When set to `true`, includes additional user access methods for managed server accounts with an allowed privilege list. Requires `include_user_access_methods` to be `true`.
           type: boolean
           x-okta-lifecycle:
             lifecycle: GA
@@ -11252,7 +13978,9 @@ components:
         - available
         - checked_out
         - checked_out_by_other_user
+        - password_not_rotated
         - unavailable
+        - unmanaged
     ResourceCheckoutDetails:
       description: Resource checkout details for end-user
       type: object
@@ -11312,6 +14040,28 @@ components:
           description: The UUID of the team associated with the resource group
           type: string
           readOnly: true
+    ResourceLeaseStatus:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The checkout/lease status of a resource
+      type: string
+      enum:
+        - ''
+        - checked_out
+        - checkin_complete
+        - checkin_failed
+        - in_progress_checkin
+        - none
+      x-enumDescriptions:
+        '': Unknown lease status.
+        none: No active lease exists for this resource. The resource is available.
+        checked_out: The resource is currently checked out by a user.
+        in_progress_checkin: A check-in operation is in progress
+        checkin_complete: The check-in has completed successfully. The resource is available.
+        checkin_failed: The check-in operation failed.
+      readOnly: true
     RevealResponse:
       description: A response containing an encrypted secret
       type: object
@@ -12052,6 +14802,7 @@ components:
             - $ref: '#/components/schemas/SecurityPolicyRuleOktaAppBasedResourceSelector'
             - $ref: '#/components/schemas/SecurityPolicySecretBasedResourceSelector'
             - $ref: '#/components/schemas/SecurityPolicyRuleActiveDirectoryBasedResourceSelector'
+            - $ref: '#/components/schemas/SecurityPolicyRuleDatabaseBasedResourceSelector'
           discriminator:
             propertyName: _type
             mapping:
@@ -12061,6 +14812,7 @@ components:
               okta_app_based_resource: '#/components/schemas/SecurityPolicyRuleOktaAppBasedResourceSelector'
               secret_based_resource: '#/components/schemas/SecurityPolicySecretBasedResourceSelector'
               active_directory_based_resource: '#/components/schemas/SecurityPolicyRuleActiveDirectoryBasedResourceSelector'
+              database_based_resource: '#/components/schemas/SecurityPolicyRuleDatabaseBasedResourceSelector'
         resource_type:
           $ref: '#/components/schemas/SecurityPolicyRuleResourceType'
         security_policy_id:
@@ -12115,6 +14867,112 @@ components:
         - access_request
         - gateway
         - mfa
+    SecurityPolicyRuleDatabaseAccountsSelector:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: SecurityPolicyRuleDatabaseAccountsSelector
+      type: object
+      properties:
+        account_name_format:
+          type: string
+          description: The format of the account name
+          enum:
+            - EQUALS
+            - STARTS_WITH
+            - ENDS_WITH
+            - CONTAINS
+        value:
+          type: string
+          description: The value of the account name
+          example: admin
+      required:
+        - account_name_format
+        - value
+    SecurityPolicyRuleDatabaseBasedResourceSelector:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: SecurityPolicyRuleDatabaseBasedResourceSelector
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The selector that defines resources targeted by this security policy for database based resources
+      type: object
+      properties:
+        selectors:
+          type: array
+          maxItems: 1
+          items:
+            $ref: '#/components/schemas/SecurityPolicyRuleDatabaseBasedResourceSelectorContainer'
+        _type:
+          type: string
+          readOnly: true
+          enum:
+            - database_based_resource_selector
+      required:
+        - _type
+        - selectors
+    SecurityPolicyRuleDatabaseBasedResourceSelectorContainer:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: SecurityPolicyRuleDatabaseBasedResourceSelectorContainer
+      type: object
+      properties:
+        selector:
+          title: SecurityPolicyRuleDatabaseBasedResourceSubSelector
+          type: object
+          description: The specific parameters used to target resources. The organization of this object depends on the `selector_type`.
+          oneOf:
+            - $ref: '#/components/schemas/SecurityPolicyRuleDatabaseResourceSelector'
+          discriminator:
+            mapping:
+              database: '#/components/schemas/SecurityPolicyRuleDatabaseResourceSelector'
+            propertyName: _type
+        selector_type:
+          $ref: '#/components/schemas/SecurityPolicyRuleDatabaseBasedResourceSubSelectorType'
+      required:
+        - selector_type
+        - selector
+    SecurityPolicyRuleDatabaseBasedResourceSubSelectorType:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: SecurityPolicyRuleDatabaseBasedResourceSubSelectorType
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The type of selector used to target database resources
+      type: string
+      enum:
+        - database
+    SecurityPolicyRuleDatabaseResourceSelector:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      title: SecurityPolicyRuleDatabaseResourceSelector
+      type: object
+      properties:
+        database_accounts:
+          type: array
+          maxItems: 20
+          description: A list of database account selectors to which this selector applies.
+          items:
+            $ref: '#/components/schemas/SecurityPolicyRuleDatabaseAccountsSelector'
+        database_connections:
+          type: array
+          maxItems: 10
+          description: A list of database connections to which this selector applies.
+          items:
+            $ref: '#/components/schemas/NamedObject'
+        _type:
+          type: string
+          enum:
+            - database
+      required:
+        - _type
+        - database_accounts
+        - database_connections
     SecurityPolicyRuleManagedSaaSAppBasedResourceSelector:
       title: SecurityPolicyRuleManagedSaaSAppBasedResourceSelector
       description: The selector that defines resources targeted by this Security Policy for managed SaaS app based resources
@@ -12272,6 +15130,7 @@ components:
       type: string
       enum:
         - active_directory_based_resource
+        - database_based_resource
         - managed_saas_app_based_resource
         - okta_app_based_resource
         - secret_based_resource
@@ -12825,6 +15684,19 @@ components:
       required:
         - hostname
         - server_id
+    ServerAccountUserAccessMethodAction:
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: |-
+        The intended action for a server account access request.
+        Only valid when `resource_type` is `server_account_password_login`.
+        Omit for the default connect flow.
+      type: string
+      enum:
+        - reveal_credentials
+        - rotate_password
     ServerAccounts:
       type: object
       properties:
@@ -12873,6 +15745,16 @@ components:
         project_id:
           description: The UUID of the project associated with this server account
           type: string
+        secret_sync_status:
+          type: string
+          description: The secret sync status of the server account password
+          readOnly: true
+          enum:
+            - SYNCED
+            - SYNCING
+            - SYNC_FAILED
+            - SYNC_PERMA_FAILED
+            - NOT_SYNCED
         server_id:
           description: The UUID of the server associated with this server account
           type: string
@@ -12888,6 +15770,18 @@ components:
           $ref: '#/components/schemas/UserAccessMethod'
       required:
         - public_key
+        - user_access_method
+    ServerAccountsRotatePasswordRequest:
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: Request body for initiating an on-demand password rotation for a server account
+      type: object
+      properties:
+        user_access_method:
+          $ref: '#/components/schemas/UserAccessMethod'
+      required:
         - user_access_method
     ServerEnrollmentToken:
       type: object
@@ -13537,8 +16431,10 @@ components:
         - user_shell
         - windows_user_name
     UUID:
+      description: A Universally Unique Identifier (UUID)
       format: regex
       example: a747a818-a4c4-4446-8a87-704216495a08
+      x-faker: datatype.uuid
       type: string
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
       readOnly: true
@@ -13580,6 +16476,43 @@ components:
       required:
         - attribute_name
         - attribute_value
+    UpdateDatabaseConnectionRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Request body to update a database connection
+      type: object
+      properties:
+        auth_details:
+          description: The authentication details for the database connection. The structure depends on the `auth_type`.
+          oneOf:
+            - $ref: '#/components/schemas/PostgresBasicAuthUpdate'
+            - $ref: '#/components/schemas/MySQLBasicAuthUpdate'
+          discriminator:
+            propertyName: _type
+            mapping:
+              postgres_basic_auth: '#/components/schemas/PostgresBasicAuthUpdate'
+              mysql_basic_auth: '#/components/schemas/MySQLBasicAuthUpdate'
+        auth_type:
+          $ref: '#/components/schemas/DatabaseAuthType'
+        description:
+          type: string
+          description: A description of the database connection
+          maxLength: 1000
+        infrastructure_orchestrator:
+          description: The infrastructure orchestrator to associate with this database connection
+          $ref: '#/components/schemas/NamedObject'
+        name:
+          type: string
+          description: The name for the database connection
+          minLength: 1
+          maxLength: 255
+      required:
+        - name
+        - auth_type
+        - auth_details
+        - infrastructure_orchestrator
     UpdateGroupAttribute:
       type: object
       properties:
@@ -13824,6 +16757,7 @@ components:
             - checked_out
             - checked_out_by_other_user
             - unavailable
+            - unmanaged
         rule_ids:
           description: The IDs of the security policy rules that generated this user access method
           items:
@@ -14075,7 +17009,7 @@ components:
           x-faker: lorem.sentence
         id:
           description: The UUID of the workload connection
-          $ref: '#/components/schemas/schemas-UUID'
+          $ref: '#/components/schemas/UUID'
           readOnly: true
         jwt_config:
           $ref: '#/components/schemas/WorkloadConnectionJWTConfig'
@@ -14187,7 +17121,7 @@ components:
           x-faker: lorem.sentence
         id:
           description: The ID of the workload role
-          $ref: '#/components/schemas/schemas-UUID'
+          $ref: '#/components/schemas/UUID'
           readOnly: true
         name:
           description: The name of the workload role
@@ -14336,6 +17270,27 @@ components:
     gateway-agent:
       type: object
       properties:
+        infrastructure_orchestrator:
+          description: |
+            <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Infrastructure orchestrator reference. Provide either 'id' (UUID of an existing
+            infrastructure orchestrator) or 'name', but not both.
+          nullable: true
+          type: object
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs: []
+          properties:
+            id:
+              description: The UUID of an existing infrastructure orchestrator
+              allOf:
+                - $ref: '#/components/schemas/UUID'
+            name:
+              description: The name of the infrastructure orchestrator
+              type: string
+              minLength: 1
+              maxLength: 63
+              example: rg-1
         labels:
           description: Key-value pairs for gateway proxy routing
           additionalProperties:
@@ -14390,10 +17345,8 @@ components:
         - RSA
         - oct
     schemas-UUID:
-      description: A Universally Unique Identifier (UUID)
       format: regex
       example: a747a818-a4c4-4446-8a87-704216495a08
-      x-faker: datatype.uuid
       type: string
       pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
       readOnly: true
