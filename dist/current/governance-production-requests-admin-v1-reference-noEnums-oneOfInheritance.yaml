@@ -500,9 +500,9 @@ paths:
       operationId: listAllRequestTeams
       summary: List all teams
       description: |
-        Lists all or a subset of teams in your organization.
+        Lists all or a subset of teams in your org.
 
-        Use the `?filter=` parameter to narrow results with the request type property `name`. This query is useful for specifying the `ownerId` of a request type.
+        Use the `?filter=` parameter to narrow results with the request type property `name`. This query is useful for specifying the team `id` (Team ID) of a request type.
 
         Pagination parameters are accepted, and standard link headers are in the response.
       parameters:

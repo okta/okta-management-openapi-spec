@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Okta OpenID Connect & OAuth 2.0
-  version: 2026.06.1
+  version: 2026.06.3
   description: OAuth 2.0 Protocol APIs
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -54,6 +54,40 @@ externalDocs:
   description: Find more info here
   url: https://developer.okta.com
 paths:
+  /.well-known/oauth-authorization-server/oauth2/{authorizationServerId}:
+    parameters:
+      - $ref: '#/components/parameters/pathAuthorizationServerId'
+    get:
+      summary: Retrieve the OAuth 2.0 metadata
+      description: |-
+        Retrieves OAuth 2.0 metadata for the specified custom authorization server. Clients can use this information to programmatically configure their interactions with Okta. Custom scopes are returned only when they are configured to be publicly discoverable. Custom claims are never returned.
+
+        > **Note:** Okta supports two URL formats for this endpoint. The RFC 8414-compliant format (`/.well-known/oauth-authorization-server/oauth2/{authorizationServerId}`) is the current standard. The legacy format (`/oauth2/{authorizationServerId}/.well-known/oauth-authorization-server`) remains supported for backwards compatibility with no planned removal date.
+      operationId: getWellKnownOAuthConfigurationCustomAS
+      parameters:
+        - $ref: '#/components/parameters/queryClientId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthMetadata'
+              examples:
+                OAuth 2.0 Metadata:
+                  $ref: '#/components/examples/CustomASOAuthMetadata'
+        '400':
+          $ref: '#/components/responses/Error400InvalidClientId'
+        '404':
+          $ref: '#/components/responses/Error404AuthorizationServerNotFound'
+      security: []
+      tags:
+        - CustomAS
+      x-okta-lifecycle:
+        isCorsEnabled: true
+        lifecycle: GA
+        isGenerallyAvailable: false
+        SKUs: []
   /.well-known/openid-configuration:
     get:
       summary: Retrieve the OpenID Connect metadata
@@ -1483,34 +1517,6 @@ paths:
   /oauth2/{authorizationServerId}/.well-known/oauth-authorization-server:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
-    get:
-      summary: Retrieve the OAuth 2.0 metadata
-      description: Returns OAuth 2.0 metadata for the specified custom authorization server. Clients can use this information to programmatically configure their interactions with Okta. Custom scopes are returned only when they are configured to be publicly discoverable. Custom claims are never returned.
-      operationId: getWellKnownOAuthConfigurationCustomAS
-      parameters:
-        - $ref: '#/components/parameters/queryClientId'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OAuthMetadata'
-              examples:
-                OAuth 2.0 Metadata:
-                  $ref: '#/components/examples/CustomASOAuthMetadata'
-        '400':
-          $ref: '#/components/responses/Error400InvalidClientId'
-        '404':
-          $ref: '#/components/responses/Error404AuthorizationServerNotFound'
-      tags:
-        - CustomAS
-      x-okta-lifecycle:
-        isCorsEnabled: true
-        lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs:
-          - API Access Management
   /oauth2/{authorizationServerId}/.well-known/openid-configuration:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
@@ -1540,8 +1546,7 @@ paths:
         isCorsEnabled: true
         lifecycle: GA
         isGenerallyAvailable: false
-        SKUs:
-          - API Access Management
+        SKUs: []
   /oauth2/{authorizationServerId}/v1/authorize:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
