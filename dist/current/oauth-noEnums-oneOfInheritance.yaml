@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Okta OpenID Connect & OAuth 2.0
-  version: 2026.06.2
+  version: 2026.06.3
   description: OAuth 2.0 Protocol APIs
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -1509,8 +1509,7 @@ paths:
         isCorsEnabled: true
         lifecycle: GA
         isGenerallyAvailable: false
-        SKUs:
-          - API Access Management
+        SKUs: []
   /oauth2/{authorizationServerId}/.well-known/openid-configuration:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
@@ -1540,8 +1539,7 @@ paths:
         isCorsEnabled: true
         lifecycle: GA
         isGenerallyAvailable: false
-        SKUs:
-          - API Access Management
+        SKUs: []
   /oauth2/{authorizationServerId}/v1/authorize:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
