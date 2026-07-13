@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Okta OpenID Connect & OAuth 2.0
-  version: 2026.06.3
+  version: 2026.07.0
   description: OAuth 2.0 Protocol APIs
   termsOfService: https://developer.okta.com/terms/
   contact:
@@ -138,12 +138,12 @@ paths:
             type: string
         - name: interclient_token
           x-okta-lifecycle:
-            lifecycle: EA
+            lifecycle: LIMITED_GA
             isGenerallyAvailable: false
             SKUs:
               - Okta Identity Engine
           in: query
-          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>A token used to SSO into the client app
+          description: <x-lifecycle-container><x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>A token used to SSO into the client app
           schema:
             type: string
         - name: login_hint
@@ -1601,12 +1601,12 @@ paths:
             type: string
         - name: interclient_token
           x-okta-lifecycle:
-            lifecycle: EA
+            lifecycle: LIMITED_GA
             isGenerallyAvailable: false
             SKUs:
               - Okta Identity Engine
           in: query
-          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle> <x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>A token used to SSO into the client app
+          description: <x-lifecycle-container><x-lifecycle class="oie"></x-lifecycle></x-lifecycle-container>A token used to SSO into the client app
           schema:
             type: string
         - name: login_hint
