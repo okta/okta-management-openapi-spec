@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 2026.09.2
+  version: 2026.41.0
   x-logo:
     url: logo.svg
     backgroundColor: transparent
@@ -10654,7 +10654,7 @@ paths:
   /api/v1/device-integrations:
     get:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
         SKUs: []
       summary: List all device integrations
@@ -10686,7 +10686,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     get:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
         SKUs: []
       summary: Retrieve a device integration
@@ -10729,7 +10729,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     post:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
         SKUs: []
       summary: Activate a device integration
@@ -10770,7 +10770,7 @@ paths:
       - $ref: '#/components/parameters/pathDeviceIntegrationId'
     post:
       x-okta-lifecycle:
-        lifecycle: LIMITED_GA
+        lifecycle: GA
         isGenerallyAvailable: false
         SKUs: []
       summary: Deactivate a device integration
@@ -33236,8 +33236,7 @@ components:
     AuthenticatorMethodWebAuthnWithRebrandSettings:
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       summary: Passkeys method with rebranded and new settings
       value:
         type: webauthn
@@ -33347,8 +33346,7 @@ components:
         description: Custom description for Passkey (FIDO2 WebAuthn) authenticator
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
     AuthenticatorResponseDuo:
       summary: Duo
       value:
@@ -33628,8 +33626,7 @@ components:
                 - POST
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
     AuthenticatorsResponse:
       summary: List of org's authenticators
       value:
@@ -33738,8 +33735,7 @@ components:
     AuthenticatorsResponseWithWebAuthnNameAndDescription:
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       summary: Org authenticators with Passkey (FIDO2 WebAuthn) authenticator name and description
       value:
         - type: email
@@ -63657,8 +63653,7 @@ components:
         description:
           x-okta-lifecycle:
             lifecycle: GA
-            isGenerallyAvailable: false
-            SKUs: []
+            isGenerallyAvailable: true
           description: The description of the authenticator. This setting is only available for the `webauthn` authenticator type (Passkeys).
           type: string
         id:
@@ -87767,8 +87762,7 @@ components:
     UserVerificationEnumForVerify:
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       description: |-
         User verification settings for verification. This setting controls the user verification requirement during authentication (verification). It determines whether the authenticator requires user verification when a user signs in with an already-registered credential.
 
@@ -87956,16 +87950,14 @@ components:
       default: true
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       type: boolean
     WebAuthnSettingCertBasedAttestationValidation:
       description: Indicates whether certificate-based attestation validation is enabled. When enabled, the authenticator's attestation certificate is validated against known root certificates (custom AAGUIDs with associated certificates or the [FIDO Metadata Service](https://fidoalliance.org/metadata/)) to ensure its validity.
       default: false
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       type: boolean
     WebAuthnSettingEnableAutofillUI:
       description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Enables the passkeys autofill UI to display available WebAuthn discoverable credentials ("resident key") from the Sign-In Widget username field
@@ -87980,24 +87972,21 @@ components:
       default: false
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       type: boolean
     WebAuthnSettingHardwareProtected:
       description: Indicates whether the authenticator is required to store the private key on a hardware component
       default: false
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       type: boolean
     WebAuthnSettingResidentKeyRequirement:
       description: Resident key requirement setting. Okta recommends using only `REQUIRED` or `DISCOURAGED` to make the requirement preference explicit. Using `PREFERRED` can sometimes lead to unpredictable behavior depending on the client platform and authenticator capabilities.
       default: REQUIRED
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       type: string
       enum:
         - DISCOURAGED
@@ -88012,8 +88001,7 @@ components:
       default: false
       x-okta-lifecycle:
         lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
+        isGenerallyAvailable: true
       type: boolean
     WellKnownAppAuthenticatorConfiguration:
       type: object
