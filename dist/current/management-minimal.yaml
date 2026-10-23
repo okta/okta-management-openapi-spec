@@ -10,7 +10,7 @@ info:
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 2026.41.0
+  version: 2026.42.1
   x-logo:
     url: logo.svg
     backgroundColor: transparent
