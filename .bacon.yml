@@ -5,4 +5,4 @@ test_suites:
       timeout: '10'
       script_name: publish
       criteria: MERGE
-      queue_name: small
+      queue_name: ci-queue-productionJenga-AL2023
