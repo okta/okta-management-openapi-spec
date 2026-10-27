@@ -54,6 +54,37 @@ externalDocs:
   description: Find more info here
   url: https://developer.okta.com
 paths:
+  /.well-known/oauth-authorization-server/oauth2/{authorizationServerId}:
+    parameters:
+      - $ref: '#/components/parameters/pathAuthorizationServerId'
+    get:
+      summary: Retrieve the OAuth 2.0 metadata
+      description: |-
+        Retrieves OAuth 2.0 metadata for the specified custom authorization server. Clients can use this information to programmatically configure their interactions with Okta. Custom scopes are returned only when they are configured to be publicly discoverable. Custom claims are never returned.
+
+        > **Note:** Okta supports two URL formats for this endpoint. The RFC 8414-compliant format (`/.well-known/oauth-authorization-server/oauth2/{authorizationServerId}`) is the current standard. The legacy format (`/oauth2/{authorizationServerId}/.well-known/oauth-authorization-server`) remains supported for backwards compatibility with no planned removal date.
+      operationId: getWellKnownOAuthConfigurationCustomAS
+      parameters:
+        - $ref: '#/components/parameters/queryClientId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthMetadata'
+        '400':
+          $ref: '#/components/responses/Error400InvalidClientId'
+        '404':
+          $ref: '#/components/responses/Error404AuthorizationServerNotFound'
+      security: []
+      tags:
+        - CustomAS
+      x-okta-lifecycle:
+        isCorsEnabled: true
+        lifecycle: GA
+        isGenerallyAvailable: false
+        SKUs: []
   /.well-known/openid-configuration:
     get:
       summary: Retrieve the OpenID Connect metadata
@@ -310,11 +341,6 @@ paths:
       tags:
         - OrgAS
   /oauth2/v1/challenge:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
     post:
       summary: /challenge
       description: |-
@@ -374,6 +400,69 @@ paths:
         - Client_authentication_private_key_jwt: []
       tags:
         - OrgAS
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
+  /oauth2/v1/challenge/requirements:
+    post:
+      summary: /challenge/requirements
+      description: |-
+        Returns the list of authenticator enrollments available for MFA challenge in a direct authentication flow. Use this endpoint after the token endpoint responds with `mfa_required` to discover which MFA authenticators the user can use.
+
+        > **Note:** The `/challenge/requirements` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+      operationId: challenge-requirements
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DirectAuthChallengeRequirementsRequest'
+            examples:
+              challengeRequirementsRequest:
+                $ref: '#/components/examples/DirectAuthChallengeRequirementsRequestExample'
+      responses:
+        '200':
+          description: Returns the list of authenticator enrollments available for the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectAuthenticationRequirementsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+      security:
+        - Client_authentication_client_secret_basic: []
+        - Client_authentication_client_secret_post: []
+        - Client_authentication_client_secret_jwt: []
+        - Client_authentication_private_key_jwt: []
+      tags:
+        - OrgAS
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
   /oauth2/v1/clients:
     get:
       summary: List all client applications
@@ -627,10 +716,6 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /oauth2/v1/global-token-revocation:
-    x-okta-lifecycle:
-      lifecycle: GA
-      isGenerallyAvailable: false
-      SKUs: []
     post:
       summary: Initiate the global revocation of all tokens and sessions
       description: Initiates the global revocation of all tokens and sessions for a specified user enabling external identity providers to trigger a comprehensive sign-out process. This includes executing IdP-initiated sign-out flows across all apps that are using global token revocation and requiring users to re-authenticate to access protected resources.
@@ -659,6 +744,9 @@ paths:
             - okta.universalLogout.manage
       tags:
         - GlobalTokenRevocation
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: true
   /oauth2/v1/introspect:
     post:
       summary: /introspect
@@ -830,11 +918,6 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /oauth2/v1/oob-authenticate:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
     post:
       deprecated: true
       summary: /oob-authenticate
@@ -895,6 +978,11 @@ paths:
         - Client_authentication_private_key_jwt: []
       tags:
         - OrgAS
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
   /oauth2/v1/par:
     options:
       summary: /par
@@ -996,11 +1084,6 @@ paths:
         SKUs:
           - Okta Identity Engine
   /oauth2/v1/primary-authenticate:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
     post:
       summary: /primary-authenticate
       description: |-
@@ -1058,6 +1141,69 @@ paths:
         - Client_authentication_private_key_jwt: []
       tags:
         - OrgAS
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
+  /oauth2/v1/primary-authenticate/requirements:
+    post:
+      summary: /primary-authenticate/requirements
+      description: |-
+        Returns the list of authenticator enrollments available for primary authentication in a direct authentication flow. Use this endpoint to discover which authenticators the user can use before initiating authentication.
+
+        > **Note:** The `/primary-authenticate/requirements` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+      operationId: primary-authenticate-requirements
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DirectAuthPrimaryAuthRequirementsRequest'
+            examples:
+              primaryAuthRequirementsRequest:
+                $ref: '#/components/examples/DirectAuthPrimaryAuthRequirementsRequestExample'
+      responses:
+        '200':
+          description: Returns the list of authenticator enrollments available for the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectAuthenticationRequirementsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+      security:
+        - Client_authentication_client_secret_basic: []
+        - Client_authentication_client_secret_post: []
+        - Client_authentication_client_secret_jwt: []
+        - Client_authentication_private_key_jwt: []
+      tags:
+        - OrgAS
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
   /oauth2/v1/revoke:
     post:
       summary: /revoke
@@ -1262,30 +1408,6 @@ paths:
   /oauth2/{authorizationServerId}/.well-known/oauth-authorization-server:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
-    get:
-      summary: Retrieve the OAuth 2.0 metadata
-      description: Returns OAuth 2.0 metadata for the specified custom authorization server. Clients can use this information to programmatically configure their interactions with Okta. Custom scopes are returned only when they are configured to be publicly discoverable. Custom claims are never returned.
-      operationId: getWellKnownOAuthConfigurationCustomAS
-      parameters:
-        - $ref: '#/components/parameters/queryClientId'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OAuthMetadata'
-        '400':
-          $ref: '#/components/responses/Error400InvalidClientId'
-        '404':
-          $ref: '#/components/responses/Error404AuthorizationServerNotFound'
-      tags:
-        - CustomAS
-      x-okta-lifecycle:
-        isCorsEnabled: true
-        lifecycle: GA
-        isGenerallyAvailable: false
-        SKUs: []
   /oauth2/{authorizationServerId}/.well-known/openid-configuration:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
@@ -1469,6 +1591,27 @@ paths:
             Using the `state` parameter is also a countermeasure to several other known attacks as outlined in [OAuth 2.0 Threat Model and Security Considerations](https://tools.ietf.org/html/rfc6819).
           schema:
             type: string
+        - name: resource
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs: []
+          in: query
+          style: form
+          explode: true
+          description: |-
+            <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An absolute URI that identifies the target resource server that requests the access token.
+
+            The issued access token's `aud` claim is set to this value. Repeat the parameter to request a token that's valid for multiple resource servers (`?resource=https://api.example.com&resource=https://other.example.com`, for example).
+
+            See [Resource Parameter](https://www.rfc-editor.org/info/rfc8707/#name-resource-parameter).
+
+            > **Note:** Multiple audiences for custom authorization servers is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
+          schema:
+            type: array
+            items:
+              type: string
+              format: uri
       responses:
         '429':
           $ref: '#/components/responses/ErrorTooManyRequests429'
@@ -1490,7 +1633,7 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/AuthorizeWithPost'
+              $ref: '#/components/schemas/AuthorizeWithPostCustomAS'
       responses:
         '429':
           $ref: '#/components/responses/ErrorTooManyRequests429'
@@ -1551,11 +1694,6 @@ paths:
       tags:
         - CustomAS
   /oauth2/{authorizationServerId}/v1/challenge:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
     post:
@@ -1617,6 +1755,71 @@ paths:
         - Client_authentication_private_key_jwt: []
       tags:
         - CustomAS
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
+  /oauth2/{authorizationServerId}/v1/challenge/requirements:
+    parameters:
+      - $ref: '#/components/parameters/pathAuthorizationServerId'
+    post:
+      summary: /challenge/requirements
+      description: |-
+        Returns the list of authenticator enrollments available for MFA challenge in a direct authentication flow. Use this endpoint after the token endpoint responds with `mfa_required` to discover which MFA authenticators the user can use.
+
+        > **Note:** The `/challenge/requirements` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+      operationId: challenge-requirements-custom-as
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DirectAuthChallengeRequirementsRequest'
+            examples:
+              challengeRequirementsRequest:
+                $ref: '#/components/examples/DirectAuthChallengeRequirementsRequestExample'
+      responses:
+        '200':
+          description: Returns the list of authenticator enrollments available for the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectAuthenticationRequirementsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+      security:
+        - Client_authentication_client_secret_basic: []
+        - Client_authentication_client_secret_post: []
+        - Client_authentication_client_secret_jwt: []
+        - Client_authentication_private_key_jwt: []
+      tags:
+        - CustomAS
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
   /oauth2/{authorizationServerId}/v1/device/authorize:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
@@ -1628,7 +1831,7 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/DeviceAuthorizeRequest'
+              $ref: '#/components/schemas/DeviceAuthorizeRequestCustomAS'
       responses:
         '200':
           description: Based on the type of token and whether it's active, the returned JSON contains a different set of information.
@@ -1828,11 +2031,6 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /oauth2/{authorizationServerId}/v1/oob-authenticate:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
     post:
@@ -1895,6 +2093,11 @@ paths:
         - Client_authentication_private_key_jwt: []
       tags:
         - CustomAS
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
   /oauth2/{authorizationServerId}/v1/par:
     options:
       summary: /par
@@ -1998,11 +2201,6 @@ paths:
         SKUs:
           - Okta Identity Engine
   /oauth2/{authorizationServerId}/v1/primary-authenticate:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
     post:
@@ -2062,6 +2260,71 @@ paths:
         - Client_authentication_private_key_jwt: []
       tags:
         - CustomAS
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
+  /oauth2/{authorizationServerId}/v1/primary-authenticate/requirements:
+    parameters:
+      - $ref: '#/components/parameters/pathAuthorizationServerId'
+    post:
+      summary: /primary-authenticate/requirements
+      description: |-
+        Returns the list of authenticator enrollments available for primary authentication in a direct authentication flow. Use this endpoint to discover which authenticators the user can use before initiating authentication.
+
+        > **Note:** The `/primary-authenticate/requirements` endpoint requires client authentication. The method is configured per client app. See [Client authentication methods](/openapi/okta-oauth/guides/client-auth/).
+      operationId: primary-authenticate-requirements-custom-as
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DirectAuthPrimaryAuthRequirementsRequest'
+            examples:
+              primaryAuthRequirementsRequest:
+                $ref: '#/components/examples/DirectAuthPrimaryAuthRequirementsRequestExample'
+      responses:
+        '200':
+          description: Returns the list of authenticator enrollments available for the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectAuthenticationRequirementsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthError'
+      security:
+        - Client_authentication_client_secret_basic: []
+        - Client_authentication_client_secret_post: []
+        - Client_authentication_client_secret_jwt: []
+        - Client_authentication_private_key_jwt: []
+      tags:
+        - CustomAS
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
   /oauth2/{authorizationServerId}/v1/revoke:
     parameters:
       - $ref: '#/components/parameters/pathAuthorizationServerId'
@@ -2501,6 +2764,25 @@ components:
         - response_type
         - scope
         - state
+    AuthorizeWithPostCustomAS:
+      allOf:
+        - $ref: '#/components/schemas/AuthorizeWithPost'
+        - type: object
+          properties:
+            resource:
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
+              type: array
+              items:
+                type: string
+                format: uri
+              description: |-
+                <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An absolute URI that identifies the target resource server that requests the access token. Use this parameter to restrict the token to a specific resource server or servers.
+                Repeat the parameter to request a token that's valid for multiple resource servers. When this parameter is included in a request, the issued token's `aud` claim is bound to the specified resource(s).
+
+                > **Note:** Multiple audiences for custom authorization servers is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
     BackchannelAuthorizeRequest:
       additionalProperties: true
       type: object
@@ -2536,7 +2818,7 @@ components:
               2. `aud` is required and must be the same value as the authorization server issuer that mints the ID or access token. This value is published in the metadata for your authorization server.
               3. JWT lifetime is evaluated using the `iat` and `exp` claims, if present. If the JWT is expired or not yet valid, Okta returns an `invalid_request_object` error. Okta rejects JWTs that expire more than one hour in the future.
               4. Okta rejects the JWT if the `jti` claim is present and it's already been processed.
-        request_expiry:
+        requested_expiry:
           type: integer
           description: Allows the client to request the `expires_in` value in number of seconds for the `auth_req_id` that the server returns.
           minimum: 1
@@ -2583,12 +2865,17 @@ components:
       type: object
       properties:
         challenge_types_supported:
-          type: array
-          description: List of direct authentication challenge types supported by the client
-          items:
-            $ref: '#/components/schemas/ChallengeType'
+          type: string
+          description: Space-separated list of direct authentication challenge types supported by the client
         channel_hint:
           $ref: '#/components/schemas/Channel'
+        enrollment_id:
+          type: string
+          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The enrollment ID of a specific authenticator enrollment to use for the MFA challenge. When provided, only the specified enrollment is challenged.
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs: []
         mfa_token:
           type: string
           description: The value returned from a previous token or challenge request for identifying the multifactor transaction across multiple requests
@@ -2745,6 +3032,30 @@ components:
         scope:
           type: string
           description: A list of scopes that the client wants to include in the access token
+    DeviceAuthorizeRequestCustomAS:
+      type: object
+      properties:
+        client_id:
+          type: string
+          description: Obtained during either manual client registration or through the [Dynamic Client Registration API](/openapi/okta-oauth/oauth/client). It identifies the client and must match the value preregistered in Okta.
+        resource:
+          type: array
+          items:
+            type: string
+            format: uri
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs: []
+          description: |-
+            <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An absolute URI that identifies the target resource server for the device authorization request.
+
+            The issued access token's `aud` claim is set to this value. Repeat the parameter to request a token that's valid for multiple resource servers (`?resource=https://api.example.com&resource=https://other.example.com`, for example).
+
+            > **Note:** Multiple audiences for custom authorization servers is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
+        scope:
+          type: string
+          description: A list of scopes that the client wants to include in the access token
     DeviceAuthorizeResponse:
       type: object
       properties:
@@ -2766,6 +3077,76 @@ components:
         verification_uri_complete:
           type: string
           description: The URI that includes the `user_code` that the end user alternatively visits to verify
+    DirectAuthChallengeRequirementsRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        challenge_types_supported:
+          type: string
+          description: Space-separated list of direct authentication challenge types supported by the client
+        mfa_token:
+          type: string
+          description: The token returned from a previous token request identifying the multifactor authentication transaction
+      required:
+        - mfa_token
+    DirectAuthPrimaryAuthRequirementsRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        challenge_types_supported:
+          type: string
+          description: Space-separated list of primary authentication challenge types supported by the client
+        intent:
+          type: string
+          description: The purpose of the authentication request
+          enum:
+            - sso
+            - recovery
+            - device_bound_sso
+          x-enumDescriptions:
+            sso: Standard sign-on authentication
+            recovery: Self-service password reset flow. Evaluates recovery policy instead of sign-on policy
+            device_bound_sso: Device-bound SSO authentication
+          example: sso
+        login_hint:
+          type: string
+          description: The user sign-in identifier (username or email) for whom authentication requirements are being requested
+      required:
+        - login_hint
+        - intent
+    DirectAuthenticationRequirementsResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        requirements:
+          type: object
+          properties:
+            challenge:
+              type: array
+              description: List of authenticator enrollments the user can use
+              items:
+                type: object
+                properties:
+                  enrollmentId:
+                    type: string
+                    description: Unique identifier for the authenticator enrollment
+                  authenticatorName:
+                    type: string
+                    description: Human-readable name of the authenticator
+                  challengeType:
+                    type: string
+                    description: The challenge type used to authenticate with this enrollment
+                  channel:
+                    $ref: '#/components/schemas/Channel'
     EndpointAuthMethod:
       description: Requested authentication method for OAuth 2.0 endpoints
       type: string
@@ -2775,6 +3156,17 @@ components:
         - client_secret_post
         - none
         - private_key_jwt
+        - self_signed_tls_client_auth
+      x-enumDescriptions:
+        client_secret_basic: Client credentials are passed as HTTP Basic Authentication in the `Authorization` header.
+        client_secret_jwt: The client authenticates by signing a JWT with a key derived from the client secret.
+        client_secret_post: Client credentials are passed as `client_id` and `client_secret` parameters in the request body.
+        none: No client authentication. Use for public clients that rely on PKCE.
+        private_key_jwt: The client authenticates by signing a JWT with its private key. Requires a registered public key.
+        self_signed_tls_client_auth: |-
+          <x-lifecycle class="ea"></x-lifecycle>The client authenticates by presenting an X.509 certificate during the TLS handshake. Okta validates the certificate against the one registered in the client's JSON Web Key Set (JWKS).
+
+          > **Note:** TLS client authentication (mTLS) is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
     Error:
       title: Error
       type: object
@@ -2823,7 +3215,6 @@ components:
         - urn:okta:params:oauth:grant-type:oob
         - http://auth0.com/oauth/grant-type/mfa-otp
         - http://auth0.com/oauth/grant-type/mfa-oob
-        - urn:ietf:params:oauth:grant-type:jwt-bearer
     IntrospectionRequest:
       type: object
       properties:
@@ -2881,6 +3272,8 @@ components:
         username:
           type: string
           description: The username associated with the token.
+        cnf:
+          $ref: '#/components/schemas/TokenConfirmation'
     JsonEncryptionWebKey:
       title: Encryption key
       allOf:
@@ -3020,6 +3413,23 @@ components:
           type: string
       required:
         - id_token_hint
+    MtlsEndpointAliases:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Alternative endpoint URLs for mutual TLS client authentication. These URLs use a dedicated mTLS domain that Okta provisions for your org. Formatted as `{yourOktaMtlsDomain}` in the examples.
+      type: object
+      properties:
+        introspection_endpoint:
+          description: URL of the mutual TLS introspection endpoint
+          type: string
+        revocation_endpoint:
+          description: URL of the mutual TLS revocation endpoint
+          type: string
+        token_endpoint:
+          description: URL of the mutual TLS token endpoint
+          type: string
     OAuthError:
       type: object
       properties:
@@ -3171,6 +3581,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EndpointAuthMethod'
+        mtls_endpoint_aliases:
+          $ref: '#/components/schemas/MtlsEndpointAliases'
+        tls_client_certificate_bound_access_tokens:
+          description: <x-lifecycle class="ea"></x-lifecycle>Indicates whether this authorization server supports access tokens that are bound to the client TLS certificate.
+          type: boolean
     OidcMetadata:
       allOf:
         - $ref: '#/components/schemas/OAuthMetadata'
@@ -3212,6 +3627,13 @@ components:
           $ref: '#/components/schemas/ChallengeHint'
         channel_hint:
           $ref: '#/components/schemas/Channel'
+        enrollment_id:
+          type: string
+          description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The enrollment ID of a specific authenticator enrollment to use for authentication. When provided, only the specified enrollment is used.
+          x-okta-lifecycle:
+            lifecycle: EA
+            isGenerallyAvailable: false
+            SKUs: []
         login_hint:
           type: string
           description: The user sign-in information for whom authentication is being requested
@@ -3486,6 +3908,17 @@ components:
       enum:
         - pairwise
         - public
+    TokenConfirmation:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Confirmation method for a certificate-bound access token.
+      type: object
+      properties:
+        x5t#S256:
+          type: string
+          description: Base64url-encoded SHA-256 thumbprint of the X.509 certificate used to bind the access token.
     TokenDeliveryMode:
       type: string
       enum:
@@ -3511,6 +3944,25 @@ components:
               description: Specifies the callback location where the authorization was sent. This value must match the `redirect_uri` used to generate the original `authorization_code`.
           required:
             - code
+    TokenRequestAuthorizationCodeCustomAS:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequestAuthorizationCode'
+        - type: object
+          properties:
+            resource:
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
+              type: array
+              items:
+                type: string
+                format: uri
+              description: |-
+                <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An absolute URI that identifies the target resource server that's requested the token. Use this parameter to restrict the token to a specific resource server or servers.
+
+                Repeat the parameter to request a token that's valid for multiple resource servers. The URI values must be a subset of the resources that are specified in the original `/authorize` request.
+                > **Note:** Multiple audiences for custom authorization servers is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
     TokenRequestCiba:
       allOf:
         - $ref: '#/components/schemas/TokenRequest'
@@ -3536,6 +3988,25 @@ components:
               description: The scopes requested
           required:
             - scope
+    TokenRequestClientCredentialsCustomAS:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequestClientCredentials'
+        - type: object
+          properties:
+            resource:
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
+              type: array
+              items:
+                type: string
+                format: uri
+              description: |-
+                <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An absolute URI that identifies the target resource server that's requested the token. Use this parameter to restrict the token to a specific resource server or servers.
+                Repeat the parameter to request a token that's valid for multiple resource servers.
+
+                > **Note:** Multiple audiences for custom authorization servers is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
     TokenRequestCustomAs:
       type: object
       properties:
@@ -3544,18 +4015,48 @@ components:
       discriminator:
         propertyName: grant_type
         mapping:
-          authorization_code: '#/components/schemas/TokenRequestAuthorizationCode'
-          client_credentials: '#/components/schemas/TokenRequestClientCredentials'
+          authorization_code: '#/components/schemas/TokenRequestAuthorizationCodeCustomAS'
+          client_credentials: '#/components/schemas/TokenRequestClientCredentialsCustomAS'
           password: '#/components/schemas/TokenRequestPassword'
-          refresh_token: '#/components/schemas/TokenRequestRefreshToken'
+          refresh_token: '#/components/schemas/TokenRequestRefreshTokenCustomAS'
           urn:ietf:params:oauth:grant-type:saml2-bearer: '#/components/schemas/TokenRequestSamlBearer'
           urn:ietf:params:oauth:grant-type:token-exchange: '#/components/schemas/TokenRequestTokenExchangeCustomAs'
+          urn:ietf:params:oauth:grant-type:device_code: '#/components/schemas/TokenRequestDeviceCodeCustomAS'
           urn:openid:params:grant-type:ciba: '#/components/schemas/TokenRequestCiba'
           urn:okta:params:oauth:grant-type:otp: '#/components/schemas/TokenRequestDirectAuthenticationOtp'
           urn:okta:params:oauth:grant-type:oob: '#/components/schemas/TokenRequestDirectAuthenticationOob'
           http://auth0.com/oauth/grant-type/mfa-otp: '#/components/schemas/TokenRequestDirectAuthenticationMfaOtp'
           http://auth0.com/oauth/grant-type/mfa-oob: '#/components/schemas/TokenRequestDirectAuthenticationMfaOob'
           urn:ietf:params:oauth:grant-type:jwt-bearer: '#/components/schemas/TokenRequestJwtBearer'
+    TokenRequestDeviceCode:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequest'
+        - type: object
+          properties:
+            device_code:
+              type: string
+              description: The device verification code that was returned from the `/device/authorize` endpoint
+          required:
+            - device_code
+    TokenRequestDeviceCodeCustomAS:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequestDeviceCode'
+        - type: object
+          properties:
+            resource:
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
+              type: array
+              items:
+                type: string
+                format: uri
+              description: |-
+                <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An absolute URI that identifies the target resource server. Use this parameter to restrict the token to a specific resource server or servers.
+
+                It must be a subset of the resource(s) that are specified in the original `/device/authorize` request.
+                > **Note:** Multiple audiences for custom authorization servers is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
     TokenRequestDirectAuthReferenceValue:
       allOf:
         - $ref: '#/components/schemas/TokenRequestDirectAuthenticationOtp'
@@ -3572,6 +4073,16 @@ components:
         - $ref: '#/components/schemas/TokenRequest'
         - type: object
           properties:
+            binding_code:
+              type: string
+              description: The verification code that the end user reads from the out-of-band channel and enters in the client. This field is required when the challenge response returns `binding_method=prompt`. That method means that the user must manually enter the code to complete the challenge.
+            enrollment_id:
+              type: string
+              description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The enrollment ID of a specific authenticator enrollment to use for authentication. When provided, only the specified enrollment is challenged.
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
             grant_types_supported:
               description: A list of the grant type values that this authorization server supports
               type: array
@@ -3600,6 +4111,13 @@ components:
         - $ref: '#/components/schemas/TokenRequest'
         - type: object
           properties:
+            enrollment_id:
+              type: string
+              description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The enrollment ID of a specific authenticator enrollment to use for authentication. When provided, only the specified enrollment is challenged.
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
             grant_types_supported:
               description: A list of the grant type values that this authorization server supports
               type: array
@@ -3628,6 +4146,16 @@ components:
         - $ref: '#/components/schemas/TokenRequest'
         - type: object
           properties:
+            binding_code:
+              type: string
+              description: The verification code that the end user reads from the out-of-band channel and enters in the client. This field is required when the challenge response returns `binding_method=prompt`. That method means that the user must manually enter the code to complete the challenge.
+            enrollment_id:
+              type: string
+              description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The enrollment ID of a specific authenticator enrollment to use for authentication. When provided, only the specified enrollment is used.
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
             grant_types_supported:
               description: A list of the grant type values that this authorization server supports
               type: array
@@ -3653,6 +4181,13 @@ components:
         - $ref: '#/components/schemas/TokenRequest'
         - type: object
           properties:
+            enrollment_id:
+              type: string
+              description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The enrollment ID of a specific authenticator enrollment to use for authentication. When provided, only the specified enrollment is used.
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
             grant_types_supported:
               description: A list of the grant type values that the client supports
               type: array
@@ -3708,6 +4243,7 @@ components:
           refresh_token: '#/components/schemas/TokenRequestRefreshToken'
           urn:ietf:params:oauth:grant-type:saml2-bearer: '#/components/schemas/TokenRequestSamlBearer'
           urn:ietf:params:oauth:grant-type:token-exchange: '#/components/schemas/TokenRequestTokenExchangeOrgAs'
+          urn:ietf:params:oauth:grant-type:device_code: '#/components/schemas/TokenRequestDeviceCode'
           urn:openid:params:grant-type:ciba: '#/components/schemas/TokenRequestCiba'
           urn:okta:params:oauth:grant-type:otp: '#/components/schemas/TokenRequestDirectAuthenticationOtp'
           urn:okta:params:oauth:grant-type:oob: '#/components/schemas/TokenRequestDirectAuthenticationOob'
@@ -3744,6 +4280,25 @@ components:
               description: The scopes requested. They must be a subset of the original scopes associated with the refresh token.
           required:
             - refresh_token
+    TokenRequestRefreshTokenCustomAS:
+      allOf:
+        - $ref: '#/components/schemas/TokenRequestRefreshToken'
+        - type: object
+          properties:
+            resource:
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
+              type: array
+              items:
+                type: string
+                format: uri
+              description: |-
+                <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>An absolute URI that identifies the target resource server. Use this parameter to restrict the token to a specific resource server or servers.
+                It must be a subset of the resource(s) that are specified in the original `/device/authorize` request.
+
+                > **Note:** Multiple audiences for custom authorization servers is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
     TokenRequestSamlBearer:
       allOf:
         - $ref: '#/components/schemas/TokenRequest'
@@ -3770,15 +4325,9 @@ components:
             actor_token:
               type: string
               description: A security token that represents the identity of the acting party
-            audience:
-              type: string
-              description: The target audience for the requested token
             auth_req_id:
               type: string
               description: <x-lifecycle class="oie"></x-lifecycle> The value is what was returned from `/bc/authorize`.
-            resource:
-              type: string
-              description: The target resource for the requested token
             scope:
               type: string
               description: The scopes requested
@@ -3794,6 +4343,18 @@ components:
           properties:
             actor_token_type:
               $ref: '#/components/schemas/TokenTypeCustomAs'
+            audience:
+              x-okta-lifecycle:
+                lifecycle: EA
+                isGenerallyAvailable: false
+                SKUs: []
+              type: array
+              items:
+                type: string
+              description: |-
+                <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The logical name of the target service or resource where the client intends to use the requested security tokens.
+                Repeat the parameter to request a token valid for multiple audiences.
+                See [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693).
             requested_token_type:
               $ref: '#/components/schemas/TokenTypeCustomAs'
             subject_token_type:
@@ -3805,6 +4366,9 @@ components:
           properties:
             actor_token_type:
               $ref: '#/components/schemas/TokenTypeOrgAs'
+            audience:
+              type: string
+              description: The target audience for the requested token
             requested_token_type:
               $ref: '#/components/schemas/TokenTypeOrgAs'
             subject_token_type:
@@ -3899,7 +4463,7 @@ components:
         urn:ietf:params:oauth:token-type:saml2: SAML 2.0 assertion
         urn:okta:oauth:token-type:web_sso_token: Web SSO token
         urn:x-oath:params:oauth:token-type:device-secret: Device secret
-        urn:okta:params:oauth:token-type:interclient_token: <x-lifecycle class="ea"></x-lifecycle> Interclient token
+        urn:okta:params:oauth:token-type:interclient_token: Interclient token
     TokenTypeHintIntrospect:
       description: Indicates the type of `token` being passed
       type: string
@@ -3960,7 +4524,7 @@ components:
         urn:ietf:params:oauth:token-type:saml2: SAML 2.0 assertion
         urn:okta:oauth:token-type:web_sso_token: Web SSO token
         urn:x-oath:params:oauth:token-type:device-secret: Device secret
-        urn:okta:params:oauth:token-type:interclient_token: <x-lifecycle class="ea"></x-lifecycle> Interclient token
+        urn:okta:params:oauth:token-type:interclient_token: Interclient token
         urn:ietf:params:oauth:token-type:id-jag: Identity Assertion JWT Authorization Grant (ID-JAG). This type is only available with Cross App Access or if you're subscribed to Okta for AI Agents.
         urn:okta:params:oauth:token-type:vaulted-secret: OPA vaulted secret. This type is only available if you're subscribed to Okta for AI Agents.
         urn:okta:params:oauth:token-type:service-account: OPA service account. This type is only available if you're subscribed to Okta for AI Agents.

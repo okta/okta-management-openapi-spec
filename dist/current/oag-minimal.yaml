@@ -55,6 +55,34 @@ tags:
       Offline mode is a feature of Access Gateway that allows it to continue functioning with modified capabilities when the connection to the IdP is lost. This API allows you to manage the offline mode settings for each IdP, which determine how Access Gateway handles authentication requests when an IdP is unavailable.
 
       > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+  - name: IDPs Offline Mode Access Policy
+    x-displayName: Identity Providers Offline Mode Access Policy
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    description: |-
+      <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The Identity Providers Offline Mode Access Policy API allows you to manage access policies for apps when they're in offline mode.
+
+      An access policy defines a set of conditions that determine which users are allowed to authenticate and which authentication methods they must use. You assign access policies to applications.
+
+      Access policies are created at the IdP level to align them with an IdP that's configured for offline mode.
+
+      > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+  - name: IDPs Offline Mode Authenticators
+    x-displayName: Identity Providers Offline Mode Authenticators
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    description: |-
+      <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The Identity Providers Offline Mode Authenticators API allows you to manage the authenticators used in offline mode for the identity providers (IdPs) on your Access Gateway instance.
+
+      Offline mode authenticators are components of Access Gateway's offline mode that determine how users sign in when the connection to the primary IdP is lost. Each IdP's authenticator settings determine the authentication methods available to users during failover, such as password-based authentication or Smart Card certificate authentication.
+
+      The password authenticator is read-only and automatically configured by the offline mode directory provider (OpenLDAP or Active Directory, for example). It's always active and can't be modified or deleted.
+
+      > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
   - name: IDPs Offline Mode Directory
     x-displayName: Identity Providers Offline Mode Directory
     x-okta-lifecycle:
@@ -79,6 +107,18 @@ tags:
       The health policy is a component of Access Gateway's offline mode that determines the health status of an IdP and when to trigger failover to offline mode. This API allows you to manage the health policy settings for each IdP, which determine how Access Gateway monitors the health of the IdP and decides when to switch to offline mode.
 
       > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+  - name: OIDC
+    x-displayName: OpenID Connect & OAuth 2.0
+    x-okta-lifecycle:
+      lifecycle: EA
+      isGenerallyAvailable: false
+      SKUs: []
+    description: |-
+      <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The OpenID Connect & OAuth 2.0 API provides the protocol endpoints for OIDC authentication and OAuth 2.0 authorization on this IDP.
+
+      OpenID Connect (OIDC) extends OAuth 2.0 to add user authentication and SSO, while OAuth 2.0 provides authorization through scoped access tokens.
+
+      > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
   - name: Settings Authentication Service
     x-displayName: Authentication Service
     x-okta-lifecycle:
@@ -87,16 +127,12 @@ tags:
       SKUs: []
     description: |-
       <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>The Authentication Service API allows you to manage the settings of the authentication service in your Access Gateway cluster. Authentication service settings at the cluster level apply to all applications and IdPs on the Access Gateway instance.
-
       > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
 paths:
   /api/v2/apps:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: List all applications
       description: Lists all applications that are configured in Access Gateway
       operationId: listApplication
@@ -133,6 +169,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Create an application
       description: |-
         Creates a new application in Access Gateway.
@@ -141,9 +179,9 @@ paths:
         To make the application available for end users, you must configure the required settings of an application, and then [activate the application](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Applications/#tag/Applications/operation/activateApplication).
 
         Ensure that you've configured the following settings of your application:
-        - [Create at least one protected resource](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Protected-Resources/#tag/Application-Protected-Resources/operation/createProtectedResource).
-        - [Create at least one policy](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Policies/#tag/Application-Policies/operation/createPolicy).
-        - [Create at least one attribute](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Attributes/#tag/Application-Attributes/operation/createAttribute) (not required for `OAG_NOAUTH` applications).
+        * [Create at least one protected resource](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Protected-Resources/#tag/Application-Protected-Resources/operation/createProtectedResource).
+        * [Create at least one policy](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Policies/#tag/Application-Policies/operation/createPolicy).
+        * [Create at least one attribute](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Attributes/#tag/Application-Attributes/operation/createAttribute) (not required for `OAG_NOAUTH` applications).
 
         Session, behavior and health check configurations are created by default for all applications. Update these configurations as needed.
 
@@ -162,6 +200,10 @@ paths:
                 $ref: '#/components/examples/ApplicationCreateRequest'
               OAG_SAML:
                 $ref: '#/components/examples/SamlApplicationCreateRequest'
+              OAG_OIDC_AUTH_CODE:
+                $ref: '#/components/examples/OidcApplicationCreateRequestAuthCodePKCE'
+              OAG_OIDC_CLIENT_CREDENTIALS:
+                $ref: '#/components/examples/OidcApplicationCreateRequestClientCredentials'
       responses:
         '200':
           description: Application created successfully
@@ -174,6 +216,10 @@ paths:
                   $ref: '#/components/examples/HeaderBasedApplicationResponseWithEmbedded'
                 OAG_SAML:
                   $ref: '#/components/examples/SamlApplicationResponseWithEmbedded'
+                OAG_OIDC:
+                  $ref: '#/components/examples/OidcApplicationResponse'
+                OAG_OIDC_EMBEDDED:
+                  $ref: '#/components/examples/OidcApplicationResponseWithEmbedded'
         '400':
           $ref: '#/components/responses/ErrorBadRequest'
         '401':
@@ -191,14 +237,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve an application
       description: Retrieves details of a specific application by `applicationId`
       operationId: getApplication
@@ -239,11 +282,19 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace an application
       description: |-
         Replaces an existing application configuration
 
         Use this endpoint to update the configuration of the specified application.
+
+        This operation is a full replace, not a partial update. Any optional field that's omitted from the request body is cleared or reset to its default rather than left unchanged. For example, if you omit `groups`, then all group assignments are removed from the application. Include every field whose current value you want to keep.
+
+        The application's `type` and `idpId` are immutable after creation and can't be changed. You don't need to include them in the request body, but if you do, their values must match the application's existing values. If you send a different value, an HTTP `400` error is returned. Read-only fields (such as `id` and `calculatedWeight`) and the `_embedded` sub-resources (attributes, policies, protected resources, session, behavior, health check) are also unaffected by this endpoint. Manage them through their own endpoints.
+
+        The other fields that are required depend on the application's `type`. For example, header-based applications require `publicDomain`, `certificateId`, and `postLoginUrl`.
       operationId: replaceApplication
       requestBody:
         required: true
@@ -256,6 +307,8 @@ paths:
                 $ref: '#/components/examples/HeaderBasedApplicationUpdateRequest'
               OAG_SAML:
                 $ref: '#/components/examples/SamlApplicationUpdateRequest'
+              OAG_OIDC:
+                $ref: '#/components/examples/OidcApplicationUpdateRequest'
       responses:
         '200':
           description: Application updated successfully
@@ -268,6 +321,8 @@ paths:
                   $ref: '#/components/examples/HeaderBasedApplicationResponse'
                 OAG_SAML:
                   $ref: '#/components/examples/SamlApplicationResponse'
+                OAG_OIDC:
+                  $ref: '#/components/examples/OidcApplicationResponse'
         '400':
           $ref: '#/components/responses/ErrorBadRequest'
         '401':
@@ -276,6 +331,8 @@ paths:
           $ref: '#/components/responses/ErrorForbidden'
         '404':
           $ref: '#/components/responses/ErrorResourceNotFound'
+        '409':
+          $ref: '#/components/responses/ErrorConflict'
         '429':
           $ref: '#/components/responses/ErrorTooManyRequests'
       security:
@@ -287,6 +344,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Delete an application
       description: |-
         Deletes an application by `applicationId`.
@@ -316,14 +375,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/activate:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Activate an application
       description: Activates a newly created application in Access Gateway. Activate an application after you create it. Access Gateway doesn't automatically activate newly created applications.
       operationId: activateApplication
@@ -349,14 +405,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/attributes:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: List all attributes
       description: Lists all attributes for a specific application in Access Gateway
       operationId: listAttributes
@@ -391,6 +444,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Create an attribute
       description: Creates an attribute for an application in Access Gateway
       operationId: createAttribute
@@ -405,6 +460,8 @@ paths:
                 $ref: '#/components/examples/AttributeCreateRequest1'
               Attribute2:
                 $ref: '#/components/examples/AttributeCreateRequest2'
+              Attribute_SAML_OIDC:
+                $ref: '#/components/examples/AttributeCreateRequestSamlOidc'
       responses:
         '200':
           description: Attribute created successfully
@@ -417,6 +474,8 @@ paths:
                   $ref: '#/components/examples/AttributeResponse1'
                 Attribute2:
                   $ref: '#/components/examples/AttributeResponse2'
+                Attribute_SAML_OIDC:
+                  $ref: '#/components/examples/AttributeResponseSamlOidc'
         '400':
           $ref: '#/components/responses/ErrorBadRequest'
         '401':
@@ -434,15 +493,12 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/attributes/{attributeId}:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
       - $ref: '#/components/parameters/AttributeID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve an attribute
       description: Retrieves details of a specific attribute for an application by `applicationId` and `attributeId`
       operationId: getAttribute
@@ -475,18 +531,25 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace an attribute
-      description: Replaces an existing attribute configuration for an application
+      description: |-
+        Replaces an existing attribute configuration for an application
+
+        This operation is a full replace, not a partial update. The request body must include `name`, `source`, and `value`. For all application types except SAML and OIDC, also include `type`. Access Gateway rejects the request if `type` is not included in the request body, even though `type` isn't in this schema's required fields. The schema is shared with SAML and OIDC applications, which ignore `type` and don't require it. Any optional field that you omit is reset to its default.
       operationId: replaceAttribute
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Attribute'
+              $ref: '#/components/schemas/AttributeUpdateRequest'
             examples:
               Attribute:
                 $ref: '#/components/examples/AttributeUpdateRequest'
+              Attribute_SAML_OIDC:
+                $ref: '#/components/examples/AttributeUpdateRequestSamlOidc'
       responses:
         '200':
           description: Attribute updated successfully
@@ -497,6 +560,8 @@ paths:
               examples:
                 Attribute:
                   $ref: '#/components/examples/AttributeResponse1'
+                Attribute_SAML_OIDC:
+                  $ref: '#/components/examples/AttributeResponseSamlOidc'
         '400':
           $ref: '#/components/responses/ErrorBadRequest'
         '401':
@@ -516,6 +581,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Delete an attribute
       description: Deletes an attribute for an application by `applicationId` and `attributeId`
       operationId: deleteAttribute
@@ -541,14 +608,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/behavior:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve the application behavior configuration
       description: Retrieves a behavior configuration for an application
       operationId: getBehavior
@@ -581,6 +645,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace the application behavior configuration
       description: |-
         Replaces the behavior configuration for an application in Access Gateway
@@ -624,15 +690,203 @@ paths:
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: true
-  /api/v2/apps/{applicationId}/deactivate:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
+  /api/v2/apps/{applicationId}/credentials/keys:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List all public keys (JWKS)
+      description: |-
+        Lists the public JSON Web Key Set (JWKS) that are configured for this application
+
+        > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+      operationId: listPublicKeys
+      responses:
+        '200':
+          description: The active JWKS for the application
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONWebKeySet'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.app.read
+      tags:
+        - Applications
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Upload a public key
+      description: |-
+        Uploads a public key in JWK format to the application's JWKS.
+
+        After you upload the new key, both the existing and new keys are active. This allows you to rotate keys without downtime by migrating clients to the new key before revoking the old one with the Revoke a Public Key [endpoint](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Applications/#tag/Applications/operation/revokeApplicationPublicKey).
+
+        > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+      operationId: uploadApplicationPublicKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JSONWebKey'
+      responses:
+        '201':
+          description: Public key added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONWebKeySet'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.app.manage
+      tags:
+        - Applications
+  /api/v2/apps/{applicationId}/credentials/keys/{kid}:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationID'
+      - $ref: '#/components/parameters/KID'
+    delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Revoke a public key
+      description: |-
+        Revokes a specific public key by its key ID (`kid`), immediately blocking any inbound authentication requests signed by the matching private key
+
+        > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+      operationId: revokeApplicationPublicKey
+      responses:
+        '204':
+          description: Key successfully revoked. No content returned.
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.app.manage
+      tags:
+        - Applications
+  /api/v2/apps/{applicationId}/credentials/secret:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve the client secret
+      description: |-
+        Retrieves the client secret for the specified OIDC application.
+
+        > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+      operationId: getClientSecret
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationSecretResponse'
+              examples:
+                ApplicationSecretResponse:
+                  $ref: '#/components/examples/ApplicationSecretResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.app.secrets.read
+      tags:
+        - Applications
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Generate a client secret
+      description: |-
+        Generates a new client secret for the specified OIDC application. The previous secret is immediately invalidated.
+
+        > **Note:** This API is available in a Limited Early Access program and may be updated or changed based on feedback. Be aware that the API may change.
+      operationId: generateClientSecret
+      responses:
+        '200':
+          description: Client secret rotated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationSecretResponse'
+              examples:
+                ApplicationSecretResponse:
+                  $ref: '#/components/examples/ApplicationSecretResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.app.secrets.manage
+      tags:
+        - Applications
+  /api/v2/apps/{applicationId}/deactivate:
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Deactivate an application
       description: Deactivates an existing application in Access Gateway
       operationId: deactivateApplication
@@ -658,14 +912,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/health-check:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve the application health check configuration
       description: Retrieves a health check configuration for an application
       operationId: getHealthCheck
@@ -698,6 +949,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace the application health check configuration
       description: |-
         Replaces the health check configuration for an application in Access Gateway
@@ -742,14 +995,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/maintenance:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Update an application status to maintenance
       description: |-
         Updates the status of an application to maintenance mode in Access Gateway
@@ -778,15 +1028,15 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/offline-mode:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Retrieve the offline mode state for an application
       description: Retrieves the offline mode state for a specific application in Access Gateway, by `applicationId`
       operationId: getApplicationOfflineModeState
@@ -818,6 +1068,12 @@ paths:
       tags:
         - Application Offline Mode
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Assign the offline mode state for an application
       description: |-
         Assigns the offline mode state for a specific application in Access Gateway, by `applicationId`.
@@ -862,21 +1118,118 @@ paths:
             - okta.oag.app.manage
       tags:
         - Application Offline Mode
-  /api/v2/apps/{applicationId}/offline-mode/group-policy:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
+  /api/v2/apps/{applicationId}/offline-mode/access-policies:
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve the offline mode access policy that's assigned to an application
+      description: Retrieves the offline mode access policy that's assigned to a specific application by `applicationId`
+      operationId: getApplicationOfflineModeAccessPolicy
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationOfflineModeAccessPolicyAssignment'
+              examples:
+                ApplicationOfflineModeAccessPolicyAssignment:
+                  $ref: '#/components/examples/ApplicationOfflineModeAccessPolicyAssignment'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.app.read
+      tags:
+        - Application Offline Mode
+    put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Assign an offline mode access policy to an application
+      description: |-
+        Assigns an offline mode access policy to a specific application by `applicationId`.
+
+        A policy can be assigned to one or more applications. Any application that you use for offline mode must always have an assigned offline mode access policy.
+      operationId: assignApplicationOfflineModeAccessPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationOfflineModeAccessPolicyAssignment'
+            examples:
+              AssignApplicationOfflineModeAccessPolicy:
+                $ref: '#/components/examples/ApplicationOfflineModeAccessPolicyAssignment'
+      responses:
+        '200':
+          description: Access policy assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationOfflineModeAccessPolicyAssignment'
+              examples:
+                ApplicationOfflineModeAccessPolicyAssignment:
+                  $ref: '#/components/examples/ApplicationOfflineModeAccessPolicyAssignment'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.app.manage
+      tags:
+        - Application Offline Mode
+  /api/v2/apps/{applicationId}/offline-mode/group-policy:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Retrieve the offline mode group policy for an application
       description: |-
         Retrieves the offline mode group policy for a specific application in Access Gateway, by `applicationId`.
 
         The offline mode group policy defines how users are grouped for offline mode. It determines which users are affected when offline mode is enabled for the application.
+
+        > **Note:** This endpoint is retained for backwards compatibility. To view and manage offline mode policies, use the offline mode access policy [endpoints](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Offline-Mode/#tag/Application-Offline-Mode/operation/assignApplicationOfflineModeAccessPolicy) instead.
       operationId: getApplicationOfflineModeGroupPolicy
       responses:
         '200':
@@ -906,6 +1259,7 @@ paths:
       tags:
         - Application Offline Mode
     put:
+      deprecated: true
       summary: Assign a group to an application's offline mode policy
       description: |-
         Assigns groups to the offline mode policy for a specific application in Access Gateway, by `applicationId`. Users who are in the groups that are assigned to the offline mode application policy can sign in to the application when offline mode is enabled. Users who aren't in the assigned groups are blocked from signing in when offline mode is enabled.
@@ -913,6 +1267,8 @@ paths:
         Before you assign groups to the application, ensure that the groups exist in your LDAP or AD directory. If your groups originate in Okta, sync them to your LDAP or AD server using the [Okta LDAP agent](https://help.okta.com/okta_help.htm?type=oie&id=ext_LDAP_Provisioning) or the [Okta AD agent](https://help.okta.com/okta_help.htm?type=oie&id=ext-ad-agent-install). After syncing the groups, [create the offline mode directory](https://developer.okta.com/docs/api/openapi/oag/oag/tag/IDPs-Offline-Mode-Directory/#tag/IDPs-Offline-Mode-Directory/operation/createOfflineModeDirectory). After you configure the offline mode directory, your groups are available to assign to the offline mode policy.
 
         > **Note:** If you're using an LDAP user directory, you don't have the `Everyone` group, by default. However, the `Assign a group to an application's offline mode policy` endpoint allows you to still pass `Everyone` in the payload to assign all users to the offline mode policy.
+
+        > **Note:** This endpoint is no longer supported as of Access Gateway version 2026.09.1 and returns an HTTP 405 error. To manage offline mode policies, use the offline mode access policy [endpoints](https://developer.okta.com/docs/api/openapi/oag/oag/tag/Application-Offline-Mode/#tag/Application-Offline-Mode/operation/assignApplicationOfflineModeAccessPolicy) instead.
       operationId: assignApplicationOfflineModeGroupPolicy
       requestBody:
         required: true
@@ -952,15 +1308,15 @@ paths:
             - okta.oag.app.manage
       tags:
         - Application Offline Mode
-  /api/v2/apps/{applicationId}/policies:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
       x-okta-lifecycle:
         lifecycle: GA
         isGenerallyAvailable: true
+  /api/v2/apps/{applicationId}/policies:
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: List all policies
       description: Lists all policies for a specific application in Access Gateway
       operationId: listPolicies
@@ -995,6 +1351,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Create a policy
       description: |-
         Creates a policy for an application in Access Gateway
@@ -1041,15 +1399,12 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/policies/{policyId}:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
       - $ref: '#/components/parameters/PolicyID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve a policy
       description: Retrieves details of a specific policy for an application by `applicationId` and `policyId`
       operationId: getPolicy
@@ -1082,15 +1437,20 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace a policy
-      description: Replaces an existing policy configuration for an application
+      description: |-
+        Replaces an existing policy configuration for an application
+
+        This operation is a full replace, not a partial update. The request body must include every required field (`name`, `resourcePath`, and `rule`). Any other optional field that you omit is reset to its default.
       operationId: replacePolicy
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Policy'
+              $ref: '#/components/schemas/PolicyUpdateRequest'
             examples:
               Policy:
                 $ref: '#/components/examples/PolicyUpdateRequest'
@@ -1123,6 +1483,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Delete a policy
       description: Deletes a policy for an application by `applicationId` and `policyId`
       operationId: deletePolicy
@@ -1148,14 +1510,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/resources:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: List all protected resources
       description: Lists all protected resources for a specific application in Access Gateway
       operationId: listProtectedResources
@@ -1190,6 +1549,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Create a protected resource
       description: |-
         Creates a protected resource for an application in Access Gateway
@@ -1236,15 +1597,12 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/resources/{protectedResourceId}:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
       - $ref: '#/components/parameters/ProtectedResourceID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve a protected resource
       description: Retrieves details of a specific protected resource by `applicationId` and `protectedResourceId`
       operationId: getResource
@@ -1277,15 +1635,20 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace a protected resource
-      description: Replaces an existing protected resource configuration for an application
+      description: |-
+        Replaces an existing protected resource configuration for an application
+
+        This operation is a full replace, not a partial update. The request body must include `hostname`. Any other optional field that you omit is reset to its default.
       operationId: replaceResource
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProtectedResource'
+              $ref: '#/components/schemas/ProtectedResourceUpdateRequest'
             examples:
               ProtectedResource:
                 $ref: '#/components/examples/ProtectedResourceUpdateRequest'
@@ -1318,6 +1681,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Delete a protected resource
       description: Deletes a protected resource for an application by `applicationId` and `protectedResourceId`
       operationId: deleteProtectedResource
@@ -1343,14 +1708,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/apps/{applicationId}/session:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/ApplicationID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve the application session configuration
       description: Retrieves a session configuration for an application
       operationId: getSession
@@ -1383,6 +1745,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace the application session configuration
       description: |-
         Replaces the session configuration for an application in Access Gateway
@@ -1427,12 +1791,9 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/certificates:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: List all certificates
       description: |-
         Lists all certificates configured in Access Gateway.
@@ -1462,14 +1823,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/certificates/{certificateId}:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/CertificateID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve a certificate
       description: Retrieves a certificate by `certificateId`
       operationId: getCertificate
@@ -1499,12 +1857,9 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/idps:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: List all IdPs
       description: Lists all identity providers (IdPs) that are configured in Access Gateway
       operationId: listIDPs
@@ -1535,6 +1890,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Create an IdP
       description: |
         Creates an identity provider (IdP) in Access Gateway
@@ -1579,14 +1936,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/idps/{idpId}:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     parameters:
       - $ref: '#/components/parameters/IdPID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Retrieve an IdP
       description: |
         Retrieves an identity provider (IdP) integration by `idpId`
@@ -1626,11 +1980,15 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Replace an IdP
       description: |-
         Replaces an existing identity provider (IdP) configuration
 
         Use this endpoint to update the configuration of the specified IdP.
+
+        `type`, `domain`, and (for Auth0 IdPs) `tenant` are immutable after creation and can't be changed. You don't need to include them in the request body, but if you do, their values must match the values used to create the IdP — sending a different value returns a `400` error.
       operationId: replaceIDP
       requestBody:
         required: true
@@ -1674,6 +2032,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
     delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Delete an IdP
       description: |
         Deletes an identity provider (IdP) by `idpId`
@@ -1702,15 +2062,15 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/idps/{idpId}/offline-mode:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
     parameters:
       - $ref: '#/components/parameters/IdPID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Retrieve the failover mode for an IdP
       description: |-
         Retrieves the failover mode for the specified identity provider (IdP) by `idpId`.
@@ -1747,6 +2107,12 @@ paths:
       tags:
         - IDPs Offline Mode
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Assign the failover mode for an IdP
       description: |-
         Assigns the failover mode for the specified identity provider (IdP) by `idpId`.
@@ -1793,16 +2159,611 @@ paths:
             - okta.oag.idp.manage
       tags:
         - IDPs Offline Mode
-  /api/v2/idps/{idpId}/offline-mode/directories:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
+  /api/v2/idps/{idpId}/offline-mode/access-policies:
     parameters:
       - $ref: '#/components/parameters/IdPID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List all offline mode access policies
+      description: Lists all offline mode access policies for the specified identity provider (IdP) by `idpId`
+      operationId: listOfflineModeAccessPolicies
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccessPolicy'
+              examples:
+                AccessPolicyListResponse:
+                  $ref: '#/components/examples/AccessPolicyListResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.read
+      tags:
+        - IDPs Offline Mode Access Policy
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create an offline mode access policy
+      description: |-
+        Creates an offline mode access policy for the specified identity provider (IdP) by `idpId`.
+
+        An access policy defines which groups can access applications during offline mode and what authentication methods they must use. The policy has no effect until you assign it to an application.
+      operationId: createOfflineModeAccessPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessPolicyCreateRequest'
+            examples:
+              AccessPolicyCreateRequest:
+                $ref: '#/components/examples/AccessPolicyCreateRequest'
+      responses:
+        '200':
+          description: Access policy created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPolicy'
+              examples:
+                AccessPolicyCreateResponse:
+                  $ref: '#/components/examples/AccessPolicyGetResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Access Policy
+  /api/v2/idps/{idpId}/offline-mode/access-policies/{accessPolicyId}:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+      - $ref: '#/components/parameters/AccessPolicyID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve an offline mode access policy
+      description: Retrieves the offline mode access policy for the specified identity provider (IdP) by `idpId` and `accessPolicyId`
+      operationId: getOfflineModeAccessPolicy
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPolicy'
+              examples:
+                AccessPolicyGetResponse:
+                  $ref: '#/components/examples/AccessPolicyGetResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.read
+      tags:
+        - IDPs Offline Mode Access Policy
+    put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Replace an offline mode access policy
+      description: |-
+        Replaces the settings of an offline mode access policy for the specified identity provider (IdP) by `idpId` and `accessPolicyId`.
+
+        The updated policy configuration applies to any applications that the access policy is assigned to.
+      operationId: replaceOfflineModeAccessPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessPolicyCreateRequest'
+            examples:
+              AccessPolicyUpdateRequest:
+                $ref: '#/components/examples/AccessPolicyCreateRequest'
+      responses:
+        '200':
+          description: Access policy updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPolicy'
+              examples:
+                AccessPolicyUpdateResponse:
+                  $ref: '#/components/examples/AccessPolicyGetResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Access Policy
+    delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Delete an offline mode access policy
+      description: |-
+        Deletes an offline mode access policy for the specified identity provider (IdP) by `idpId` and `accessPolicyId`.
+
+        A policy can only be deleted if it's not assigned to any applications. The default policy can't be deleted.
+      operationId: deleteOfflineModeAccessPolicy
+      responses:
+        '204':
+          description: Access policy deleted successfully
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Access Policy
+  /api/v2/idps/{idpId}/offline-mode/access-policies/{accessPolicyId}/apps:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+      - $ref: '#/components/parameters/AccessPolicyID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List all applications assigned to an offline mode access policy
+      description: Lists all applications that are assigned to the specified offline mode access policy for the given identity provider (IdP) by `idpId` and `accessPolicyId`
+      operationId: listOfflineModeAccessPolicyApplications
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationCreateResponse'
+              examples:
+                AccessPolicyApplicationListResponse:
+                  $ref: '#/components/examples/AccessPolicyApplicationListResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.read
+      tags:
+        - IDPs Offline Mode Access Policy
+  /api/v2/idps/{idpId}/offline-mode/authenticators:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List all offline mode authenticators
+      description: Lists all offline mode authenticators for the specified identity provider (IdP) by `idpId`
+      operationId: listOfflineModeAuthenticators
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfflineModeAuthenticator'
+              examples:
+                OfflineModeAuthenticatorListResponse:
+                  $ref: '#/components/examples/OfflineModeAuthenticatorList'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.read
+      tags:
+        - IDPs Offline Mode Authenticators
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create an offline mode authenticator
+      description: |-
+        Creates an offline mode authenticator for the specified identity provider (IdP) by `idpId`.
+
+        When you create an offline mode authenticator, and it's active, it becomes available to end users and they can use it to sign in during an IdP failover.
+      operationId: createOfflineModeAuthenticator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfflineModeAuthenticatorSmartCard'
+            examples:
+              OfflineModeAuthenticatorSmartCardCreateRequest:
+                $ref: '#/components/examples/OfflineModeAuthenticatorSmartCardCreateRequest'
+      responses:
+        '200':
+          description: Offline mode authenticator created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfflineModeAuthenticator'
+              examples:
+                OfflineModeAuthenticatorSmartCardCreateResponse:
+                  $ref: '#/components/examples/OfflineModeAuthenticatorSmartCardCreateResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Authenticators
+  /api/v2/idps/{idpId}/offline-mode/authenticators/{authenticatorId}:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+      - $ref: '#/components/parameters/AuthenticatorID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve an offline mode authenticator
+      description: Retrieves an offline mode authenticator for the specified identity provider (IdP) by `idpId` and `authenticatorId`
+      operationId: getOfflineModeAuthenticator
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfflineModeAuthenticator'
+              examples:
+                OfflineModeAuthenticatorSmartCardGetResponse:
+                  $ref: '#/components/examples/OfflineModeAuthenticatorSmartCardGetResponse'
+                OfflineModeAuthenticatorPasswordGetResponse:
+                  $ref: '#/components/examples/OfflineModeAuthenticatorPasswordGetResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.read
+      tags:
+        - IDPs Offline Mode Authenticators
+    put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Replace an offline mode authenticator
+      description: Replaces the settings of an existing offline mode authenticator for the specified identity provider (IdP) by `idpId` and `authenticatorId`
+      operationId: replaceOfflineModeAuthenticator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfflineModeAuthenticatorSmartCard'
+            examples:
+              OfflineModeAuthenticatorSmartCardUpdateRequest:
+                $ref: '#/components/examples/OfflineModeAuthenticatorSmartCardUpdateRequest'
+      responses:
+        '200':
+          description: Offline mode authenticator updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfflineModeAuthenticator'
+              examples:
+                OfflineModeAuthenticatorSmartCardUpdateResponse:
+                  $ref: '#/components/examples/OfflineModeAuthenticatorSmartCardUpdateResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Authenticators
+    delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Delete an offline mode authenticator
+      description: Deletes an offline mode authenticator for the specified identity provider (IdP) by `idpId` and `authenticatorId`
+      operationId: deleteOfflineModeAuthenticator
+      responses:
+        '204':
+          description: Offline mode authenticator deleted successfully
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '409':
+          $ref: '#/components/responses/ErrorConflict'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Authenticators
+  /api/v2/idps/{idpId}/offline-mode/authenticators/{authenticatorId}/lifecycle/activate:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+      - $ref: '#/components/parameters/AuthenticatorID'
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Activate an offline mode authenticator
+      description: |-
+        Activates an offline mode authenticator for the specified identity provider (IdP) by `idpId` and `authenticatorId`.
+
+        This sets the authenticator status to `ACTIVE`, allowing it to be used for authentication during IdP failover.
+      operationId: activateOfflineModeAuthenticator
+      responses:
+        '200':
+          description: Offline mode authenticator activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfflineModeAuthenticator'
+              examples:
+                OfflineModeAuthenticatorSmartCardActivateResponse:
+                  $ref: '#/components/examples/OfflineModeAuthenticatorSmartCardActivateResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Authenticators
+  /api/v2/idps/{idpId}/offline-mode/authenticators/{authenticatorId}/lifecycle/deactivate:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+      - $ref: '#/components/parameters/AuthenticatorID'
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Deactivate an offline mode authenticator
+      description: |-
+        Deactivates an offline mode authenticator for the specified identity provider (IdP) by `idpId` and `authenticatorId`.
+
+        This sets the authenticator status to `INACTIVE`, preventing it from being used for authentication during IdP failover.
+      operationId: deactivateOfflineModeAuthenticator
+      responses:
+        '200':
+          description: Offline mode authenticator deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfflineModeAuthenticator'
+              examples:
+                OfflineModeAuthenticatorSmartCardDeactivateResponse:
+                  $ref: '#/components/examples/OfflineModeAuthenticatorSmartCardDeactivateResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '409':
+          $ref: '#/components/responses/ErrorConflict'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+        '502':
+          $ref: '#/components/responses/ErrorBadGateway'
+        '503':
+          $ref: '#/components/responses/ErrorServiceUnavailable'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.idp.manage
+      tags:
+        - IDPs Offline Mode Authenticators
+  /api/v2/idps/{idpId}/offline-mode/directories:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: List all offline mode directories
       description: Lists all offline mode directories for the specified identity provider (IdP) by `idpId`
       operationId: listOfflineModeDirectories
@@ -1840,6 +2801,12 @@ paths:
       tags:
         - IDPs Offline Mode Directory
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Create an offline mode directory
       description: |-
         Creates an offline mode directory for the specified identity provider (IdP) by `idpId`.
@@ -1889,16 +2856,16 @@ paths:
       tags:
         - IDPs Offline Mode Directory
   /api/v2/idps/{idpId}/offline-mode/directories/{directoryId}:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
     parameters:
       - $ref: '#/components/parameters/IdPID'
       - $ref: '#/components/parameters/DirectoryID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Retrieve an offline mode directory
       description: Retrieves an offline mode directory for the specified identity provider (IdP) by `idpId` and `directoryId`
       operationId: getOfflineModeDirectory
@@ -1936,6 +2903,12 @@ paths:
       tags:
         - IDPs Offline Mode Directory
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Replace an offline mode directory
       description: Replaces an existing offline mode directory for the specified identity provider (IdP) by `idpId` and `directoryId`
       operationId: replaceOfflineModeDirectory
@@ -1984,6 +2957,12 @@ paths:
       tags:
         - IDPs Offline Mode Directory
     delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Delete an offline mode directory
       description: Deletes an offline mode directory for the specified identity provider (IdP) by `idpId` and `directoryId`
       operationId: deleteOfflineModeDirectory
@@ -2012,15 +2991,15 @@ paths:
       tags:
         - IDPs Offline Mode Directory
   /api/v2/idps/{idpId}/offline-mode/health-policy:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
     parameters:
       - $ref: '#/components/parameters/IdPID'
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Retrieve an offline mode health policy
       description: Retrieves the offline mode health policy for the specified identity provider (IdP) by `idpId`
       operationId: getOfflineModeHealthPolicy
@@ -2054,6 +3033,12 @@ paths:
       tags:
         - IDPs Offline Mode Health Policy
     put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Replace an offline mode health policy
       description: Replaces the offline mode health policy for the specified identity provider (IdP) by `idpId`
       operationId: replaceOfflineModeHealthPolicy
@@ -2096,15 +3081,15 @@ paths:
       tags:
         - IDPs Offline Mode Health Policy
   /api/v2/idps/{idpId}/offline-mode/test-directory-connection:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
     parameters:
       - $ref: '#/components/parameters/IdPID'
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Test a directory connection
       description: |-
         Tests the connection to the offline mode directory for the specified identity provider (IdP) by `idpId`.
@@ -2145,12 +3130,9 @@ paths:
       tags:
         - IDPs Offline Mode Directory
   /api/v2/oauth/token:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
       summary: Create an access token
       description: |
         Creates an access token for your Access Gateway. Use the access token to authenticate API requests. Authentication is performed using a signed JWT assertion in the `client_assertion` parameter of the request body, not through HTTP headers.
@@ -2185,13 +3167,13 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /api/v2/settings/authentication-service:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Retrieve the authentication service setting
       description: Retrieves the current authentication service setting for Access Gateway
       operationId: getAuthenticationServiceSetting
@@ -2223,6 +3205,12 @@ paths:
       tags:
         - Settings Authentication Service
     post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Enable the authentication service setting
       description: Enables the authentication service setting for Access Gateway
       operationId: enableAuthenticationServiceSetting
@@ -2261,6 +3249,12 @@ paths:
       tags:
         - Settings Authentication Service
     delete:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Disable the authentication service setting
       description: Disables the authentication service setting for Access Gateway
       operationId: disableAuthenticationServiceSetting
@@ -2282,14 +3276,138 @@ paths:
             - okta.oag.authenticationService.manage
       tags:
         - Settings Authentication Service
-  /api/v2/settings/authentication-service/health-check:
-    x-okta-team-detail:
-      x-team-slack: amp-eng-resource-management-platform
-    x-okta-lifecycle:
-      lifecycle: EA
-      isGenerallyAvailable: false
-      SKUs: []
+  /api/v2/settings/authentication-service/certificates:
     get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List all authentication service certificates
+      description: Lists all certificate configurations that are used by the authentication service
+      operationId: listAuthenticationServiceCertificates
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthenticationServiceCertificate'
+              examples:
+                AuthenticationServiceCertificateListResponse:
+                  $ref: '#/components/examples/AuthenticationServiceCertificateListResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.authenticationService.read
+      tags:
+        - Settings Authentication Service
+    put:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Replace a certificate used by the authentication service
+      description: Replaces a certificate configuration used by the authentication service
+      operationId: replaceAuthenticationServiceCertificate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationServiceCertificateRequest'
+            examples:
+              AuthenticationServiceCertificateMtlsRequest:
+                $ref: '#/components/examples/AuthenticationServiceCertificateMtlsRequest'
+      responses:
+        '200':
+          description: Certificate configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationServiceCertificate'
+              examples:
+                AuthenticationServiceCertificateMtlsResponse:
+                  $ref: '#/components/examples/AuthenticationServiceCertificateMtlsResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.authenticationService.manage
+      tags:
+        - Settings Authentication Service
+  /api/v2/settings/authentication-service/certificates/{type}:
+    parameters:
+      - $ref: '#/components/parameters/AuthenticationServiceCertificateType'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve an authentication service certificate
+      description: Retrieves a certificate configuration used by the authentication service by `type`
+      operationId: getAuthenticationServiceCertificate
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationServiceCertificate'
+              examples:
+                AuthenticationServiceCertificateMtlsResponse:
+                  $ref: '#/components/examples/AuthenticationServiceCertificateMtlsResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+      security:
+        - jwtBearerAuth:
+            - okta.oag.authenticationService.read
+      tags:
+        - Settings Authentication Service
+  /api/v2/settings/authentication-service/health-check:
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
       summary: Retrieve the authentication service health check
       description: Retrieves the current health check status of the authentication service for Access Gateway
       operationId: getAuthenticationServiceHealthCheck
@@ -2320,8 +3438,440 @@ paths:
             - okta.oag.authenticationService.read
       tags:
         - Settings Authentication Service
+  /realms/{idpId}/.well-known/openid-configuration:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve the OpenID Connect discovery document
+      description: |-
+        Retrieves the OpenID Connect discovery document for the specified IdP.
+
+        The discovery document contains metadata about the authorization server, including supported endpoints, scopes, response types, and grant types.
+      operationId: getOpenIDConnectDiscovery
+      responses:
+        '200':
+          description: OpenID Connect discovery document retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenIDConnectDiscoveryDocument'
+              examples:
+                OpenIDConnectDiscoveryDocument:
+                  $ref: '#/components/examples/OpenIDConnectDiscoveryDocument'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security: []
+      tags:
+        - OIDC
+  /realms/{idpId}/protocol/openid-connect/auth:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Initiate an OIDC authorization for a user using GET
+      description: |-
+        Initiates an OIDC authorization for a user by directing them to authenticate with the specified IdP. Authorization request parameters are passed as URL query parameters.
+
+        After authentication, Access Gateway redirects the browser to the client's redirect URI with an authorization code. The client exchanges the authorization code for access, ID, and refresh tokens at the token endpoint.
+      operationId: initiateOidcAuthorizationResponseGet
+      parameters:
+        - $ref: '#/components/parameters/AuthorizeClientId'
+        - $ref: '#/components/parameters/AuthorizeRedirectUri'
+        - $ref: '#/components/parameters/AuthorizeResponseType'
+        - $ref: '#/components/parameters/AuthorizeScope'
+        - $ref: '#/components/parameters/AuthorizeState'
+        - $ref: '#/components/parameters/AuthorizeNonce'
+        - $ref: '#/components/parameters/AuthorizeCodeChallenge'
+        - $ref: '#/components/parameters/AuthorizeCodeChallengeMethod'
+        - $ref: '#/components/parameters/AuthorizeResponseMode'
+        - $ref: '#/components/parameters/AuthorizePrompt'
+      responses:
+        '302':
+          description: Redirect to the client with authorization code or tokens
+          headers:
+            Location:
+              schema:
+                type: string
+              description: The redirect URI with authorization parameters
+              example: https://myapp.example.com/callback?code=AUTH_CODE&state=xyz
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security: []
+      tags:
+        - OIDC
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Initiate an OIDC authorization for a user using POST
+      description: |-
+        Initiates an OIDC authorization for a user by directing them to authenticate with the specified IdP. Authorization request parameters are passed as form-encoded body parameters.
+
+        After authentication, Access Gateway redirects the browser to the client's redirect URI with an authorization code. The client exchanges the authorization code for access, ID, and refresh tokens at the token endpoint.
+      operationId: initiateOidcAuthorizationResponsePost
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthorizeRequestParameters'
+            examples:
+              authorizationCode:
+                $ref: '#/components/examples/AuthorizeRequestBody'
+      responses:
+        '302':
+          description: Redirect to the client with authorization code or token
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+      security: []
+      tags:
+        - OIDC
+  /realms/{idpId}/protocol/openid-connect/certs:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve the JSON Web Key Set
+      description: |-
+        Retrieves the JSON Web Key Set (JWKS) for the specified IdP.
+
+        The JWKS contains the public keys that are used to validate tokens issued by the authorization server.
+      operationId: getJSONWebKeySet
+      responses:
+        '200':
+          description: JSON Web Key Set retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONWebKeySet'
+              examples:
+                JSONWebKeySetResponse:
+                  $ref: '#/components/examples/JSONWebKeySetResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResourceNotFound'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security: []
+      tags:
+        - OIDC
+  /realms/{idpId}/protocol/openid-connect/revoke:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Revoke a token
+      description: |-
+        Revokes an access or refresh token for the specified IdP.
+
+        After a token is revoked, it can't be used to access protected resources.
+      operationId: revokeToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRevocationRequest'
+            examples:
+              TokenRevocationRequest:
+                $ref: '#/components/examples/TokenRevocationRequest'
+      responses:
+        '200':
+          description: Token successfully revoked or is already invalid
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+      security:
+        - BasicAuth: []
+      tags:
+        - OIDC
+  /realms/{idpId}/protocol/openid-connect/token:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Request a token
+      description: |-
+        Requests a token for the specified IdP's authorization server. Use the token to authenticate API requests. Perform client authentication by using either HTTP Basic Auth (client ID and secret as Basic credentials) or by including `client_id`/`client_secret` (or `client_assertion`/`client_assertion_type` for JWT-based methods) as body parameters.
+
+        This endpoint supports the OAuth 2.0 authorization code, refresh token, and client credentials grant types. It returns access tokens, refresh tokens, or ID tokens based on the request parameters. You're not able to use any other OAuth 2.0 grant types with this endpoint.
+      operationId: requestToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+            examples:
+              authorizationCode:
+                $ref: '#/components/examples/TokenRequestAuthorizationCode'
+              clientCredentials:
+                $ref: '#/components/examples/TokenRequestClientCredentials'
+      responses:
+        '200':
+          description: Token successfully issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              examples:
+                TokenSuccessResponse:
+                  $ref: '#/components/examples/TokenSuccessResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+      security:
+        - BasicAuth: []
+      tags:
+        - OIDC
+  /realms/{idpId}/protocol/openid-connect/token/introspect:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    post:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Validate a token
+      description: Validates an access or refresh token for the specified IdP and returns its active status and associated claims, such as the subject, scopes, and expiry time
+      operationId: validateToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenIntrospectionRequest'
+            examples:
+              TokenIntrospectionRequest:
+                $ref: '#/components/examples/TokenIntrospectionRequest'
+      responses:
+        '200':
+          description: Token introspection result retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenIntrospectionResponse'
+              examples:
+                activeToken:
+                  $ref: '#/components/examples/TokenIntrospectionActiveResponse'
+                inactiveToken:
+                  $ref: '#/components/examples/TokenIntrospectionInactiveResponse'
+        '400':
+          $ref: '#/components/responses/ErrorBadRequest'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+        '500':
+          $ref: '#/components/responses/ErrorInternalServerError'
+      security: []
+      tags:
+        - OIDC
+  /realms/{idpId}/protocol/openid-connect/userinfo:
+    parameters:
+      - $ref: '#/components/parameters/IdPID'
+    get:
+      x-okta-team-detail:
+        x-team-slack: amp-eng-resource-management-platform
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Retrieve the user information
+      description: Retrieves profile claims for the user that's associated with the provided access token. For example, the response includes the user's name, email address, and username. The claims that are returned depend on the scopes granted to the access token.
+      operationId: getUserInfo
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponse'
+              examples:
+                UserInfoResponse:
+                  $ref: '#/components/examples/UserInfoResponse'
+        '401':
+          $ref: '#/components/responses/ErrorUnauthorized'
+        '403':
+          $ref: '#/components/responses/ErrorForbidden'
+        '429':
+          $ref: '#/components/responses/ErrorTooManyRequests'
+      security:
+        - jwtBearerAuth:
+            - openid
+      tags:
+        - OIDC
 components:
   examples:
+    AccessPolicyApplicationListResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List of applications assigned to an access policy
+      value:
+        - id: 44931df2-4464-4c4d-97ce-5d0177b09f30
+          name: testapp
+          type: OAG_HEADER_BASED
+          description: Header site
+          label: Test App
+          idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
+          publicDomain: oagapp.domain.tld
+          status: CREATED
+          postLoginUrl: https://oagapp.domain.tld/landing
+          groups:
+            - 00ghsrbfqxmSf7Ekw1d7
+          certificateId: 15cc2bc6-b280-4d94-a0bf-c91751b40d9c
+          loadBalanced: true
+          usePublicDomainAsHostHeader: false
+          hostHeaderValue: app.domain.tld
+          contentRewrite: false
+          proxyRedirect: false
+          maxFileSize: 4000
+          proxyReadTimeout: 30
+          localNetworkAccessRestriction: false
+    AccessPolicyCreateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create access policy request
+      value:
+        name: Admin Policy
+        description: Access policy for administrators
+        rules:
+          - name: password
+            conditions:
+              groups:
+                include:
+                  - name: Admins
+            actions:
+              access: allow
+              chains:
+                - authenticationMethods:
+                    - - key: password
+    AccessPolicyGetResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Get access policy response
+      value:
+        id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        name: Access Policy
+        description: Access policy for offline mode
+        isDefault: true
+        rules:
+          - name: password
+            conditions:
+              groups:
+                include:
+                  - name: Admins
+            actions:
+              access: allow
+              chains:
+                - authenticationMethods:
+                    - - key: password
+    AccessPolicyListResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List access policies response
+      value:
+        - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          name: Admin Policy
+          description: Access policy for administrators
+          isDefault: false
+          rules:
+            - name: password
+              conditions:
+                groups:
+                  include:
+                    - name: Admins
+              actions:
+                access: allow
+                chains:
+                  - authenticationMethods:
+                      - - key: password
+        - id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+          name: Engineering Policy
+          description: Access policy for engineers
+          isDefault: false
+          rules:
+            - name: password and smartcard
+              conditions:
+                groups:
+                  include:
+                    - name: Engineers
+              actions:
+                access: allow
+                chains:
+                  - authenticationMethods:
+                      - - key: password
+                      - - key: smart_card
     ApplicationCreateRequest:
       summary: Create a header based application request
       value:
@@ -2343,6 +3893,10 @@ components:
         proxyReadTimeout: 30
         localNetworkAccessRestriction: false
         debug: true
+    ApplicationOfflineModeAccessPolicyAssignment:
+      summary: Assign an access policy to an app
+      value:
+        accessPolicyId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
     ApplicationOfflineModeGroupPolicy:
       summary: Application offline mode group policy
       value:
@@ -2526,6 +4080,14 @@ components:
                 source: IDP
                 value: firstName
                 type: HEADER
+    ApplicationSecretResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Application client secret response
+      value:
+        clientSecret: <<client-secret>>
     AttributeCreateRequest1:
       summary: Attribute 1
       value:
@@ -2540,6 +4102,12 @@ components:
         source: IDP
         value: lastName
         type: HEADER
+    AttributeCreateRequestSamlOidc:
+      summary: Attribute for a SAML or OIDC application (type omitted)
+      value:
+        name: sampleattribute
+        source: IDP
+        value: firstName
     AttributeResponse1:
       summary: Attribute 1
       value:
@@ -2582,6 +4150,14 @@ components:
           source: IDP
           value: firstName
           type: HEADER
+    AttributeResponseSamlOidc:
+      summary: Attribute for a SAML or OIDC application (type omitted)
+      value:
+        id: 9c471061-8981-43c5-a7bc-deef2150a5a2
+        active: true
+        name: sampleattribute
+        source: IDP
+        value: firstName
     AttributeUpdateRequest:
       summary: Attribute
       value:
@@ -2589,6 +4165,12 @@ components:
         source: IDP
         value: firstName
         type: HEADER
+    AttributeUpdateRequestSamlOidc:
+      summary: Attribute for a SAML or OIDC application (type omitted)
+      value:
+        name: sampleattribute
+        source: IDP
+        value: firstName
     Auth0IdPCreateRequest:
       summary: Create Auth0 IdP request
       value:
@@ -2614,8 +4196,11 @@ components:
     Auth0IdPUpdateRequest:
       summary: Update Auth0 IdP request
       value:
+        type: IDP_AUTH0
         name: My Auth0 IdP
         description: Auth0 identity provider
+        domain: auth0.company.com
+        tenant: company.us.auth0.com
         clientId: <client-id>
         clientSecret: <client-secret>
     AuthRequest:
@@ -2632,6 +4217,24 @@ components:
         token_type: Bearer
         expires_in: 300
         scope: okta.oag.idp.read okta.oag.app.read
+    AuthenticationServiceCertificateListResponse:
+      summary: List authentication service certificates response
+      value:
+        - type: mtls
+          hostname: mtls.offline-idp-service.domain.tld
+          certificateId: 15cc2bc6-b280-4d94-a0bf-c91751b40d9c
+    AuthenticationServiceCertificateMtlsRequest:
+      summary: Update mTLS certificate request
+      value:
+        type: mtls
+        hostname: mtls.offline-idp-service.domain.tld
+        certificateId: 15cc2bc6-b280-4d94-a0bf-c91751b40d9c
+    AuthenticationServiceCertificateMtlsResponse:
+      summary: Update mTLS certificate response
+      value:
+        type: mtls
+        hostname: mtls.offline-idp-service.domain.tld
+        certificateId: 15cc2bc6-b280-4d94-a0bf-c91751b40d9c
     AuthenticationServiceEnableRequest:
       summary: Enable authentication service request
       value:
@@ -2663,6 +4266,23 @@ components:
       value:
         status: HEALTHY
         lastChecked: '2026-10-01T12:34:56Z'
+    AuthorizeRequestBody:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Authorize request body parameters
+      value:
+        client_id: my-client-id
+        response_type: code
+        redirect_uri: https://myapp.example.com/callback
+        scope: openid profile email
+        state: abc123
+        nonce: xyz789
+        code_challenge: E9Mrozoa2owUednMR...
+        code_challenge_method: S256
+        response_mode: query
+        prompt: login
     Behavior:
       summary: Update behavior configuration
       value:
@@ -2800,6 +4420,8 @@ components:
     HeaderBasedApplicationUpdateRequest:
       summary: Update a header based application request
       value:
+        type: OAG_HEADER_BASED
+        idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
         label: Test App
         description: Header site
         publicDomain: oagapp.domain.tld
@@ -2813,6 +4435,7 @@ components:
         proxyRedirect: false
         maxFileSize: 4000
         proxyReadTimeout: 30
+        debug: true
     HealthCheck:
       summary: Update health check configuration
       value:
@@ -3062,6 +4685,413 @@ components:
           memberAttribute: uniqueMember
           memberUserAttribute: uid
           rdnLdapAttribute: uid
+    JSONWebKeySetResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: JSON Web Key Set response
+      value:
+        keys:
+          - kty: RSA
+            use: sig
+            kid: key-1
+            'n': xnK82U4TZpFV...
+            e: AQAB
+          - kty: RSA
+            use: sig
+            kid: key-2
+            'n': ypL93V5UaxMT...
+            e: AQAB
+    OfflineModeAuthenticatorList:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List of offline mode authenticators with multiple entries
+      value:
+        - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          key: password
+          status: ACTIVE
+          name: Password
+          configuration:
+            provider: 3f63f461-c7fc-483b-b2ae-961633d251ac
+        - id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+          key: smart_card
+          status: ACTIVE
+          name: Corporate PIV Card Authenticator
+          configuration:
+            certificates:
+              - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+              - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+            offlineCrlFailover:
+              urls:
+                - http://crl.company.com/piv-ca.crl
+            userMatching:
+              allowMultipleUserMatching: false
+              matchType: EMAIL
+              matchAttribute: ''
+              identitySource: SUBJECTALTNAME_EMAIL
+        - id: c3d4e5f6-a7b8-9012-cdef-123456789012
+          key: smart_card
+          status: ACTIVE
+          name: Government CAC Authenticator
+          configuration:
+            certificates:
+              - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAab...
+            offlineCrlFailover:
+              urls:
+                - http://crl.government.gov/cac
+            userMatching:
+              allowMultipleUserMatching: true
+              matchType: CUSTOM
+              matchAttribute: employeeNumber
+              identitySource: SUBJECTDN_CN
+        - id: d4e5f6a7-b8c9-0123-defa-234567890123
+          key: smart_card
+          status: INACTIVE
+          name: Legacy Smart Card Authenticator
+          configuration:
+            certificates:
+              - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAcd...
+              - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAef...
+              - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAbc...
+            offlineCrlFailover:
+              urls:
+                - http://crl.legacy.internal/ca.crl
+            userMatching:
+              allowMultipleUserMatching: false
+              matchType: USERNAME
+              matchAttribute: ''
+              identitySource: SUBJECTALTNAME_OTHERNAME
+    OfflineModeAuthenticatorPasswordGetResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Password offline mode authenticator response
+      value:
+        id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        key: password
+        status: ACTIVE
+        name: Password
+        configuration:
+          provider: 3f63f461-c7fc-483b-b2ae-961633d251ac
+    OfflineModeAuthenticatorSmartCardActivateResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Activate Smart Card offline mode authenticator response
+      value:
+        id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+        key: smart_card
+        status: ACTIVE
+        name: Corporate PIV Card Authenticator
+        configuration:
+          certificates:
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+          offlineCrlFailover:
+            urls:
+              - http://crl.company.com/piv-ca.crl
+          userMatching:
+            allowMultipleUserMatching: false
+            matchType: EMAIL
+            matchAttribute: ''
+            identitySource: SUBJECTALTNAME_EMAIL
+    OfflineModeAuthenticatorSmartCardCreateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create Smart Card offline mode authenticator request
+      value:
+        key: smart_card
+        name: Corporate PIV Card Authenticator
+        configuration:
+          certificates:
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+          offlineCrlFailover:
+            urls:
+              - http://crl.company.com/piv-ca.crl
+          userMatching:
+            allowMultipleUserMatching: false
+            matchType: CUSTOM
+            matchAttribute: employeeId
+            identitySource: SUBJECTDN_CN
+    OfflineModeAuthenticatorSmartCardCreateResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create Smart Card offline mode authenticator response
+      value:
+        id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+        key: smart_card
+        status: INACTIVE
+        name: Corporate PIV Card Authenticator
+        configuration:
+          certificates:
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAbc...
+          offlineCrlFailover:
+            urls:
+              - http://crl.company.com/piv-ca.crl
+          userMatching:
+            allowMultipleUserMatching: false
+            matchType: CUSTOM
+            matchAttribute: employeeId
+            identitySource: SUBJECTDN_CN
+    OfflineModeAuthenticatorSmartCardDeactivateResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Deactivate Smart Card offline mode authenticator response
+      value:
+        id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+        key: smart_card
+        status: INACTIVE
+        name: Corporate PIV Card Authenticator
+        configuration:
+          certificates:
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAbc...
+          offlineCrlFailover:
+            urls:
+              - http://crl.company.com/piv-ca.crl
+          userMatching:
+            allowMultipleUserMatching: false
+            matchType: EMAIL
+            matchAttribute: ''
+            identitySource: SUBJECTALTNAME_EMAIL
+    OfflineModeAuthenticatorSmartCardGetResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Smart Card offline mode authenticator response
+      value:
+        id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+        key: smart_card
+        status: ACTIVE
+        name: Corporate PIV Card Authenticator
+        configuration:
+          certificates:
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+          offlineCrlFailover:
+            urls:
+              - http://crl.company.com/piv-ca.crl
+          userMatching:
+            allowMultipleUserMatching: false
+            matchType: EMAIL
+            matchAttribute: ''
+            identitySource: SUBJECTALTNAME_EMAIL
+    OfflineModeAuthenticatorSmartCardUpdateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Update Smart Card offline mode authenticator request
+      value:
+        key: smart_card
+        name: Government Agency PIV Authenticator
+        configuration:
+          certificates:
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAbc...
+          offlineCrlFailover:
+            urls:
+              - http://crl.agency.gov/piv
+          userMatching:
+            allowMultipleUserMatching: true
+            matchType: CUSTOM
+            matchAttribute: certificateIssuer
+            identitySource: ISSUERDN
+    OfflineModeAuthenticatorSmartCardUpdateResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Update Smart Card offline mode authenticator response
+      value:
+        id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+        key: smart_card
+        status: ACTIVE
+        name: Government Agency PIV Authenticator
+        configuration:
+          certificates:
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA75...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9x...
+            - MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAbc...
+          offlineCrlFailover:
+            urls:
+              - http://crl.agency.gov/piv
+          userMatching:
+            allowMultipleUserMatching: true
+            matchType: CUSTOM
+            matchAttribute: certificateIssuer
+            identitySource: ISSUERDN
+    OidcApplicationCreateRequestAuthCodePKCE:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create an OIDC application with Auth Code + PKCE flow
+      value:
+        type: OAG_OIDC
+        label: Test OIDC App - Auth Code
+        description: OIDC application using authorization code flow with PKCE
+        idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
+        groups:
+          - 00ghsrbfqxmSf7Ekw1d7
+        oidc:
+          applicationType: web
+          redirectUris:
+            - https://example.com/callback
+          responseTypes:
+            - code
+          grantTypes:
+            - authorization_code
+            - refresh_token
+          tokenEndpointAuthMethod: client_secret
+          pkceRequired: true
+          allowedScopes:
+            - openid
+            - profile
+            - email
+          accessTokenLifetime: 3600
+          refreshTokenLifetime: 86400
+    OidcApplicationCreateRequestClientCredentials:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Create an OIDC application with Client Credentials flow
+      value:
+        type: OAG_OIDC
+        label: Test OIDC App - Client Credentials
+        description: OIDC application using client credentials flow
+        idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
+        groups:
+          - 00ghsrbfqxmSf7Ekw1d7
+        oidc:
+          applicationType: web
+          responseTypes:
+            - token
+          grantTypes:
+            - client_credentials
+          tokenEndpointAuthMethod: client_secret
+          clientCredentialsEnabled: true
+          allowedScopes:
+            - openid
+          accessTokenLifetime: 3600
+    OidcApplicationResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: OIDC application response without embedded details
+      value:
+        id: app-oidc-123
+        type: OAG_OIDC
+        label: Test OIDC App
+        status: ACTIVE
+        idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
+        groups:
+          - 00ghsrbfqxmSf7Ekw1d7
+        oidc:
+          applicationType: web
+          redirectUris:
+            - https://example.com/callback
+          responseTypes:
+            - code
+          grantTypes:
+            - authorization_code
+            - refresh_token
+          tokenEndpointAuthMethod: client_secret
+          pkceRequired: true
+          allowedScopes:
+            - openid
+            - profile
+            - email
+          accessTokenLifetime: 3600
+          refreshTokenLifetime: 86400
+          clientCredentialsEnabled: false
+    OidcApplicationResponseWithEmbedded:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: OIDC application response with embedded details
+      value:
+        id: app-oidc-123
+        type: OAG_OIDC
+        label: Test OIDC App
+        status: ACTIVE
+        idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
+        groups:
+          - 00ghsrbfqxmSf7Ekw1d7
+        oidc:
+          applicationType: web
+          redirectUris:
+            - https://example.com/callback
+          responseTypes:
+            - code
+          grantTypes:
+            - authorization_code
+            - refresh_token
+          tokenEndpointAuthMethod: client_secret
+          pkceRequired: true
+          allowedScopes:
+            - openid
+            - profile
+            - email
+          accessTokenLifetime: 3600
+          refreshTokenLifetime: 86400
+          clientCredentialsEnabled: false
+        _embedded:
+          behavior:
+            singleLogout: false
+            universalLogout: false
+            globalTokenRevocation: false
+    OidcApplicationUpdateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Update an OIDC application
+      value:
+        type: OAG_OIDC
+        idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
+        label: Test OIDC App - Updated
+        description: Updated description for OIDC application
+        oidc:
+          applicationType: web
+          redirectUris:
+            - https://example.com/callback
+            - https://example.com/logout
+          responseTypes:
+            - code
+            - id_token
+          grantTypes:
+            - authorization_code
+            - refresh_token
+          tokenEndpointAuthMethod: client_secret
+          pkceRequired: true
+          allowedScopes:
+            - openid
+            - profile
+            - email
+          accessTokenLifetime: 3600
+          refreshTokenLifetime: 86400
+          clientCredentialsEnabled: false
     OktaIdPCreateRequest:
       summary: Create Okta IdP request
       value:
@@ -3088,9 +5118,38 @@ components:
     OktaIdPUpdateRequest:
       summary: Update Okta IdP request
       value:
+        type: IDP_OKTA
         name: My Okta IdP
         description: Okta identity provider
+        domain: idp.company.com
         apiToken: <api-token>
+    OpenIDConnectDiscoveryDocument:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: OpenID Connect discovery document
+      value:
+        issuer: https://oag.example.com/realms/idp1
+        authorization_endpoint: https://oag.example.com/realms/idp1/protocol/openid-connect/auth
+        token_endpoint: https://oag.example.com/realms/idp1/protocol/openid-connect/token
+        userinfo_endpoint: https://oag.example.com/realms/idp1/protocol/openid-connect/userinfo
+        jwks_uri: https://oag.example.com/realms/idp1/protocol/openid-connect/certs
+        revocation_endpoint: https://oag.example.com/realms/idp1/protocol/openid-connect/revoke
+        introspection_endpoint: https://oag.example.com/realms/idp1/protocol/openid-connect/token/introspect
+        response_types_supported:
+          - code
+          - token
+          - id_token
+        grant_types_supported:
+          - authorization_code
+          - client_credentials
+        scopes_supported:
+          - openid
+          - profile
+          - email
+        token_endpoint_auth_methods_supported:
+          - client_secret
     PolicyCreateRequest1:
       summary: Policy 1
       value:
@@ -3235,7 +5294,7 @@ components:
     ProtectedResourceUpdateRequest:
       summary: Protected resource
       value:
-        - hostname: http://app1.internal.domain.tld
+        hostname: http://app1.internal.domain.tld
     SamlApplicationCreateRequest:
       x-okta-lifecycle:
         lifecycle: EA
@@ -3342,6 +5401,8 @@ components:
         SKUs: []
       summary: Update a SAML application request
       value:
+        type: OAG_SAML
+        idpId: 3f63f461-c7fc-483b-b2ae-961633d251ac
         label: SAML Test App
         description: SAML based application
         groups:
@@ -3371,7 +5432,106 @@ components:
         maxSession: true
         maxSessionTimeout: 28800
         browserSessionExpiration: false
+    TokenIntrospectionActiveResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Token introspection response for an active token
+      value:
+        active: true
+        scope: openid profile email
+        client_id: client-id
+        username: user-123
+        token_type: Bearer
+        exp: 1722592345
+        iat: 1722588745
+        sub: user-123
+        iss: https://oag.example.com/realms/idp1
+    TokenIntrospectionInactiveResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Token introspection response for an inactive token
+      value:
+        active: false
+    TokenIntrospectionRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Token introspection request
+      value:
+        token: <<token>>
+        token_type_hint: access_token
+    TokenRequestAuthorizationCode:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Token request using authorization code grant
+      value:
+        grant_type: authorization_code
+        code: <<authorization_code>>
+        redirect_uri: https://myapp.example.com/callback
+        client_id: client-id
+        code_verifier: E9Mrozoa2owUednMR...
+    TokenRequestClientCredentials:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Token request using client credentials grant
+      value:
+        grant_type: client_credentials
+        scope: okta.oag.app.read okta.oag.idp.read
+    TokenRevocationRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Token revocation request
+      value:
+        token: <<token>>
+        token_type_hint: access_token
+    TokenSuccessResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Token success response
+      value:
+        access_token: <<access_token>>
+        token_type: Bearer
+        expires_in: <<expires_in>>
+        scope: openid profile email
+        refresh_token: <<refresh_token>>
+        id_token: <<id_token>>
+    UserInfoResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: User info response
+      value:
+        sub: user-123
+        name: John Doe
+        email: john.doe@example.com
+        email_verified: true
+        given_name: John
+        family_name: Doe
+        picture: https://example.com/photos/john.jpg
+        updated_at: 1311280970
   parameters:
+    AccessPolicyID:
+      in: path
+      name: accessPolicyId
+      required: true
+      description: Identifier of the access policy
+      schema:
+        type: string
+        format: uuid
     ApplicationID:
       name: applicationId
       in: path
@@ -3388,6 +5548,103 @@ components:
       schema:
         type: string
         format: uuid
+    AuthenticationServiceCertificateType:
+      in: path
+      name: type
+      required: true
+      description: The virtual host type for the authentication service certificate
+      schema:
+        $ref: '#/components/schemas/AuthenticationServiceCertificateTypeEnum'
+    AuthenticatorID:
+      in: path
+      name: authenticatorId
+      required: true
+      description: Identifier of the offline mode authenticator
+      schema:
+        type: string
+        format: uuid
+    AuthorizeClientId:
+      name: client_id
+      in: query
+      required: true
+      description: The client ID of the OAuth 2.0 client
+      schema:
+        type: string
+    AuthorizeCodeChallenge:
+      name: code_challenge
+      in: query
+      description: The PKCE code challenge derived from the code verifier. It's required when using the authorization code flow with PKCE.
+      schema:
+        type: string
+    AuthorizeCodeChallengeMethod:
+      name: code_challenge_method
+      in: query
+      description: The method that's used to derive the code challenge
+      schema:
+        type: string
+        enum:
+          - S256
+    AuthorizeNonce:
+      name: nonce
+      in: query
+      description: A random string included in the authorization request and embedded in the ID token. It's used to associate the token with a client session.
+      schema:
+        type: string
+    AuthorizePrompt:
+      name: prompt
+      in: query
+      description: Controls whether the authorization server prompts the user during the authorization request
+      schema:
+        type: string
+        enum:
+          - login
+          - consent
+          - none
+      x-enumDescriptions:
+        login: Forces the user to authenticate, even if the user already has an active session
+        consent: Forces the user to grant consent, even if consent was previously granted
+        none: Returns an error if the user is not already authenticated or consent has not been granted
+    AuthorizeRedirectUri:
+      name: redirect_uri
+      in: query
+      required: true
+      description: The redirect URI where the authorization code is sent
+      schema:
+        type: string
+    AuthorizeResponseMode:
+      name: response_mode
+      in: query
+      description: The mechanism that's used to return authorization response parameters
+      schema:
+        type: string
+        enum:
+          - query
+          - fragment
+          - form_post
+    AuthorizeResponseType:
+      name: response_type
+      in: query
+      required: true
+      description: The response type requested by the client
+      schema:
+        type: string
+    AuthorizeScope:
+      name: scope
+      in: query
+      description: |-
+        A space-separated list of scope values. Supported scopes:
+        - `openid`: Required for OIDC authentication. Grants access to the `sub` claim in the ID token.
+        - `profile`: Grants access to the user's profile information, including `name`, `given_name`, `family_name`, `preferred_username`, `picture`, and `updated_at`.
+        - `email`: Grants access to the user's `email` and `email_verified` claims.
+        - `offline_access`: Grants a refresh token that allows the client to obtain new access tokens without user interaction. Requires the `refresh_token` grant type to be enabled.
+      schema:
+        type: string
+    AuthorizeState:
+      name: state
+      in: query
+      description: An opaque value that's used to maintain state between the authorization request and the redirect response
+      schema:
+        type: string
     CertificateID:
       in: path
       name: certificateId
@@ -3430,6 +5687,13 @@ components:
       schema:
         type: string
         format: uuid
+    KID:
+      name: kid
+      in: path
+      required: true
+      description: Identifier of the key
+      schema:
+        type: string
     PolicyID:
       in: path
       name: policyId
@@ -3446,6 +5710,20 @@ components:
       schema:
         type: string
         format: uuid
+    Realm:
+      name: realm
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The realm identifier
+    ScopeName:
+      name: scopeName
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The scope name to retrieve or update or delete
   responses:
     ErrorBadRequest:
       description: Bad Request
@@ -3453,6 +5731,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/BadRequest'
+    ErrorConflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Conflict'
     ErrorUnauthorized:
       description: Unauthorized
       content:
@@ -3496,6 +5780,132 @@ components:
           schema:
             $ref: '#/components/schemas/ServiceUnavailable'
   schemas:
+    AccessPolicy:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the access policy
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique identifier of the access policy
+        isDefault:
+          type: boolean
+          readOnly: true
+          description: Indicates whether the access policy is the default policy for the offline mode IdP. The default policy is created automatically by Access Gateway.
+        name:
+          type: string
+          description: Name of the access policy
+        rules:
+          type: array
+          description: List of rules of the access policy that are evaluated in priority order
+          items:
+            $ref: '#/components/schemas/AccessPolicyRule'
+    AccessPolicyActions:
+      description: Actions that apply when a policy rule's conditions are met
+      type: object
+      properties:
+        access:
+          type: string
+          enum:
+            - allow
+          description: The access decision that applies when the rule conditions are met
+        chains:
+          type: array
+          description: An ordered list of authenticators that users must sign in with
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/AccessPolicyChain'
+      required:
+        - access
+        - chains
+    AccessPolicyAuthMethod:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+            - smart_card
+            - password
+          description: The authenticator key. If you include `smart_card`, then users must sign in with the configured Smart Card authenticator.
+      required:
+        - key
+    AccessPolicyChain:
+      type: object
+      properties:
+        authenticationMethods:
+          type: array
+          minItems: 1
+          description: |-
+            Ordered steps in the authentication chain. Each array item can contain a list of authentication methods, where any one method in the step satisfies the authentication requirement.
+
+            For example, if `password` and `smart_card` are both listed in the same step, then users can sign in with either authenticator to satisfy the authentication requirement.
+          items:
+            type: array
+            minItems: 1
+            items:
+              $ref: '#/components/schemas/AccessPolicyAuthMethod'
+      required:
+        - authenticationMethods
+    AccessPolicyConditions:
+      description: Conditions that determine whether a policy rule applies to a user
+      type: object
+      properties:
+        groups:
+          $ref: '#/components/schemas/AccessPolicyGroupCondition'
+      required:
+        - groups
+    AccessPolicyCreateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/AccessPolicy'
+        - type: object
+          required:
+            - name
+            - description
+            - rules
+    AccessPolicyGroup:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the group
+      required:
+        - name
+    AccessPolicyGroupCondition:
+      type: object
+      properties:
+        include:
+          type: array
+          description: List of groups that the access policy applies to
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/AccessPolicyGroup'
+      required:
+        - include
+    AccessPolicyRule:
+      type: object
+      properties:
+        actions:
+          $ref: '#/components/schemas/AccessPolicyActions'
+        conditions:
+          $ref: '#/components/schemas/AccessPolicyConditions'
+        name:
+          type: string
+          description: Name of the rule
+      required:
+        - name
+        - conditions
+        - actions
     ApplicationCreateRequest:
       type: object
       discriminator:
@@ -3520,6 +5930,7 @@ components:
           ORACLE_WEBCENTER: '#/components/schemas/HeaderBasedApplicationCreateRequest'
           ORACLE_WEBLOGIC: '#/components/schemas/HeaderBasedApplicationCreateRequest'
           OAG_SAML: '#/components/schemas/SamlApplicationCreateRequest'
+          OAG_OIDC: '#/components/schemas/OidcApplicationCreateRequest'
     ApplicationCreateResponse:
       type: object
       discriminator:
@@ -3544,6 +5955,20 @@ components:
           ORACLE_WEBCENTER: '#/components/schemas/HeaderBasedApplicationResponseWithEmbedded'
           ORACLE_WEBLOGIC: '#/components/schemas/HeaderBasedApplicationResponseWithEmbedded'
           OAG_SAML: '#/components/schemas/SamlApplicationResponseWithEmbedded'
+          OAG_OIDC: '#/components/schemas/OidcApplicationResponseWithEmbedded'
+    ApplicationOfflineModeAccessPolicyAssignment:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        accessPolicyId:
+          type: string
+          format: uuid
+          description: Identifier of the access policy that's assigned to the application
+      required:
+        - accessPolicyId
     ApplicationOfflineModeGroupPolicy:
       type: object
       properties:
@@ -3601,11 +6026,6 @@ components:
           type: string
           description: Application name
           readOnly: true
-        postLoginUrl:
-          type: string
-          format: uri
-          pattern: ^https?://[a-zA-Z0-9.-]+(:[0-9]{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$
-          description: The default URL that end users are directed to after they sign in
         status:
           type: string
           description: Application status
@@ -3639,6 +6059,7 @@ components:
           ORACLE_WEBCENTER: '#/components/schemas/HeaderBasedApplicationRequest'
           ORACLE_WEBLOGIC: '#/components/schemas/HeaderBasedApplicationRequest'
           OAG_SAML: '#/components/schemas/SamlApplicationRequest'
+          OAG_OIDC: '#/components/schemas/OidcApplicationRequest'
     ApplicationResponse:
       type: object
       discriminator:
@@ -3663,8 +6084,22 @@ components:
           ORACLE_WEBCENTER: '#/components/schemas/HeaderBasedApplicationRequest'
           ORACLE_WEBLOGIC: '#/components/schemas/HeaderBasedApplicationRequest'
           OAG_SAML: '#/components/schemas/SamlApplicationRequest'
+          OAG_OIDC: '#/components/schemas/OidcApplicationRequest'
+    ApplicationSecretResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Response containing the client secret for an OIDC application
+      type: object
+      properties:
+        clientSecret:
+          type: string
+          description: The client secret for the OIDC application.
+      required:
+        - clientSecret
     ApplicationType:
-      description: Application type
+      description: Application type. This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the application's type. A different value returns an HTTP `400` error.
       type: string
       enum:
         - OAG_ADMINUI
@@ -3686,6 +6121,7 @@ components:
         - ORACLE_WEBCENTER
         - ORACLE_WEBLOGIC
         - OAG_SAML
+        - OAG_OIDC
       x-enumDescriptions:
         OAG_HEADER_BASED: Applications that use header-based authentication. Access Gateway passes user attributes in HTTP headers to the application, which uses these attributes to identify the user and manage sessions.
         OAG_ADMINUI: The Access Gateway Admin UI, which is the interface that admins use to manage Access Gateway.
@@ -3706,6 +6142,7 @@ components:
         ORACLE_WEBCENTER: Oracle WebCenter applications.
         ORACLE_WEBLOGIC: Oracle WebLogic Server applications.
         OAG_SAML: <x-lifecycle class="ea"></x-lifecycle>SAML applications that use Security Assertion Markup Language (SAML) 2.0 for single sign-on (SSO) authentication.
+        OAG_OIDC: <x-lifecycle class="ea"></x-lifecycle>OIDC applications that use OpenID Connect for single sign-on (SSO) authentication.
     ApplicationUpdateRequest:
       type: object
       properties:
@@ -3717,16 +6154,19 @@ components:
           items:
             type: string
           description: Array of group IDs from your Okta org that are granted access to the application
+        idpId:
+          type: string
+          format: uuid
+          description: IdP identifier. This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the application's existing IdP. A different value returns an HTTP `400` error.
         label:
           type: string
           description: The name of the application, and also the tile name in your Okta tenant. The label must be unique.
-        postLoginUrl:
-          type: string
-          format: uri
-          pattern: ^https?://[a-zA-Z0-9.-]+(:[0-9]{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$
-          description: The default URL that end users are directed to after they sign in
         type:
-          $ref: '#/components/schemas/ApplicationType'
+          allOf:
+            - $ref: '#/components/schemas/ApplicationType'
+            - type: string
+      required:
+        - label
       discriminator:
         propertyName: type
         mapping:
@@ -3749,6 +6189,7 @@ components:
           ORACLE_WEBCENTER: '#/components/schemas/HeaderBasedApplicationUpdateRequest'
           ORACLE_WEBLOGIC: '#/components/schemas/HeaderBasedApplicationUpdateRequest'
           OAG_SAML: '#/components/schemas/SamlApplicationUpdateRequest'
+          OAG_OIDC: '#/components/schemas/OidcApplicationUpdateRequest'
     Attribute:
       type: object
       properties:
@@ -3815,7 +6256,10 @@ components:
           enum:
             - HEADER
             - COOKIE
-          description: The method that's used to pass attributes. You can pass attributes in a header or in a cookie.
+          description: |-
+            The method that's used to pass attributes. You can pass attributes in a header or in a cookie.
+
+            This property is required for all application types except SAML and OIDC, which ignore this property and don't use it.
         value:
           type: string
           description: The dynamic value of the attribute that's based on the `source`
@@ -3827,7 +6271,14 @@ components:
             - name
             - source
             - value
-            - type
+    AttributeUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/Attribute'
+        - type: object
+          required:
+            - name
+            - source
+            - value
     Auth0IdPRequest:
       allOf:
         - $ref: '#/components/schemas/IDPRequest'
@@ -3853,6 +6304,32 @@ components:
             - type
             - domain
             - tenant
+            - clientId
+            - clientSecret
+      type: object
+    Auth0IdPUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IDPUpdateRequest'
+        - type: object
+          properties:
+            clientId:
+              type: string
+              description: The client ID for the Auth0 IdP
+            clientSecret:
+              type: string
+              description: The client secret for the Auth0 IdP
+            domain:
+              type: string
+              description: Domain configured for Auth0 tenant. This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the value that was used when you originally created the IdP. A different value returns an HTTP `400` error.
+            tenant:
+              type: string
+              description: IdP tenant name. This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the value that was used when you originally created the IdP. A different value returns an HTTP `400` error.
+            type:
+              type: string
+              description: IdP type. This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the value that was used when you originally created the IdP. A different value returns an HTTP `400` error.
+              enum:
+                - IDP_AUTH0
+          required:
             - clientId
             - clientSecret
       type: object
@@ -3882,6 +6359,8 @@ components:
             - okta.oag.idp.manage
             - okta.oag.app.read
             - okta.oag.app.manage
+            - okta.oag.app.secrets.read
+            - okta.oag.app.secrets.manage
             - okta.oag.cert.read
             - okta.oag.authenticationService.manage
             - okta.oag.authenticationService.read
@@ -3902,6 +6381,8 @@ components:
             - okta.oag.idp.manage
             - okta.oag.app.read
             - okta.oag.app.manage
+            - okta.oag.app.secrets.read
+            - okta.oag.app.secrets.manage
             - okta.oag.cert.read
             - okta.oag.authenticationService.manage
             - okta.oag.authenticationService.read
@@ -3911,6 +6392,69 @@ components:
             The token type
 
             The value is generally `Bearer` except for a few instances of token exchange.
+    AuthenticationServiceCertificate:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/AuthenticationServiceCertificateTypeEnum'
+      required:
+        - type
+      discriminator:
+        propertyName: type
+        mapping:
+          mtls: '#/components/schemas/AuthenticationServiceCertificateMtls'
+    AuthenticationServiceCertificateMtls:
+      allOf:
+        - $ref: '#/components/schemas/AuthenticationServiceCertificate'
+        - type: object
+          properties:
+            certificateId:
+              $ref: '#/components/schemas/AuthenticationServiceCertificateMtlsCertificateId'
+            hostname:
+              $ref: '#/components/schemas/AuthenticationServiceCertificateMtlsHostname'
+            type:
+              $ref: '#/components/schemas/AuthenticationServiceCertificateTypeEnum'
+          required:
+            - hostname
+            - certificateId
+    AuthenticationServiceCertificateMtlsCertificateId:
+      format: uuid
+      description: The ID of the certificate that's used for the mTLS virtual host
+      type: string
+    AuthenticationServiceCertificateMtlsHostname:
+      format: hostname
+      description: Hostname for the mTLS endpoint
+      type: string
+    AuthenticationServiceCertificateMtlsRequest:
+      allOf:
+        - $ref: '#/components/schemas/AuthenticationServiceCertificateRequest'
+        - type: object
+          properties:
+            certificateId:
+              $ref: '#/components/schemas/AuthenticationServiceCertificateMtlsCertificateId'
+            hostname:
+              $ref: '#/components/schemas/AuthenticationServiceCertificateMtlsHostname'
+            type:
+              $ref: '#/components/schemas/AuthenticationServiceCertificateTypeEnum'
+          required:
+            - hostname
+            - certificateId
+    AuthenticationServiceCertificateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/AuthenticationServiceCertificateTypeEnum'
+      required:
+        - type
+      discriminator:
+        propertyName: type
+        mapping:
+          mtls: '#/components/schemas/AuthenticationServiceCertificateMtlsRequest'
+    AuthenticationServiceCertificateTypeEnum:
+      description: Certificate type
+      type: string
+      enum:
+        - mtls
     AuthenticationServiceHealthCheck:
       type: object
       properties:
@@ -3977,6 +6521,66 @@ components:
           items:
             type: string
           description: A list of hostnames of nodes in the Access Gateway cluster where the authentication service runs
+    AuthorizeRequestParameters:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        client_id:
+          type: string
+          description: The client ID of the OAuth 2.0 client
+        code_challenge:
+          type: string
+          description: The PKCE code challenge derived from the code verifier. It's required when using the authorization code flow with PKCE.
+        code_challenge_method:
+          type: string
+          enum:
+            - S256
+          description: The method used to derive the code challenge
+        nonce:
+          type: string
+          description: A random string included in the authorization request and embedded in the ID token. It's used to associate the token with a client session.
+        prompt:
+          type: string
+          enum:
+            - login
+            - consent
+            - none
+          description: Controls whether the authorization server prompts the user during the authorization request
+          x-enumDescriptions:
+            login: Forces the user to authenticate, even if the user already has an active session
+            consent: Forces the user to grant consent, even if consent was previously granted
+            none: Returns an error if the user is not already authenticated or consent has not been granted
+        redirect_uri:
+          type: string
+          description: The redirect URI where the authorization code is sent
+        response_mode:
+          type: string
+          enum:
+            - query
+            - fragment
+            - form_post
+          description: The mechanism that's used to return authorization response parameters
+        response_type:
+          type: string
+          description: The response type requested by the client
+        scope:
+          type: string
+          description: |-
+            A space-separated list of scope values. Supported scopes:
+            - `openid`: Required for OIDC authentication. Grants access to the `sub` claim in the ID token.
+            - `profile`: Grants access to the user's profile information, including `name`, `given_name`, `family_name`, `preferred_username`, `picture`, and `updated_at`.
+            - `email`: Grants access to the user's `email` and `email_verified` claims.
+            - `offline_access`: Grants a refresh token that allows the client to obtain new access tokens without user interaction. Requires the `refresh_token` grant type to be enabled.
+        state:
+          type: string
+          description: An opaque value that's used to maintain state between the authorization request and the redirect response
+      required:
+        - client_id
+        - response_type
+        - redirect_uri
     BadGateway:
       allOf:
         - $ref: '#/components/schemas/Error'
@@ -4071,14 +6675,14 @@ components:
           type: string
           enum:
             - OAG_LOGOUT_PATH
-            - OAG_LOGOUT_PATH2
+            - OAG_LOGOUT_SHOW_LOGIN
             - APP_LOGOUT_PATH
             - NO_APP_LOGOUT_PATH
             - CUSTOM_URL
           description: Allows you to define logout endpoints that help terminate user sessions
           x-enumDescriptions:
             OAG_LOGOUT_PATH: This option signs the user out of Access Gateway and the application. Set the logout path with the `logoutPath` property.
-            OAG_LOGOUT_PATH2: This option signs the user out of Access Gateway and the application, with a different path
+            OAG_LOGOUT_SHOW_LOGIN: This option intercepts the logout path and displays the login page, signing the user out locally within Access Gateway without propagating the logout to the IdP. Set the logout path with the `logoutPath` property.
             APP_LOGOUT_PATH: This option signs the user out of the application only
             NO_APP_LOGOUT_PATH: This option does not sign the user out of the application
             CUSTOM_URL: This option redirects the user to a custom URL for logout. Set the custom URL with the `postLogoutUrl` property
@@ -4254,6 +6858,17 @@ components:
           type: integer
           description: The number of days until expiration
           readOnly: true
+    Conflict:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            errorCode:
+              type: string
+              example: CONFLICT
+            message:
+              type: string
+              example: The request could not be completed due to a conflict with the current state of the resource
     Error:
       type: object
       properties:
@@ -4278,6 +6893,12 @@ components:
             message:
               type: string
               example: Insufficient permission
+    HeaderAttribute:
+      allOf:
+        - $ref: '#/components/schemas/Attribute'
+        - type: object
+          required:
+            - type
     HeaderBasedApplicationCreateRequest:
       allOf:
         - $ref: '#/components/schemas/HeaderBasedApplicationRequest'
@@ -4298,7 +6919,6 @@ components:
         - idpId
         - certificateId
         - postLoginUrl
-        - loadBalanced
     HeaderBasedApplicationRequest:
       allOf:
         - $ref: '#/components/schemas/ApplicationRequest'
@@ -4330,6 +6950,11 @@ components:
               type: integer
               description: Maximum file upload size allowed by the application, in megabytes (MB). The default value is 1 (1 MB). Setting it to 0 (zero) allows for an unlimited file upload size.
               default: 1
+            postLoginUrl:
+              type: string
+              format: uri
+              pattern: ^https?://[a-zA-Z0-9.-]+(:[0-9]{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$
+              description: The default URL that end users are directed to after they sign in
             proxyReadTimeout:
               type: integer
               description: Defines a timeout in seconds for reading a response from the proxied server. The timeout counter takes effect only between two successive read operations, not for the transmission of the whole response. If the proxied server doesn't transmit anything within this time, the connection is closed.
@@ -4398,7 +7023,7 @@ components:
                 attributes:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Attribute'
+                    $ref: '#/components/schemas/HeaderAttribute'
                   description: Attributes configuration
                 policies:
                   type: array
@@ -4417,6 +7042,10 @@ components:
             contentRewrite:
               type: boolean
               description: Indicates whether Access Gateway attempts to rewrite redirects and URLs in an app's HTML content
+            debug:
+              type: boolean
+              description: Indicates whether debug logging is enabled for the application
+              default: false
             hostHeaderValue:
               type: string
               description: The value of the host header that's passed to the back-end protected web resources. It uses the fully qualified external name.
@@ -4432,6 +7061,11 @@ components:
               type: integer
               description: Maximum file upload size allowed by the application, in megabytes (MB). The default value is 1 (1 MB). Setting it to 0 (zero) allows for an unlimited file upload size.
               default: 1
+            postLoginUrl:
+              type: string
+              format: uri
+              pattern: ^https?://[a-zA-Z0-9.-]+(:[0-9]{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?$
+              description: The default URL that end users are directed to after they sign in
             proxyReadTimeout:
               type: integer
               description: Defines a timeout in seconds for reading a response from the proxied server. The timeout counter takes effect only between two successive read operations, not for the transmission of the whole response. If the proxied server doesn't transmit anything within this time, the connection is closed.
@@ -4471,9 +7105,13 @@ components:
               type: boolean
               description: |-
                 Indicates whether the application sends a host header to the protected resource.
-                * If it's set to `true`, Access Gateway uses the public domain name as the host header value.
-                * If it's set to `false`, Access Gateway uses the `hostHeaderValue` as the host header value if `hostHeaderValue` is specified.
-                * If it's set to `false` and `hostHeaderValue` isn't specified, Access Gateway uses the protected resource hostname as the host header value.
+                - If it's set to `true`, Access Gateway uses the public domain name as the host header value.
+                - If it's set to `false`, Access Gateway uses the `hostHeaderValue` as the host header value if `hostHeaderValue` is specified.
+                - If it's set to `false` and `hostHeaderValue` isn't specified, Access Gateway uses the protected resource hostname as the host header value.
+          required:
+            - publicDomain
+            - certificateId
+            - postLoginUrl
       type: object
     HealthCheck:
       description: |-
@@ -4561,11 +7199,17 @@ components:
         name:
           type: string
           description: Enter a name for the IdP
+        type:
+          type: string
+          description: IdP type. This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the value that was used when you originally created the IdP. A different value returns an HTTP `400` error.
+          enum:
+            - IDP_OKTA
+            - IDP_AUTH0
       discriminator:
         propertyName: type
         mapping:
-          IDP_OKTA: '#/components/schemas/OktaIdPRequest'
-          IDP_AUTH0: '#/components/schemas/Auth0IdPRequest'
+          IDP_OKTA: '#/components/schemas/OktaIdPUpdateRequest'
+          IDP_AUTH0: '#/components/schemas/Auth0IdPUpdateRequest'
     IdP:
       type: object
       properties:
@@ -4769,7 +7413,12 @@ components:
           maximum: 5
         recoveryCooldownInterval:
           type: integer
-          description: The interval, in seconds, before offline mode is exited and Access Gateway connects to the Okta IdP. The recovery cooldown is used after the `successThreshold` is met and the Okta IdP is marked healthy again. After the recovery cooldown interval, Access Gateway attempts to connect to the Okta IdP and exit offline mode.
+          description: |-
+            The interval, in seconds, that Access Gateway waits after `successThreshold` is met and the Okta IdP is marked healthy before it reconnects to the Okta IdP and exits offline mode.
+
+            The value of `recoveryCooldownInterval` must be at least twice the time it takes Access Gateway to detect a failure, which is the product of the `healthCheckInterval` value multiplied by the `failureThreshold` value. This minimum interval prevents Access Gateway from alternating between online and offline mode. A shorter cooldown could let Access Gateway reconnect, hit the same failure again almost immediately, and fail over before the recovery is confirmed to be stable.
+
+            For example, with a value of `60` for `healthCheckInterval` and `3` for `failureThreshold`, `recoveryCooldownInterval` must be at least `360` seconds. Any value greater than or equal to this minimum is valid. The value can't exceed the maximum allowed value of `6000` seconds.
           default: 360
           minimum: 120
           maximum: 6000
@@ -4796,6 +7445,441 @@ components:
             message:
               type: string
               example: An unexpected error occurred on the server side
+    JSONWebKey:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        alg:
+          type: string
+          description: The algorithm that's used to sign tokens. `RS256` uses RSA with SHA-256.
+          enum:
+            - RS256
+        e:
+          type: string
+          description: The base64url-encoded exponent of the RSA public key
+        kid:
+          type: string
+          description: A unique identifier for this key. It's used to select the correct key when multiple keys are present, such as during key rotation.
+        kty:
+          type: string
+          description: The cryptographic algorithm family for this key. RSA indicates an RSA key pair.
+          enum:
+            - RSA
+        'n':
+          type: string
+          description: The base64url-encoded modulus of the RSA public key
+        use:
+          type: string
+          description: The intended use of this key. `sig` indicates that the key is used for signing tokens.
+          enum:
+            - sig
+      required:
+        - kty
+        - kid
+        - use
+        - alg
+        - 'n'
+        - e
+    JSONWebKeySet:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        keys:
+          type: array
+          description: The list of JSON Web Keys
+          items:
+            $ref: '#/components/schemas/JSONWebKey'
+    OfflineModeAuthenticator:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        configuration:
+          type: object
+          description: The authenticator configuration. The structure varies based on the `key` field.
+        id:
+          type: string
+          description: Unique identifier of the authenticator
+          readOnly: true
+          format: uuid
+        key:
+          type: string
+          description: The key identifier for the authenticator
+          enum:
+            - smart_card
+            - password
+          x-enumDescriptions:
+            smart_card: Smart Card-based certificate authentication
+            password: Password-based authentication using a directory provider
+        name:
+          type: string
+          description: The display name of the authenticator
+        status:
+          type: string
+          description: The status of the authenticator
+          readOnly: true
+          enum:
+            - ACTIVE
+            - INACTIVE
+          x-enumDescriptions:
+            ACTIVE: The authenticator is active and can be used for authentication
+            INACTIVE: The authenticator is inactive and can't be used for authentication
+      required:
+        - key
+        - name
+        - configuration
+      discriminator:
+        propertyName: key
+        mapping:
+          smart_card: '#/components/schemas/OfflineModeAuthenticatorSmartCard'
+          password: '#/components/schemas/OfflineModeAuthenticatorPassword'
+    OfflineModeAuthenticatorPassword:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/OfflineModeAuthenticator'
+        - description: |-
+            Password authenticator for offline mode authentication.
+
+            This authenticator is read-only and automatically configured. It provides password-based authentication using the configured directory provider when offline. The authenticator is always active and can't be modified or deleted.
+          type: object
+          properties:
+            configuration:
+              $ref: '#/components/schemas/OfflineModeAuthenticatorPasswordConfiguration'
+            key:
+              type: string
+              enum:
+                - password
+    OfflineModeAuthenticatorPasswordConfiguration:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Configuration for the password authenticator (`password`)
+      type: object
+      properties:
+        provider:
+          type: string
+          format: uuid
+          description: The `id` of the [offline mode directory](https://developer.okta.com/docs/api/openapi/oag/oag/tags/idps-offline-mode-directory/idps-offline-mode-directory) that Access Gateway uses as the source for user identities. User credentials are validated against this directory during offline mode authentication.
+          readOnly: true
+      required:
+        - provider
+      readOnly: true
+    OfflineModeAuthenticatorSmartCard:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/OfflineModeAuthenticator'
+        - type: object
+          properties:
+            configuration:
+              $ref: '#/components/schemas/OfflineModeAuthenticatorSmartCardConfiguration'
+            key:
+              type: string
+              enum:
+                - smart_card
+    OfflineModeAuthenticatorSmartCardConfiguration:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Configuration for the Smart Card authenticator (`smart_card`)
+      type: object
+      properties:
+        certificates:
+          type: array
+          description: Array of Base64-encoded X.509 certificates, in Distinguished Encoding Rules (DER) format, that form the certificate chain for trust validation
+          items:
+            type: string
+        offlineCrlFailover:
+          $ref: '#/components/schemas/OfflineModeAuthenticatorSmartCardOfflineCrlFailover'
+        userMatching:
+          $ref: '#/components/schemas/OfflineModeAuthenticatorSmartCardUserMatching'
+      required:
+        - certificates
+        - userMatching
+    OfflineModeAuthenticatorSmartCardOfflineCrlFailover:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: |-
+        <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>Certificate Revocation List (CRL) failover settings for the Smart Card authenticator during offline mode.
+
+        * When `urls` is set, those URLs become the sole source for certificate revocation checking. The per-certificate CRL Distribution Point (CDP) URLs embedded in the certificate chain are bypassed entirely. Access Gateway fetches revocation data exclusively from these URLs. If all URLs are unreachable, authentication fails.
+        * When `urls` isn't set, Access Gateway fetches revocation data from the CDP URLs embedded in each certificate in the chain.
+      type: object
+      properties:
+        urls:
+          type: array
+          minItems: 1
+          description: |-
+            The URLs of the revocation endpoints that are used as the sole CRL sources. Provide one URL per CA level in the certificate hierarchy.
+
+            When you set a value for `urls`, all per-certificate CDP URLs embedded in the certificate chain are ignored.
+          items:
+            type: string
+            format: uri
+    OfflineModeAuthenticatorSmartCardUserMatching:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      description: |-
+        <x-lifecycle-container><x-lifecycle class="ea"></x-lifecycle></x-lifecycle-container>User matching settings for the Smart Card authenticator.
+
+        User matching maps the identity in a Smart Card certificate to an Okta user account. When a user presents a Smart Card, Access Gateway extracts an identity value from the certificate (the field determined by `identitySource`) and looks it up against a user attribute in Okta (the field determined by `matchType`). If a match is found, that user is authenticated.
+      type: object
+      properties:
+        allowMultipleUserMatching:
+          type: boolean
+          description: |-
+            Allows the Smart Card certificate identity to match multiple Okta user accounts.
+
+            By default, Smart Card authentication expects a one-to-one mapping between a certificate and a user account. Set `allowMultipleUserMatching` to `true` to allow a single certificate to match multiple accounts, enabling users to select which account to use for authentication.
+          default: false
+        identitySource:
+          type: string
+          description: Specifies which certificate field to use as the user identity source
+          enum:
+            - SUBJECTALTNAME_EMAIL
+            - SUBJECTALTNAME_OTHERNAME
+            - SUBJECTDN_CN
+            - ISSUERDN
+            - SERIALNUMBER
+          x-enumDescriptions:
+            SUBJECTALTNAME_EMAIL: Email address from the Subject Alternative Name (SAN) extension
+            SUBJECTALTNAME_OTHERNAME: Subject's other name from Subject Alternative Name Extension (UPN)
+            SUBJECTDN_CN: Common Name (CN) from the subject's Distinguished Name (DN), typically the user's display name or username
+            ISSUERDN: DN of the issuing certificate authority
+            SERIALNUMBER: Serial number assigned to the certificate by the issuing certificate authority
+        matchAttribute:
+          type: string
+          description: The custom attribute to use for matching when `matchType` is `CUSTOM`. Leave `matchAttribute` empty if you use other match types.
+        matchType:
+          type: string
+          description: Determines how to match the certificate subject to an Okta user
+          enum:
+            - EMAIL
+            - USERNAME
+            - CUSTOM
+          x-enumDescriptions:
+            EMAIL: Match the certificate subject to the user's email address
+            USERNAME: Match the certificate subject to the user's username
+            CUSTOM: Use a custom attribute for matching
+      required:
+        - allowMultipleUserMatching
+        - matchType
+        - matchAttribute
+        - identitySource
+    OidcApplicationCreateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/OidcApplicationRequest'
+        - type: object
+          required:
+            - idpId
+            - label
+            - oidc
+            - type
+      type: object
+    OidcApplicationProperties:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        accessTokenLifetime:
+          type: integer
+          description: Access token lifetime in seconds
+          default: 3600
+        allowedScopes:
+          type: array
+          items:
+            type: string
+          description: List of allowed scopes
+          default:
+            - openid
+        applicationType:
+          type: string
+          enum:
+            - web
+            - native
+            - spa
+          description: The type of OIDC application
+          x-enumDescriptions:
+            web: Server-side web applications. You can use the authorization code with PKCE, client credentials, and refresh tokens grant types with this application type.
+            native: Native mobile or desktop applications. You can use the authorization code with PKCE and refresh tokens grant types with this application type.
+            spa: Single-page applications running in browsers. You can only use the authorization code with PKCE grant type with this application type.
+        clientCredentialsEnabled:
+          type: boolean
+          description: Indicates whether the client credentials grant is enabled. Required when using the client credentials grant type.
+          default: false
+        clientId:
+          type: string
+          description: The client ID for the OIDC application
+          readOnly: true
+        grantTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - authorization_code
+              - refresh_token
+              - client_credentials
+            x-enumDescriptions:
+              authorization_code: Exchanges an authorization code for tokens. Use with PKCE for added security.
+              refresh_token: Exchanges a refresh token for a new access token without re-authenticating the user.
+              client_credentials: Used for machine-to-machine authentication where no user involvement is required.
+          description: Grant types supported by the OIDC application
+        pkceRequired:
+          type: boolean
+          description: Indicates whether PKCE is required for the authorization code flow. Only applies to the authorization code grant type.
+          default: true
+        redirectUris:
+          type: array
+          items:
+            type: string
+            format: uri
+            pattern: ^https?://[a-zA-Z0-9.-]+(:[0-9]{1,5})?(?:/[A-Za-z0-9._~!$&'()*+,;=:@%/-]*)?(?:\?[A-Za-z0-9._~!$&'()*+,;=:@%/?-]*)?(?:#[A-Za-z0-9._~!$&'()*+,;=:@%/?-]*)?$
+          description: List of redirect URIs for the OIDC application. It's required when `grantTypes` includes `authorization_code`. Omit this property for `client_credentials` only (machine-to-machine) applications that don't use redirect URIs.
+        refreshTokenLifetime:
+          type: integer
+          description: Refresh token lifetime in seconds. Only applies when `refresh_token` is included in `grantTypes`.
+          default: 86400
+        responseTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - code
+              - token
+              - id_token
+          description: Response types that are supported by the OIDC application
+        signingAlgorithm:
+          type: string
+          description: |
+            The algorithm used to sign the ID token and client assertions.
+            Supported algorithms depend on the `tokenEndpointAuthMethod`:
+            - client_secret_jwt: HS256, HS384, HS512 (default: HS256)
+            - private_key_jwt: RS256, RS384, RS512, ES256, ES384, ES512 (default: RS256)
+            - other methods: RS256, RS384, RS512, ES256, ES384, ES512 (default: RS256)
+          enum:
+            - HS256
+            - HS384
+            - HS512
+            - RS256
+            - RS384
+            - RS512
+            - ES256
+            - ES384
+            - ES512
+        tokenEndpointAuthMethod:
+          type: string
+          description: Token endpoint authentication method
+          enum:
+            - client_secret
+            - client_secret_jwt
+            - private_key_jwt
+            - none
+          x-enumDescriptions:
+            client_secret: Client credentials are passed either as HTTP Basic Auth in the `Authorization` header or as body parameters.
+            client_secret_jwt: The client authenticates by signing a JWT with a key derived from the client secret.
+            private_key_jwt: The client authenticates by signing a JWT with its private key. Requires a registered public key.
+            none: No client authentication. Use for public clients that rely on PKCE.
+          default: client_secret
+      required:
+        - responseTypes
+        - grantTypes
+        - applicationType
+    OidcApplicationRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/ApplicationRequest'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique identifier of the application
+              readOnly: true
+            oidc:
+              $ref: '#/components/schemas/OidcApplicationProperties'
+            status:
+              type: string
+              description: Application status
+              enum:
+                - CREATED
+                - ACTIVE
+                - INACTIVE
+                - MAINTENANCE
+              readOnly: true
+            type:
+              $ref: '#/components/schemas/ApplicationType'
+      type: object
+    OidcApplicationResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/OidcApplicationRequest'
+      type: object
+    OidcApplicationResponseWithEmbedded:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/OidcApplicationResponse'
+        - type: object
+          properties:
+            _embedded:
+              type: object
+              description: Additional configuration settings for applications that are returned when you use the `expand` query parameter
+              readOnly: true
+              x-order: 99
+              properties:
+                healthCheck:
+                  $ref: '#/components/schemas/HealthCheck'
+                session:
+                  $ref: '#/components/schemas/Session'
+                behavior:
+                  $ref: '#/components/schemas/Behavior'
+    OidcApplicationUpdateRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      allOf:
+        - $ref: '#/components/schemas/ApplicationUpdateRequest'
+        - type: object
+          properties:
+            oidc:
+              $ref: '#/components/schemas/OidcApplicationProperties'
+          required:
+            - oidc
+      type: object
     OktaIdPRequest:
       allOf:
         - $ref: '#/components/schemas/IDPRequest'
@@ -4817,6 +7901,73 @@ components:
             - domain
             - apiToken
       type: object
+    OktaIdPUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IDPUpdateRequest'
+        - type: object
+          properties:
+            apiToken:
+              type: string
+              description: Access token for the IdP
+            domain:
+              type: string
+              description: The Okta org domain (or custom domain, if you've configured one). This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the value that was used when you originally created the IdP. A different value returns an HTTP `400` error.
+            type:
+              type: string
+              description: IdP type. This property is immutable after it's created. It's not required, but if you include it in a request body, it must match the value that was used when you originally created the IdP. A different value returns an HTTP `400` error.
+              enum:
+                - IDP_OKTA
+          required:
+            - apiToken
+      type: object
+    OpenIDConnectDiscoveryDocument:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        authorization_endpoint:
+          type: string
+          description: URL of the authorization server's authorization endpoint
+        grant_types_supported:
+          type: array
+          items:
+            type: string
+          description: A list of the grant type values that this authorization server supports
+        introspection_endpoint:
+          type: string
+          description: URL of the authorization server's introspection endpoint
+        issuer:
+          type: string
+          description: The authorization server's issuer identifier. For your Access Gateway instance, this is your authorization server's base URL. This becomes the `iss` claim in an access token.
+        jwks_uri:
+          type: string
+          description: URL of the authorization server's JSON Web Key Set (JWKS) document
+        response_types_supported:
+          type: array
+          items:
+            type: string
+          description: A list of the `response_type` values that this authorization server supports. It can be a combination of `code`, `token`, and `id_token`.
+        revocation_endpoint:
+          type: string
+          description: URL of the authorization server's revocation endpoint
+        scopes_supported:
+          type: array
+          items:
+            type: string
+          description: A list of the scope values that this authorization server supports
+        token_endpoint:
+          type: string
+          description: URL of the authorization server's token endpoint
+        token_endpoint_auth_methods_supported:
+          type: array
+          items:
+            type: string
+          description: A list of client authentication methods supported by this token endpoint
+        userinfo_endpoint:
+          type: string
+          description: URL of the authorization server's userinfo endpoint
     Policy:
       type: object
       properties:
@@ -4880,6 +8031,14 @@ components:
             - name
             - resourcePath
             - rule
+    PolicyUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/Policy'
+        - type: object
+          required:
+            - name
+            - resourcePath
+            - rule
     ProtectedResource:
       type: object
       properties:
@@ -4918,6 +8077,12 @@ components:
           description: Unique identifier of the protected resource
           readOnly: true
     ProtectedResourceCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/ProtectedResource'
+        - type: object
+          required:
+            - hostname
+    ProtectedResourceUpdateRequest:
       allOf:
         - $ref: '#/components/schemas/ProtectedResource'
         - type: object
@@ -5101,6 +8266,18 @@ components:
       allOf:
         - $ref: '#/components/schemas/ApplicationUpdateRequest'
         - $ref: '#/components/schemas/SamlApplicationProperties'
+        - type: object
+          required:
+            - clientId
+            - acsUrl
+            - postLoginUrl
+            - logoutUrl
+          properties:
+            type:
+              type: string
+              description: The application type
+              enum:
+                - OAG_SAML
       type: object
     ServiceUnavailable:
       allOf:
@@ -5154,6 +8331,178 @@ components:
             The minimum value for this field is determined by the `idleSessionTimeout` value. The value of `maxSessionTimeout` must be greater than or equal to `idleSessionTimeout`.
             Setting `maxSessionTimeout` to `0` means that the app session never expires which is similar to setting `maxSession` to `false`.
           default: 28800
+    TokenIntrospectionRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        client_id:
+          type: string
+          description: The client ID of the application that requested the token
+        client_secret:
+          type: string
+          description: The client secret.
+        token:
+          type: string
+          description: The token to introspect
+        token_type_hint:
+          type: string
+          description: A hint to the authorization server about the type of token being submitted. If omitted, the server attempts to determine the token type automatically.
+          enum:
+            - access_token
+            - refresh_token
+          x-enumDescriptions:
+            access_token: The submitted token is an access token
+            refresh_token: The submitted token is a refresh token
+      required:
+        - token
+        - client_id
+    TokenIntrospectionResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Indicates whether the token is currently valid. A token is active if it has not expired and has not been revoked.
+        aud:
+          type: string
+          description: The audience of the token
+        client_id:
+          type: string
+          description: The client ID for which the token was issued
+        exp:
+          type: integer
+          description: UNIX timestamp of when the token expires
+        iat:
+          type: integer
+          description: UNIX timestamp of when the token was issued
+        iss:
+          type: string
+          description: The issuer of the token
+        scope:
+          type: string
+          description: The scopes granted to the token
+        sub:
+          type: string
+          description: The subject (user) that the token was issued for
+        token_type:
+          type: string
+          description: The token type that indicates how the token should be used. A Bearer token can be used by any party that holds it without additional proof of identity.
+        username:
+          type: string
+          description: The username of the user that the token was issued for
+      required:
+        - active
+    TokenRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        client_assertion:
+          type: string
+          description: A signed JWT that's used to authenticate the client. Required when using `client_secret_jwt` or `private_key_jwt` authentication.
+          writeOnly: true
+        client_assertion_type:
+          type: string
+          description: The format of the client assertion. Required when using `client_secret_jwt` or `private_key_jwt` authentication.
+          enum:
+            - urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        client_id:
+          type: string
+          description: The client ID of the application
+        client_secret:
+          type: string
+          description: The client secret. Not required for public clients or when using PKCE.
+          writeOnly: true
+        code:
+          type: string
+          description: The authorization code. Required for the `authorization_code` grant type.
+        code_verifier:
+          type: string
+          description: The PKCE code verifier. Required when using PKCE.
+        grant_type:
+          type: string
+          description: The grant type for the token request
+          enum:
+            - authorization_code
+            - refresh_token
+            - client_credentials
+        redirect_uri:
+          type: string
+          description: The redirect URI used in the authorization request
+        refresh_token:
+          type: string
+          description: The refresh token. Required for the `refresh_token` grant type.
+        scope:
+          type: string
+          description: Space-separated list of scopes
+      required:
+        - grant_type
+    TokenResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: The access token
+        expires_in:
+          type: integer
+          description: The lifetime in seconds of the access token
+        id_token:
+          type: string
+          description: The ID token (JWT containing user information) that's issued when the `openid` scope is requested
+        refresh_token:
+          type: string
+          description: The refresh token that's issued when the `offline_access` scope is requested
+        scope:
+          type: string
+          description: The granted scopes
+        token_type:
+          type: string
+          description: The token type. It's always `Bearer` for tokens that are issued by the token endpoint.
+          enum:
+            - Bearer
+      required:
+        - access_token
+        - token_type
+    TokenRevocationRequest:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        client_id:
+          type: string
+          description: The client ID. Provide this value if you are not using HTTP Basic Auth.
+        client_secret:
+          type: string
+          description: The client secret. Provide this value if you are not using HTTP Basic Auth.
+          writeOnly: true
+        token:
+          type: string
+          description: The access token or refresh token to revoke
+        token_type_hint:
+          type: string
+          description: A hint to the authorization server about the type of token being submitted. If it's omitted, the server attempts to determine the token type automatically.
+          enum:
+            - access_token
+            - refresh_token
+          x-enumDescriptions:
+            access_token: The submitted token is an access token
+            refresh_token: The submitted token is a refresh token
+      required:
+        - token
     TooManyRequests:
       allOf:
         - $ref: '#/components/schemas/Error'
@@ -5176,14 +8525,54 @@ components:
             message:
               type: string
               example: Authentication is required or has failed
+    UserInfoResponse:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      type: object
+      properties:
+        email:
+          type: string
+          description: The user's email address
+        email_verified:
+          type: boolean
+          description: Whether the user's email address is verified
+        family_name:
+          type: string
+          description: The user's family name
+        given_name:
+          type: string
+          description: The user's given name
+        name:
+          type: string
+          description: The user's full name
+        picture:
+          type: string
+          description: URL of the user's profile picture
+        preferred_username:
+          type: string
+          description: The user's preferred name
+        sub:
+          type: string
+          description: The unique subject identifier for the user
+        updated_at:
+          type: integer
+          format: int64
+          description: Time in seconds since January 1, 1970 UTC when the user's information was last updated
+      required:
+        - sub
   securitySchemes:
     jwtBearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
       description: 'Enter the JWT bearer token in the format: Bearer {token}'
+    BasicAuth:
+      type: http
+      scheme: basic
 x-tagGroups:
-  - name: Access Tokens
+  - name: API Access Tokens
     tags:
       - AccessTokens
   - name: Applications
@@ -5205,6 +8594,9 @@ x-tagGroups:
       - IDPs Offline Mode
       - IDPs Offline Mode Directory
       - IDPs Offline Mode Health Policy
+      - IDPs Offline Mode Authenticators
+      - IDPs Offline Mode Access Policy
+      - OIDC
   - name: Settings
     tags:
       - Settings Authentication Service

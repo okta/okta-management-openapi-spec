@@ -59,8 +59,6 @@ tags:
   - name: My Access Certification Reviews
     description: |
       The My Access Certification Reviews API enables end users to retrieve reviews and associated review resources that are assigned to them. The response is specifically for the authenticated user (the end user) making the request.
-    x-okta-lifecycle:
-      lifecycle: BETA
   - name: My Settings
     description: The My Settings API allows end users to manage their governance settings. The response is specifically for the authenticated user (the end user) making the request. Use this API to view and manage your settings, such as appointing a delegate for governance reviews.
     x-okta-lifecycle:
@@ -234,7 +232,37 @@ paths:
             - okta.accessRequests.request.read
       responses:
         '200':
-          $ref: '#/components/responses/request-get-success'
+          $ref: '#/components/responses/my-request-get-success'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+    patch:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-disable-permissions-audit: true
+      operationId: updateMyRequestV2
+      parameters:
+        - $ref: '#/components/parameters/catalog-entry-id'
+        - $ref: '#/components/parameters/rcar-request-id-parameter'
+      tags:
+        - My Requests
+      summary: Update my request
+      description: Updates a request that belongs to you (the authenticated requester)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request-update'
+      security:
+        - OAuth2:
+            - okta.accessRequests.request.manage
+      responses:
+        '200':
+          $ref: '#/components/responses/my-request-update-success'
+        '400':
+          $ref: '#/components/responses/my-request-update-failed'
         '401':
           $ref: '#/components/responses/authentication-error-response'
         '404':
@@ -306,7 +334,7 @@ paths:
             ```
       security:
         - OAuth2:
-            - okta.accessRequests.catalog.read
+            - okta.accessRequests.request.read
       responses:
         '200':
           $ref: '#/components/responses/entry-users-list-success'
@@ -344,7 +372,7 @@ paths:
         If the request submission is allowed, then the request fields are determined by the associated approval sequence for the risk level.
       security:
         - OAuth2:
-            - okta.accessRequests.catalog.read
+            - okta.accessRequests.request.read
       responses:
         '200':
           $ref: '#/components/responses/my-request-fields-get-success'
@@ -799,7 +827,10 @@ paths:
       description: |-
         Generates a summary for an access item in a security access review
 
-        > **Note:** The [`governanceAI.securityAccessReview.enabled`](https://developer.okta.com/docs/api/iga/openapi/governance.api/tag/Org-Governance-Settings/#tag/Org-Governance-Settings/operation/updateOrgSettings!path=governanceAI&t=request) org governance setting must be enabled for users to generate summaries for security access reviews.
+        > **Notes:**
+        > * The [`governanceAI.securityAccessReview.enabled`](https://developer.okta.com/docs/api/iga/openapi/governance.api/tag/Org-Governance-Settings/#tag/Org-Governance-Settings/operation/updateOrgSettings!path=governanceAI&t=request) org governance setting must be enabled for users to generate summaries for security access reviews.
+        > * This feature is excluded from the Okta for AI Agents - Core SKU, which is the version of Okta for AI Agents available to FedRAMP Moderate and FedRAMP High customers.
+        >   Okta for AI Agents - Core isn't available in Okta for US Military cells. For a current list of features that are excluded from the Okta for AI Agents - Core SKU, please refer to the [Okta US Public Sector Limitations or Exceptions](https://support.okta.com/help/s/article/okta-us-public-sector-limitations-or-exceptions?language=en_US) documentation.
       parameters:
         - $ref: '#/components/parameters/security-access-review-id'
         - $ref: '#/components/parameters/security-access-review-target-id'
@@ -1073,7 +1104,7 @@ paths:
   /governance/api/v1/my/campaigns/{campaignId}/reviews/bulk-decisions:
     post:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         features:
           - IGA_REVIEW_ML_RECOMMENDATIONS
       x-disable-permissions-audit: true
@@ -1118,7 +1149,7 @@ paths:
   /governance/api/v1/my/campaigns/{campaignId}/reviews/bulk-decisions/jobs/{jobId}:
     get:
       x-okta-lifecycle:
-        lifecycle: EA
+        lifecycle: GA
         features:
           - IGA_REVIEW_ML_RECOMMENDATIONS
       x-disable-permissions-audit: true
@@ -1142,6 +1173,111 @@ paths:
           $ref: '#/components/responses/authorization-error-response'
         '404':
           $ref: '#/components/responses/resource-not-found-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/my/campaigns/{campaignId}/reviews:
+    get:
+      x-okta-lifecycle:
+        lifecycle: GA
+        features:
+          - IGA_ACCESS_CERT_REVIEW_ITEMS_ENDUSER_API
+      tags:
+        - My Access Certification Reviews
+      operationId: listCampaignReviews
+      summary: List my reviews for a campaign
+      description: |
+        Lists the reviews assigned to you for a given campaign.
+
+        Use the filter expression (`?filter=`) query parameter to return a subset of your reviews for a campaign.
+
+        Pagination parameters are accepted, and standard link headers are in the response.
+
+        Reviews are returned only for campaigns that launched and have an `ACTIVE` or `COMPLETED` status.
+        `UNREVIEWED` decision status reviews have a null `decided` property. If remediation isn't completed, then the `remediationStatus` property is also null.
+
+        The order criteria (`orderBy`) applies to the following properties: `decided`, `decision`, `remediationStatus`, and `created`.
+
+        By default, results are sorted by `id`.
+
+        > **Note:** Okta recommends adding a filter in your request to target the reviews returned. This provides reliable performance when your org contains a large number of campaigns and reviews. The response for this request can time out or fail if there are a large number of campaigns and reviews to process.
+      parameters:
+        - $ref: '#/components/parameters/campaign-id'
+        - $ref: '#/components/parameters/campaign-reviews-filter'
+        - $ref: '#/components/parameters/after'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/my-reviews-order-by'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.reviewer.read
+      responses:
+        '200':
+          $ref: '#/components/responses/review-list-success'
+        '400':
+          $ref: '#/components/responses/list-bad-request'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/my/campaigns/{campaignId}/reviews/actions:
+    post:
+      x-okta-lifecycle:
+        lifecycle: GA
+        features:
+          - IGA_ACCESS_CERT_REVIEW_ITEMS_ENDUSER_API
+      tags:
+        - My Access Certification Reviews
+      operationId: submitMyCampaignReviewActions
+      summary: Submit my review actions
+      description: |
+        Submits actions for reviews that are assigned to you in the specified campaign.
+
+        You can specify a maximum of 50 review actions in a request.
+
+        For each review, specify the `APPROVE`, `REVOKE`, or `REASSIGN` action.
+
+        If you reassign a review (`action=REASSIGN`), you must also include the
+        `reviewerId` and `justification` parameters. All your `REASSIGN` reviews must have
+        the same `reviewerId` in a single request.
+
+        A successful request returns the updated reviews based on the submitted actions.
+      security:
+        - OAuth2:
+            - okta.governance.reviewer.manage
+      parameters:
+        - $ref: '#/components/parameters/campaign-id'
+      requestBody:
+        required: true
+        description: Submit my review actions request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/review-items-action-mutable'
+            examples:
+              review-items-action-revoke-request:
+                $ref: '#/components/examples/review-items-action-revoke-request'
+              review-items-action-reassign-request:
+                $ref: '#/components/examples/review-items-action-reassign-request'
+              review-items-action-mixed-request:
+                $ref: '#/components/examples/review-items-action-mixed-request'
+      responses:
+        '200':
+          $ref: '#/components/responses/review-actions-success-response'
+        '400':
+          $ref: '#/components/responses/bad-request'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '409':
+          $ref: '#/components/responses/review-actions-conflict-response'
         '429':
           $ref: '#/components/responses/rate-limit-exceeded-response'
         '500':
@@ -1189,591 +1325,6 @@ components:
             okta.governance.reviewer.manage: Allows the end user to manage access certification reviews assigned to them
             okta.accessRequests.tasks.manage: Allows the user to manage tasks for access requests in your Okta org
             okta.accessRequests.tasks.read: Allows the user to read information about tasks for access requests in your Okta org
-  parameters:
-    rcar-entries-list-filter-v2:
-      name: filter
-      description: |
-        A required [filter](https://developer.okta.com/docs/api/#filter) expression that returns entries based on the [`parent`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.admin.v2/tag/Catalogs/#tag/Catalogs/operation/listAllDefaultEntriesV2!c=200&path=data/parent&t=response) property:
-        * This filter expression only supports the `parent` property and the `eq` and `pr` [operators](https://developer.okta.com/docs/api/#operators).
-        * If you want the query to return child entries, then you must specify the `parent` ID with the `eq` operator.
-
-        > **Notes:**
-        > * If you don't use the `parent` property in the filter expression, undesireable results are returned.
-        > * Query parameter percent encoding is required. See [Special characters]( https://developer.okta.com/docs/api/#special-characters ).
-      in: query
-      required: true
-      schema:
-        type: string
-        format: scim-filter
-        example: not(parent pr)
-      x-scim-filter:
-        parent:
-          operators:
-            - eq
-          schema:
-            $ref: '#/components/schemas/catalog-entry-id'
-    rcar-entries-list-after:
-      name: after
-      description: |-
-        The [pagination](https://developer.okta.com/docs/api/#pagination) cursor that points to the last record of the previous response.
-
-        The maximum number of entries returned in a response is determined by the [`limit`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.admin.v2/tag/Catalogs/#tag/Catalogs/operation/listAllDefaultEntriesV2!in=query&path=limit&t=request) query parameter.
-        If there are more entries to return, the `_links.next.href` link contains the `after` cursor for the next page of results.
-      in: query
-      required: false
-      schema:
-        $ref: '#/components/schemas/catalog-entry-id'
-    rcar-entries-list-match:
-      name: match
-      description: Return catalog entries that match a substring value in the [`name`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.enduser.v2/tag/My-Catalogs/#tag/My-Catalogs/operation/listMyDefaultEntriesV2!c=200&path=data/name&t=response) or [`description`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.enduser.v2/tag/My-Catalogs/#tag/My-Catalogs/operation/listMyDefaultEntriesV2!c=200&path=data/description&t=response) properties. At least three characters are required for fuzzy search.
-      in: query
-      required: false
-      schema:
-        type: string
-        minLength: 3
-        maxLength: 50
-        example: figma
-    rcar-entries-list-limit:
-      name: limit
-      description: The maximum number of records returned in a response
-      in: query
-      required: false
-      schema:
-        type: integer
-        maximum: 200
-        minimum: 1
-        example: 20
-    catalog-entry-id:
-      name: entryId
-      description: Unique identifier for the catalog entry
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/catalog-entry-id'
-    rcar-request-id-parameter:
-      name: requestId
-      description: Unique identifier for the Resource-Centric Access Requests (RCAR) request
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/rcar-request-id'
-    entry-user-list-filter:
-      name: filter
-      description: |
-        A required filter expression that returns users based on the `firstName` or `lastName` properties.
-        This [filter](https://developer.okta.com/docs/api/#filter) expression supports the `sw` [operator](https://developer.okta.com/docs/api/#operators).
-
-        **Note:** Query parameter percent encoding is required. See [Special characters]( https://developer.okta.com/docs/api/#special-characters ).
-      in: query
-      required: true
-      schema:
-        type: string
-        format: scim-filter
-        example: firstName sw "John" OR lastName sw "John"
-      x-scim-filter:
-        firstName:
-          operators:
-            - sw
-          type: String
-        lastName:
-          operators:
-            - sw
-          type: String
-    after:
-      name: after
-      description: |-
-        Specifies the pagination cursor for the next page of results.
-        Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
-      in: query
-      required: false
-      schema:
-        type: string
-        example: 00u68w6vzKLultXS97g6
-    limit:
-      name: limit
-      description: The maximum number of records returned in a response
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 20
-        maximum: 200
-        minimum: 1
-    user-id:
-      name: userId
-      description: Unique identifier for the user
-      in: path
-      required: true
-      schema:
-        type: string
-        maxLength: 20
-        minLength: 20
-        example: 00ucvnr9rbONeZdRp1d7
-    my-task-list-filter:
-      name: filter
-      description: |
-        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters a collection of tasks in the response.
-        The filter expression supports the following properties and [operators](https://developer.okta.com/docs/api/#operators):
-
-        - `status`: The status of the task. Possible values: `OPEN`, `COMPLETED`, `ASSIGNING`, and `LOCKED`. Supports the `eq` operator.
-        - `type`: The type of the task. Possible values: `QUESTION`, `APPROVAL`, and `TODO`. Supports the `eq` operator.
-        - `requestId`: The ID of the request for the task. Supports the `eq` operator.
-        - `createdAt`: The task created time. Supports the `gt`, `ge`, `le`, and `lt` operators.
-        - `updatedAt`: The latest task updated time. Supports the `gt`, `ge`, `le`, and `lt` operators.
-
-        > **Note**: Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
-      in: query
-      required: false
-      schema:
-        $ref: '#/components/schemas/scim-filter'
-      x-scim-filter:
-        status:
-          operators:
-            - eq
-          schema:
-            $ref: '#/components/schemas/task-status'
-        type:
-          operators:
-            - eq
-          schema:
-            $ref: '#/components/schemas/task-type'
-        requestId:
-          operators:
-            - eq
-          schema:
-            $ref: '#/components/schemas/task-request-id'
-        createdAt:
-          operators:
-            - gt
-            - ge
-            - le
-            - lt
-          schema:
-            $ref: '#/components/schemas/task-created-at'
-        updatedAt:
-          operators:
-            - gt
-            - ge
-            - le
-            - lt
-          schema:
-            $ref: '#/components/schemas/task-updated-at'
-      examples:
-        FilterByStatus:
-          summary: Filter by status
-          value: status eq "OPEN"
-        FilterByType:
-          summary: Filter by type
-          value: type eq "QUESTION"
-        FilterByRequestId:
-          summary: Filter by requestId
-          value: requestId eq "0oafxqCAJWWGELFTYASJ"
-        FilterByCreatedAt:
-          summary: Filter by createdAt
-          value: createdAt gt "2022-05-24T14:15:22Z"
-        FilterByUpdatedAt:
-          summary: Filter by updatedAt
-          value: updatedAt gt "2022-05-24T14:15:22Z"
-    task-list-after:
-      name: after
-      description: |
-        Specifies the pagination cursor for the next page of results. Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
-      in: query
-      required: false
-      schema:
-        $ref: '#/components/schemas/task-id'
-    task-list-order-by:
-      name: orderBy
-      description: |
-        Specifies a property to sort the results. The following properties are supported:
-        - `createdAt`
-        - `updatedAt`
-
-        Append `desc` or `asc` to indicate the sorting direction.
-        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
-      in: query
-      required: false
-      schema:
-        $ref: '#/components/schemas/order-by'
-      x-order-by:
-        attributes:
-          - createdAt
-          - updatedAt
-      examples:
-        OrderByCreated:
-          summary: Order by created
-          value: createdAt desc
-        OrderByLastUpdated:
-          summary: Order by updatedAt
-          value: updatedAt desc
-    task-id-parameter:
-      name: taskId
-      description: The `id` of the task
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/task-id'
-    security-access-reviews-filter:
-      name: filter
-      in: query
-      description: |-
-        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters security access reviews.
-        The `eq` and `co` [operators](https://developer.okta.com/docs/api/#operators) are supported for string properties.
-        The `gt` and `lt` operators are supported for date properties.
-
-        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
-      required: false
-      allowEmptyValue: true
-      schema:
-        type: string
-      examples:
-        FilterByName:
-          summary: Filter by name provided for the security access review
-          value: name co "Git"
-        FilterByStatus:
-          summary: Filter by status of the security access review
-          value: status eq "ACTIVE"
-        FilterByReviewerName:
-          summary: Filter by reviewer.name. Note that it compares against the first name and last name of the reviewer.
-          value: reviewer.name co "John"
-        FilterByCreated:
-          summary: Filter by created
-          value: created gt "2022-05-24T14:15:22Z"
-    security-access-reviews-order-by:
-      name: orderBy
-      description: |
-        The field to sort the results, in ascending (`asc`) or descending (`desc`) order.
-        Sorting is applied to only one field.
-
-        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
-      in: query
-      required: false
-      style: form
-      explode: false
-      schema:
-        type: array
-        uniqueItems: false
-        minItems: 1
-        maxItems: 1
-        items:
-          type: string
-          description: A property of items within the collection, optionally followed by a ` asc` or ` desc` suffix.
-        default:
-          - created asc
-      examples:
-        OrderByName:
-          summary: Order by name
-          value: name desc
-        OrderByCreated:
-          summary: Order by created
-          value: created desc
-        OrderByEndTime:
-          summary: Order by endTime
-          value: endTime desc
-        OrderByStatus:
-          summary: Order by status
-          value: status desc
-        OrderById:
-          summary: Order by id
-          value: id desc
-    security-access-review-id:
-      name: securityAccessReviewId
-      in: path
-      description: The ID of the security access review
-      required: true
-      schema:
-        type: string
-    security-access-review-accesses-filter:
-      name: filter
-      description: |-
-        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters access items.
-
-        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
-      in: query
-      required: false
-      schema:
-        type: string
-      examples:
-        FilterByName:
-          summary: Filter by name
-          value: name co "Git"
-        FilterByPriority:
-          summary: Filter by priority
-          value: priority eq "HIGH"
-        FilterBySODConflict:
-          summary: Filter by sodConflictSeverity
-          value: sodConflictSeverity eq "HIGH"
-        FilterByAssignmentMethod:
-          summary: Filter by assignmentMethodSeverity
-          value: assignmentMethodSeverity eq "HIGH"
-        FilterByPastGovernanceDecisions:
-          summary: Filter by pastGovernanceDecisionsSeverity
-          value: pastGovernanceDecisionsSeverity eq "HIGH"
-        FilterByUsageHistory:
-          summary: Filter by usageHistorySeverity
-          value: usageHistorySeverity eq "HIGH"
-        FilterByGovernanceLabel:
-          summary: Filter by governanceLabel
-          value: governanceLabel co "Crown Jewel"
-    security-access-review-accesses-order-by:
-      name: orderBy
-      description: |-
-        The field to sort the results, in ascending (asc) or descending (desc) order. Sorting is applied to only one field.
-
-        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
-      in: query
-      required: false
-      style: form
-      explode: false
-      schema:
-        type: array
-        uniqueItems: false
-        minItems: 1
-        maxItems: 1
-        items:
-          type: string
-          description: A property of items within the collection, optionally followed by a ` asc` or ` desc` suffix.
-        default:
-          - priority desc
-      examples:
-        OrderByPriority:
-          summary: Order by priority
-          value: priority desc
-        OrderByLastAccess:
-          summary: Order by lastAccess
-          value: lastAccess desc
-        OrderByAccessFrequency:
-          summary: Order by accessFrequency
-          value: accessFrequency desc
-    security-access-review-access-id:
-      name: securityAccessReviewAccessId
-      in: path
-      description: The ID of the access item in a security access review
-      required: true
-      schema:
-        type: string
-    security-access-review-sub-accesses-filter:
-      name: filter
-      description: |
-        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters sub-access items.
-
-        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
-      in: query
-      required: false
-      schema:
-        type: string
-      examples:
-        FilterByName:
-          summary: Filter by name
-          value: name co "Git"
-        FilterByResourceType:
-          summary: Filter by resourceType
-          value: resourceType eq "GROUP"
-        FilterByPriority:
-          summary: Filter by priority
-          value: priority eq "HIGH"
-        FilterBySODConflict:
-          summary: Filter by sodConflictSeverity
-          value: sodConflictSeverity eq "HIGH"
-        FilterByAssignmentMethod:
-          summary: Filter by assignmentMethodSeverity
-          value: assignmentMethodSeverity eq "HIGH"
-        FilterByPastGovernanceDecisions:
-          summary: Filter by pastGovernanceDecisionsSeverity
-          value: pastGovernanceDecisionsSeverity eq "HIGH"
-        FilterByUsageHistory:
-          summary: Filter by usageHistorySeverity
-          value: usageHistorySeverity eq "HIGH"
-        FilterByGovernanceLabel:
-          summary: Filter by governanceLabel
-          value: governanceLabel co "Crown Jewel"
-    security-access-review-sub-accesses-order-by:
-      name: orderBy
-      description: |
-        A field by which results can be sorted. For now, sorting by a single field is supported.
-
-        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
-      in: query
-      required: false
-      style: form
-      explode: false
-      schema:
-        type: array
-        uniqueItems: false
-        minItems: 1
-        maxItems: 1
-        items:
-          type: string
-          description: A property of items within the collection, optionally followed by a ` asc` or ` desc` suffix.
-        default:
-          - priority desc
-      examples:
-        OrderByPriority:
-          summary: Order by priority
-          value: priority desc
-    security-access-review-target-id:
-      name: securityAccessReviewTargetId
-      in: path
-      description: The ID of the access or sub-access item in a security access review
-      required: true
-      schema:
-        type: string
-    delegates-user-list-filter:
-      name: filter
-      description: |
-        An optional filter expression that returns users based on the `firstName` or `lastName` properties.
-        This [filter](https://developer.okta.com/docs/api/#filter) expression supports the `sw` [operator](https://developer.okta.com/docs/api/#operators).
-
-        When omitted, the endpoint returns all eligible delegates for the current user.
-        However, if the org's delegate scope settings are unrestricted (the `onlyFor` list is empty),
-        the filter parameter is required and omitting it returns a 400 error.
-
-        **Note:** Query parameter percent encoding is required. See [Special characters](https://developer.okta.com/docs/api/#special-characters).
-      in: query
-      required: false
-      schema:
-        type: string
-        format: scim-filter
-        example: firstName sw "John" OR lastName sw "John"
-      x-scim-filter:
-        firstName:
-          operators:
-            - sw
-          type: String
-        lastName:
-          operators:
-            - sw
-          type: String
-    campaign-id:
-      name: campaignId
-      description: Unique identifier for the campaign
-      in: path
-      required: true
-      schema:
-        type: string
-    review-id:
-      name: reviewId
-      description: Unique identifier for the review
-      in: path
-      required: true
-      schema:
-        type: string
-    resource-connection-agent-id:
-      name: agentId
-      in: path
-      required: true
-      description: ID of the agent
-      schema:
-        type: string
-        example: wlpkhjm0jnDp8RrUu0g4
-    job-id:
-      name: jobId
-      description: Unique identifier for the job
-      in: path
-      required: true
-      schema:
-        type: string
-    campaign-reviews-filter:
-      name: filter
-      description: |
-        Apply various filters by using supported review filtering properties.
-
-        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
-
-        Supported filters are:
-
-        - `id`: string
-        - `principalId`: string
-        - `reviewerId`: string
-        - `decision`: string (APPROVE, REVOKE, UNREVIEWED)
-        - `resourceId`: string (`GroupId` or `AppId`)
-        - `reviewerType`: string (`USER` or `GROUP` or `RESOURCE_OWNER`)
-        - `reviewerLevel`: string (`FIRST` or `SECOND`)
-        - `entitlementValueId`: string
-        - `entitlementBundleId`: string
-        - `govAnalyzerRecommendationContext.recommendedReviewDecision`: string (APPROVE, REVOKE, UNREVIEWED)
-        - `govAnalyzerRecommendationContext.bulkReviewDecisionJobId`: string
-      in: query
-      required: false
-      schema:
-        type: string
-      examples:
-        FilterByReviewDecision:
-          summary: Filter by review decisions
-          value: decision eq "UNREVIEWED"
-        FilterByReviewerId:
-          summary: Filter by reviewerId
-          value: reviewerId eq "00u5v5viPvg84h0W68g4"
-        FilterByGroupResourceId:
-          summary: Filter by group resourceId
-          value: resourceId eq "00gyqjxNrsh764hjs784"
-        FilterByAppResourceId:
-          summary: Filter by app resourceId
-          value: resourceId eq "00ayqjxNrZD11n4w40g3"
-        FilterByPrincipalId:
-          summary: Filter by principalId
-          value: principalId eq "00u5v5viPvg84h0W68g4"
-        FilterByReviewerType:
-          summary: Filter by reviewerType
-          value: reviewerType eq USER
-        FilterByReviewerLevel:
-          summary: Filter by reviewerLevel
-          value: reviewerLevel eq FIRST
-        FilterByEntitlementId:
-          summary: Filter by entitlement value ID
-          value: entitlementValueId eq "enthzzPJAXvaYQ71T0g3"
-        FilterByEntitlementType:
-          summary: Filter by entitlement bundle ID
-          value: entitlementBundleId eq "enbisi7xt3iBd39Bn0g3"
-        FilterByRecommendedReviewDecision:
-          summary: Filter by entitlement bundle ID
-          value: govAnalyzerRecommendationContext.recommendedReviewDecision eq "APPROVE"
-        FilterByBulkReviewDecisionJobId:
-          summary: Filter by entitlement bundle ID
-          value: govAnalyzerRecommendationContext.bulkReviewDecisionJobId eq "aae3l2XZ300xRq1rV0g3"
-        FilterByAppServiceAccountId:
-          summary: Filter by SaaS app service account ID
-          value: appServiceAccountId eq "00saqjxNrZD11n4w40g3"
-        FilterByOktaServiceAccountId:
-          summary: Filter by Okta service account ID
-          value: oktaServiceAccountId eq "00sa5v5viPvg84h0W68g4"
-    my-reviews-order-by:
-      name: orderBy
-      description: |
-        Specifies a property to sort the results. The following properties are supported:
-        - `decided`
-        - `decision`
-        - `remediationStatus`
-        - `created`
-
-        Append `desc` or `asc` to indicate the sorting direction.
-
-        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
-      in: query
-      required: false
-      style: form
-      explode: false
-      schema:
-        type: array
-        uniqueItems: false
-        minItems: 1
-        maxItems: 1
-        items:
-          type: string
-          description: A property from the collection, optionally followed by an ` asc` or ` desc` suffix.
-      examples:
-        OrderByDecided:
-          summary: Order by decided
-          value: decided desc
-        OrderByDecision:
-          summary: Order by decision
-          value: decision desc
-        OrderByRemediationStatus:
-          summary: Order by remediationStatus
-          value: remediationStatus desc
-        OrderByCreated:
-          summary: Order by created
-          value: created desc
   schemas:
     catalog-entry-id:
       type: string
@@ -2218,6 +1769,7 @@ components:
       description: The requested resource type
       x-okta-known-values:
         - APPLICATION
+        - COLLECTION
         - REQUEST_TYPE
     access-scope-id:
       type: string
@@ -2231,6 +1783,7 @@ components:
         - ENTITLEMENT_BUNDLE
         - GROUP
         - APPLICATION
+        - COLLECTION
         - REQUEST_TYPE
     requested:
       type: object
@@ -2456,10 +2009,10 @@ components:
           $ref: '#/components/schemas/request-submission-type'
         riskRules:
           $ref: '#/components/schemas/risk-rules'
-    request-full:
+    request-full-common:
       type: object
       x-okta-ignore-redocly-rules-for-sdk: true
-      description: Full representation of a Request.
+      description: Shared base for admin and enduser request-full models.
       allOf:
         - $ref: '#/components/schemas/read-only-standard-properties'
         - $ref: '#/components/schemas/request-minimal-read-only-fields'
@@ -2486,6 +2039,12 @@ components:
         - requestedFor
         - requested
         - _links
+    my-request-full:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: Full representation of a Request.
+      allOf:
+        - $ref: '#/components/schemas/request-full-common'
     rcar-request-id:
       type: string
       format: rcar-request-id
@@ -2495,10 +2054,10 @@ components:
       example: reqp1pmpjhVdGEcVK1d5
     request-status-patchable:
       type: string
-      description: |-
-        Specify the status of the request.
-
-        Only `CANCELED` is supported. You can't cancel a request if any of its tasks have been resolved.
+      description: Specify the status of the request
+      x-enumDescriptions:
+        CANCELED: Only `CANCELED` is supported. You can't cancel a request if any of its tasks have been resolved.
+      example: CANCELED
       x-okta-known-values:
         - CANCELED
     request-update:
@@ -2560,6 +2119,229 @@ components:
           properties:
             riskAssessment:
               $ref: '#/components/schemas/risk-assessment'
+    request-field-values-map:
+      type: object
+      description: Previously selected field values, keyed by field ID.
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+      example:
+        OKTA_RESOURCE_ASSET: rea12fzP9nuAdHd9Z0g4
+    request-fields-query-body:
+      type: object
+      description: Request body for dynamic request field queries, providing previously selected field values.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+    order-by:
+      type: string
+      format: order-by
+      description: A property of items within the collection, optionally followed by a `%20asc` or `%20desc` suffix.
+    request-field-choices-query-body:
+      type: object
+      description: Request body for field choices queries, providing the current values of other fields to filter the available choices.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+        filter:
+          type: string
+          description: |
+            SCIM filter to narrow the returned choices. Supported attribute: `label`.
+            Supported operators: `co` (contains), `sw` (starts with).
+          example: label co "prod"
+    request-field-choice:
+      type: object
+      description: A selectable choice for a request field
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the choice. Stable across calls and used as the answer value.
+        label:
+          type: string
+          description: Display label for the choice
+        description:
+          type: string
+          description: Optional description providing additional context for the choice
+        category:
+          type: string
+          description: Optional category label for the choice.
+      required:
+        - id
+        - label
+    request-field-choices-list:
+      type: object
+      description: Paginated list of choices for a request field
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/request-field-choice'
+        _links:
+          type: object
+          required:
+            - self
+          properties:
+            self:
+              $ref: '#/components/schemas/link'
+            next:
+              $ref: '#/components/schemas/link'
+      required:
+        - data
+        - _links
+    scim-filter:
+      type: string
+      format: scim-filter
+    resource-asset-name:
+      type: string
+      description: The display name for a resource asset
+      minLength: 1
+      maxLength: 255
+    resource-orn:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      format: okta-resource-orn
+      description: |
+        The Okta resource in [ORN format](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#okta-resource-name-orn)
+
+        See the ORN format for [supported resources](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#supported-resources).
+    catalog-entry-entitlement-resource-asset:
+      type: object
+      description: The resource asset that scopes this entitlement row. Present only for catalog entries where entitlements are scoped to resource assets.
+      properties:
+        id:
+          type: string
+          description: The identifier of the resource asset
+          minLength: 1
+          maxLength: 20
+        orn:
+          $ref: '#/components/schemas/resource-orn'
+        name:
+          $ref: '#/components/schemas/resource-asset-name'
+      required:
+        - id
+        - orn
+        - name
+    entitlement-property-id:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: The `id` property of an entitlement
+      minLength: 20
+      maxLength: 20
+    entitlement-property-display-name:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: The display name for an entitlement property
+      minLength: 1
+      maxLength: 255
+    entitlement-property-description:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: The description of an entitlement property
+      minLength: 1
+      maxLength: 1000
+    entitlement-value-id:
+      type: string
+      description: The `id` of the entitlement value
+      minLength: 20
+      maxLength: 20
+    entitlement-value-display-name:
+      type: string
+      description: The display name for an entitlement value
+      minLength: 1
+      maxLength: 255
+    catalog-entry-entitlement-value:
+      type: object
+      description: An entitlement value for a catalog entry entitlement
+      properties:
+        id:
+          $ref: '#/components/schemas/entitlement-value-id'
+        name:
+          $ref: '#/components/schemas/entitlement-value-display-name'
+      required:
+        - id
+        - name
+    list-links:
+      type: object
+      description: Link relations available using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06)
+      required:
+        - self
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+        next:
+          $ref: '#/components/schemas/link'
+    catalog-entry-entitlement-item:
+      type: object
+      description: |
+        An entitlement property for a catalog entry, with the first page of its values inline. If more values remain, `_links.next` points to the `/entitlements/values` endpoint.
+      properties:
+        id:
+          $ref: '#/components/schemas/entitlement-property-id'
+        name:
+          $ref: '#/components/schemas/entitlement-property-display-name'
+        description:
+          $ref: '#/components/schemas/entitlement-property-description'
+        values:
+          type: array
+          description: |
+            The first page of values for this entitlement. Up to 20 values are returned inline. If more values remain, `_links.next` is present.
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-value'
+        _links:
+          $ref: '#/components/schemas/list-links'
+      required:
+        - id
+        - name
+        - values
+    catalog-entry-entitlement-row:
+      type: object
+      description: |-
+        One resource asset in the effective-entitlement view for this catalog entry.
+        * `targetOrn` is the stable identifier that paginates `data[]`.
+      properties:
+        targetOrn:
+          $ref: '#/components/schemas/resource-orn'
+        resourceAsset:
+          $ref: '#/components/schemas/catalog-entry-entitlement-resource-asset'
+        entitlements:
+          type: array
+          description: |
+            The complete effective entitlements on this target, from all grant sources: direct grants, group-inherited grants, and hierarchy-inherited grants. Each item is one entitlement property with only the first page of its effective values returned.
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-item'
+      required:
+        - targetOrn
+        - resourceAsset
+        - entitlements
+    catalog-entry-entitlements-list:
+      type: object
+      description: A paginated list of asset and entitlement rows for a catalog entry
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-row'
+        _links:
+          $ref: '#/components/schemas/list-links'
+      required:
+        - data
+        - _links
+    catalog-entry-entitlement-values-list:
+      type: object
+      description: A paginated list of entitlement values for a specific entitlement on a catalog entry
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-value'
+        _links:
+          $ref: '#/components/schemas/list-links'
+      required:
+        - data
+        - _links
     entry-user:
       type: object
       description: A limited set of properties from the user's profile
@@ -2602,38 +2384,6 @@ components:
             $ref: '#/components/schemas/entry-user'
         _links:
           $ref: '#/components/schemas/entry-user-list-links'
-    scim-filter:
-      type: string
-      format: scim-filter
-    task-id:
-      type: string
-      format: task-id
-      description: The unique identifier for the task
-      maxLength: 24
-      minLength: 24
-      pattern: ^[0-9a-f]{24}$
-      example: 68b0a1576dd8db837f5ee55d
-    order-by:
-      type: string
-      format: order-by
-      description: A property of items within the collection, optionally followed by a `%20asc` or `%20desc` suffix.
-    okta-id:
-      description: The Okta ID
-      type: string
-      maxLength: 20
-      minLength: 20
-    task-assignees:
-      type: object
-      x-okta-ignore-redocly-rules-for-sdk: true
-      required:
-        - externalId
-        - type
-      description: A task assignee that performs actions on the task.
-      properties:
-        externalId:
-          $ref: '#/components/schemas/okta-id'
-        type:
-          $ref: '#/components/schemas/principal-type'
     task-status:
       type: string
       description: The status of the task
@@ -2642,6 +2392,13 @@ components:
         - COMPLETED
         - ASSIGNING
         - LOCKED
+    task-type:
+      type: string
+      description: The type of the task
+      x-okta-known-values:
+        - QUESTION
+        - APPROVAL
+        - TODO
     task-request-id:
       type: string
       maxLength: 20
@@ -2657,13 +2414,32 @@ components:
       type: string
       format: date-time
       readOnly: true
-    task-type:
+    task-id:
       type: string
-      description: The type of the task
-      x-okta-known-values:
-        - QUESTION
-        - APPROVAL
-        - TODO
+      format: task-id
+      description: The unique identifier for the task
+      maxLength: 24
+      minLength: 24
+      pattern: ^[0-9a-f]{24}$
+      example: 68b0a1576dd8db837f5ee55d
+    okta-id:
+      description: The Okta ID
+      type: string
+      maxLength: 20
+      minLength: 20
+      example: 00u1a2b3c4d5e6f7g8h9
+    task-assignees:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      required:
+        - externalId
+        - type
+      description: A task assignee that performs actions on the task.
+      properties:
+        externalId:
+          $ref: '#/components/schemas/okta-id'
+        type:
+          $ref: '#/components/schemas/principal-type'
     task-sparse:
       type: object
       description: Sparse representation of a Task resource
@@ -2809,6 +2585,7 @@ components:
         - USER
         - CLIENT_APP
         - UNKNOWN
+        - AI_AGENT
     principal-profile-enriched:
       type: object
       x-okta-ignore-redocly-rules-for-sdk: true
@@ -2820,29 +2597,34 @@ components:
       properties:
         id:
           type: string
-          description: The Okta user `id`
+          description: User Principal `id`
           minLength: 1
-          maxLength: 20
+          maxLength: 255
         email:
           type: string
-          description: The Okta user's email address
+          description: Okta user's email address
           minLength: 1
           maxLength: 100
         firstName:
           type: string
-          description: The Okta user's first name
+          description: Okta user's first name
           minLength: 0
           maxLength: 255
         lastName:
           type: string
-          description: The Okta user's last name
+          description: Okta user's last name
           minLength: 0
           maxLength: 255
         login:
           type: string
-          description: The Okta user's sign-in credentials, which is often their email address
+          description: Okta user's sign-in credentials, which is often their email address
           minLength: 1
           maxLength: 100
+        name:
+          type: string
+          description: Principal's name (populated if `type` is `AI_AGENT`)
+          minLength: 1
+          maxLength: 255
         status:
           $ref: '#/components/schemas/principal-profile-status'
         type:
@@ -3234,30 +3016,12 @@ components:
         - ADMIN
         - POLICY
         - ENTITLEMENT
-    entitlement-property-id:
-      type: string
-      x-okta-ignore-redocly-rules-for-sdk: true
-      description: The `id` property of an entitlement
-      minLength: 20
-      maxLength: 20
-    entitlement-property-display-name:
-      type: string
-      x-okta-ignore-redocly-rules-for-sdk: true
-      description: The display name for an entitlement property
-      minLength: 1
-      maxLength: 255
     entitlement-property-value:
       type: string
       x-okta-ignore-redocly-rules-for-sdk: true
       description: The value of an entitlement property
       minLength: 1
       maxLength: 255
-    entitlement-property-description:
-      type: string
-      x-okta-ignore-redocly-rules-for-sdk: true
-      description: The description of an entitlement property
-      minLength: 1
-      maxLength: 1000
     entitlement-property-multi-value:
       type: boolean
       x-okta-ignore-redocly-rules-for-sdk: true
@@ -4474,7 +4238,7 @@ components:
       type: string
       x-okta-ignore-redocly-rules-for-sdk: true
       x-enumDescriptions:
-        GOVERNANCE_ANALYZER: Criteria is based on Governance Analyzer's recommendation.
+        GOVERNANCE_ANALYZER: Criteria is based on Governance Analyzer's recommendation
       x-okta-known-values:
         - GOVERNANCE_ANALYZER
     decision:
@@ -4487,8 +4251,7 @@ components:
         - REVOKE
     bulk-review-criteria-gov-analyzer-mutable:
       type: object
-      description: |
-        The criteria for selecting reviews are based on the action recommended by Governance Analyzer.
+      description: Criteria for selecting reviews are based on the action recommended by Governance Analyzer
       required:
         - recommendedActionDecision
       properties:
@@ -4693,7 +4456,7 @@ components:
         - MANUAL
     reviewers-reviewer-type:
       type: string
-      description: Identifies the kind of reviewer for Access Certification.
+      description: Identifies the reviewer type for the access certification. Reviewers can be `USER`, `GROUP`, or `RESOURCE_OWNER`.
       x-okta-known-values:
         - USER
         - GROUP
@@ -4732,7 +4495,6 @@ components:
       description: Links available on a single review representation
       required:
         - self
-        - reassignReview
       properties:
         self:
           $ref: '#/components/schemas/link'
@@ -4831,6 +4593,196 @@ components:
           description: The service account name
           minLength: 1
           maxLength: 255
+    authorization-server-scope-condition:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: Scope condition defined for the authorization server
+      x-okta-known-values:
+        - ALL_SCOPES
+        - INCLUDE_ONLY
+        - EXCLUDE
+    reviewer-ai-agent-connected-resource-authorization-server:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: Authorization server details for an AI agent connection
+      properties:
+        orn:
+          type: string
+          description: Okta Resource Name (ORN) of the authorization server
+        name:
+          type: string
+          description: Name of the authorization server
+        issuerUrl:
+          type: string
+          description: Issuer URL of the connected authorization server
+        resourceIndicator:
+          type: string
+          description: Resource indicator used when requesting tokens
+          format: uri
+        scopeCondition:
+          $ref: '#/components/schemas/authorization-server-scope-condition'
+        scopes:
+          type: array
+          description: Connected authorization server scopes that the AI agent has access to
+          items:
+            type: string
+    reviewer-ai-agent-connected-resource-app:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: App details for an AI agent connection
+      properties:
+        id:
+          type: string
+          description: ID of the connected app
+        orn:
+          type: string
+          description: Okta Resource Name (ORN) of the connected app
+        name:
+          type: string
+          description: Name of the connected app
+    reviewer-ai-agent-connected-resource-mcp-server:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: MCP server details for an AI agent connection
+      properties:
+        id:
+          type: string
+          description: ID of the connected MCP server
+        orn:
+          type: string
+          description: Okta Resource Name (ORN) of the connected MCP server
+        name:
+          type: string
+          description: Name of the connected MCP server
+        endpointUrl:
+          type: string
+          description: Connected MCP server access URL for the AI agent
+        scopes:
+          type: array
+          description: Connected API server scopes that the AI agent has access to
+          maxItems: 50
+          items:
+            type: string
+            minLength: 1
+            maxLength: 1000
+            uniqueItems: true
+    reviewer-ai-agent-connected-resource-api-server:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: API server details for an AI agent connection
+      properties:
+        id:
+          type: string
+          description: ID of the connected API server
+        orn:
+          type: string
+          description: Okta Resource Name (ORN) of the connected API server
+        name:
+          type: string
+          description: Name of the connected API server
+        resourceUrl:
+          type: string
+          description: URL of the connected API server
+        scopes:
+          type: array
+          description: Connected API server scopes that the AI agent has access to
+          minItems: 0
+          maxItems: 50
+          items:
+            type: string
+            maxLength: 1000
+    reviewer-ai-agent-connected-resource-service-account-app:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: App details of the connected service account
+      properties:
+        orn:
+          type: string
+          description: Okta Resource Name (ORN) of the app
+        name:
+          type: string
+          description: Name of the app
+    reviewer-ai-agent-connected-resource-service-account:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: Service account details for an AI agent connection
+      properties:
+        orn:
+          type: string
+          description: Okta Resource Name (ORN) of the connected service account
+        name:
+          type: string
+          description: Name of the connected service account
+        app:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource-service-account-app'
+    reviewer-ai-agent-connected-resource-secret:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: OPA secret details for an AI agent connection
+      properties:
+        orn:
+          type: string
+          description: Okta Resource Name (ORN) of the connected OPA secret
+        name:
+          type: string
+          description: Name of the connected OPA secret
+        description:
+          type: string
+          description: Description of the connected OPA secret
+        path:
+          type: string
+          description: Path of the connected OPA secret
+    ai-agent-connected-resource-type:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: Type of resource connected to an AI agent
+      x-okta-known-values:
+        - APP
+        - MCP_SERVER
+        - API_SERVER
+        - AUTHORIZATION_SERVER
+        - OPA_SECRET
+        - APP_SERVICE_ACCOUNT
+    reviewer-ai-agent-connected-resource:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: AI agent connection resource details
+      required:
+        - type
+      properties:
+        authorizationServer:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource-authorization-server'
+        app:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource-app'
+        mcpServer:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource-mcp-server'
+        apiServer:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource-api-server'
+        serviceAccount:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource-service-account'
+        opaSecret:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource-secret'
+        type:
+          $ref: '#/components/schemas/ai-agent-connected-resource-type'
+    reviewer-ai-agent-connection:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: AI agent connection
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: AI agent connection ID
+          minLength: 1
+          maxLength: 20
+        name:
+          type: string
+          description: Name of the resource associated with this connection
+          minLength: 1
+          maxLength: 255
+        connectedResource:
+          $ref: '#/components/schemas/reviewer-ai-agent-connected-resource'
     review-minimal-read-only-fields:
       type: object
       x-okta-ignore-redocly-rules-for-sdk: true
@@ -4869,7 +4821,6 @@ components:
         reviewerProfile:
           $ref: '#/components/schemas/principal-profile-enriched'
         reviewerType:
-          description: Specifies the type of the reviewers. Reviewers can be `USER`, `GROUP`, `RESOURCE_OWNER`
           $ref: '#/components/schemas/reviewers-reviewer-type'
         reviewerGroupProfile:
           $ref: '#/components/schemas/reviewer-group-profile'
@@ -4894,18 +4845,14 @@ components:
           $ref: '#/components/schemas/reviewer-service-account'
         oktaServiceAccount:
           $ref: '#/components/schemas/reviewer-service-account'
+        aiAgentConnection:
+          $ref: '#/components/schemas/reviewer-ai-agent-connection'
     review-sparse:
       description: Sparse representation of a Review resource
       x-okta-ignore-redocly-rules-for-sdk: true
       allOf:
         - $ref: '#/components/schemas/read-only-standard-properties'
         - $ref: '#/components/schemas/review-minimal-read-only-fields'
-      required:
-        - _links
-      properties:
-        _links:
-          allOf:
-            - $ref: '#/components/schemas/review-links'
     review-list-links:
       type: object
       description: Links available in review list response
@@ -4931,6 +4878,677 @@ components:
             $ref: '#/components/schemas/review-sparse'
         _links:
           $ref: '#/components/schemas/review-list-links'
+    review-action:
+      type: string
+      description: The action to apply to a review
+      x-okta-known-values:
+        - APPROVE
+        - REVOKE
+        - REASSIGN
+    review-action-item:
+      type: object
+      description: A review with the action to apply to it
+      required:
+        - reviewId
+        - action
+      properties:
+        reviewId:
+          type: string
+          description: Review ID
+          minLength: 1
+        action:
+          $ref: '#/components/schemas/review-action'
+        reviewerId:
+          type: string
+          description: |
+            The reassigned reviewer's Okta user ID
+            Required when `action` is `REASSIGN`. All items with `action` set
+            to `REASSIGN` in a single request must specify the same `reviewerId`.
+          minLength: 1
+          maxLength: 20
+        note:
+          type: string
+          description: Optional note to justify the action taken on this review
+          nullable: true
+          maxLength: 300
+    review-items-action-mutable:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: |
+        The request body to submit actions for a collection of reviews assigned
+        to the current reviewer in a campaign. You can submit up to 50 review actions
+        (in a combination of `APPROVE`, `REVOKE`, or `REASSIGN`) in a single request. For `REASSIGN`
+        actions, you must also include the new reviewer's ID (`reviewerId`). You can only reassign reviews
+        to the same reviewer in a single request. That is, all `REASSIGN` actions must target the same `reviewerId`
+        in a request.
+      required:
+        - reviews
+      properties:
+        reviews:
+          description: |
+            List of review actions
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/review-action-item'
+        reviewerLevel:
+          description: |
+            The reviewer level for the review action. Required only
+            for multi-level campaigns.
+          $ref: '#/components/schemas/reviewer-level-type'
+  parameters:
+    rcar-entries-list-filter-v2:
+      name: filter
+      description: |
+        A required [filter](https://developer.okta.com/docs/api/#filter) expression that returns entries based on the [`parent`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.admin.v2/tag/Catalogs/#tag/Catalogs/operation/listAllDefaultEntriesV2!c=200&path=data/parent&t=response) property:
+        * This filter expression only supports the `parent` property and the `eq` and `pr` [operators](https://developer.okta.com/docs/api/#operators).
+        * If you want the query to return child entries, then you must specify the `parent` ID with the `eq` operator.
+
+        > **Notes:**
+        > * If you don't use the `parent` property in the filter expression, undesireable results are returned.
+        > * Query parameter percent encoding is required. See [Special characters]( https://developer.okta.com/docs/api/#special-characters ).
+      in: query
+      required: true
+      schema:
+        type: string
+        format: scim-filter
+        example: not(parent pr)
+      x-scim-filter:
+        parent:
+          operators:
+            - eq
+          schema:
+            $ref: '#/components/schemas/catalog-entry-id'
+    rcar-entries-list-after:
+      name: after
+      description: |-
+        The [pagination](https://developer.okta.com/docs/api/#pagination) cursor that points to the last record of the previous response.
+
+        The maximum number of entries returned in a response is determined by the [`limit`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.admin.v2/tag/Catalogs/#tag/Catalogs/operation/listAllDefaultEntriesV2!in=query&path=limit&t=request) query parameter.
+        If there are more entries to return, the `_links.next.href` link contains the `after` cursor for the next page of results.
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/catalog-entry-id'
+    rcar-entries-list-match:
+      name: match
+      description: Return catalog entries that match a substring value in the [`name`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.enduser.v2/tag/My-Catalogs/#tag/My-Catalogs/operation/listMyDefaultEntriesV2!c=200&path=data/name&t=response) or [`description`](https://developer.okta.com/docs/api/iga/openapi/governance.requests.enduser.v2/tag/My-Catalogs/#tag/My-Catalogs/operation/listMyDefaultEntriesV2!c=200&path=data/description&t=response) properties. At least three characters are required for fuzzy search.
+      in: query
+      required: false
+      schema:
+        type: string
+        minLength: 3
+        maxLength: 50
+        example: figma
+    rcar-entries-list-limit:
+      name: limit
+      description: The maximum number of records returned in a response
+      in: query
+      required: false
+      schema:
+        type: integer
+        maximum: 200
+        minimum: 1
+        example: 20
+    catalog-entry-id:
+      name: entryId
+      description: Unique identifier for the catalog entry
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/catalog-entry-id'
+    rcar-request-id-parameter:
+      name: requestId
+      description: Unique identifier for the Resource-Centric Access Requests (RCAR) request
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/rcar-request-id'
+    field-id:
+      name: fieldId
+      in: path
+      required: true
+      description: The ID of the request field
+      schema:
+        type: string
+    choices-order-by:
+      name: orderBy
+      description: |
+        Specifies a property to sort the results. The following properties are supported:
+        - `label`
+
+        Append `desc` or `asc` to indicate the sorting direction.
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/order-by'
+      x-order-by:
+        attributes:
+          - label
+      examples:
+        OrderByLabel:
+          summary: Order by label
+          value: label asc
+    limit:
+      name: limit
+      description: The maximum number of records returned in a response
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 20
+        maximum: 200
+        minimum: 1
+    after:
+      name: after
+      description: |-
+        Specifies the pagination cursor for the next page of results.
+        Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
+      in: query
+      required: false
+      schema:
+        type: string
+        example: 00u68w6vzKLultXS97g6
+    entry-user-list-filter:
+      name: filter
+      description: |
+        A required filter expression that returns users based on the `firstName` or `lastName` properties.
+        This [filter](https://developer.okta.com/docs/api/#filter) expression supports the `sw` [operator](https://developer.okta.com/docs/api/#operators).
+
+        **Note:** Query parameter percent encoding is required. See [Special characters]( https://developer.okta.com/docs/api/#special-characters ).
+      in: query
+      required: true
+      schema:
+        type: string
+        format: scim-filter
+        example: firstName sw "John" OR lastName sw "John"
+      x-scim-filter:
+        firstName:
+          operators:
+            - sw
+          type: String
+        lastName:
+          operators:
+            - sw
+          type: String
+    user-id:
+      name: userId
+      description: Unique identifier for the user
+      in: path
+      required: true
+      schema:
+        type: string
+        maxLength: 20
+        minLength: 20
+        example: 00ucvnr9rbONeZdRp1d7
+    my-task-list-filter:
+      name: filter
+      description: |
+        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters a collection of tasks in the response.
+        The filter expression supports the following properties and [operators](https://developer.okta.com/docs/api/#operators):
+
+        - `status`: The status of the task. Possible values: `OPEN`, `COMPLETED`, `ASSIGNING`, and `LOCKED`. Supports the `eq` operator, and the `or` operator when you group multiple `status` values in parentheses.
+        - `type`: The type of the task. Possible values: `QUESTION`, `APPROVAL`, and `TODO`. Supports the `eq` operator.
+        - `requestId`: The ID of the request for the task. Supports the `eq` operator.
+        - `createdAt`: The task created time. Supports the `gt`, `ge`, `le`, and `lt` operators.
+        - `updatedAt`: The latest task updated time. Supports the `gt`, `ge`, `le`, and `lt` operators.
+
+        You can combine multiple filter expressions using the `and` operator. To match multiple `status` values in a single request, combine `status` conditions with the `or` operator inside parentheses, for example `(status eq "OPEN" or status eq "ASSIGNING")`.
+
+        > **Note**: Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/scim-filter'
+      x-scim-filter:
+        status:
+          operators:
+            - eq
+          schema:
+            $ref: '#/components/schemas/task-status'
+        type:
+          operators:
+            - eq
+          schema:
+            $ref: '#/components/schemas/task-type'
+        requestId:
+          operators:
+            - eq
+          schema:
+            $ref: '#/components/schemas/task-request-id'
+        createdAt:
+          operators:
+            - gt
+            - ge
+            - le
+            - lt
+          schema:
+            $ref: '#/components/schemas/task-created-at'
+        updatedAt:
+          operators:
+            - gt
+            - ge
+            - le
+            - lt
+          schema:
+            $ref: '#/components/schemas/task-updated-at'
+      examples:
+        FilterByStatus:
+          summary: Filter by status
+          value: status eq "OPEN"
+        FilterByMultipleStatuses:
+          summary: Filter by multiple statuses
+          value: (status eq "OPEN" or status eq "ASSIGNING")
+        FilterByType:
+          summary: Filter by type
+          value: type eq "QUESTION"
+        FilterByRequestId:
+          summary: Filter by requestId
+          value: requestId eq "0oafxqCAJWWGELFTYASJ"
+        FilterByCreatedAt:
+          summary: Filter by createdAt
+          value: createdAt gt "2022-05-24T14:15:22Z"
+        FilterByUpdatedAt:
+          summary: Filter by updatedAt
+          value: updatedAt gt "2022-05-24T14:15:22Z"
+    task-list-after:
+      name: after
+      description: |
+        Specifies the pagination cursor for the next page of results. Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/task-id'
+    task-list-order-by:
+      name: orderBy
+      description: |
+        Specifies a property to sort the results. The following properties are supported:
+        - `createdAt`
+        - `updatedAt`
+
+        Append `desc` or `asc` to indicate the sorting direction.
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/order-by'
+      x-order-by:
+        attributes:
+          - createdAt
+          - updatedAt
+      examples:
+        OrderByCreated:
+          summary: Order by created
+          value: createdAt desc
+        OrderByLastUpdated:
+          summary: Order by updatedAt
+          value: updatedAt desc
+    task-id-parameter:
+      name: taskId
+      description: The `id` of the task
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/task-id'
+    security-access-reviews-filter:
+      name: filter
+      in: query
+      description: |-
+        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters security access reviews.
+        The `eq` and `co` [operators](https://developer.okta.com/docs/api/#operators) are supported for string properties.
+        The `gt` and `lt` operators are supported for date properties.
+
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      required: false
+      allowEmptyValue: true
+      schema:
+        type: string
+      examples:
+        FilterByName:
+          summary: Filter by name provided for the security access review
+          value: name co "Git"
+        FilterByStatus:
+          summary: Filter by status of the security access review
+          value: status eq "ACTIVE"
+        FilterByReviewerName:
+          summary: Filter by reviewer.name. Note that it compares against the first name and last name of the reviewer.
+          value: reviewer.name co "John"
+        FilterByCreated:
+          summary: Filter by created
+          value: created gt "2022-05-24T14:15:22Z"
+    security-access-reviews-order-by:
+      name: orderBy
+      description: |
+        The field to sort the results, in ascending (`asc`) or descending (`desc`) order.
+        Sorting is applied to only one field.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        uniqueItems: false
+        minItems: 1
+        maxItems: 1
+        items:
+          type: string
+          description: A property of items within the collection, optionally followed by a ` asc` or ` desc` suffix.
+        default:
+          - created asc
+      examples:
+        OrderByName:
+          summary: Order by name
+          value: name desc
+        OrderByCreated:
+          summary: Order by created
+          value: created desc
+        OrderByEndTime:
+          summary: Order by endTime
+          value: endTime desc
+        OrderByStatus:
+          summary: Order by status
+          value: status desc
+        OrderById:
+          summary: Order by id
+          value: id desc
+    security-access-review-id:
+      name: securityAccessReviewId
+      in: path
+      description: The ID of the security access review
+      required: true
+      schema:
+        type: string
+    security-access-review-accesses-filter:
+      name: filter
+      description: |-
+        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters access items.
+
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        type: string
+      examples:
+        FilterByName:
+          summary: Filter by name
+          value: name co "Git"
+        FilterByPriority:
+          summary: Filter by priority
+          value: priority eq "HIGH"
+        FilterBySODConflict:
+          summary: Filter by sodConflictSeverity
+          value: sodConflictSeverity eq "HIGH"
+        FilterByAssignmentMethod:
+          summary: Filter by assignmentMethodSeverity
+          value: assignmentMethodSeverity eq "HIGH"
+        FilterByPastGovernanceDecisions:
+          summary: Filter by pastGovernanceDecisionsSeverity
+          value: pastGovernanceDecisionsSeverity eq "HIGH"
+        FilterByUsageHistory:
+          summary: Filter by usageHistorySeverity
+          value: usageHistorySeverity eq "HIGH"
+        FilterByGovernanceLabel:
+          summary: Filter by governanceLabel
+          value: governanceLabel co "Crown Jewel"
+    security-access-review-accesses-order-by:
+      name: orderBy
+      description: |-
+        The field to sort the results, in ascending (asc) or descending (desc) order. Sorting is applied to only one field.
+
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        uniqueItems: false
+        minItems: 1
+        maxItems: 1
+        items:
+          type: string
+          description: A property of items within the collection, optionally followed by a ` asc` or ` desc` suffix.
+        default:
+          - priority desc
+      examples:
+        OrderByPriority:
+          summary: Order by priority
+          value: priority desc
+        OrderByLastAccess:
+          summary: Order by lastAccess
+          value: lastAccess desc
+        OrderByAccessFrequency:
+          summary: Order by accessFrequency
+          value: accessFrequency desc
+    security-access-review-access-id:
+      name: securityAccessReviewAccessId
+      in: path
+      description: The ID of the access item in a security access review
+      required: true
+      schema:
+        type: string
+    security-access-review-sub-accesses-filter:
+      name: filter
+      description: |
+        A [filter](https://developer.okta.com/docs/api/#filter) expression that filters sub-access items.
+
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        type: string
+      examples:
+        FilterByName:
+          summary: Filter by name
+          value: name co "Git"
+        FilterByResourceType:
+          summary: Filter by resourceType
+          value: resourceType eq "GROUP"
+        FilterByPriority:
+          summary: Filter by priority
+          value: priority eq "HIGH"
+        FilterBySODConflict:
+          summary: Filter by sodConflictSeverity
+          value: sodConflictSeverity eq "HIGH"
+        FilterByAssignmentMethod:
+          summary: Filter by assignmentMethodSeverity
+          value: assignmentMethodSeverity eq "HIGH"
+        FilterByPastGovernanceDecisions:
+          summary: Filter by pastGovernanceDecisionsSeverity
+          value: pastGovernanceDecisionsSeverity eq "HIGH"
+        FilterByUsageHistory:
+          summary: Filter by usageHistorySeverity
+          value: usageHistorySeverity eq "HIGH"
+        FilterByGovernanceLabel:
+          summary: Filter by governanceLabel
+          value: governanceLabel co "Crown Jewel"
+    security-access-review-sub-accesses-order-by:
+      name: orderBy
+      description: |
+        A field by which results can be sorted. For now, sorting by a single field is supported.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        uniqueItems: false
+        minItems: 1
+        maxItems: 1
+        items:
+          type: string
+          description: A property of items within the collection, optionally followed by a ` asc` or ` desc` suffix.
+        default:
+          - priority desc
+      examples:
+        OrderByPriority:
+          summary: Order by priority
+          value: priority desc
+    security-access-review-target-id:
+      name: securityAccessReviewTargetId
+      in: path
+      description: The ID of the access or sub-access item in a security access review
+      required: true
+      schema:
+        type: string
+    delegates-user-list-filter:
+      name: filter
+      description: |
+        An optional filter expression that returns users based on the `firstName` or `lastName` properties.
+        This [filter](https://developer.okta.com/docs/api/#filter) expression supports the `sw` [operator](https://developer.okta.com/docs/api/#operators).
+
+        When omitted, the endpoint returns all eligible delegates for the current user.
+        However, if the org's delegate scope settings are unrestricted (the `onlyFor` list is empty),
+        the filter parameter is required and omitting it returns a 400 error.
+
+        **Note:** Query parameter percent encoding is required. See [Special characters](https://developer.okta.com/docs/api/#special-characters).
+      in: query
+      required: false
+      schema:
+        type: string
+        format: scim-filter
+        example: firstName sw "John" OR lastName sw "John"
+      x-scim-filter:
+        firstName:
+          operators:
+            - sw
+          type: String
+        lastName:
+          operators:
+            - sw
+          type: String
+    campaign-id:
+      name: campaignId
+      description: Unique identifier for the campaign
+      in: path
+      required: true
+      schema:
+        type: string
+    review-id:
+      name: reviewId
+      description: Unique identifier for the review
+      in: path
+      required: true
+      schema:
+        type: string
+    resource-connection-agent-id:
+      name: agentId
+      in: path
+      required: true
+      description: ID of the agent
+      schema:
+        type: string
+        example: wlpkhjm0jnDp8RrUu0g4
+    job-id:
+      name: jobId
+      description: Unique identifier for the job
+      in: path
+      required: true
+      schema:
+        type: string
+    campaign-reviews-filter:
+      name: filter
+      description: |
+        Apply various filters by using supported review filtering properties.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+
+        Supported filters are:
+
+        - `id`: string
+        - `principalId`: string
+        - `reviewerId`: string
+        - `decision`: string (APPROVE, REVOKE, UNREVIEWED)
+        - `resourceId`: string (`GroupId` or `AppId`)
+        - `reviewerType`: string (`USER` or `GROUP` or `RESOURCE_OWNER`)
+        - `reviewerLevel`: string (`FIRST` or `SECOND`)
+        - `entitlementValueId`: string
+        - `entitlementBundleId`: string
+        - `principalProfile.status`: string (`ACTIVE` or `INACTIVE`)
+      in: query
+      required: false
+      schema:
+        type: string
+      examples:
+        FilterByReviewDecision:
+          summary: Filter by review decisions
+          value: decision eq "UNREVIEWED"
+        FilterByReviewerId:
+          summary: Filter by reviewerId
+          value: reviewerId eq "00u5v5viPvg84h0W68g4"
+        FilterByGroupResourceId:
+          summary: Filter by group resourceId
+          value: resourceId eq "00gyqjxNrsh764hjs784"
+        FilterByAppResourceId:
+          summary: Filter by app resourceId
+          value: resourceId eq "00ayqjxNrZD11n4w40g3"
+        FilterByPrincipalId:
+          summary: Filter by principalId
+          value: principalId eq "00u5v5viPvg84h0W68g4"
+        FilterByReviewerType:
+          summary: Filter by reviewerType
+          value: reviewerType eq USER
+        FilterByReviewerLevel:
+          summary: Filter by reviewerLevel
+          value: reviewerLevel eq FIRST
+        FilterByEntitlementId:
+          summary: Filter by entitlement value ID
+          value: entitlementValueId eq "enthzzPJAXvaYQ71T0g3"
+        FilterByEntitlementType:
+          summary: Filter by entitlement bundle ID
+          value: entitlementBundleId eq "enbisi7xt3iBd39Bn0g3"
+        FilterByAppServiceAccountId:
+          summary: Filter by SaaS app service account ID
+          value: appServiceAccountId eq "00saqjxNrZD11n4w40g3"
+        FilterByOktaServiceAccountId:
+          summary: Filter by Okta service account ID
+          value: oktaServiceAccountId eq "00sa5v5viPvg84h0W68g4"
+        FilterByPrincipalProfileStatus:
+          summary: Filter by principal profile status
+          value: principalProfile.status eq "ACTIVE"
+    my-reviews-order-by:
+      name: orderBy
+      description: |
+        Specifies a property to sort the results. The following properties are supported:
+        - `decided`
+        - `decision`
+        - `remediationStatus`
+        - `created`
+
+        Append `desc` or `asc` to indicate the sorting direction.
+
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        uniqueItems: false
+        minItems: 1
+        maxItems: 1
+        items:
+          type: string
+          description: A property from the collection, optionally followed by an ` asc` or ` desc` suffix.
+      examples:
+        OrderByDecided:
+          summary: Order by decided
+          value: decided desc
+        OrderByDecision:
+          summary: Order by decision
+          value: decision desc
+        OrderByRemediationStatus:
+          summary: Order by remediationStatus
+          value: remediationStatus desc
+        OrderByCreated:
+          summary: Order by created
+          value: created desc
   headers:
     link:
       required: false
@@ -6282,6 +6900,143 @@ components:
               - name: Financial reporting and transaction processing
                 description: Accountant cannot process transactions or alter the general ledger.
                 resourceName: Netsuite
+    catalog-entry-entitlements-default:
+      summary: Default unfiltered response, with results across two assets
+      value:
+        data:
+          - targetOrn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+            resourceAsset:
+              id: reaBcDeFgHiJkLmNoPqR
+              orn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+              name: AWS Account PROD
+            entitlements:
+              - id: espBcDeFgHiJkLmNoPqR
+                name: Roles
+                description: IAM roles assigned to this group
+                values:
+                  - id: entBcDeFgHiJkLmNoPqR
+                    name: ReadOnlyAccess
+                  - id: entBcDeFgHiJkLmNoPqS
+                    name: PowerUserAccess
+          - targetOrn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqS
+            resourceAsset:
+              id: reaBcDeFgHiJkLmNoPqS
+              orn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqS
+              name: AWS Account DEV
+            entitlements:
+              - id: espBcDeFgHiJkLmNoPqS
+                name: Roles
+                description: IAM roles assigned to this group
+                values:
+                  - id: entBcDeFgHiJkLmNoPqT
+                    name: AdminAccess
+        _links:
+          self:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements
+          next:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements?after=reaBcDeFgHiJkLmNoPqS
+    catalog-entry-entitlements-scoped:
+      summary: One asset row with one entitlement, with all values fit inline and more asset rows remain
+      value:
+        data:
+          - targetOrn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+            resourceAsset:
+              id: reaBcDeFgHiJkLmNoPqR
+              orn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+              name: AWS Account PROD
+            entitlements:
+              - id: espBcDeFgHiJkLmNoPqR
+                name: Roles
+                description: IAM roles assigned to this group
+                values:
+                  - id: entBcDeFgHiJkLmNoPqR
+                    name: Role 01
+        _links:
+          self:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements
+          next:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements?after=reaBcDeFgHiJkLmNoPqR
+    catalog-entry-entitlements-asset-name-search:
+      summary: An `asset.name` search, with rows matching the name prefix "PROD"
+      value:
+        data:
+          - targetOrn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+            resourceAsset:
+              id: reaBcDeFgHiJkLmNoPqR
+              orn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+              name: PROD Account
+            entitlements:
+              - id: espBcDeFgHiJkLmNoPqR
+                name: Roles
+                description: IAM roles assigned to this group
+                values:
+                  - id: entBcDeFgHiJkLmNoPqR
+                    name: ReadOnlyAccess
+        _links:
+          self:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements?filter=asset.name+sw+%22PROD%22
+    catalog-entry-entitlements-values-truncated:
+      summary: One asset row where the entitlement has more values than what fits inline and `_links.next` on the entitlement
+      value:
+        data:
+          - targetOrn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+            resourceAsset:
+              id: reaBcDeFgHiJkLmNoPqR
+              orn: orn:okta:governance:00oBcDeFgHiJkLmNoPqR:resource-assets:reaBcDeFgHiJkLmNoPqR
+              name: AWS Account PROD
+            entitlements:
+              - id: espBcDeFgHiJkLmNoPqR
+                name: Roles
+                description: IAM roles assigned to this group
+                values:
+                  - id: entBcDeFgHiJkLmNoPqR
+                    name: ReadOnlyAccess
+                  - id: entBcDeFgHiJkLmNoPqS
+                    name: PowerUserAccess
+                  - id: entBcDeFgHiJkLmNoPqT
+                    name: ViewOnlyAccess
+                _links:
+                  self:
+                    href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements/values?filter=entitlement.id+eq+%22espBcDeFgHiJkLmNoPqR%22+AND+targetOrn+eq+%22orn%3Aokta%3Agovernance%3A00oBcDeFgHiJkLmNoPqR%3Aresource-assets%3AreaBcDeFgHiJkLmNoPqR%22
+                  next:
+                    href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements/values?filter=entitlement.id+eq+%22espBcDeFgHiJkLmNoPqR%22+AND+targetOrn+eq+%22orn%3Aokta%3Agovernance%3A00oBcDeFgHiJkLmNoPqR%3Aresource-assets%3AreaBcDeFgHiJkLmNoPqR%22&after=entBcDeFgHiJkLmNoPqT
+        _links:
+          self:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements
+    catalog-entry-entitlements-unsupported-entry:
+      summary: When the catalog entry does not support entitlements
+      description: Entitlements are not supported for this catalog entry
+      value:
+        errorCode: E0000001
+        errorSummary: 'Api validation failed: CatalogEntry'
+        errorLink: E0000001
+        errorId: oaenikBPk01RLu4b4D6PdUlcA
+        errorCauses:
+          - errorSummary: Entitlements are not supported for this catalog entry
+    catalog-entry-entitlement-values:
+      summary: Next page of values for an entitlement
+      value:
+        data:
+          - id: entBcDeFgHiJkLmNoPqS
+            name: Role 02
+          - id: entBcDeFgHiJkLmNoPqT
+            name: Role 03
+        _links:
+          self:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements/values?filter=targetOrn+eq+%22orn%3Aokta%3Agovernance%3A00oBcDeFgHiJkLmNoPqR%3Aresource-assets%3AreaBcDeFgHiJkLmNoPqR%22+AND+entitlement.id+eq+%22espBcDeFgHiJkLmNoPqR%22
+          next:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements/values?filter=targetOrn+eq+%22orn%3Aokta%3Agovernance%3A00oBcDeFgHiJkLmNoPqR%3Aresource-assets%3AreaBcDeFgHiJkLmNoPqR%22+AND+entitlement.id+eq+%22espBcDeFgHiJkLmNoPqR%22&after=entBcDeFgHiJkLmNoPqT
+    catalog-entry-entitlement-values-terminal:
+      summary: Terminal page of values. The complete set is returned, with no next link.
+      value:
+        data:
+          - id: entBcDeFgHiJkLmNoPqU
+            name: Role 04
+          - id: entBcDeFgHiJkLmNoPqV
+            name: Role 05
+        _links:
+          self:
+            href: https://subdomain.okta.com/governance/api/v2/my/catalogs/default/entries/cenBcDeFgHiJkLmNoPqR/entitlements/values?filter=targetOrn+eq+%22orn%3Aokta%3Agovernance%3A00oBcDeFgHiJkLmNoPqR%3Aresource-assets%3AreaBcDeFgHiJkLmNoPqR%22+AND+entitlement.id+eq+%22espBcDeFgHiJkLmNoPqR%22&after=entBcDeFgHiJkLmNoPqT
     entry-user-list-success:
       summary: Lists all users who may be requesters for the entry
       description: Lists all users who may be requesters for the entry that the authorized user could request on behalf of
@@ -7518,6 +8273,253 @@ components:
             href: https://myorg.okta.com/governance/api/v1/reviews?filter%3DreviewerType%20eq%20%22GROUP%22
           next:
             href: https://myorg.okta.com/governance/api/v1/reviews?after=1&filter%3DreviewerType%20eq%20%22GROUP%22
+    review-items-action-revoke-request:
+      summary: Payload to revoke access for two reviews
+      value:
+        reviews:
+          - reviewId: icraveS4pQxfJrPRa0g3
+            action: REVOKE
+            note: Reviewed during Q1 access certification
+          - reviewId: icran1tBlqTx9Qdvz0g3
+            action: REVOKE
+            note: Reviewed during Q1 access certification
+    review-items-action-reassign-request:
+      summary: Payload to reassign two reviews to another reviewer
+      value:
+        reviews:
+          - reviewId: icraveS4pQxfJrPRa0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+          - reviewId: icran1tBlqTx9Qdvz0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+    review-items-action-mixed-request:
+      summary: Payload with a combination of REASSIGN, APPROVE, and REVOKE actions in a single request
+      value:
+        reviews:
+          - reviewId: icraveS4pQxfJrPRa0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+          - reviewId: icran1tBlqTx9Qdvz0g3
+            action: REASSIGN
+            reviewerId: 00u31c7qMRUfrhdew0g4
+            note: Reassigning while out of office
+          - reviewId: icran1tBlqTx9Qdfz0g3
+            action: APPROVE
+            note: Access is appropriate for this user's role
+          - reviewId: icran1tBlqTx9Qdrz0g3
+            action: REVOKE
+            note: Access is no longer needed
+    review-actions-response-01-revoke:
+      summary: Two reviews revoked
+      description: |
+        The `decision` and `decided` properties are updated after two reviews were revoked.
+      value:
+        data:
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u28w6vzKKultXP98g5
+              email: jessie.smith@example.com
+              firstName: Jessie
+              lastName: Smith
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: REVOKE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icraveS4pQxfJrPRa0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u2iudyie873
+              email: tal.gupta@example.com
+              firstName: Tal
+              lastName: Gupta
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: REVOKE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdvz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+        _links:
+          self:
+            href: https://myorg.okta.com/governance/api/v1/my/campaigns/icitdyhndQ6qstyvR8g5/reviews/actions
+    review-actions-response-02-reassign:
+      summary: Two reviews reassigned to another reviewer
+      description: |
+        After two reviews were reassigned, the `reviewerProfile` properties were updated, while the `decision` remains `UNREVIEWED`.
+      value:
+        data:
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u28w6vzKKultXP98g5
+              email: jessie.smith@example.com
+              firstName: Jessie
+              lastName: Smith
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icraveS4pQxfJrPRa0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u2iudyie873
+              email: tal.gupta@example.com
+              firstName: Tal
+              lastName: Gupta
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdvz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+        _links:
+          self:
+            href: https://myorg.okta.com/governance/api/v1/my/campaigns/icitdyhndQ6qstyvR8g5/reviews/actions
+    review-actions-response-03-mixed:
+      summary: Combination of reassigned, approved, and revoked reviews
+      description: |
+        After submitting `REASSIGN`, `APPROVE`, and `REVOKE` actions, reassigned reviews have updated `reviewerProfile` while the `decision` remains `UNREVIEWED`. Approved and revoked reviews have `decision` and `decided` properties updated.
+      value:
+        data:
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u28w6vzKKultXP98g5
+              email: jessie.smith@example.com
+              firstName: Jessie
+              lastName: Smith
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icraveS4pQxfJrPRa0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u2iudyie873
+              email: tal.gupta@example.com
+              firstName: Tal
+              lastName: Gupta
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u31c7qMRUfrhdew0g4
+              email: tim.manager@example.com
+              firstName: Tim
+              lastName: Manager
+              status: ACTIVE
+            decision: UNREVIEWED
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdvz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00847dfjhgd98
+              email: juan.garcia@example.com
+              firstName: Juan
+              lastName: Garcia
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: APPROVE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdfz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+          - campaignId: icitdyhndQ6qstyvR8g5
+            resourceId: 00gco5q3vQ20oPncs8g5
+            principalProfile:
+              id: 00u4xyzqMRUf3gkpy0g4
+              email: morgan.lee@example.com
+              firstName: Morgan
+              lastName: Lee
+              status: ACTIVE
+            reviewerProfile:
+              id: 00u5v5viPvg84h0W68g4
+              email: reviewer@example.com
+              firstName: Riley
+              lastName: Reviewer
+              status: ACTIVE
+            decision: REVOKE
+            decided: '2026-06-11T15:30:00Z'
+            remediationStatus: NONE
+            reviewerType: USER
+            id: icran1tBlqTx9Qdrz0g3
+            created: '2026-06-01T09:00:00Z'
+            createdBy: 00ub0oNGTSWTBKOLGLNR
+            lastUpdated: '2026-06-11T15:30:00Z'
+            lastUpdatedBy: 00u5v5viPvg84h0W68g4
+        _links:
+          self:
+            href: https://myorg.okta.com/governance/api/v1/my/campaigns/icitdyhndQ6qstyvR8g5/reviews/actions
   responses:
     rcar-entries-list-success-v2:
       description: List of all entries in the resource catalog
@@ -7660,7 +8662,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/request-full'
+            $ref: '#/components/schemas/my-request-full'
           examples:
             WhenEntryHasNoRequesterFieldsEmptyObject:
               $ref: '#/components/examples/request-00-create-no-fields-example-full'
@@ -7696,7 +8698,7 @@ components:
           examples:
             RequestMissingRequiredFields:
               $ref: '#/components/examples/request-create-missing-fields'
-    request-get-success:
+    my-request-get-success:
       description: A successful get request response
       headers:
         Link:
@@ -7710,7 +8712,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/request-full'
+            $ref: '#/components/schemas/my-request-full'
           examples:
             WhenRequestIsAccepted:
               $ref: '#/components/examples/request-get-submitted'
@@ -7738,7 +8740,7 @@ components:
               $ref: '#/components/examples/request-get-pending-with-client-credentials'
             WhenRequestHasRiskAssessment:
               $ref: '#/components/examples/request-with-risk-assessment-example'
-    request-update-success:
+    my-request-update-success:
       description: A successful update request response
       headers:
         Link:
@@ -7752,7 +8754,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/request-full'
+            $ref: '#/components/schemas/my-request-full'
           examples:
             WhenRequestStatusIsCanceled:
               $ref: '#/components/examples/request-update-status-canceled'
@@ -7891,6 +8893,101 @@ components:
               $ref: '#/components/examples/request-fields-get-request-submission-allowed-example'
             WhenEntryHasRiskAssessmentWithRestrictedRequestSubmissionAndMultipleRiskRules:
               $ref: '#/components/examples/request-fields-get-request-submission-restricted-with-multiple-risk-rules-example'
+    bad-request:
+      description: A request failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    choices-list-success:
+      description: Successful response that contains a paginated list of available choices
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-field-choices-list'
+          examples:
+            ListChoicesSuccess:
+              value:
+                data:
+                  - id: ent1a2b3c4d5e6f
+                    label: ReadOnlyAccess
+                  - id: ent2b3c4d5e6f7g
+                    label: PowerUserAccess
+                  - id: ent3c4d5e6f7g8h
+                    label: AdministratorAccess
+                _links:
+                  self:
+                    href: https://example.okta.com/governance/api/v2/my/catalogs/default/entries/cen12jfA9rrhdg16j0g4/request-fields/ROLE/choices/query
+                  next:
+                    href: https://example.okta.com/governance/api/v2/my/catalogs/default/entries/cen12jfA9rrhdg16j0g4/request-fields/ROLE/choices/query?after=ent3c4d5e6f7g8h
+    catalog-entry-entitlements-list-success:
+      description: Entitlements for a catalog entry that was retrieved successfully
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/catalog-entry-entitlements-list'
+          examples:
+            DefaultNoFilter:
+              $ref: '#/components/examples/catalog-entry-entitlements-default'
+            ScopedPushGroup:
+              $ref: '#/components/examples/catalog-entry-entitlements-scoped'
+            AssetNameSearch:
+              $ref: '#/components/examples/catalog-entry-entitlements-asset-name-search'
+            ValuesTruncated:
+              $ref: '#/components/examples/catalog-entry-entitlements-values-truncated'
+    catalog-entry-entitlements-list-bad-request:
+      description: An invalid list request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          examples:
+            InvalidFilter:
+              $ref: '#/components/examples/invalid-filter'
+            InvalidAfter:
+              $ref: '#/components/examples/invalid-after'
+            InvalidLimit:
+              $ref: '#/components/examples/invalid-limit'
+            UnsupportedEntry:
+              $ref: '#/components/examples/catalog-entry-entitlements-unsupported-entry'
+    catalog-entry-entitlement-values-list-success:
+      description: Entitlement values for a catalog entry entitlement that was retrieved successfully
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/catalog-entry-entitlement-values-list'
+          examples:
+            NextPageOfValues:
+              $ref: '#/components/examples/catalog-entry-entitlement-values'
+            TerminalPage:
+              $ref: '#/components/examples/catalog-entry-entitlement-values-terminal'
     entry-users-list-success:
       description: List of all requesters who may be able to request the entry
       headers:
@@ -8368,3 +9465,35 @@ components:
               $ref: '#/components/examples/reviews-list-response-02-filtered-by-entitlement-bundleid'
             filter-by-entitlement-value:
               $ref: '#/components/examples/reviews-list-response-02-filtered-by-entitlement-valueid'
+    review-actions-success-response:
+      description: A successful submit-actions response
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/review-list'
+          examples:
+            review-items-action-revoke-request:
+              $ref: '#/components/examples/review-actions-response-01-revoke'
+            review-items-action-reassign-request:
+              $ref: '#/components/examples/review-actions-response-02-reassign'
+            review-items-action-mixed-request:
+              $ref: '#/components/examples/review-actions-response-03-mixed'
+    review-actions-conflict-response:
+      description: Campaign isn't active and can't accept review actions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            errorCode: E0000175
+            errorSummary: Campaign isn't in an active state. Review actions can only be submitted for active campaigns.
+            errorLink: E0000175
+            errorId: oaeWCGz73hpRCG75VHP6-YYFw
+            errorCauses: []
