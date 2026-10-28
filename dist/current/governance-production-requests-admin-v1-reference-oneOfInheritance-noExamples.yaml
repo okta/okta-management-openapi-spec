@@ -34,8 +34,8 @@ tags:
 
       > **Notes**:
       >
-      > * Each org has a limit of 500 active request types.
-      > * Operations to create or delete apps or groups in Okta could take up to 24 hours before they can be referenced by the Access Requests - V1 APIs. To trigger these changes immediately, open Okta Access Requests as an administrator, go to **Settings** > **Configuration** and click **Sync Now** on the relevant Okta resource list.
+      > * Each org has a limit of 750 active request types.
+      > * Operations to create or delete apps or groups in Okta could take up to 24 hours before they can be referenced by the Access Requests - V1 APIs. To trigger these changes immediately, open Okta Access Requests as an admin, go to **Settings** > **Configuration** and click **Sync Now** on the relevant Okta resource list.
   - name: Requests
     description: |
       Okta Access Requests automate the process of requesting access to resources like apps, groups, and entitlement bundles. 
@@ -411,6 +411,48 @@ paths:
           $ref: '#/components/responses/rate-limit-exceeded-response'
         '500':
           $ref: '#/components/responses/unexpected-error-response'
+    patch:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Requests
+      operationId: updateRequest
+      summary: Update a request
+      description: |-
+        Updates a request.
+
+        You can only cancel a request by setting `status` to `CANCELED`.
+      parameters:
+        - $ref: '#/components/parameters/request-id'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.manage
+      requestBody:
+        required: true
+        description: The writable attributes of a request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request-update'
+      responses:
+        '200':
+          $ref: '#/components/responses/request-update-success'
+        '400':
+          $ref: '#/components/responses/bad-request'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
   /governance/api/v1/requests/{requestId}/messages:
     post:
       x-okta-lifecycle:
@@ -457,9 +499,9 @@ paths:
       operationId: listAllRequestTeams
       summary: List all teams
       description: |
-        Lists all or a subset of teams in your organization.
+        Lists all or a subset of teams in your org.
 
-        Use the `?filter=` parameter to narrow results with the request type property `name`. This query is useful for specifying the `ownerId` of a request type.
+        Use the `?filter=` parameter to narrow results with the request type property `name`. This query is useful for specifying the team `id` (Team ID) of a request type.
 
         Pagination parameters are accepted, and standard link headers are in the response.
       parameters:
@@ -534,6 +576,25 @@ components:
     scim-filter:
       type: string
       format: scim-filter
+    request-type-status:
+      type: string
+      enum:
+        - DRAFT
+        - ACTIVE
+        - DISABLED
+      description: |
+        A request type has a status lifecycle described in our [request type lifecycle documentation](/#request-type-status-lifecycle).
+
+        A request type may start with a status of DRAFT or ACTIVE, based on the status property in the Add request body.
+
+        The publish, unpublish, and delete operations all affect a request type's status.
+
+        Additionally, if any operation detects invalid settings, such as an approver who is no longer in the organization, the request type automatically transitions to disabled.
+    last-updated:
+      description: The ISO 8601 formatted date and time when the object was last updated
+      type: string
+      format: date-time
+      readOnly: true
     request-type-id:
       type: string
       maxLength: 24
@@ -576,11 +637,6 @@ components:
       description: The ISO 8601 formatted date and time when the resource was created
       type: string
       x-okta-ignore-redocly-rules-for-sdk: true
-      format: date-time
-      readOnly: true
-    last-updated:
-      description: The ISO 8601 formatted date and time when the object was last updated
-      type: string
       format: date-time
       readOnly: true
     last-updated-by:
@@ -654,20 +710,6 @@ components:
           description: Links to related resources
           additionalProperties:
             $ref: '#/components/schemas/link'
-    request-type-status:
-      type: string
-      enum:
-        - DRAFT
-        - ACTIVE
-        - DISABLED
-      description: |
-        A request type has a status lifecycle described in our [request type lifecycle documentation](/#request-type-status-lifecycle).
-
-        A request type may start with a status of DRAFT or ACTIVE, based on the status property in the Add request body.
-
-        The publish, unpublish, and delete operations all affect a request type's status.
-
-        Additionally, if any operation detects invalid settings, such as an approver who is no longer in the organization, the request type automatically transitions to disabled.
     request-type-links:
       type: object
       description: Links available on a single request type representation
@@ -1744,6 +1786,25 @@ components:
           self:
             href: https://myorg.okta.com/governance/api/v1/requests/61eb2db568c7c300079fefd0
             type: application/json
+    request-request-status:
+      type: string
+      description: |
+        A request has a lifecycle. See our [request lifecycle documentation](/#request).
+
+        A request progresses in its lifecycle state based on requester, approver, and administrator activities across a variety of channels, such as:
+
+        - Access Request portal
+        - Slack
+        - Microsoft teams
+
+        The following lifecycle operations are available on a single request.
+
+        - [Add](/iga/openapi/governance-production-requests-admin-v1-reference/requests/createrequest)
+      enum:
+        - OPEN
+        - PENDING
+        - RESOLVED
+        - LOCKED
     request-id:
       type: string
       maxLength: 24
@@ -1786,25 +1847,6 @@ components:
         requestTypeId: 05ab2db568c7c300079fefd0
         requesterUserIds:
           - 00ub0oNGTSWTBKOLGLNR
-    request-request-status:
-      type: string
-      description: |
-        A request has a lifecycle. See our [request lifecycle documentation](/#request).
-
-        A request progresses in its lifecycle state based on requester, approver, and administrator activities across a variety of channels, such as:
-
-        - Access Request portal
-        - Slack
-        - Microsoft teams
-
-        The following lifecycle operations are available on a single request.
-
-        - [Add](/iga/openapi/governance-production-requests-admin-v1-reference/requests/createrequest)
-      enum:
-        - OPEN
-        - PENDING
-        - RESOLVED
-        - LOCKED
     request-resolved-date-time:
       type: string
       format: date-time
@@ -2398,6 +2440,22 @@ components:
       oneOf:
         - $ref: '#/components/schemas/request-full-api-compatible'
         - $ref: '#/components/schemas/request-full-api-incompatible'
+    request-status-patchable:
+      type: string
+      description: Specify the status of the request
+      enum:
+        - CANCELED
+      x-enumDescriptions:
+        CANCELED: Only `CANCELED` is supported. You can't cancel a request if any of its tasks have been resolved.
+      example: CANCELED
+    request-update:
+      type: object
+      required:
+        - status
+      additionalProperties: false
+      properties:
+        status:
+          $ref: '#/components/schemas/request-status-patchable'
     request-message-message:
       type: string
       description: Message that will be created for the request. Newline can be specified by characters "\n". Message will be visible for all users who can view the request.
@@ -2416,6 +2474,11 @@ components:
       description: The properties expected in a request message create request
       allOf:
         - $ref: '#/components/schemas/request-message-mutable'
+    team-name:
+      type: string
+      description: The name of the team
+      maxLength: 40
+      minLength: 1
     team-id:
       type: string
       description: Team ID
@@ -2423,11 +2486,6 @@ components:
       minLength: 24
       pattern: ^[a-fA-F\d]{24}$
       format: owner-id
-    team-name:
-      type: string
-      description: The name of the team
-      maxLength: 40
-      minLength: 1
     team:
       type: object
       required:
@@ -2898,6 +2956,25 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/request-full'
+    request-update-success:
+      description: A successful update request response
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-full'
+    bad-request:
+      description: A request failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     teams-list-success:
       description: A successful teams list response
       content:

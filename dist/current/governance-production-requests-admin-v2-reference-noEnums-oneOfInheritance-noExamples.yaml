@@ -35,13 +35,17 @@ tags:
       - A priority to control what condition should take precedence when a requester matches against multiple request conditions
 
       See [Access request conditions](https://help.okta.com/oie/en-us/content/topics/identity-governance/access-requests/rcar-conditions.htm) for more information on Access request conditions and Identity Governance.
+
+      > **Note:** The following are maximum access-level limits for a request condition:
+      > * The maximum requestable entitlement bundles for a condition is 1000.
+      > * The maximum requestable unique groups for a condition is 1000.
     x-okta-lifecycle:
       lifecycle: GA
   - name: Request Sequences
     description: |-
-      The Request Sequences API allows you to retrieve request sequence data necessary for managing request conditions. Request sequences are created in the Okta Access Requets app and define a series of steps (questions, approval tasks, and custom tasks) that must be completed for a requester to gain access to the resource.
+      Use the Request Sequences API to retrieve the request sequence data needed to manage request conditions. Request sequences, also known as approval sequences, are defined in the Okta Access Requests app. They establish a series of steps (such as questions, approval tasks, and custom tasks) that must be fulfilled before a requester is granted access to a resource.
 
-      When you create a request condition, you must reference a request sequence. You can reuse request sequences with many request conditions.
+      When you create a request condition, you must reference a request sequence (see `approvalSequenceId` in [Create a request condition](https://developer.okta.com/docs/api/iga/openapi/governance-production-requests-admin-v2-reference/request-conditions/createresourcerequestconditionv2)). You can also reuse the same request sequence across multiple request conditions.
 
       See [Configure an approval sequence](https://help.okta.com/okta_help.htm?type=oie&id=csh-rcar-approval-sequences) in the product documentation.
 
@@ -527,7 +531,9 @@ paths:
         - Request Sequences
       operationId: listResourceRequestSequencesV2
       summary: List all resource request sequences
-      description: Lists access request sequences for a resource in your org
+      description: |-
+        Lists access request sequences for a resource in your org
+        > **Note:** The request sequence is known as the approval sequence in the Okta Access Requests app.
       parameters:
         - $ref: '#/components/parameters/resource-id-orn-or-okta'
       security:
@@ -561,7 +567,9 @@ paths:
         - $ref: '#/components/parameters/sequence-id-parameter'
       operationId: getResourceRequestSequenceV2
       summary: Retrieve a resource request sequence
-      description: Retrieves a access request sequence referenced by the specified resource
+      description: |-
+        Retrieves an access request sequence that's referenced by a resource ID and a sequence ID
+        > **Note:** The request sequence is known as the approval sequence in the Okta Access Requests app.
       security:
         - ApiKey:
             - admin
@@ -590,7 +598,9 @@ paths:
         - Request Sequences
       operationId: deleteRequestSequenceV2
       summary: Delete a request sequence
-      description: Deletes the access request sequence given its `id`
+      description: |-
+        Deletes the access request sequence that's referenced by the sequence ID
+        > **Note:** The request sequence is known as the approval sequence in the Okta Access Requests app.
       parameters:
         - $ref: '#/components/parameters/sequence-id-parameter'
       security:
@@ -728,6 +738,44 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/request-get-success'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+    patch:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Requests
+      operationId: updateRequestV2
+      summary: Update a request
+      description: Updates a request with the specified `requestId`
+      parameters:
+        - $ref: '#/components/parameters/rcar-request-id-parameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request-update'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.accessRequests.request.manage
+      responses:
+        '200':
+          $ref: '#/components/responses/request-update-success'
+        '400':
+          $ref: '#/components/responses/request-update-failed'
         '401':
           $ref: '#/components/responses/authentication-error-response'
         '403':
@@ -1032,7 +1080,7 @@ paths:
       description: |
         Updates a task by performing actions such as assigning the task to a new set of task assignees.
 
-        When task assignment is made via this endpoint, the task will be unassigned from any previous task assignees and assigned to the new set of task assignees.
+        When you reassign a task, all previous task assignees are replaced with the new set of assignees.
       parameters:
         - $ref: '#/components/parameters/task-id-parameter'
       security:
@@ -1049,6 +1097,7 @@ paths:
               properties:
                 assignees:
                   type: array
+                  description: List of task assignees to perform actions on the task. A maximum of 25 assignees can be assigned to a task.
                   minItems: 1
                   items:
                     $ref: '#/components/schemas/task-assignees'
@@ -1159,6 +1208,11 @@ components:
     scim-filter:
       type: string
       format: scim-filter
+    approval-sequence-id:
+      type: string
+      description: Unique identifier for the approval sequence
+      minLength: 24
+      maxLength: 24
     writable-standard-properties-request-condition:
       type: object
       properties:
@@ -1697,10 +1751,10 @@ components:
         - status
         - priority
         - _links
-    groups-array-creatable:
+    groups-array-requester-settings-creatable:
       type: array
       description: |-
-        List of requestable groups
+        List of groups whose members can request access. The maximum number of groups that can be specified is 500.
 
         > **Note:** Both standard Okta groups and AD-sourced groups are supported in Access Requests.
         > Standard Okta groups have the `okta:user_group` value, whereas AD-sourced groups have the `okta:windows_security_principal` value in their `objectClass` property.
@@ -1722,8 +1776,7 @@ components:
           enum:
             - GROUPS
         groups:
-          description: Groups whose members can file an access request
-          $ref: '#/components/schemas/groups-array-creatable'
+          $ref: '#/components/schemas/groups-array-requester-settings-creatable'
       required:
         - type
         - groups
@@ -1781,7 +1834,7 @@ components:
         - type
     entitlement-bundles-array-creatable:
       type: array
-      description: Entitlement bundles that are made requestable
+      description: Entitlement bundles that are made requestable. You can specify a maximum of 1000 requestable entitlement bundles for each condition.
       items:
         type: object
         description: Entitlement bundle ID that is made requestable
@@ -1794,7 +1847,7 @@ components:
       minItems: 1
     access-scope-settings-creatable_EntitlementBundleAccessScopeSettings:
       type: object
-      description: Access scope settings that resource permissions are entitlement bundles.
+      description: Access scope settings where resource permissions are entitlement bundles.
       additionalProperties: false
       properties:
         type:
@@ -1807,9 +1860,24 @@ components:
       required:
         - type
         - entitlementBundles
+    groups-array-access-scope-creatable:
+      type: array
+      description: |-
+        List of requestable groups. You can specify a maximum of 1000 requestable groups for each condition.
+
+        > **Note:** Both standard Okta groups and AD-sourced groups are supported in Access Requests.
+        > Standard Okta groups have the `okta:user_group` value, whereas AD-sourced groups have the `okta:windows_security_principal` value in their [`objectClass` property](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/group/other/getgroup#other/getgroup/t=response&c=200&path=objectclass).
+      items:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/group-id'
+        required:
+          - id
+      minItems: 1
     access-scope-settings-creatable_GroupAccessScopeSettings:
       type: object
-      description: Access scope settings that resource permissions are groups.
+      description: Access scope settings where resource permissions are groups.
       additionalProperties: false
       properties:
         type:
@@ -1818,7 +1886,7 @@ components:
           enum:
             - GROUPS
         groups:
-          $ref: '#/components/schemas/groups-array-creatable'
+          $ref: '#/components/schemas/groups-array-access-scope-creatable'
       required:
         - type
         - groups
@@ -1849,11 +1917,6 @@ components:
       oneOf:
         - $ref: '#/components/schemas/access-duration-settings-admin-fixed-duration'
         - $ref: '#/components/schemas/access-duration-settings-requester-specified-duration'
-    approval-sequence-id:
-      type: string
-      description: Unique identifier for the approval sequence
-      minLength: 24
-      maxLength: 24
     request-condition-creatable:
       type: object
       description: |
@@ -2257,6 +2320,51 @@ components:
       x-okta-known-values:
         - ADMIN_ROLES
         - CATALOG
+    resource-catalog-visibility-type:
+      type: string
+      description: The target type for resource catalog visibility
+      x-enumDescriptions:
+        GROUP: Visibility is scoped to specific groups
+      x-okta-known-values:
+        - GROUP
+    resource-catalog-visibility-target:
+      type: object
+      description: A typed visibility target used to scope resource catalog access
+      required:
+        - type
+        - id
+      properties:
+        type:
+          $ref: '#/components/schemas/resource-catalog-visibility-type'
+        id:
+          type: string
+          description: The ID for the given target type (for example, a group ID for `GROUP`)
+    resource-catalog-visibility:
+      type: object
+      description: |-
+        Visibility settings for access to the resource catalog.
+
+        This setting controls the **Request Access** button visible in the End-User Dashboard.
+        For the Unified requester experience, this setting also controls the **Resource Catalog** links and search options from the Okta Access Request app, Slack, or Microsoft Teams.
+      required:
+        - visible
+      properties:
+        visible:
+          type: boolean
+          description: |-
+            Indicates whether users can access the resource catalog:
+              * If `false`, no users can access the resource catalog.
+              * If `true` and `onlyFor` isn't specified, all users in the org can access the resource catalog.
+        onlyFor:
+          nullable: true
+          type: array
+          description: |-
+            Specific user targets for resource catalog visibility:
+            * If this array is specified, only the specified targets can access the resource catalog.
+            * If this array is null and `visible` is `true`, all users in the org can access the resource catalog.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/resource-catalog-visibility-target'
     integration-id:
       type: string
       maxLength: 20
@@ -2334,6 +2442,8 @@ components:
         longTimePastProvisioned:
           type: boolean
           description: Indicates that Access Request provisioning was triggered more than 10 minutes ago
+        resourceCatalogVisibility:
+          $ref: '#/components/schemas/resource-catalog-visibility'
         integrations:
           $ref: '#/components/schemas/request-integrations'
     org-request-settings-patchable:
@@ -2342,6 +2452,8 @@ components:
       properties:
         subprocessorsAcknowledged:
           $ref: '#/components/schemas/subprocessors-acknowledged'
+        resourceCatalogVisibility:
+          $ref: '#/components/schemas/resource-catalog-visibility'
         integrations:
           $ref: '#/components/schemas/request-integrations'
     compatible-resource-types:
@@ -2380,7 +2492,7 @@ components:
       properties:
         data:
           type: array
-          description: All resource request sequences
+          description: All resource request sequences (approval sequences)
           items:
             $ref: '#/components/schemas/request-sequence'
         _links:
@@ -2401,17 +2513,6 @@ components:
       pattern: ^[a-fA-F\d]{24}$
       format: sequence-id
       example: 673b6e662088ea0006d10ff3
-    rcar-request-id:
-      type: string
-      format: rcar-request-id
-      maxLength: 20
-      minLength: 20
-      pattern: req[0-9a-zA-Z]+
-      example: reqp1pmpjhVdGEcVK1d5
-    order-by:
-      type: string
-      format: order-by
-      description: A property of items within the collection, optionally followed by a `%20asc` or `%20desc` suffix.
     request-status:
       type: string
       description: The status of the request
@@ -2423,11 +2524,6 @@ components:
         - DENIED
         - CANCELED
         - EXPIRED
-    request-resolved-date-time:
-      type: string
-      format: date-time
-      nullable: true
-      description: The date the request was resolved. The property may transition from having a value to null if the request is reopened.
     request-grant-status:
       type: string
       description: The grant status of the request
@@ -2436,6 +2532,61 @@ components:
         - GRANTED
         - FAILED
         - MANUAL_REQUIRED
+    user-id:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      format: okta-user-id
+      description: The Okta user `id`
+      maxLength: 20
+      minLength: 20
+      pattern: 00u[0-9a-zA-Z]+
+      example: 00ub0oNGTSWTBKOLGLNR
+    resource-id:
+      type: string
+      format: okta-resource-id
+      description: |
+        The Okta `app.id` or `group.id` of the resource that can be requested with this request type.
+
+        * See [List all applications](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/application/other/listapplications) to retrieve app IDs.
+        * See [List all groups](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/group/other/listgroups) to retrieve group IDs.
+      maxLength: 20
+    resource-type:
+      type: string
+      description: The requested resource type
+      x-okta-known-values:
+        - APPLICATION
+        - COLLECTION
+        - REQUEST_TYPE
+    access-scope-id:
+      type: string
+      description: ID of the access scope
+      minLength: 20
+      maxLength: 20
+    access-scope-type:
+      type: string
+      description: The access scope type
+      x-okta-known-values:
+        - ENTITLEMENT_BUNDLE
+        - GROUP
+        - APPLICATION
+        - COLLECTION
+        - REQUEST_TYPE
+    rcar-request-id:
+      type: string
+      format: rcar-request-id
+      maxLength: 20
+      minLength: 20
+      pattern: req[0-9a-zA-Z]+
+      example: reqp1pmpjhVdGEcVK1d5
+    order-by:
+      type: string
+      format: order-by
+      description: A property of items within the collection, optionally followed by a `%20asc` or `%20desc` suffix.
+    request-resolved-date-time:
+      type: string
+      format: date-time
+      nullable: true
+      description: The date the request was resolved. The property may transition from having a value to null if the request is reopened.
     request-granted-date-time:
       type: string
       format: date-time
@@ -2475,15 +2626,6 @@ components:
           x-enumDescriptions:
             OKTA_USER: The principal is an Okta user. `externalId` has the format `00u*`.
             UNKNOWN: The principal isn't a known Okta user. `externalId` has the format `pca*`. This option is for requests not made by a known Okta user, such as requests from a service using client credentials authentication.
-    user-id:
-      type: string
-      x-okta-ignore-redocly-rules-for-sdk: true
-      format: okta-user-id
-      description: The Okta user `id`
-      maxLength: 20
-      minLength: 20
-      pattern: 00u[0-9a-zA-Z]+
-      example: 00ub0oNGTSWTBKOLGLNR
     principal-type:
       type: string
       description: The type of principal
@@ -2507,30 +2649,11 @@ components:
       minLength: 20
       description: Unique identifier of the resource catalog entry
       example: cenp2rjyxK1Js2Fc41d5
-    resource-id:
+    resource-id-2:
       type: string
       maxLength: 20
       minLength: 20
       description: the requested resource ID
-    resource-type:
-      type: string
-      description: The requested resource type
-      x-okta-known-values:
-        - APPLICATION
-        - REQUEST_TYPE
-    access-scope-id:
-      type: string
-      description: ID of the access scope
-      minLength: 20
-      maxLength: 20
-    access-scope-type:
-      type: string
-      description: The access scope type
-      x-okta-known-values:
-        - ENTITLEMENT_BUNDLE
-        - GROUP
-        - APPLICATION
-        - REQUEST_TYPE
     requested:
       type: object
       description: A representation of the resource in request
@@ -2538,7 +2661,7 @@ components:
         entryId:
           $ref: '#/components/schemas/catalog-entry-id'
         resourceId:
-          $ref: '#/components/schemas/resource-id'
+          $ref: '#/components/schemas/resource-id-2'
         resourceType:
           $ref: '#/components/schemas/resource-type'
         accessScopeId:
@@ -2589,6 +2712,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/read-only-standard-properties'
         - $ref: '#/components/schemas/request-minimal-read-only-fields'
+        - type: object
       required:
         - id
         - created
@@ -2959,10 +3083,10 @@ components:
           maxItems: 10
           items:
             $ref: '#/components/schemas/request-approval-decision'
-    request-full:
+    request-full-common:
       type: object
       x-okta-ignore-redocly-rules-for-sdk: true
-      description: Full representation of a Request.
+      description: Shared base for admin and enduser request-full models.
       allOf:
         - $ref: '#/components/schemas/read-only-standard-properties'
         - $ref: '#/components/schemas/request-minimal-read-only-fields'
@@ -2989,12 +3113,19 @@ components:
         - requestedFor
         - requested
         - _links
+    request-full:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: Full representation of a Request.
+      allOf:
+        - $ref: '#/components/schemas/request-full-common'
+        - type: object
     request-status-patchable:
       type: string
-      description: |-
-        Specify the status of the request.
-
-        Only `CANCELED` is supported. You can't cancel a request if any of its tasks have been resolved.
+      description: Specify the status of the request
+      x-enumDescriptions:
+        CANCELED: Only `CANCELED` is supported. You can't cancel a request if any of its tasks have been resolved.
+      example: CANCELED
       x-okta-known-values:
         - CANCELED
     request-update:
@@ -3079,6 +3210,25 @@ components:
           maxItems: 10
           items:
             $ref: '#/components/schemas/request-decision-creatable'
+    request-approval-insights-links:
+      type: object
+      description: Links available on a generate request approval insights response
+      required:
+        - self
+        - request
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+        request:
+          $ref: '#/components/schemas/link'
+    request-approval-insights-generate-success:
+      type: object
+      description: The result of generating approval insights for a request
+      required:
+        - _links
+      properties:
+        _links:
+          $ref: '#/components/schemas/request-approval-insights-links'
     rcar-entry-requestable:
       type: boolean
       nullable: false
@@ -3250,6 +3400,222 @@ components:
           properties:
             riskAssessment:
               $ref: '#/components/schemas/risk-assessment'
+    request-field-values-map:
+      type: object
+      description: Previously selected field values, keyed by field ID.
+      additionalProperties:
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+      example:
+        OKTA_RESOURCE_ASSET: rea12fzP9nuAdHd9Z0g4
+    request-fields-query-body:
+      type: object
+      description: Request body for dynamic request field queries, providing previously selected field values.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+    request-field-choices-query-body:
+      type: object
+      description: Request body for field choices queries, providing the current values of other fields to filter the available choices.
+      properties:
+        fieldValues:
+          $ref: '#/components/schemas/request-field-values-map'
+        filter:
+          type: string
+          description: |
+            SCIM filter to narrow the returned choices. Supported attribute: `label`.
+            Supported operators: `co` (contains), `sw` (starts with).
+          example: label co "prod"
+    request-field-choice:
+      type: object
+      description: A selectable choice for a request field
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the choice. Stable across calls and used as the answer value.
+        label:
+          type: string
+          description: Display label for the choice
+        description:
+          type: string
+          description: Optional description providing additional context for the choice
+        category:
+          type: string
+          description: Optional category label for the choice.
+      required:
+        - id
+        - label
+    request-field-choices-list:
+      type: object
+      description: Paginated list of choices for a request field
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/request-field-choice'
+        _links:
+          type: object
+          required:
+            - self
+          properties:
+            self:
+              $ref: '#/components/schemas/link'
+            next:
+              $ref: '#/components/schemas/link'
+      required:
+        - data
+        - _links
+    resource-asset-name:
+      type: string
+      description: The display name for a resource asset
+      minLength: 1
+      maxLength: 255
+    resource-orn:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      format: okta-resource-orn
+      description: |
+        The Okta resource in [ORN format](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#okta-resource-name-orn)
+
+        See the ORN format for [supported resources](https://developer.okta.com/docs/api/openapi/okta-management/guides/roles/#supported-resources).
+    catalog-entry-entitlement-resource-asset:
+      type: object
+      description: The resource asset that scopes this entitlement row. Present only for catalog entries where entitlements are scoped to resource assets.
+      properties:
+        id:
+          type: string
+          description: The identifier of the resource asset
+          minLength: 1
+          maxLength: 20
+        orn:
+          $ref: '#/components/schemas/resource-orn'
+        name:
+          $ref: '#/components/schemas/resource-asset-name'
+      required:
+        - id
+        - orn
+        - name
+    entitlement-property-id:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: The `id` property of an entitlement
+      minLength: 20
+      maxLength: 20
+    entitlement-property-display-name:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: The display name for an entitlement property
+      minLength: 1
+      maxLength: 255
+    entitlement-property-description:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: The description of an entitlement property
+      minLength: 1
+      maxLength: 1000
+    entitlement-value-id:
+      type: string
+      description: The `id` of the entitlement value
+      minLength: 20
+      maxLength: 20
+    entitlement-value-display-name:
+      type: string
+      description: The display name for an entitlement value
+      minLength: 1
+      maxLength: 255
+    catalog-entry-entitlement-value:
+      type: object
+      description: An entitlement value for a catalog entry entitlement
+      properties:
+        id:
+          $ref: '#/components/schemas/entitlement-value-id'
+        name:
+          $ref: '#/components/schemas/entitlement-value-display-name'
+      required:
+        - id
+        - name
+    list-links:
+      type: object
+      description: Link relations available using the [JSON Hypertext Application Language](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-06)
+      required:
+        - self
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+        next:
+          $ref: '#/components/schemas/link'
+    catalog-entry-entitlement-item:
+      type: object
+      description: |
+        An entitlement property for a catalog entry, with the first page of its values inline. If more values remain, `_links.next` points to the `/entitlements/values` endpoint.
+      properties:
+        id:
+          $ref: '#/components/schemas/entitlement-property-id'
+        name:
+          $ref: '#/components/schemas/entitlement-property-display-name'
+        description:
+          $ref: '#/components/schemas/entitlement-property-description'
+        values:
+          type: array
+          description: |
+            The first page of values for this entitlement. Up to 20 values are returned inline. If more values remain, `_links.next` is present.
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-value'
+        _links:
+          $ref: '#/components/schemas/list-links'
+      required:
+        - id
+        - name
+        - values
+    catalog-entry-entitlement-row:
+      type: object
+      description: |-
+        One resource asset in the effective-entitlement view for this catalog entry.
+        * `targetOrn` is the stable identifier that paginates `data[]`.
+      properties:
+        targetOrn:
+          $ref: '#/components/schemas/resource-orn'
+        resourceAsset:
+          $ref: '#/components/schemas/catalog-entry-entitlement-resource-asset'
+        entitlements:
+          type: array
+          description: |
+            The complete effective entitlements on this target, from all grant sources: direct grants, group-inherited grants, and hierarchy-inherited grants. Each item is one entitlement property with only the first page of its effective values returned.
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-item'
+      required:
+        - targetOrn
+        - resourceAsset
+        - entitlements
+    catalog-entry-entitlements-list:
+      type: object
+      description: A paginated list of asset and entitlement rows for a catalog entry
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-row'
+        _links:
+          $ref: '#/components/schemas/list-links'
+      required:
+        - data
+        - _links
+    catalog-entry-entitlement-values-list:
+      type: object
+      description: A paginated list of entitlement values for a specific entitlement on a catalog entry
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/catalog-entry-entitlement-value'
+        _links:
+          $ref: '#/components/schemas/list-links'
+      required:
+        - data
+        - _links
     requesters-member:
       type: object
       required:
@@ -3345,31 +3711,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/requesters-member'
-    task-id:
-      type: string
-      format: task-id
-      description: The unique identifier for the task
-      maxLength: 24
-      minLength: 24
-      pattern: ^[0-9a-f]{24}$
-      example: 68b0a1576dd8db837f5ee55d
-    okta-id:
-      description: The Okta ID
-      type: string
-      maxLength: 20
-      minLength: 20
-    task-assignees:
-      type: object
-      x-okta-ignore-redocly-rules-for-sdk: true
-      required:
-        - externalId
-        - type
-      description: A task assignee that performs actions on the task.
-      properties:
-        externalId:
-          $ref: '#/components/schemas/okta-id'
-        type:
-          $ref: '#/components/schemas/principal-type'
     task-status:
       type: string
       description: The status of the task
@@ -3378,6 +3719,13 @@ components:
         - COMPLETED
         - ASSIGNING
         - LOCKED
+    task-type:
+      type: string
+      description: The type of the task
+      x-okta-known-values:
+        - QUESTION
+        - APPROVAL
+        - TODO
     task-request-id:
       type: string
       maxLength: 20
@@ -3393,13 +3741,32 @@ components:
       type: string
       format: date-time
       readOnly: true
-    task-type:
+    task-id:
       type: string
-      description: The type of the task
-      x-okta-known-values:
-        - QUESTION
-        - APPROVAL
-        - TODO
+      format: task-id
+      description: The unique identifier for the task
+      maxLength: 24
+      minLength: 24
+      pattern: ^[0-9a-f]{24}$
+      example: 68b0a1576dd8db837f5ee55d
+    okta-id:
+      description: The Okta ID
+      type: string
+      maxLength: 20
+      minLength: 20
+      example: 00u1a2b3c4d5e6f7g8h9
+    task-assignees:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      required:
+        - externalId
+        - type
+      description: A task assignee that performs actions on the task.
+      properties:
+        externalId:
+          $ref: '#/components/schemas/okta-id'
+        type:
+          $ref: '#/components/schemas/principal-type'
     task-sparse:
       type: object
       description: Sparse representation of a Task resource
@@ -3739,6 +4106,42 @@ components:
         maxLength: 20
         minLength: 20
         example: 00ucvnr9rbONeZdRp1d7
+    field-id:
+      name: fieldId
+      in: path
+      required: true
+      description: The ID of the request field
+      schema:
+        type: string
+    choices-order-by:
+      name: orderBy
+      description: |
+        Specifies a property to sort the results. The following properties are supported:
+        - `label`
+
+        Append `desc` or `asc` to indicate the sorting direction.
+        > **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/order-by'
+      x-order-by:
+        attributes:
+          - label
+      examples:
+        OrderByLabel:
+          summary: Order by label
+          value: label asc
+    after:
+      name: after
+      description: |-
+        Specifies the pagination cursor for the next page of results.
+        Treat this as an opaque value obtained through the standard link headers. See [pagination](https://developer.okta.com/docs/api/#pagination).
+      in: query
+      required: false
+      schema:
+        type: string
+        example: 00u68w6vzKLultXS97g6
     requesters-id:
       name: requesterSetId
       description: The unique `id` that represents a list of requesters for access requests
@@ -3755,12 +4158,14 @@ components:
         A [filter](https://developer.okta.com/docs/api/#filter) expression that filters a collection of tasks in the response.
         The filter expression supports the following properties and [operators](https://developer.okta.com/docs/api/#operators):
 
-        - `status`: The status of the task. Possible values: `OPEN`, `COMPLETED`, `ASSIGNING`, and `LOCKED`. Supports the `eq` operator.
+        - `status`: The status of the task. Possible values: `OPEN`, `COMPLETED`, `ASSIGNING`, and `LOCKED`. Supports the `eq` operator, and the `or` operator when you group multiple `status` values in parentheses.
         - `type`: The type of the task. Possible values: `QUESTION`, `APPROVAL`, and `TODO`. Supports the `eq` operator.
-        - `assigneeId`: The Okta user ID of the task assignee. Supports the `eq` operator.
+        - `assigneeId`: The Okta user ID of the task assignee. Supports the `eq` and `pr` operators.
         - `requestId`: The ID of the request for the task. Supports the `eq` operator.
         - `createdAt`: The task created time. Supports the `gt`, `ge`, `le`, and `lt` operators.
         - `updatedAt`: The latest task updated time. Supports the `gt`, `ge`, `le`, and `lt` operators.
+
+        You can combine multiple filter expressions using the `and` operator. To match multiple `status` values in a single request, combine `status` conditions with the `or` operator inside parentheses, for example `(status eq "OPEN" or status eq "ASSIGNING")`.
 
         > **Note**: Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding).
       in: query
@@ -3781,6 +4186,7 @@ components:
         assigneeId:
           operators:
             - eq
+            - pr
           schema:
             type: string
             maxLength: 20
@@ -3811,12 +4217,21 @@ components:
         FilterByStatus:
           summary: Filter by status
           value: status eq "OPEN"
+        FilterByMultipleStatuses:
+          summary: Filter by multiple statuses
+          value: (status eq "OPEN" or status eq "ASSIGNING")
         FilterByType:
           summary: Filter by type
           value: type eq "QUESTION"
         FilterByAssigneeId:
           summary: Filter by assigneeId
           value: assigneeId eq "0oafxqCAJWWGELFTYASJ"
+        FilterByAssigneeIdPresent:
+          summary: Filter tasks with at least one assignee
+          value: assigneeId pr
+        FilterByAssigneeIdNotPresent:
+          summary: Filter tasks with no assignees
+          value: not(assigneeId pr)
         FilterByRequestId:
           summary: Filter by requestId
           value: requestId eq "0oafxqCAJWWGELFTYASJ"
@@ -3894,6 +4309,14 @@ components:
         type: integer
         minimum: 0
         example: 1609459200
+    request-approval-insights-location:
+      required: true
+      description: |-
+        Location of the request for which approval insights generation was initiated.
+
+        The approval insights can be retrieved from this location once they're available.
+      schema:
+        type: string
   responses:
     request-conditions-get-success:
       description: A successful request condition list response
@@ -4324,6 +4747,33 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+    request-approval-insights-generate-success-response:
+      description: A successful generate request approval insights response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-approval-insights-generate-success'
+      headers:
+        Location:
+          $ref: '#/components/headers/request-approval-insights-location'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+    request-approval-insights-generate-bad-request:
+      description: When approval insights generation failed because the request isn't in flight
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    request-approval-insights-generate-conflict-response:
+      description: A conflict prevents generating approval insights for the request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
     catalog-entries-list-success-v2:
       description: List of all entries in the resource catalog
       headers:
@@ -4382,6 +4832,63 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/catalog-entry-request-fields'
+    bad-request:
+      description: A request failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    choices-list-success:
+      description: Successful response that contains a paginated list of available choices
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-field-choices-list'
+    catalog-entry-entitlements-list-success:
+      description: Entitlements for a catalog entry that was retrieved successfully
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/catalog-entry-entitlements-list'
+    catalog-entry-entitlements-list-bad-request:
+      description: An invalid list request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    catalog-entry-entitlement-values-list-success:
+      description: Entitlement values for a catalog entry entitlement that was retrieved successfully
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/catalog-entry-entitlement-values-list'
     requesters-by-id-patch-success:
       description: Requester members updated successfully response.
       headers:
@@ -4397,12 +4904,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/requesters-full'
-    bad-request:
-      description: A request failed validation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/error'
     tasks-list-success:
       description: A successful tasks list response
       headers:

@@ -163,6 +163,8 @@ externalDocs:
   url: https://developer.okta.com
 paths:
   /idp/myaccount/app-authenticators:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Create an App Authenticator Enrollment
       description: |-
@@ -225,14 +227,15 @@ paths:
         isGenerallyAvailable: false
         SKUs: []
   /idp/myaccount/app-authenticators/challenge/{challengeId}/verify:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
     parameters:
       - $ref: '#/components/parameters/appAuthenticatorChallengeId'
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
       summary: Verify a Push Notification Challenge Response from the App Authenticator
       description: Verifies a push notification challenge from the app authenticator
       operationId: verifyAppAuthenticatorPushNotificationChallenge
@@ -263,6 +266,7 @@ paths:
   /idp/myaccount/app-authenticators/{enrollmentId}:
     parameters:
       - $ref: '#/components/parameters/appAuthenticatorEnrollmentId'
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     patch:
       summary: Update an App Authenticator Enrollment
       description: |-
@@ -379,6 +383,7 @@ paths:
   /idp/myaccount/app-authenticators/{enrollmentId}/push/notifications:
     parameters:
       - $ref: '#/components/parameters/appAuthenticatorEnrollmentId'
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all pending Push Notification Challenges
       description: Lists all pending push notification challenges
@@ -413,15 +418,16 @@ paths:
         isGenerallyAvailable: false
         SKUs: []
   /idp/myaccount/authenticators:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Authenticators
       description: |
         Lists all of the authenticators for the current user
+
+        > <x-lifecycle class="ea"></x-lifecycle> **Note:** When the Flexible Okta Verify authenticator configuration feature is enabled, the response includes both the individual per-method authenticators (`okta_verify_totp`, `okta_verify_push`, `okta_verify_fastpass`) and a legacy `okta_verify` aggregate object for backward compatibility.
+        >
+        > Flexible Okta Verify authenticator configuration is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
       operationId: listAuthenticators
       parameters:
         - $ref: '#/components/parameters/queryExpandAuthenticator'
@@ -439,9 +445,15 @@ paths:
             - okta.myAccount.authenticators.read
       tags:
         - Authenticators
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
   /idp/myaccount/authenticators/{authenticatorId}:
     parameters:
       - $ref: '#/components/parameters/pathAuthenticatorId'
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve an Authenticator
       description: |
@@ -473,6 +485,7 @@ paths:
   /idp/myaccount/authenticators/{authenticatorId}/enrollments:
     parameters:
       - $ref: '#/components/parameters/pathAuthenticatorId'
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Enrollments
       description: |
@@ -503,6 +516,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/pathAuthenticatorId'
       - $ref: '#/components/parameters/pathEnrollmentId'
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve an Enrollment
       description: |
@@ -589,6 +603,8 @@ paths:
         SKUs:
           - Okta Identity Engine
   /idp/myaccount/emails:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Emails
       description: |
@@ -691,6 +707,7 @@ paths:
         name: id
         in: path
         required: true
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve an Email
       description: 'Retrieves the current user''s email information by ID: a collection of links that describe the acceptable email operations'
@@ -749,6 +766,7 @@ paths:
         name: id
         in: path
         required: true
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Send an Email Challenge
       description: |-
@@ -939,6 +957,7 @@ paths:
           Use the `POST /idp/myaccount/emails/{id}/challenge/` operation to obtain the `challengeId` when creating a new challenge.
         in: path
         required: true
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Poll the Challenge for Email Magic Link
       description: Polls for the email challenge's status
@@ -1112,6 +1131,7 @@ paths:
         name: challengeId
         in: path
         required: true
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Verify an Email OTP
       description: |
@@ -1157,11 +1177,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/okta-applications:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Okta Apps
       description: |
@@ -1179,12 +1196,14 @@ paths:
             - okta.myAccount.oktaApplications.read
       tags:
         - OktaApplications
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
   /idp/myaccount/organization:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve the Org Details
       description: |
@@ -1202,7 +1221,14 @@ paths:
             - okta.myAccount.organization.read
       tags:
         - Organization
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
   /idp/myaccount/password:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve a Password
       description: |
@@ -1345,12 +1371,14 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/password/change-password:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
       summary: Update a Password
       description: Updates a password. The user needs to know the current password to change it.
       operationId: updatePassword
@@ -1390,12 +1418,14 @@ paths:
       tags:
         - Password
   /idp/myaccount/password/complexity-requirements:
-    x-okta-lifecycle:
-      lifecycle: LIMITED_GA
-      isGenerallyAvailable: false
-      SKUs:
-        - Okta Identity Engine
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
+      x-okta-lifecycle:
+        lifecycle: LIMITED_GA
+        isGenerallyAvailable: false
+        SKUs:
+          - Okta Identity Engine
       summary: Retrieve the Password Complexity Requirements
       description: Retrieves the password complexity requirements for the current user
       operationId: getPasswordRequirements
@@ -1410,6 +1440,8 @@ paths:
       tags:
         - Password
   /idp/myaccount/phones:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Phones
       description: Lists the current user's phone information for all phones. Includes a collection of links for each phone describing the acceptable operations.
@@ -1500,6 +1532,7 @@ paths:
         name: id
         in: path
         required: true
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve a Phone
       description: Retrieves the current user's phone information by ID. Along with a collection of links describing the operations that can be performed to the phone.
@@ -1555,6 +1588,7 @@ paths:
         name: id
         in: path
         required: true
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Send a Phone Challenge
       description: |-
@@ -1624,6 +1658,7 @@ paths:
         name: id
         in: path
         required: true
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Verify a Phone Challenge
       description: |-
@@ -1676,6 +1711,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/profile:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve my Profile
       description: Retrieves the caller's Okta user profile, without attributes excluded by the [Get my user profile schema](/openapi/okta-myaccount/myaccount/profile/getprofileschema)
@@ -1761,6 +1798,8 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/profile/schema:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve my Profile Schema
       description: |-
@@ -1826,10 +1865,12 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/sessions:
-    x-okta-lifecycle:
-      lifecycle: GA
-      isGenerallyAvailable: true
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     delete:
+      x-okta-lifecycle:
+        lifecycle: GA
+        isGenerallyAvailable: true
       summary: Delete all Sessions
       description: |
         Deletes all sessions. Revokes all active identity provider sessions of the user. This forces the user to authenticate on the next operation. Also revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
@@ -1876,6 +1917,8 @@ paths:
       tags:
         - Sessions
   /idp/myaccount/webauthn:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all WebAuthn enrollments
       description: |
@@ -1931,6 +1974,8 @@ paths:
         isGenerallyAvailable: false
         SKUs: []
   /idp/myaccount/webauthn/registration:
+    parameters:
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Start a WebAuthn enrollment
       description: |
@@ -1964,6 +2009,7 @@ paths:
   /idp/myaccount/webauthn/{id}:
     parameters:
       - $ref: '#/components/parameters/webauthnEnrollmentId'
+      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve a WebAuthn enrollment
       description: Retrieves a Passkey (FIDO2 WebAuthn) enrollment
@@ -2035,6 +2081,87 @@ components:
                 - GET
           enrollments:
             href: https://sampleorg.okta.com/idp/myaccount/authenticators/autt5i9pIn7WMBUht0g4/enrollments
+            hints:
+              allow:
+                - GET
+    AuthenticatorExampleOktaVerifyFastpass:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Okta Verify FastPass authenticator
+      value:
+        id: autf5jzpIaAbmXXQ30g4
+        key: okta_verify_fastpass
+        name: Okta Verify FastPass
+        enrollable: true
+        _links:
+          self:
+            href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4
+            hints:
+              allow:
+                - GET
+          enroll:
+            href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jzpIaAbmXXQ30g4
+            hints:
+              allow:
+                - GET
+          enrollments:
+            href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4/enrollments
+            hints:
+              allow:
+                - GET
+    AuthenticatorExampleOktaVerifyPush:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Okta Verify Push authenticator
+      value:
+        id: autf5jyYtSkbEvFpv0g4
+        key: okta_verify_push
+        name: Okta Verify Push
+        enrollable: true
+        _links:
+          self:
+            href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4
+            hints:
+              allow:
+                - GET
+          enroll:
+            href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jyYtSkbEvFpv0g4
+            hints:
+              allow:
+                - GET
+          enrollments:
+            href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4/enrollments
+            hints:
+              allow:
+                - GET
+    AuthenticatorExampleOktaVerifyTotp:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: Okta Verify TOTP authenticator
+      value:
+        id: autf5jxPRRciM4mXb0g4
+        key: okta_verify_totp
+        name: Okta Verify TOTP
+        enrollable: true
+        _links:
+          self:
+            href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4
+            hints:
+              allow:
+                - GET
+          enroll:
+            href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jxPRRciM4mXb0g4
+            hints:
+              allow:
+                - GET
+          enrollments:
+            href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4/enrollments
             hints:
               allow:
                 - GET
@@ -2535,6 +2662,262 @@ components:
                     hints:
                       allow:
                         - GET
+    ListAuthenticatorsExpandOVBreakdownExample:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List all authenticators with embedded enrollments including Okta Verify method-specific authenticators
+      value:
+        - id: autf5jzpIaAbmXXQ30g4
+          key: okta_verify_fastpass
+          name: Okta Verify FastPass
+          enrollable: true
+          _links:
+            self:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4
+              hints:
+                allow:
+                  - GET
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jzpIaAbmXXQ30g4
+              hints:
+                allow:
+                  - GET
+            enrollments:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4/enrollments
+              hints:
+                allow:
+                  - GET
+          _embedded:
+            enrollments:
+              - id: pfd1ohopjzzOlYOll0g5
+                name: Okta Verify FastPass
+                created: '2026-06-11T23:14:51.000Z'
+                lastChallenged: '2026-06-24T22:41:23.000Z'
+                canReset: false
+                canUnenroll: true
+                profile:
+                  deviceName: iPhone 17 Pro
+                _links:
+                  self:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4/enrollments/pfd1ohopjzzOlYOll0g5
+                    hints:
+                      allow:
+                        - GET
+                  unenroll:
+                    href: https://sampleorg.okta.com/idp/authenticators/pfd1ohopjzzOlYOll0g5/unenroll
+                    hints:
+                      allow:
+                        - GET
+                  authenticator:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4
+                    hints:
+                      allow:
+                        - GET
+        - id: autf5jyYtSkbEvFpv0g4
+          key: okta_verify_push
+          name: Okta Verify Push
+          enrollable: true
+          _links:
+            self:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4
+              hints:
+                allow:
+                  - GET
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jyYtSkbEvFpv0g4
+              hints:
+                allow:
+                  - GET
+            enrollments:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4/enrollments
+              hints:
+                allow:
+                  - GET
+          _embedded:
+            enrollments:
+              - id: pfd1ohopjzzOlYOll0g5
+                name: Okta Verify Push
+                created: '2026-06-11T23:14:51.000Z'
+                lastChallenged: '2026-06-24T22:41:23.000Z'
+                canReset: false
+                canUnenroll: true
+                profile:
+                  deviceName: iPhone 17 Pro
+                _links:
+                  self:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4/enrollments/pfd1ohopjzzOlYOll0g5
+                    hints:
+                      allow:
+                        - GET
+                  unenroll:
+                    href: https://sampleorg.okta.com/idp/authenticators/pfd1ohopjzzOlYOll0g5/unenroll
+                    hints:
+                      allow:
+                        - GET
+                  authenticator:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4
+                    hints:
+                      allow:
+                        - GET
+        - id: autf5jxPRRciM4mXb0g4
+          key: okta_verify_totp
+          name: Okta Verify TOTP
+          enrollable: true
+          _links:
+            self:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4
+              hints:
+                allow:
+                  - GET
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jxPRRciM4mXb0g4
+              hints:
+                allow:
+                  - GET
+            enrollments:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4/enrollments
+              hints:
+                allow:
+                  - GET
+          _embedded:
+            enrollments:
+              - id: pfd1ohopjzzOlYOll0g5
+                name: Okta Verify TOTP
+                created: '2026-06-11T23:14:51.000Z'
+                lastChallenged: '2026-06-24T22:41:23.000Z'
+                canReset: false
+                canUnenroll: true
+                profile:
+                  deviceName: iPhone 17 Pro
+                _links:
+                  self:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4/enrollments/pfd1ohopjzzOlYOll0g5
+                    hints:
+                      allow:
+                        - GET
+                  unenroll:
+                    href: https://sampleorg.okta.com/idp/authenticators/pfd1ohopjzzOlYOll0g5/unenroll
+                    hints:
+                      allow:
+                        - GET
+                  authenticator:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4
+                    hints:
+                      allow:
+                        - GET
+        - id: okta_verify
+          key: okta_verify
+          enrollable: true
+          _links:
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/okta_verify
+              hints:
+                allow:
+                  - GET
+          _embedded:
+            enrollments:
+              - id: pfd1ohopjzzOlYOll0g5
+                name: Okta Verify
+                created: '2026-06-11T23:14:51.000Z'
+                lastChallenged: '2026-06-24T22:41:23.000Z'
+                canReset: false
+                canUnenroll: true
+                profile:
+                  deviceName: iPhone 17 Pro
+                _links:
+                  self:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/okta_verify/enrollments/pfd1ohopjzzOlYOll0g5
+                    hints:
+                      allow:
+                        - GET
+                  unenroll:
+                    href: https://sampleorg.okta.com/idp/authenticators/pfd1ohopjzzOlYOll0g5/unenroll
+                    hints:
+                      allow:
+                        - GET
+                  authenticator:
+                    href: https://sampleorg.okta.com/idp/myaccount/authenticators/okta_verify
+                    hints:
+                      allow:
+                        - GET
+    ListAuthenticatorsOVBreakdownExample:
+      x-okta-lifecycle:
+        lifecycle: EA
+        isGenerallyAvailable: false
+        SKUs: []
+      summary: List all authenticators including all Okta Verify method-specific authenticators
+      value:
+        - id: autf5jzpIaAbmXXQ30g4
+          key: okta_verify_fastpass
+          name: Okta Verify FastPass
+          enrollable: true
+          _links:
+            self:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4
+              hints:
+                allow:
+                  - GET
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jzpIaAbmXXQ30g4
+              hints:
+                allow:
+                  - GET
+            enrollments:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jzpIaAbmXXQ30g4/enrollments
+              hints:
+                allow:
+                  - GET
+        - id: autf5jyYtSkbEvFpv0g4
+          key: okta_verify_push
+          name: Okta Verify Push
+          enrollable: true
+          _links:
+            self:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4
+              hints:
+                allow:
+                  - GET
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jyYtSkbEvFpv0g4
+              hints:
+                allow:
+                  - GET
+            enrollments:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jyYtSkbEvFpv0g4/enrollments
+              hints:
+                allow:
+                  - GET
+        - id: autf5jxPRRciM4mXb0g4
+          key: okta_verify_totp
+          name: Okta Verify TOTP
+          enrollable: true
+          _links:
+            self:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4
+              hints:
+                allow:
+                  - GET
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/autf5jxPRRciM4mXb0g4
+              hints:
+                allow:
+                  - GET
+            enrollments:
+              href: https://sampleorg.okta.com/idp/myaccount/authenticators/autf5jxPRRciM4mXb0g4/enrollments
+              hints:
+                allow:
+                  - GET
+        - id: okta_verify
+          key: okta_verify
+          enrollable: true
+          _links:
+            enroll:
+              href: https://sampleorg.okta.com/idp/authenticators/setup/okta_verify
+              hints:
+                allow:
+                  - GET
     ListEnrollmentsExample:
       summary: All security key and biometric enrollments
       value:
@@ -2696,6 +3079,14 @@ components:
       schema:
         type: string
         example: pfd7rzcmvlhmE0Y1w0g4
+    myaccountAcceptHeader:
+      name: Accept
+      in: header
+      required: true
+      description: 'Specifies the API version. Current version: `1.0.0`'
+      schema:
+        type: string
+        example: application/json; okta-version=1.0.0
     pathAuthenticatorId:
       name: authenticatorId
       in: path
@@ -2790,6 +3181,10 @@ components:
               $ref: '#/components/examples/ListAuthenticatorsExample'
             ListAuthenticatorsExpandExample:
               $ref: '#/components/examples/ListAuthenticatorsExpandExample'
+            ListAuthenticatorsOVBreakdownExample:
+              $ref: '#/components/examples/ListAuthenticatorsOVBreakdownExample'
+            ListAuthenticatorsExpandOVBreakdownExample:
+              $ref: '#/components/examples/ListAuthenticatorsExpandOVBreakdownExample'
     AuthenticatorResponse:
       description: Authenticator
       content:
@@ -2803,6 +3198,12 @@ components:
               $ref: '#/components/examples/AuthenticatorExampleSecurityKey'
             AuthenticatorExampleExternalIdp:
               $ref: '#/components/examples/AuthenticatorExampleExternalIdp'
+            AuthenticatorExampleOktaVerifyFastpass:
+              $ref: '#/components/examples/AuthenticatorExampleOktaVerifyFastpass'
+            AuthenticatorExampleOktaVerifyPush:
+              $ref: '#/components/examples/AuthenticatorExampleOktaVerifyPush'
+            AuthenticatorExampleOktaVerifyTotp:
+              $ref: '#/components/examples/AuthenticatorExampleOktaVerifyTotp'
     ListEnrollmentsResponse:
       description: Enrollments
       content:
@@ -4089,6 +4490,9 @@ components:
         - symantec_vip
         - webauthn
         - yubikey_token
+        - okta_verify_totp
+        - okta_verify_push
+        - okta_verify_fastpass
       readOnly: true
     CreateWebAuthnRequest:
       type: object
