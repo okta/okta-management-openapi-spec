@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: MyAccount Management
-  version: 2026.42.1
+  version: 2026.44.0
   description: |-
     APIs for managing a user's own emails, phones, profile, and app authenticators.
     > **Note:** The MyAccount API doesn't support [delegated authentication](https://help.okta.com/okta_help.htm?id=ext_Security_Authentication).
@@ -163,8 +163,6 @@ externalDocs:
   url: https://developer.okta.com
 paths:
   /idp/myaccount/app-authenticators:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Create an App Authenticator Enrollment
       description: |-
@@ -227,15 +225,14 @@ paths:
         isGenerallyAvailable: false
         SKUs: []
   /idp/myaccount/app-authenticators/challenge/{challengeId}/verify:
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
     parameters:
       - $ref: '#/components/parameters/appAuthenticatorChallengeId'
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
-      x-okta-lifecycle:
-        lifecycle: LIMITED_GA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
       summary: Verify a Push Notification Challenge Response from the App Authenticator
       description: Verifies a push notification challenge from the app authenticator
       operationId: verifyAppAuthenticatorPushNotificationChallenge
@@ -266,7 +263,6 @@ paths:
   /idp/myaccount/app-authenticators/{enrollmentId}:
     parameters:
       - $ref: '#/components/parameters/appAuthenticatorEnrollmentId'
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     patch:
       summary: Update an App Authenticator Enrollment
       description: |-
@@ -383,7 +379,6 @@ paths:
   /idp/myaccount/app-authenticators/{enrollmentId}/push/notifications:
     parameters:
       - $ref: '#/components/parameters/appAuthenticatorEnrollmentId'
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all pending Push Notification Challenges
       description: Lists all pending push notification challenges
@@ -418,16 +413,15 @@ paths:
         isGenerallyAvailable: false
         SKUs: []
   /idp/myaccount/authenticators:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
     get:
       summary: List all Authenticators
       description: |
         Lists all of the authenticators for the current user
-
-        > <x-lifecycle class="ea"></x-lifecycle> **Note:** When the Flexible Okta Verify authenticator configuration feature is enabled, the response includes both the individual per-method authenticators (`okta_verify_totp`, `okta_verify_push`, `okta_verify_fastpass`) and a legacy `okta_verify` aggregate object for backward compatibility.
-        >
-        > Flexible Okta Verify authenticator configuration is a [self-service Early Access (EA)](/docs/concepts/feature-lifecycle-management/#self-service-features) feature. See [Manage Early Access and Beta features](https://help.okta.com/okta_help.htm?id=ext_secur_manage_ea_bata) to enable the feature.
       operationId: listAuthenticators
       parameters:
         - $ref: '#/components/parameters/queryExpandAuthenticator'
@@ -445,15 +439,9 @@ paths:
             - okta.myAccount.authenticators.read
       tags:
         - Authenticators
-      x-okta-lifecycle:
-        lifecycle: LIMITED_GA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
   /idp/myaccount/authenticators/{authenticatorId}:
     parameters:
       - $ref: '#/components/parameters/pathAuthenticatorId'
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve an Authenticator
       description: |
@@ -485,7 +473,6 @@ paths:
   /idp/myaccount/authenticators/{authenticatorId}/enrollments:
     parameters:
       - $ref: '#/components/parameters/pathAuthenticatorId'
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Enrollments
       description: |
@@ -516,7 +503,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/pathAuthenticatorId'
       - $ref: '#/components/parameters/pathEnrollmentId'
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve an Enrollment
       description: |
@@ -603,8 +589,6 @@ paths:
         SKUs:
           - Okta Identity Engine
   /idp/myaccount/emails:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Emails
       description: |
@@ -699,7 +683,6 @@ paths:
         name: id
         in: path
         required: true
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve an Email
       description: 'Retrieves the current user''s email information by ID: a collection of links that describe the acceptable email operations'
@@ -758,7 +741,6 @@ paths:
         name: id
         in: path
         required: true
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Send an Email Challenge
       description: |-
@@ -945,7 +927,6 @@ paths:
           Use the `POST /idp/myaccount/emails/{id}/challenge/` operation to obtain the `challengeId` when creating a new challenge.
         in: path
         required: true
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Poll the Challenge for Email Magic Link
       description: Polls for the email challenge's status
@@ -1119,7 +1100,6 @@ paths:
         name: challengeId
         in: path
         required: true
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Verify an Email OTP
       description: |
@@ -1161,8 +1141,11 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/okta-applications:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
     get:
       summary: List all Okta Apps
       description: |
@@ -1180,14 +1163,12 @@ paths:
             - okta.myAccount.oktaApplications.read
       tags:
         - OktaApplications
-      x-okta-lifecycle:
-        lifecycle: LIMITED_GA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
   /idp/myaccount/organization:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
     get:
       summary: Retrieve the Org Details
       description: |
@@ -1205,14 +1186,7 @@ paths:
             - okta.myAccount.organization.read
       tags:
         - Organization
-      x-okta-lifecycle:
-        lifecycle: LIMITED_GA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
   /idp/myaccount/password:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve a Password
       description: |
@@ -1345,14 +1319,12 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/password/change-password:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
     post:
-      x-okta-lifecycle:
-        lifecycle: LIMITED_GA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
       summary: Update a Password
       description: Updates a password. The user needs to know the current password to change it.
       operationId: updatePassword
@@ -1387,14 +1359,12 @@ paths:
       tags:
         - Password
   /idp/myaccount/password/complexity-requirements:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
+    x-okta-lifecycle:
+      lifecycle: LIMITED_GA
+      isGenerallyAvailable: false
+      SKUs:
+        - Okta Identity Engine
     get:
-      x-okta-lifecycle:
-        lifecycle: LIMITED_GA
-        isGenerallyAvailable: false
-        SKUs:
-          - Okta Identity Engine
       summary: Retrieve the Password Complexity Requirements
       description: Retrieves the password complexity requirements for the current user
       operationId: getPasswordRequirements
@@ -1409,8 +1379,6 @@ paths:
       tags:
         - Password
   /idp/myaccount/phones:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all Phones
       description: Lists the current user's phone information for all phones. Includes a collection of links for each phone describing the acceptable operations.
@@ -1494,7 +1462,6 @@ paths:
         name: id
         in: path
         required: true
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve a Phone
       description: Retrieves the current user's phone information by ID. Along with a collection of links describing the operations that can be performed to the phone.
@@ -1550,7 +1517,6 @@ paths:
         name: id
         in: path
         required: true
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Send a Phone Challenge
       description: |-
@@ -1613,7 +1579,6 @@ paths:
         name: id
         in: path
         required: true
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Verify a Phone Challenge
       description: |-
@@ -1662,8 +1627,6 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/profile:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve my Profile
       description: Retrieves the caller's Okta user profile, without attributes excluded by the [Get my user profile schema](/openapi/okta-myaccount/myaccount/profile/getprofileschema)
@@ -1740,8 +1703,6 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/profile/schema:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve my Profile Schema
       description: |-
@@ -1807,12 +1768,10 @@ paths:
         lifecycle: GA
         isGenerallyAvailable: true
   /idp/myaccount/sessions:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
+    x-okta-lifecycle:
+      lifecycle: GA
+      isGenerallyAvailable: true
     delete:
-      x-okta-lifecycle:
-        lifecycle: GA
-        isGenerallyAvailable: true
       summary: Delete all Sessions
       description: |
         Deletes all sessions. Revokes all active identity provider sessions of the user. This forces the user to authenticate on the next operation. Also revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
@@ -1859,8 +1818,6 @@ paths:
       tags:
         - Sessions
   /idp/myaccount/webauthn:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: List all WebAuthn enrollments
       description: |
@@ -1913,8 +1870,6 @@ paths:
         isGenerallyAvailable: false
         SKUs: []
   /idp/myaccount/webauthn/registration:
-    parameters:
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     post:
       summary: Start a WebAuthn enrollment
       description: |
@@ -1948,7 +1903,6 @@ paths:
   /idp/myaccount/webauthn/{id}:
     parameters:
       - $ref: '#/components/parameters/webauthnEnrollmentId'
-      - $ref: '#/components/parameters/myaccountAcceptHeader'
     get:
       summary: Retrieve a WebAuthn enrollment
       description: Retrieves a Passkey (FIDO2 WebAuthn) enrollment
@@ -2014,14 +1968,6 @@ components:
       schema:
         type: string
         example: pfd7rzcmvlhmE0Y1w0g4
-    myaccountAcceptHeader:
-      name: Accept
-      in: header
-      required: true
-      description: 'Specifies the API version. Current version: `1.0.0`'
-      schema:
-        type: string
-        example: application/json; okta-version=1.0.0
     pathAuthenticatorId:
       name: authenticatorId
       in: path
@@ -3381,9 +3327,6 @@ components:
         - symantec_vip
         - webauthn
         - yubikey_token
-        - okta_verify_totp
-        - okta_verify_push
-        - okta_verify_fastpass
       readOnly: true
     CreateWebAuthnRequest:
       type: object

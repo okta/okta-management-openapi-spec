@@ -1,0 +1,2915 @@
+openapi: 3.0.3
+info:
+  title: Access Requests - V1
+  description: Allows customers to easily access the Okta API
+  termsOfService: https://developer.okta.com/terms/
+  contact:
+    name: Okta Developer Team
+    url: https://developer.okta.com/
+    email: devex-public@okta.com
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 3.2.0
+  x-logo:
+    url: logo.svg
+    backgroundColor: transparent
+    altText: Okta Developer
+servers:
+  - url: https://{yourOktaDomain}
+    variables:
+      yourOktaDomain:
+        default: subdomain.okta.com
+        description: The domain of your organization. This can be a provided subdomain of an official okta domain (okta.com, oktapreview.com, etc) or one of your configured custom domains.
+tags:
+  - name: Request Types
+    description: |
+      The Request Types API allows you to manage request types, similar to the operations performed in the Okta Access Requests app. Use this API to define request types that include:
+
+      - Fields to complete
+      - Approvals and tasks required
+      - Actions performed in Okta
+
+      See [Access Request Types](https://help.okta.com/okta_help.htm?type=oie&id=ext-ar-reqtype) in the product documentation.
+
+      > **Notes**:
+      >
+      > * Each org has a limit of 500 active request types.
+      > * Operations to create or delete apps or groups in Okta could take up to 24 hours before they can be referenced by the Access Requests - V1 APIs. To trigger these changes immediately, open Okta Access Requests as an administrator, go to **Settings** > **Configuration** and click **Sync Now** on the relevant Okta resource list.
+  - name: Requests
+    description: |
+      Okta Access Requests automate the process of requesting access to resources like apps, groups, and entitlement bundles. 
+      Each request is associated with a request approval process that determines the actions taken by Okta Access Requests. 
+      Manage this process directly with the following request APIs.
+
+      See [Access Requests](https://help.okta.com/okta_help.htm?type=oie&id=ext-ar) for more information on Access Requests 
+      and Identity Governance.
+externalDocs:
+  description: Find more info here
+  url: https://developer.okta.com/docs/reference/core-okta-api/#design-principles
+paths:
+  /governance/api/v1/request-types:
+    post:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Request Types
+      operationId: createRequestType
+      summary: Create a request type
+      description: |
+        Creates a request type that governs the requests allowed in your org.
+
+        Specify the following to create a request type:
+
+        - What resource access can be requested
+        - Who can request access
+        - What question(s) requesters must answer (optional)
+        - Who can approve access
+        - What question(s) approvers must answer (optional)
+        - How long access should be granted for (optional)
+
+        > **Notes**:
+        >
+        > * You can have a maximum of 100 combined items across `approvalSettings.approvals`, `approvalSettings.approvals.approverFields`, and `requestSettings.requesterFields` objects for each request type. This translates to a maximum of 100 combined questions, tasks, or actions for each request type.
+        > * The limit on the JSON response payload of a request type is 100,000 characters.
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.manage
+      requestBody:
+        required: true
+        description: The writable attributes of a request type
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request-type-creatable'
+      responses:
+        '201':
+          $ref: '#/components/responses/request-types-create-success-response'
+        '400':
+          $ref: '#/components/responses/request-types-create-bad-request-response'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+    get:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      tags:
+        - Request Types
+      operationId: listAllRequestTypes
+      summary: List all request types
+      description: |-
+        Lists all or a subset of request types in your organization.
+
+        Use the `?filter=` parameter to narrow results with the following request type properties: `status` and `lastUpdated`.
+
+        Pagination parameters are accepted, and standard link headers are in the response.
+      parameters:
+        - $ref: '#/components/parameters/request-types-list-filter'
+        - $ref: '#/components/parameters/request-types-list-after'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/request-types-list-order-by'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.read
+      responses:
+        '200':
+          $ref: '#/components/responses/request-types-list-success'
+        '400':
+          $ref: '#/components/responses/request-types-list-bad-request'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/request-types/{requestTypeId}:
+    get:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Request Types
+      operationId: getRequestType
+      summary: Retrieve a request type
+      description: |-
+        Retrieves the full representation of a specific request type.
+
+        More information is returned than the abbreviated representation in a List request types operation.
+      parameters:
+        - $ref: '#/components/parameters/request-type-id'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.read
+      responses:
+        '200':
+          $ref: '#/components/responses/request-type-get-success'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+    delete:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Request Types
+      operationId: deleteRequestType
+      summary: Delete a request type
+      description: |
+        Deletes a request type from your organization.
+
+        A deleted request type:
+
+        - Can no longer be used to add requests
+        - Can no longer be unpublished or published
+        - Is no longer available for Get or List operations
+
+        >**Note:** In-flight requests using the `DELETED` request type continue in their lifecycle operations using the state of the request type at the time the request was made.
+      parameters:
+        - $ref: '#/components/parameters/request-type-id'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.manage
+      responses:
+        '204':
+          $ref: '#/components/responses/request-type-delete-success-response'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/request-types/{requestTypeId}/publish:
+    post:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Request Types
+      operationId: publishRequestType
+      summary: Publish a request type
+      description: |
+        Publishes a request type to your organziation.
+
+        A published request type:
+
+        - Can be used to create requests
+        - Can be viewed by non-administrative users
+        - Sets the request type's status to `ACTIVE`
+
+        A request type with a status of `ACTIVE` can be unpublished or deleted at any time.
+      parameters:
+        - $ref: '#/components/parameters/request-type-id'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.manage
+      responses:
+        '200':
+          $ref: '#/components/responses/request-type-publish-success-response'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '409':
+          $ref: '#/components/responses/request-type-publish-conflict-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/request-types/{requestTypeId}/un-publish:
+    post:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Request Types
+      operationId: unpublishRequestType
+      summary: Unpublish a request type
+      description: |
+        Unpublishes a request type, which returns the status of the request type to `DRAFT`.
+
+        An unpublished Request Type:
+
+        - Can't be used to add new requests
+        - Is not visible to non-administrative users
+
+        >**Note:** In-flight requests continue in their lifecycle using the request type definition from the point in time the request was created.
+
+        A request type with a status of `DRAFT` can be published or deleted at any time.
+      parameters:
+        - $ref: '#/components/parameters/request-type-id'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.manage
+      responses:
+        '200':
+          $ref: '#/components/responses/request-type-un-publish-success-response'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '409':
+          $ref: '#/components/responses/request-type-un-publish-conflict-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/requests:
+    get:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Requests
+      operationId: listAllRequests
+      summary: List all requests
+      description: |
+        Lists all or a subset of requests made by users in your organization.
+
+        Use the `?filter=` parameter to narrow results with the following request properties: `requestStatus` and `lastUpdated`.
+
+        Pagination parameters are accepted, and standard link headers are in the response.
+      parameters:
+        - $ref: '#/components/parameters/request-list-filter'
+        - $ref: '#/components/parameters/request-list-after'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/request-list-order-by'
+      security:
+        - OAuth2:
+            - okta.governance.accessRequests.read
+      responses:
+        '200':
+          $ref: '#/components/responses/requests-list-success'
+        '400':
+          $ref: '#/components/responses/requests-list-bad-request'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+    post:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      operationId: createRequest
+      tags:
+        - Requests
+      summary: Create a request
+      description: |
+        Creates a request to access a resource in your organization.
+
+        When creating a request, you specify:
+
+        - the request type (`requestTypeId`) to use for the request
+        - and the subject line (`subject`) of the request
+
+        Optionally, you can specify:
+
+        - The requester user IDs for the request. If not provided, user IDs are obtained from the user identity of the `API Token` or `Access Token`.
+      requestBody:
+        required: true
+        description: The writable attributes of a request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request-creatable'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.manage
+      responses:
+        '201':
+          $ref: '#/components/responses/request-create-success-response'
+        '400':
+          $ref: '#/components/responses/request-create-bad-request-response'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/request-create-forbidden-response'
+        '409':
+          $ref: '#/components/responses/request-create-conflict-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/requests/{requestId}:
+    get:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Requests
+      operationId: getRequest
+      summary: Retrieve a request
+      description: |
+        Retrieves the full representation of a specific request
+
+        More information is returned than the abbreviated representation in a [List all requests](/iga/openapi/governance-production-requests-admin-v1-reference/requests/listallrequests) operation.
+      parameters:
+        - $ref: '#/components/parameters/request-id'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.read
+      responses:
+        '200':
+          $ref: '#/components/responses/request-get-success'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '404':
+          $ref: '#/components/responses/resource-not-found-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/requests/{requestId}/messages:
+    post:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Requests
+      operationId: createRequestMessage
+      summary: Create a Message for a Request
+      description: |
+        Creates a message to add context to the request. Message will be authored by the authenticated user and display as "Sent via API".
+      parameters:
+        - $ref: '#/components/parameters/request-id'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.manage
+      requestBody:
+        required: true
+        description: The writable attributes of a request message
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request-message-creatable'
+      responses:
+        '201':
+          description: A successful create request message response
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '429':
+          $ref: '#/components/responses/rate-limit-exceeded-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+  /governance/api/v1/teams:
+    get:
+      x-okta-lifecycle:
+        lifecycle: BETA
+      x-okta-iam-admin-roles:
+        - ACCESS_REQUESTS_ADMIN
+      tags:
+        - Request Types
+      operationId: listAllRequestTeams
+      summary: List all teams
+      description: |
+        Lists all or a subset of teams in your organization.
+
+        Use the `?filter=` parameter to narrow results with the request type property `name`. This query is useful for specifying the `ownerId` of a request type.
+
+        Pagination parameters are accepted, and standard link headers are in the response.
+      parameters:
+        - $ref: '#/components/parameters/teams-filter'
+        - $ref: '#/components/parameters/teams-after'
+        - $ref: '#/components/parameters/limit'
+      security:
+        - ApiKey:
+            - admin
+        - OAuth2:
+            - okta.governance.accessRequests.read
+      responses:
+        '200':
+          $ref: '#/components/responses/teams-list-success'
+        '400':
+          $ref: '#/components/responses/teams-list-bad-request'
+        '401':
+          $ref: '#/components/responses/authentication-error-response'
+        '403':
+          $ref: '#/components/responses/authorization-error-response'
+        '500':
+          $ref: '#/components/responses/unexpected-error-response'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: 'Pass the `access_token` as the value of the Authorization header: `Authorization: Bearer {access_token}`. See [Make a request](https://developer.okta.com/docs/guides/implement-oauth-for-okta-serviceapp/main/#make-a-request).'
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/v1/authorize
+          tokenUrl: /oauth2/v1/token
+          scopes:
+            okta.governance.accessCertifications.manage: Allows the app to create and manage Access Certification Campaigns
+            okta.governance.accessCertifications.read: Allows the app to read information about Access Certification Campaigns and Reviews in your Okta org
+            okta.governance.accessRequests.manage: Allows the app to create and manage V1 Access Requests, Request Types, and Teams
+            okta.governance.accessRequests.read: Allows the app to read information about V1 Access Requests, Request Types, and Teams in your Okta org
+            okta.governance.entitlements.read: Allows the app to read information about Entitlements, Entitlement bundles, and Grants
+            okta.governance.entitlements.manage: Allows the app to create and manage Entitlements, Entitlement bundles, and Grants
+            okta.accessRequests.catalog.read: Allows the app to read information about Access Request Catalogs in your Okta org
+            okta.accessRequests.condition.manage: Allows the app to create and manage Conditions for the Access Request Resource Catalog
+            okta.accessRequests.condition.read: Allows the app to read information about Conditions for the Access Request Resource Catalog
+            okta.accessRequests.request.manage: Allows the app to create and manage V2 Access Requests through the Access Request Resource Catalog
+            okta.accessRequests.request.read: Allows the app to read information about V2 Access Requests created through the Access Requests Resource Catalog
+            okta.governance.collections.manage: Allows the app to create and manage collections
+            okta.governance.collections.read: Allows the app to read information about collections in your Okta org
+            okta.governance.operations.read: Allows the app to read information about asynchronous operations in your Okta org
+            okta.governance.riskRule.manage: Allows the app to create and manage rules
+            okta.governance.riskRule.read: Allows the app to read information about rules in your Okta org
+            okta.governance.resourceOwner.manage: Allows the app to create and manage resource owners
+            okta.governance.resourceOwner.read: Allows the app to read information about resource owners in your Okta org
+            okta.governance.labels.manage: Allows the user to create and manage labels
+            okta.governance.labels.read: Allows the user to read information about labels in your Okta org
+            okta.governance.securityAccessReviews.admin.manage: Allows the admin app to create and manage security access reviews
+            okta.governance.securityAccessReviews.admin.read: Allows the admin app to read information about security access reviews
+            okta.governance.securityAccessReviews.endUser.manage: Allows the end-user app to create and manage security access reviews
+            okta.governance.securityAccessReviews.endUser.read: Allows the end-user app to read information about security access reviews
+            okta.governance.principalSettings.manage: Allows the app to create and manage governance settings for any user in your Okta org
+            okta.governance.principalSettings.read: Allows the app to read information about governance settings for any user in your Okta org
+            okta.governance.settings.manage: Allows the app to create and manage governance settings for your Okta org
+            okta.governance.settings.read: Allows the app to read information about governance settings for your Okta org
+            okta.governance.delegates.read: Allows the app to read information about delegates in your Okta org
+            okta.governance.reviewer.read: Allows the end user to read information about access certification reviews assigned to them
+            okta.governance.reviewer.manage: Allows the end user to manage access certification reviews assigned to them
+            okta.accessRequests.tasks.manage: Allows the user to manage tasks for access requests in your Okta org
+            okta.accessRequests.tasks.read: Allows the user to read information about tasks for access requests in your Okta org
+    ApiKey:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: 'Pass the API token as the Authorization header value prefixed with SSWS: `Authorization: SSWS {API Token}`.'
+  schemas:
+    scim-filter:
+      type: string
+      format: scim-filter
+    request-type-id:
+      type: string
+      maxLength: 24
+      minLength: 24
+      pattern: ^[a-fA-F\d]{24}$
+      format: request-type-id
+      description: |
+        The request type `id`.
+    order-by:
+      type: string
+      format: order-by
+      description: A property of items within the collection, optionally followed by a `%20asc` or `%20desc` suffix.
+    writable-standard-properties:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: A user-defined unique key that's set during the create operation and can't be updated afterwards
+          maxLength: 50
+          minLength: 1
+        description:
+          type: string
+          nullable: false
+          description: Human readable description
+          maxLength: 2000
+          minLength: 1
+      example:
+        name: my-object-1
+        description: The unique instance of my-object-1
+    created-by:
+      description: The `id` of the Okta user who created the resource
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      readOnly: true
+      minLength: 1
+      maxLength: 20
+      format: okta-user-id
+    created:
+      description: The ISO 8601 formatted date and time when the resource was created
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      format: date-time
+      readOnly: true
+    last-updated:
+      description: The ISO 8601 formatted date and time when the object was last updated
+      type: string
+      format: date-time
+      readOnly: true
+    last-updated-by:
+      description: The `id` of the Okta user who last updated the object
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      readOnly: true
+      minLength: 1
+      maxLength: 20
+      format: okta-user-id
+    link:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: A link to a related RESTful resource
+      required:
+        - href
+      properties:
+        name:
+          type: string
+          description: Link name
+        rel:
+          type: string
+          description: Link relation
+        href:
+          type: string
+          minLength: 1
+          description: Link URI
+        type:
+          type: string
+          description: The media type of the link. If omitted, it's implicitly `application/json`.
+        method:
+          type: string
+          deprecated: true
+        templated:
+          type: boolean
+          description: Indicates whether the link object's `href` property is a URI template
+        hints:
+          type: object
+          description: Link hints
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        title:
+          type: string
+          description: Link title or label
+    read-only-standard-properties:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      required:
+        - id
+        - createdBy
+        - created
+        - lastUpdated
+        - lastUpdatedBy
+      properties:
+        id:
+          description: Unique identifier for the object
+          type: string
+          minLength: 1
+        createdBy:
+          $ref: '#/components/schemas/created-by'
+        created:
+          $ref: '#/components/schemas/created'
+        lastUpdated:
+          $ref: '#/components/schemas/last-updated'
+        lastUpdatedBy:
+          $ref: '#/components/schemas/last-updated-by'
+        _links:
+          type: object
+          description: Links to related resources
+          additionalProperties:
+            $ref: '#/components/schemas/link'
+    request-type-status:
+      type: string
+      enum:
+        - DRAFT
+        - ACTIVE
+        - DISABLED
+      description: |
+        A request type has a status lifecycle described in our [request type lifecycle documentation](/#request-type-status-lifecycle).
+
+        A request type may start with a status of DRAFT or ACTIVE, based on the status property in the Add request body.
+
+        The publish, unpublish, and delete operations all affect a request type's status.
+
+        Additionally, if any operation detects invalid settings, such as an approver who is no longer in the organization, the request type automatically transitions to disabled.
+    request-type-links:
+      type: object
+      description: Links available on a single request type representation
+      required:
+        - requests
+        - self
+      properties:
+        createRequest:
+          description: Only available for request type with status of ACTIVE
+          allOf:
+            - $ref: '#/components/schemas/link'
+        requests:
+          $ref: '#/components/schemas/link'
+        self:
+          $ref: '#/components/schemas/link'
+      additionalProperties:
+        $ref: '#/components/schemas/link'
+    request-type-sparse:
+      type: object
+      description: Sparse representation of a Request Type resource
+      allOf:
+        - $ref: '#/components/schemas/writable-standard-properties'
+        - $ref: '#/components/schemas/read-only-standard-properties'
+      required:
+        - id
+        - name
+        - description
+        - lastUpdated
+        - lastUpdatedBy
+        - status
+        - lastUpdateSource
+        - _links
+      properties:
+        status:
+          $ref: '#/components/schemas/request-type-status'
+        lastUpdateSource:
+          type: string
+          enum:
+            - API
+        _links:
+          $ref: '#/components/schemas/request-type-links'
+      example:
+        id: 61eb2db568c7c300079fefd0
+        name: salesforce-01
+        description: How users can request access to Salesforce 01
+        lastUpdated: '2022-05-24T14:15:22Z'
+        lastUpdatedBy: 00ub0oNGTSWTBKOLGLNR
+        created: '2022-05-24T14:15:22Z'
+        createdBy: 00ub0oNGTSWTBKOLGLNR
+        status: ACTIVE
+        lastUpdateSource: API
+        _links:
+          createRequest:
+            href: https://my-org.at.okta.com/next/new?q=Request%20access%20to%20Salesforce&request_type=0oa1gjh63g214q0Hq0g4
+            type: text/html
+          requests:
+            href: https://myorg.okta.com/governance/api/v1/requests?filter=requestTypeId%20eq%20%2261eb2db568c7c300079fefd0%22
+            type: application/json
+          self:
+            href: https://myorg.okta.com/governance/api/v1/requests/61eb2db568c7c300079fefd0
+            type: application/json
+    request-types-list-links:
+      type: object
+      description: Links available in request type list response
+      required:
+        - self
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+        next:
+          $ref: '#/components/schemas/link'
+      additionalProperties:
+        $ref: '#/components/schemas/link'
+    request-types-list:
+      type: object
+      properties:
+        data:
+          description: All Request Types on the current page
+          type: array
+          items:
+            $ref: '#/components/schemas/request-type-sparse'
+        _links:
+          $ref: '#/components/schemas/request-types-list-links'
+    error-cause:
+      type: object
+      x-okta-ignore-redocly-rules-for-sdk: true
+      description: A specific cause of an error
+      required:
+        - errorSummary
+      properties:
+        errorSummary:
+          type: string
+          description: A more specific summary for the error that contains the error cause
+        reason:
+          type: string
+          description: An enumerated value to represent the reason why the error occurred. This enumeration allows codes to adapt to different conditions in which an error code can occur.
+        location:
+          type: string
+          description: A value that represents the key where the error cause occurred. This is used with `locationType` to give a holistic view of where the error cause occurred. For example, if `locationType` is `body`, `location` is `username`, and the `reason` was `UNIQUE_CONSTRAINT`, you can derive that the username was already taken.
+        locationType:
+          type: string
+          description: A value that represents where the error cause occurred. For example, in the body or header of the request. This value isn't required for cases where the request is correct, but there was another reason why the error occurred (server-side state conflict, rate limit violation, and so on).
+        domain:
+          type: string
+          description: A value that represents the domain of the service in which the error occurs. This value is used to isolate the error cause reason.
+    error:
+      type: object
+      description: An Error object
+      required:
+        - errorCode
+        - errorId
+        - errorSummary
+      properties:
+        errorCode:
+          type: string
+          description: An error code unique to the error
+        errorId:
+          type: string
+          description: An error identifier useful for troubleshooting an error with support
+        errorSummary:
+          type: string
+          description: An error code description detailing the error
+        errorLink:
+          type: string
+          description: An indicator of where to look to troubleshoot the error
+        errorCauses:
+          type: array
+          description: An optional array of string values that explain possible reasons for the error
+          items:
+            $ref: '#/components/schemas/error-cause'
+    request-type-creatable-status:
+      type: string
+      enum:
+        - DRAFT
+        - ACTIVE
+      default: DRAFT
+      description: Whether the request type starts with a status of DRAFT or ACTIVE. Starting as ACTIVE is preferable to avoid a publish operation when no manual inspection of the request type is necessary before publication.
+    request-type-owner-id:
+      type: string
+      description: The ID of the team that administers this request type.
+      maxLength: 24
+      minLength: 24
+      pattern: ^[a-fA-F\d]{24}$
+      format: owner-id
+    application-id:
+      type: string
+      format: okta-application-id
+      description: |
+        An Okta app ID
+
+        See [List all apps](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/application/other/listapplications) endpoint for more information on how to retrieve app IDs.
+      pattern: 0oa[0-9a-zA-Z]+
+      maxLength: 20
+      minLength: 20
+    okta-application-resource:
+      type: object
+      description: Identifies a unique Okta resource
+      required:
+        - resourceId
+      properties:
+        resourceId:
+          $ref: '#/components/schemas/application-id'
+    request-type-resource-settings-apps:
+      type: object
+      description: Specifies that all resources must be Okta apps
+      required:
+        - type
+        - targetResources
+      properties:
+        type:
+          type: string
+          enum:
+            - APPS
+        targetResources:
+          type: array
+          description: List of Okta applications
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: '#/components/schemas/okta-application-resource'
+    group-id:
+      type: string
+      format: okta-group-id
+      description: |
+        Okta group ID.
+
+        > **Note:** See [List all groups](https://developer.okta.com/docs/api/openapi/okta-management/management/group/listgroups) for more information on how to retrieve group IDs.
+      pattern: 00g[0-9a-zA-Z]+
+      maxLength: 20
+      minLength: 20
+    okta-group-resource:
+      type: object
+      description: Identifies a unique Okta group resource
+      required:
+        - resourceId
+      properties:
+        resourceId:
+          $ref: '#/components/schemas/group-id'
+    request-type-resource-settings-groups:
+      type: object
+      description: Specifies that all resources must be Okta groups
+      required:
+        - type
+        - targetResources
+      properties:
+        type:
+          type: string
+          enum:
+            - GROUPS
+        targetResources:
+          type: array
+          description: List of Okta groups
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: '#/components/schemas/okta-group-resource'
+    entitlement-bundle-id:
+      type: string
+      maxLength: 20
+      minLength: 20
+      format: entitlement-bundle-id
+      pattern: enb[0-9a-zA-Z]+
+      description: |
+        The entitlement bundle `id`
+    okta-entitlement-bundle-resource:
+      type: object
+      description: Identifies a unique Okta entitlement bundle resource
+      required:
+        - resourceId
+      properties:
+        resourceId:
+          $ref: '#/components/schemas/entitlement-bundle-id'
+    request-type-resource-settings-entitlement-bundles:
+      type: object
+      description: Specifies that all resources must be Okta entitlement bundles
+      required:
+        - type
+        - targetResources
+      properties:
+        type:
+          type: string
+          enum:
+            - ENTITLEMENT_BUNDLES
+        targetResources:
+          type: array
+          description: List of Okta entitlement bundles
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: '#/components/schemas/okta-entitlement-bundle-resource'
+    request-type-resource-settings-mutable:
+      type: object
+      description: Which resource(s) are requestable
+      oneOf:
+        - $ref: '#/components/schemas/request-type-resource-settings-apps'
+        - $ref: '#/components/schemas/request-type-resource-settings-groups'
+        - $ref: '#/components/schemas/request-type-resource-settings-entitlement-bundles'
+      discriminator:
+        propertyName: type
+        mapping:
+          APPS: '#/components/schemas/request-type-resource-settings-apps'
+          GROUPS: '#/components/schemas/request-type-resource-settings-groups'
+          ENTITLEMENT_BUNDLES: '#/components/schemas/request-type-resource-settings-entitlement-bundles'
+    okta-push-group-id:
+      type: string
+      format: okta-push-group-id
+      description: An Okta Group ID that's used for push groups in Okta.
+      example: 00g1emaKYZTWRYYRRTSK
+      pattern: 00g[0-9a-zA-Z]+
+      maxLength: 20
+      minLength: 20
+    member-of:
+      type: array
+      description: Okta groups that the user persona must be a member of
+      minItems: 1
+      maxItems: 1
+      items:
+        $ref: '#/components/schemas/okta-push-group-id'
+    field-prompt:
+      type: string
+      description: Text to prompt the user with
+      minLength: 1
+      maxLength: 100
+      example: What is the business justification?
+    field-required:
+      type: boolean
+      description: Whether a value to this field is required to advance the request
+      example: true
+      default: true
+    base-field-writable:
+      type: object
+      description: The field to use when prompting the user
+      required:
+        - prompt
+      properties:
+        prompt:
+          $ref: '#/components/schemas/field-prompt'
+        required:
+          $ref: '#/components/schemas/field-required'
+    field-select-type:
+      type: string
+      enum:
+        - SELECT
+    field-option-value:
+      type: string
+      description: The value of a select option
+      maxLength: 280
+      minLength: 1
+    field-option:
+      type: object
+      description: An option for the user to select for a field prompt
+      required:
+        - value
+      properties:
+        value:
+          $ref: '#/components/schemas/field-option-value'
+    field-select-options:
+      type: array
+      description: The options available for the select input
+      maxItems: 25
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/field-option'
+    field-select-writable:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field-writable'
+      description: A select field
+      required:
+        - type
+        - options
+      properties:
+        type:
+          $ref: '#/components/schemas/field-select-type'
+        options:
+          $ref: '#/components/schemas/field-select-options'
+    field-text-type:
+      type: string
+      enum:
+        - TEXT
+    field-text-writable:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field-writable'
+      description: A text field
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/field-text-type'
+    field-date-time-type:
+      type: string
+      enum:
+        - DATE-TIME
+    field-date-writable:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field-writable'
+      description: A date field
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/field-date-time-type'
+    field-writable:
+      description: The field to use when prompting the user
+      oneOf:
+        - $ref: '#/components/schemas/field-select-writable'
+        - $ref: '#/components/schemas/field-text-writable'
+        - $ref: '#/components/schemas/field-date-writable'
+      discriminator:
+        propertyName: type
+        mapping:
+          SELECT: '#/components/schemas/field-select-writable'
+          TEXT: '#/components/schemas/field-text-writable'
+          DATE-TIME: '#/components/schemas/field-date-writable'
+      default:
+        type: TEXT
+        required: true
+    fields-writable:
+      type: array
+      description: A list of fields with which to gather input. The order of the fields in the array controls the order that the fields are presented to users.
+      default: []
+      maxItems: 5
+      items:
+        $ref: '#/components/schemas/field-writable'
+    request-type-requester-member-of-writable:
+      type: object
+      description: A request where the requester that must be a member of a particular Okta Group.
+      required:
+        - type
+        - requesterMemberOf
+      properties:
+        type:
+          type: string
+          enum:
+            - MEMBER_OF
+        requesterMemberOf:
+          $ref: '#/components/schemas/member-of'
+        requesterFields:
+          $ref: '#/components/schemas/fields-writable'
+    request-type-requester-everyone-writable:
+      type: object
+      description: A request where the requester may be any Okta user in the Okta organization.
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - EVERYONE
+        requesterFields:
+          $ref: '#/components/schemas/fields-writable'
+    request-type-request-settings-mutable:
+      type: object
+      description: |
+        The `requestSettings` control:
+
+        - Which users can request access using this request type.
+        - What fields the user may or must fill out in order to request access.
+      default:
+        type: EVERYONE
+        requesterFields: []
+      oneOf:
+        - $ref: '#/components/schemas/request-type-requester-member-of-writable'
+        - $ref: '#/components/schemas/request-type-requester-everyone-writable'
+      discriminator:
+        propertyName: type
+        mapping:
+          MEMBER_OF: '#/components/schemas/request-type-requester-member-of-writable'
+          EVERYONE: '#/components/schemas/request-type-requester-everyone-writable'
+    request-type-approver-fields-writable:
+      type: array
+      description: |
+        A list of fields with which to gather input.
+
+        The order of field object controls the order with which the fields are presented to users.
+
+        #### Known limitation
+
+        Unlike requester fields, all approver fields are *required* and may not be set as optional.
+      default: []
+      maxItems: 5
+      items:
+        $ref: '#/components/schemas/field-writable'
+    request-type-approval-member-of-writable:
+      type: object
+      description: An approval when the approver must be a member of a particular Okta Group.
+      required:
+        - approverType
+        - approverMemberOf
+      properties:
+        approverType:
+          type: string
+          enum:
+            - MEMBER_OF
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+        approverMemberOf:
+          $ref: '#/components/schemas/member-of'
+        approverFields:
+          $ref: '#/components/schemas/request-type-approver-fields-writable'
+    user-id:
+      type: string
+      x-okta-ignore-redocly-rules-for-sdk: true
+      format: okta-user-id
+      description: The Okta user `id`
+      maxLength: 20
+      minLength: 20
+      pattern: 00u[0-9a-zA-Z]+
+      example: 00ub0oNGTSWTBKOLGLNR
+    request-type-approval-user-writable:
+      type: object
+      description: An approval when the approver must be a particular user.
+      required:
+        - approverType
+        - approverUserId
+      properties:
+        approverType:
+          type: string
+          enum:
+            - USER
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+        approverUserId:
+          $ref: '#/components/schemas/user-id'
+        approverFields:
+          $ref: '#/components/schemas/request-type-approver-fields-writable'
+    request-type-approval-manager-writable:
+      type: object
+      description: Specifying the approver must be the requester's manager
+      required:
+        - approverType
+      properties:
+        approverType:
+          type: string
+          enum:
+            - MANAGER
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+        approverFields:
+          $ref: '#/components/schemas/request-type-approver-fields-writable'
+    request-type-approval-resource-owner-writable:
+      type: object
+      description: Specifying the approver must be the resource owner
+      required:
+        - approverType
+      properties:
+        approverType:
+          type: string
+          enum:
+            - RESOURCE_OWNER
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+    request-type-approval-writable:
+      type: object
+      description: request-type-approval-description.md
+      oneOf:
+        - $ref: '#/components/schemas/request-type-approval-member-of-writable'
+        - $ref: '#/components/schemas/request-type-approval-user-writable'
+        - $ref: '#/components/schemas/request-type-approval-manager-writable'
+        - $ref: '#/components/schemas/request-type-approval-resource-owner-writable'
+      discriminator:
+        propertyName: approverType
+        mapping:
+          MEMBER_OF: '#/components/schemas/request-type-approval-member-of-writable'
+          USER: '#/components/schemas/request-type-approval-user-writable'
+          MANAGER: '#/components/schemas/request-type-approval-manager-writable'
+          RESOURCE_OWNER: '#/components/schemas/request-type-approval-resource-owner-writable'
+    request-type-approvals-writable:
+      description: |
+        The `SERIAL` approvals required to grant access:
+
+        * All specified approvals are considered required in order to fulfill an access request.
+        * At least one approval must be specified for a request type.
+        * When a request type has two approvals:
+          * Only the first approval is immediately actionable by an approver in the request.
+          * After an approver has made a decision for the first approval, then the second approval is actionable.
+        * The approval type of `RESOURCE_OWNER` is supported for apps, entitlement bundles, and associated groups from the resource requested.
+      type: array
+      minItems: 1
+      maxItems: 5
+      items:
+        $ref: '#/components/schemas/request-type-approval-writable'
+    request-type-approval-settings-serial-writable:
+      type: object
+      description: Settings for approval
+      required:
+        - type
+        - approvals
+      properties:
+        type:
+          type: string
+          enum:
+            - SERIAL
+          description: |-
+            Multiple approvals defined in a serial sequence:
+              * An approval isn't actionable until the previous approval is approved.
+              * An approval denial terminates the request and no subsequent approvals are actionable.
+        approvals:
+          $ref: '#/components/schemas/request-type-approvals-writable'
+    request-type-approval-settings-none:
+      type: object
+      description: Settings for no approvals
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - NONE
+          description: No approvals are required for this request type.
+    request-type-approval-settings-mutable:
+      type: object
+      description: |-
+        Specify one of the following `type` of approval settings:
+          | Type | Description |
+          |------|-------------|
+          | NONE | This request type doesn't need any approval. |
+          | SERIAL | This request type needs at least one approval. |
+      oneOf:
+        - $ref: '#/components/schemas/request-type-approval-settings-serial-writable'
+        - $ref: '#/components/schemas/request-type-approval-settings-none'
+      discriminator:
+        propertyName: type
+        mapping:
+          SERIAL: '#/components/schemas/request-type-approval-settings-serial-writable'
+          NONE: '#/components/schemas/request-type-approval-settings-none'
+    request-duration:
+      description: |
+        How long the requester retains access after their request is approved and fulfilled.
+
+        Specified in [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+        #### Known limitation
+
+        Only single time unit ISO 8601 duration formats (D, H, M) are supported for units (days, hours, minutes).
+
+        ##### Supported
+
+        | Unit       | Example |
+        | ---------- | ------- |
+        | D, days    | P40D    |
+        | H, hours   | PT65H   |
+        | M, minutes | PT90M   |
+
+        > **Note:** Mixes of units, as well as month/year/week designations, aren't supported. For example, `P40DT65H`, `P40M`, `P1W`, and `P1Y` aren't supported.
+      type: string
+      example: P40D
+      format: iso-duration
+      nullable: true
+      default: null
+    request-type-creatable:
+      type: object
+      description: The properties expected in an initial Add request
+      required:
+        - name
+        - resourceSettings
+        - approvalSettings
+        - ownerId
+      allOf:
+        - $ref: '#/components/schemas/writable-standard-properties'
+      properties:
+        status:
+          $ref: '#/components/schemas/request-type-creatable-status'
+        ownerId:
+          $ref: '#/components/schemas/request-type-owner-id'
+        resourceSettings:
+          $ref: '#/components/schemas/request-type-resource-settings-mutable'
+        requestSettings:
+          $ref: '#/components/schemas/request-type-request-settings-mutable'
+        approvalSettings:
+          $ref: '#/components/schemas/request-type-approval-settings-mutable'
+        accessDuration:
+          $ref: '#/components/schemas/request-duration'
+      example:
+        name: salesforce-01
+        description: How users can request access to Salesforce 01
+        ownerId: 61eb0f06c462d20007f051ac
+        approvalSettings:
+          type: SERIAL
+          approvals:
+            - approverType: MEMBER_OF
+              approverMemberOf:
+                - 00g1emaKYZTWRYYRRTSK
+              approverFields:
+                - prompt: What is the business justification?
+                  required: true
+                  input:
+                    type: TEXT
+        resourceSettings:
+          type: GROUPS
+          targetResources:
+            - 00g1emaKYZTWRYYRRTSK
+        requestSettings:
+          type: EVERYONE
+          requesterFields:
+            - prompt: What is the business justification?
+              required: true
+              input:
+                type: TEXT
+    request-type-resource-settings-custom:
+      type: object
+      description: Resource settings which cannot be represented in the API accurately. Often the case when lastUpdatedSource is 'WEB'.
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - CUSTOM
+    request-type-resource-settings-readable:
+      type: object
+      description: Which resource(s) are requestable
+      oneOf:
+        - $ref: '#/components/schemas/request-type-resource-settings-apps'
+        - $ref: '#/components/schemas/request-type-resource-settings-groups'
+        - $ref: '#/components/schemas/request-type-resource-settings-entitlement-bundles'
+        - $ref: '#/components/schemas/request-type-resource-settings-custom'
+      required:
+        - type
+      discriminator:
+        propertyName: type
+        mapping:
+          APPS: '#/components/schemas/request-type-resource-settings-apps'
+          GROUPS: '#/components/schemas/request-type-resource-settings-groups'
+          ENTITLEMENT_BUNDLES: '#/components/schemas/request-type-resource-settings-entitlement-bundles'
+          CUSTOM: '#/components/schemas/request-type-resource-settings-custom'
+    field-id:
+      type: string
+      description: |-
+        A `read-only` field ID.
+
+        This field is useful for specifying `requesterFieldValues` when adding a request.
+
+        The generated value is a UUID v4 from [RFC4122](https://www.ietf.org/rfc/rfc4122.txt).
+      format: uuid
+      maxLength: 36
+      minLength: 36
+      readOnly: true
+      example: 1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed
+    base-field-readable:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/field-id'
+    base-field:
+      type: object
+      description: The field to use when prompting the user
+      allOf:
+        - $ref: '#/components/schemas/base-field-writable'
+        - $ref: '#/components/schemas/base-field-readable'
+    field-select:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field'
+      description: A select field
+      required:
+        - id
+        - type
+        - options
+      properties:
+        type:
+          $ref: '#/components/schemas/field-select-type'
+        options:
+          $ref: '#/components/schemas/field-select-options'
+    field-text:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field'
+      description: A text field
+      required:
+        - id
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/field-text-type'
+    field-date:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field'
+      description: A date field
+      required:
+        - id
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/field-date-time-type'
+    field:
+      type: object
+      description: The field to use when prompting the user
+      oneOf:
+        - $ref: '#/components/schemas/field-select'
+        - $ref: '#/components/schemas/field-text'
+        - $ref: '#/components/schemas/field-date'
+      discriminator:
+        propertyName: type
+        mapping:
+          SELECT: '#/components/schemas/field-select'
+          TEXT: '#/components/schemas/field-text'
+          DATE-TIME: '#/components/schemas/field-date'
+      default:
+        type: TEXT
+        required: true
+    fields:
+      type: array
+      description: A list of fields to gather input. The order of the fields in the array controls the order that the fields are presented to users.
+      default: []
+      maxItems: 5
+      items:
+        $ref: '#/components/schemas/field'
+    request-type-requester-member-of:
+      type: object
+      description: A request where the requester that must be a member of a particular Okta Group.
+      required:
+        - type
+        - requesterMemberOf
+      properties:
+        type:
+          type: string
+          enum:
+            - MEMBER_OF
+        requesterMemberOf:
+          $ref: '#/components/schemas/member-of'
+        requesterFields:
+          $ref: '#/components/schemas/fields'
+    request-type-requester-everyone:
+      type: object
+      description: A request where the requester may be any Okta user in the Okta organization.
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - EVERYONE
+        requesterFields:
+          $ref: '#/components/schemas/fields'
+    request-type-requester-custom:
+      type: object
+      description: Request settings which cannot be represented in the API accurately. Often the case when lastUpdatedSource is 'WEB'.
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - CUSTOM
+    request-type-request-settings-readable:
+      type: object
+      description: |
+        The `requestSettings` control:
+
+        - Which users can request access using this request type.
+        - What fields the user may or must fill out in order to request access.
+      default:
+        type: EVERYONE
+        requesterFields: []
+      oneOf:
+        - $ref: '#/components/schemas/request-type-requester-member-of'
+        - $ref: '#/components/schemas/request-type-requester-everyone'
+        - $ref: '#/components/schemas/request-type-requester-custom'
+      discriminator:
+        propertyName: type
+        mapping:
+          MEMBER_OF: '#/components/schemas/request-type-requester-member-of'
+          EVERYONE: '#/components/schemas/request-type-requester-everyone'
+          CUSTOM: '#/components/schemas/request-type-requester-custom'
+    request-type-approver-fields:
+      type: array
+      description: |
+        A list of fields with which to gather input.
+
+        The order of field object controls the order with which the fields are presented to users.
+
+        #### Known limitation
+
+        Unlike requester fields, all approver fields are *required* and may not be set as optional.
+      default: []
+      maxItems: 5
+      items:
+        $ref: '#/components/schemas/field'
+    request-type-approval-member-of:
+      type: object
+      description: An approval when the approver must be a member of a particular Okta Group.
+      required:
+        - approverType
+        - approverMemberOf
+      properties:
+        approverType:
+          type: string
+          enum:
+            - MEMBER_OF
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+        approverMemberOf:
+          $ref: '#/components/schemas/member-of'
+        approverFields:
+          $ref: '#/components/schemas/request-type-approver-fields'
+    request-type-approval-user:
+      type: object
+      description: An approval when the approver must be a particular user.
+      required:
+        - approverType
+        - approverUserId
+      properties:
+        approverType:
+          type: string
+          enum:
+            - USER
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+        approverUserId:
+          $ref: '#/components/schemas/user-id'
+        approverFields:
+          $ref: '#/components/schemas/request-type-approver-fields'
+    request-type-approval-manager:
+      type: object
+      description: Specifying the approver must be the requester's manager
+      required:
+        - approverType
+      properties:
+        approverType:
+          type: string
+          enum:
+            - MANAGER
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+        approverFields:
+          $ref: '#/components/schemas/request-type-approver-fields'
+    request-type-approval-resource-owner:
+      type: object
+      description: Specifying the approver must be the resource owner
+      required:
+        - approverType
+      properties:
+        approverType:
+          type: string
+          enum:
+            - RESOURCE_OWNER
+        description:
+          type: string
+          minLength: 1
+          maxLength: 250
+    request-type-approval:
+      type: object
+      description: request-type-approval-description.md
+      oneOf:
+        - $ref: '#/components/schemas/request-type-approval-member-of'
+        - $ref: '#/components/schemas/request-type-approval-user'
+        - $ref: '#/components/schemas/request-type-approval-manager'
+        - $ref: '#/components/schemas/request-type-approval-resource-owner'
+      discriminator:
+        propertyName: approverType
+        mapping:
+          MEMBER_OF: '#/components/schemas/request-type-approval-member-of'
+          USER: '#/components/schemas/request-type-approval-user'
+          MANAGER: '#/components/schemas/request-type-approval-manager'
+          RESOURCE_OWNER: '#/components/schemas/request-type-approval-resource-owner'
+    request-type-approvals:
+      description: |
+        The `SERIAL` approvals required to grant access:
+
+        * All specified approvals are considered required in order to fulfill an access request.
+        * At least one approval must be specified for a request type.
+        * When a request type has two approvals:
+          * Only the first approval is immediately actionable by an approver in the request.
+          * After an approver has made a decision for the first approval, then the second approval is actionable.
+        * The approval type of `RESOURCE_OWNER` is supported for apps, entitlement bundles, and associated groups from the resource requested.
+      type: array
+      minItems: 1
+      maxItems: 5
+      items:
+        $ref: '#/components/schemas/request-type-approval'
+    request-type-approval-settings-serial:
+      type: object
+      description: Settings for approval
+      required:
+        - type
+        - approvals
+      properties:
+        type:
+          type: string
+          enum:
+            - SERIAL
+          description: |
+            When there are multiple approvals, an approval is not actionable until the previous approval has been approved. A denial will terminate the request and no subsequent approvals will be made actionable.
+        approvals:
+          $ref: '#/components/schemas/request-type-approvals'
+    request-type-approval-settings-custom:
+      type: object
+      description: Approval settings which are not represented in the API accurately. Often the case when lastUpdatedSource is 'WEB'.
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - CUSTOM
+          description: |
+            `CUSTOM` is set for request types created through the Okta Access Requests app that aren't accurately represented by the `SERIAL` request type model.
+    request-type-approval-settings-readable:
+      type: object
+      description: Approval settings for the request type
+      oneOf:
+        - $ref: '#/components/schemas/request-type-approval-settings-serial'
+        - $ref: '#/components/schemas/request-type-approval-settings-custom'
+        - $ref: '#/components/schemas/request-type-approval-settings-none'
+      discriminator:
+        propertyName: type
+        mapping:
+          SERIAL: '#/components/schemas/request-type-approval-settings-serial'
+          CUSTOM: '#/components/schemas/request-type-approval-settings-custom'
+          NONE: '#/components/schemas/request-type-approval-settings-none'
+    request-type-last-update-source:
+      type: string
+      enum:
+        - API
+        - WEB
+      description: Whether the request type was last updated through the API or the user interface.
+    request-type-full:
+      type: object
+      description: Full representation of a request type resource
+      allOf:
+        - $ref: '#/components/schemas/writable-standard-properties'
+        - $ref: '#/components/schemas/read-only-standard-properties'
+      required:
+        - id
+        - name
+        - description
+        - lastUpdated
+        - lastUpdatedBy
+        - ownerId
+        - resourceSettings
+        - requestSettings
+        - approvalSettings
+        - accessDuration
+        - status
+        - lastUpdateSource
+        - _links
+      properties:
+        ownerId:
+          $ref: '#/components/schemas/request-type-owner-id'
+        resourceSettings:
+          $ref: '#/components/schemas/request-type-resource-settings-readable'
+        requestSettings:
+          $ref: '#/components/schemas/request-type-request-settings-readable'
+        approvalSettings:
+          $ref: '#/components/schemas/request-type-approval-settings-readable'
+        accessDuration:
+          $ref: '#/components/schemas/request-duration'
+        status:
+          $ref: '#/components/schemas/request-type-status'
+        lastUpdateSource:
+          $ref: '#/components/schemas/request-type-last-update-source'
+        _links:
+          $ref: '#/components/schemas/request-type-links'
+      example:
+        id: 61eb2db568c7c300079fefd0
+        name: salesforce-01
+        description: How users can request access to Salesforce 01
+        lastUpdated: '2022-05-24T14:15:22Z'
+        lastUpdatedBy: 00ub0oNGTSWTBKOLGLNR
+        created: '2022-05-24T14:15:22Z'
+        createdBy: 00ub0oNGTSWTBKOLGLNR
+        ownerId: 61eb0f06c462d20007f051ac
+        resourceSettings:
+          type: GROUPS
+          targetResources:
+            - 00g1emaKYZTWRYYRRTSK
+        requestSettings:
+          type: EVERYONE
+          requesterFields:
+            - prompt: What is the business justification?
+              required: true
+              input:
+                type: TEXT
+        approvalSettings:
+          type: SERIAL
+          approvals:
+            - approverType: MEMBER_OF
+              approverMemberOf:
+                - 00g1emaKYZTWRYYRRTSK
+              approverFields:
+                - prompt: What is the business justification?
+                  required: true
+                  input:
+                    type: TEXT
+        lastUpdateSource: API
+        status: ACTIVE
+        _links:
+          createRequest:
+            href: https://my-org.at.okta.com/next/new?q=Request%20access%20to%20Salesforce&request_type=0oa1gjh63g214q0Hq0g4
+            type: text/html
+          requests:
+            href: https://myorg.okta.com/governance/api/v1/requests?filter=requestTypeId%20eq%20%2261eb2db568c7c300079fefd0%22
+            type: application/json
+          self:
+            href: https://myorg.okta.com/governance/api/v1/requests/61eb2db568c7c300079fefd0
+            type: application/json
+    request-id:
+      type: string
+      maxLength: 24
+      minLength: 24
+      pattern: ^[a-fA-F\d]{24}$
+      format: request-id
+      description: |
+        The request `id`
+    request-subject:
+      type: string
+      description: The subject of the request
+      maxLength: 250
+      minLength: 1
+    requester-user-id:
+      type: string
+      format: okta-user-id
+      description: Okta User.id of the requesting user
+      maxLength: 20
+      minLength: 20
+      pattern: 00u[0-9a-zA-Z]+
+    requester-user-ids:
+      type: array
+      minItems: 1
+      maxItems: 1
+      description: A list of requester Okta user `id`s.
+      items:
+        $ref: '#/components/schemas/requester-user-id'
+    request-mutable:
+      type: object
+      description: Properties which are mutable in mutation operations
+      properties:
+        requestTypeId:
+          $ref: '#/components/schemas/request-type-id'
+        subject:
+          $ref: '#/components/schemas/request-subject'
+        requesterUserIds:
+          $ref: '#/components/schemas/requester-user-ids'
+      example:
+        subject: Can I have access to Salesforce?
+        requestTypeId: 05ab2db568c7c300079fefd0
+        requesterUserIds:
+          - 00ub0oNGTSWTBKOLGLNR
+    request-request-status:
+      type: string
+      description: |
+        A request has a lifecycle. See our [request lifecycle documentation](/#request).
+
+        A request progresses in its lifecycle state based on requester, approver, and administrator activities across a variety of channels, such as:
+
+        - Access Request portal
+        - Slack
+        - Microsoft teams
+
+        The following lifecycle operations are available on a single request.
+
+        - [Add](/iga/openapi/governance-production-requests-admin-v1-reference/requests/createrequest)
+      enum:
+        - OPEN
+        - PENDING
+        - RESOLVED
+        - LOCKED
+    request-resolved-date-time:
+      type: string
+      format: date-time
+      nullable: true
+      description: The date the request was resolved. The property may transition from having a value to null if the request is reopened.
+    request-permalink-id:
+      type: integer
+      description: The immutable, persistent identifier that always resolves to the request
+    request-links:
+      type: object
+      description: Links available on a single request representation
+      required:
+        - requestType
+        - self
+      properties:
+        requestType:
+          $ref: '#/components/schemas/link'
+        self:
+          $ref: '#/components/schemas/link'
+      additionalProperties:
+        $ref: '#/components/schemas/link'
+    request-sparse:
+      type: object
+      description: Sparse representation of a Request resource
+      allOf:
+        - $ref: '#/components/schemas/read-only-standard-properties'
+        - $ref: '#/components/schemas/request-mutable'
+      required:
+        - id
+        - createdBy
+        - created
+        - lastUpdated
+        - lastUpdatedBy
+        - subject
+        - requestTypeId
+        - type
+        - resolved
+        - requestStatus
+        - requesterUserIds
+        - permalinkId
+        - _links
+      properties:
+        type:
+          description: Whether the request's request type has CUSTOM settings or not.
+          type: string
+          enum:
+            - ACCESS_REQUEST
+            - CUSTOM
+        requestStatus:
+          $ref: '#/components/schemas/request-request-status'
+        resolved:
+          $ref: '#/components/schemas/request-resolved-date-time'
+        permalinkId:
+          $ref: '#/components/schemas/request-permalink-id'
+        _links:
+          $ref: '#/components/schemas/request-links'
+      example:
+        id: 61eb06a3c462d20007f0235c
+        subject: request-from-service-now-xsd23432
+        requestTypeId: 61eb2db568c7c300079fefd0
+        requesterUserIds:
+          - 00ub0oNGTSWTBKOLGLNR
+        lastUpdated: '2022-05-05T14:15:22Z'
+        lastUpdatedBy: 00ub0oNGTSWTBKOLGLNR
+        resolved: 2022-05-05T14:15:22Z'
+        requestStatus: RESOLVED
+        type: ACCESS_REQUEST
+        permalinkId: 1
+        _links:
+          requestType:
+            href: https://myorg.okta.com/governance/api/v1/request-types/61eb2db568c7c300079fefd0
+            type: application/json
+          self:
+            href: https://myorg.okta.com/governance/api/v1/requests/61eb06a3c462d20007f0235c
+            type: application/json
+    request-list-links:
+      type: object
+      description: Links available in request list response
+      required:
+        - self
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+        next:
+          $ref: '#/components/schemas/link'
+      additionalProperties:
+        $ref: '#/components/schemas/link'
+    request-list:
+      type: object
+      properties:
+        data:
+          description: All requests on the current page
+          type: array
+          items:
+            $ref: '#/components/schemas/request-sparse'
+        _links:
+          $ref: '#/components/schemas/request-list-links'
+    field-id-writable:
+      type: string
+      description: The `id` of a `requesterField` in the related request type's `requestSettings.requesterFields`
+      format: uuid
+      maxLength: 36
+      minLength: 36
+      example: 1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed
+    field-date-time-value:
+      type: string
+      nullable: true
+      maxLength: 1000
+      format: date-time
+      description: Value provided by a user in ISO 8601 string format
+    field-select-value-writable:
+      type: array
+      nullable: true
+      minItems: 1
+      maxItems: 1
+      description: Values provided by a user, only `1` is supported
+      items:
+        $ref: '#/components/schemas/field-option-value'
+    field-text-value:
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 1000
+      description: Value provided by a user
+    field-value-writable-allowed-values:
+      anyOf:
+        - $ref: '#/components/schemas/field-date-time-value'
+        - $ref: '#/components/schemas/field-select-value-writable'
+        - $ref: '#/components/schemas/field-text-value'
+    field-value-writable:
+      type: object
+      description: |
+        An `id` and `value` that corresponds to the `id` of a field in the request type's `requestSettings.requesterFields`.
+
+        If the `id` corresponds to a `DATE-TIME` field, the value must be an `ISO-8601` date-time.
+        If the `id` corresponds to a `SELECT` field, the value must be an array of strings where each string is a value from the select field's options.
+        If the `id` corresponds to a `TEXT` field, the value must be a string.
+
+        Only provide the field `id` once. Duplicates result in a `409 Conflict` response.
+
+        A non-required field may be omitted from the list.
+      required:
+        - id
+        - value
+      properties:
+        id:
+          $ref: '#/components/schemas/field-id-writable'
+        value:
+          $ref: '#/components/schemas/field-value-writable-allowed-values'
+    requester-field-values-writable:
+      type: array
+      description: |
+        Field values provided when adding the request.
+
+        If a request type has required `requesterFields`, they must be provided when the request is created.
+
+        Non-required fields may be omitted when creating the request.
+      items:
+        $ref: '#/components/schemas/field-value-writable'
+    request-creatable-only:
+      type: object
+      properties:
+        requesterFieldValues:
+          $ref: '#/components/schemas/requester-field-values-writable'
+    request-creatable:
+      type: object
+      description: The properties expected in an initial create request
+      required:
+        - requestTypeId
+        - subject
+      allOf:
+        - $ref: '#/components/schemas/request-mutable'
+        - $ref: '#/components/schemas/request-creatable-only'
+      example:
+        subject: Requesting access to salesforce-01 for my team member
+        requesterUserIds:
+          - 00ub0oNGTSWTBKOLGLNR
+    request-full-api-compatible:
+      type: object
+      description: Full representation of a Request resource.
+      allOf:
+        - $ref: '#/components/schemas/read-only-standard-properties'
+        - $ref: '#/components/schemas/request-mutable'
+        - $ref: '#/components/schemas/request-minimal-read-only-fields'
+      required:
+        - type
+        - id
+        - created
+        - createdBy
+        - subject
+        - requestTypeId
+        - lastUpdated
+        - lastUpdatedBy
+        - resolved
+        - requestStatus
+        - requesterUserIds
+        - requesterFieldValues
+        - approvals
+        - actions
+        - permalinkId
+        - _links
+      properties:
+        approvals:
+          type: array
+          description: Request approvals
+          items:
+            $ref: '#/components/schemas/request-approval'
+        actions:
+          $ref: '#/components/schemas/request-actions'
+        permalinkId:
+          $ref: '#/components/schemas/request-permalink-id'
+        type:
+          description: This request is associated with a request type with no `CUSTOM` settings.
+          type: string
+          enum:
+            - ACCESS_REQUEST
+    request-full-api-incompatible:
+      type: object
+      description: A Request where the request type has a CUSTOM setting. This representation is limited and does not contain `actions` and `approvals`.
+      allOf:
+        - $ref: '#/components/schemas/read-only-standard-properties'
+        - $ref: '#/components/schemas/request-mutable'
+        - $ref: '#/components/schemas/request-minimal-read-only-fields'
+      required:
+        - type
+        - id
+        - created
+        - createdBy
+        - subject
+        - requestTypeId
+        - lastUpdated
+        - lastUpdatedBy
+        - resolved
+        - requestStatus
+        - requesterUserIds
+        - requesterFieldValues
+        - permalinkId
+        - _links
+      properties:
+        permalinkId:
+          $ref: '#/components/schemas/request-permalink-id'
+        type:
+          description: This request is associated with a request type with `CUSTOM` settings.
+          type: string
+          enum:
+            - CUSTOM
+    request-request-type-id:
+      type: string
+      description: The Request Type enabling this Request.
+      maxLength: 24
+      minLength: 24
+      pattern: ^[a-fA-F\d]{24}$
+      format: request-type-id
+      example: 05ab2db568c7c300079fefd0
+    base-field-value:
+      type: object
+      description: The field value provided by the user
+      required:
+        - required
+        - prompt
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/field-id'
+        prompt:
+          $ref: '#/components/schemas/field-prompt'
+        required:
+          $ref: '#/components/schemas/field-required'
+    field-value-date:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field-value'
+      required:
+        - id
+        - type
+        - value
+      properties:
+        type:
+          $ref: '#/components/schemas/field-date-time-type'
+        value:
+          $ref: '#/components/schemas/field-date-time-value'
+    field-select-value:
+      type: array
+      nullable: true
+      minItems: 1
+      maxItems: 1
+      description: Values provided by a user, only `1` is supported
+      items:
+        $ref: '#/components/schemas/field-option-value'
+    field-value-select:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field-value'
+      required:
+        - id
+        - type
+        - value
+      properties:
+        type:
+          $ref: '#/components/schemas/field-select-type'
+        value:
+          $ref: '#/components/schemas/field-select-value'
+      example:
+        type: SELECT
+        prompt: Indicate business justification
+        value:
+          - REQUIRED for job duties
+    field-value-text:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/base-field-value'
+      required:
+        - id
+        - type
+        - value
+      properties:
+        type:
+          $ref: '#/components/schemas/field-text-type'
+        value:
+          $ref: '#/components/schemas/field-text-value'
+    field-value:
+      description: The field value provided by the user
+      oneOf:
+        - $ref: '#/components/schemas/field-value-date'
+        - $ref: '#/components/schemas/field-value-select'
+        - $ref: '#/components/schemas/field-value-text'
+      discriminator:
+        propertyName: type
+        mapping:
+          DATE-TIME: '#/components/schemas/field-value-date'
+          SELECT: '#/components/schemas/field-value-select'
+          TEXT: '#/components/schemas/field-value-text'
+    requester-field-values:
+      type: array
+      nullable: true
+      description: |
+        Field values provided when adding the request.
+
+        If a request type has required `requesterFields`, they must be provided when the request is created.
+
+        Non-required fields may be omitted when creating the request.
+      items:
+        $ref: '#/components/schemas/field-value'
+    request-minimal-read-only-fields:
+      type: object
+      description: Properties contained by default in sparse representation
+      properties:
+        requestStatus:
+          $ref: '#/components/schemas/request-request-status'
+        requestTypeId:
+          $ref: '#/components/schemas/request-request-type-id'
+        resolved:
+          $ref: '#/components/schemas/request-resolved-date-time'
+        requesterFieldValues:
+          $ref: '#/components/schemas/requester-field-values'
+        _links:
+          $ref: '#/components/schemas/request-links'
+    request-approval-id:
+      type: string
+      maxLength: 24
+      minLength: 24
+      pattern: ^[a-fA-F\d]{24}$
+      format: approval-id
+      description: A unique identifier of the approval in the request
+    request-approval-pending:
+      type: object
+      description: A pending access request approval
+      required:
+        - status
+        - approvalId
+      properties:
+        status:
+          type: string
+          description: The status of a pending approval
+          enum:
+            - PENDING
+        approvalId:
+          $ref: '#/components/schemas/request-approval-id'
+      example:
+        requestStatus: OPEN
+    approval-field-values:
+      type: array
+      description: |-
+        Values to field prompts provided by the approver at the time of approval.
+
+        All approval fields specified in the related request type are represented in the same order as defined in the request type.
+      nullable: true
+      items:
+        $ref: '#/components/schemas/field-value'
+    request-approval-completed:
+      type: object
+      description: A completed access request approval
+      required:
+        - status
+        - approverName
+        - approvalId
+        - approverId
+        - decision
+        - decided
+        - fieldValues
+      properties:
+        status:
+          type: string
+          description: The status of a completed approval
+          enum:
+            - COMPLETED
+        approverName:
+          type: string
+          description: Okta username of the user which approved the request
+          maxLength: 100
+        approvalId:
+          $ref: '#/components/schemas/request-approval-id'
+        approverId:
+          type: string
+          format: okta-user-id
+          description: Okta User.id of the user which approved the request
+          maxLength: 20
+          minLength: 20
+          pattern: 00u[0-9a-zA-Z]+
+        decision:
+          type: string
+          enum:
+            - APPROVED
+            - DENIED
+        decided:
+          type: string
+          format: date-time
+          description: The date the approver made their decision.
+        originalDeciderId:
+          $ref: '#/components/schemas/user-id'
+        originalDeciderFullName:
+          type: string
+          description: Full name of the original decider
+          maxLength: 100
+        originalDeciderEmail:
+          type: string
+          description: Email of the original decider
+          format: email
+        deciderDelegated:
+          type: boolean
+          description: Indicates if the decision was made by a delegated decider
+        deciderEscalated:
+          type: boolean
+          description: Indicates if the decision was made by an escalated decider
+        fieldValues:
+          $ref: '#/components/schemas/approval-field-values'
+      example:
+        status: COMPLETED
+        approverId: 00ub0oNGTSWTBKOLGLNR
+        decision: APPROVED
+        decided: '2022-06-02T21:36:25.344Z'
+        fieldValues:
+          - type: SELECT
+            value:
+              - value: Curious
+    request-approval:
+      type: object
+      description: An approval for this request. It may be in a PENDING or COMPLETED state.
+      oneOf:
+        - $ref: '#/components/schemas/request-approval-pending'
+        - $ref: '#/components/schemas/request-approval-completed'
+      discriminator:
+        propertyName: status
+        mapping:
+          PENDING: '#/components/schemas/request-approval-pending'
+          COMPLETED: '#/components/schemas/request-approval-completed'
+    request-action-enum:
+      type: string
+      enum:
+        - ADD_USER_TO_GROUP
+        - ASSIGN_APP_TO_USER
+        - GRANT_ACCESS_TO_ENTITLEMENT_BUNDLE
+      description: The type of action taken by the access request service to fulfill the request.
+    request-action-id:
+      type: string
+      maxLength: 24
+      minLength: 24
+      pattern: ^[a-fA-F\d]{24}$
+      format: action-id
+      description: A unique identifier of the action taken in the request
+    request-action-pending:
+      type: object
+      description: A pending action, approvals still required
+      required:
+        - status
+        - action
+        - actionId
+      properties:
+        status:
+          type: string
+          description: The status of a pending action
+          enum:
+            - PENDING
+        action:
+          $ref: '#/components/schemas/request-action-enum'
+        actionId:
+          $ref: '#/components/schemas/request-action-id'
+      example:
+        status: PENDING
+    resource-id:
+      type: string
+      format: okta-resource-id
+      description: |
+        The Okta `app.id` or `group.id` of the resource that can be requested with this request type.
+
+        * See [List all applications](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/application/other/listapplications) to retrieve app IDs.
+        * See [List all groups](https://developer.okta.com/docs/api/openapi/okta-management/management/tags/group/other/listgroups) to retrieve group IDs.
+      maxLength: 20
+    okta-resource-readable:
+      type: object
+      description: Identifies a unique Okta resource
+      properties:
+        resourceName:
+          type: string
+          description: Human readable name of the resource
+        resourceId:
+          $ref: '#/components/schemas/resource-id'
+        resourceType:
+          type: string
+          enum:
+            - APP
+            - GROUP
+            - ENTITLEMENT_BUNDLE
+          description: The type of resource
+    request-action-completed:
+      type: object
+      description: A completed access request approval
+      required:
+        - status
+        - action
+        - actionId
+        - actionStatus
+        - actionAttempted
+        - resourceId
+        - resourceName
+        - resourceType
+      allOf:
+        - $ref: '#/components/schemas/okta-resource-readable'
+      properties:
+        status:
+          type: string
+          description: The status of a completed approval
+          enum:
+            - COMPLETED
+        action:
+          $ref: '#/components/schemas/request-action-enum'
+        actionId:
+          $ref: '#/components/schemas/request-action-id'
+        actionStatus:
+          type: string
+          enum:
+            - SUCCEEDED
+            - FAILED
+          description: Whether the action was successful or not
+        actionAttempted:
+          type: string
+          format: date-time
+          description: When the action was attempted
+        accessRemoved:
+          nullable: true
+          type: string
+          format: date-time
+          description: When access was removed if the associated Request Type has an `accessDuration`. null if the Request Type does not have an `accessDuration`, or the duration has not yet expired.
+    request-action:
+      type: object
+      description: An action taken as part of this request, null if there will never be actions for this request.
+      oneOf:
+        - $ref: '#/components/schemas/request-action-pending'
+        - $ref: '#/components/schemas/request-action-completed'
+      discriminator:
+        propertyName: status
+        mapping:
+          PENDING: '#/components/schemas/request-action-pending'
+          COMPLETED: '#/components/schemas/request-action-completed'
+    request-actions:
+      type: array
+      minItems: 1
+      maxItems: 1
+      description: A list of actions. Currently only supports one action per request.
+      nullable: true
+      items:
+        $ref: '#/components/schemas/request-action'
+    request-full:
+      type: object
+      description: A full representation of a request
+      discriminator:
+        propertyName: type
+        mapping:
+          ACCESS_REQUEST: '#/components/schemas/request-full-api-compatible'
+          CUSTOM: '#/components/schemas/request-full-api-incompatible'
+      oneOf:
+        - $ref: '#/components/schemas/request-full-api-compatible'
+        - $ref: '#/components/schemas/request-full-api-incompatible'
+    request-message-message:
+      type: string
+      description: Message that will be created for the request. Newline can be specified by characters "\n". Message will be visible for all users who can view the request.
+      minLength: 1
+      maxLength: 5000
+      nullable: false
+    request-message-mutable:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          $ref: '#/components/schemas/request-message-message'
+    request-message-creatable:
+      type: object
+      description: The properties expected in a request message create request
+      allOf:
+        - $ref: '#/components/schemas/request-message-mutable'
+    team-id:
+      type: string
+      description: Team ID
+      maxLength: 24
+      minLength: 24
+      pattern: ^[a-fA-F\d]{24}$
+      format: owner-id
+    team-name:
+      type: string
+      description: The name of the team
+      maxLength: 40
+      minLength: 1
+    team:
+      type: object
+      required:
+        - id
+        - created
+        - lastUpdated
+        - name
+      properties:
+        id:
+          $ref: '#/components/schemas/team-id'
+        created:
+          description: The ISO 8601 formatted date and time when the resource was created
+          type: string
+          format: date-time
+          readOnly: true
+        lastUpdated:
+          $ref: '#/components/schemas/last-updated'
+        name:
+          $ref: '#/components/schemas/team-name'
+    teams-list-links:
+      type: object
+      description: Links available in teams response
+      required:
+        - self
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+        next:
+          $ref: '#/components/schemas/link'
+      additionalProperties:
+        $ref: '#/components/schemas/link'
+    teams-list:
+      type: object
+      properties:
+        data:
+          description: All teams on the current page
+          type: array
+          items:
+            $ref: '#/components/schemas/team'
+        _links:
+          $ref: '#/components/schemas/teams-list-links'
+  parameters:
+    request-types-list-filter:
+      name: filter
+      description: |
+        Apply various filters by using supported request types filtering properties.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/scim-filter'
+      x-scim-filter:
+        status:
+          operators:
+            - eq
+          schema:
+            $ref: '#/components/schemas/request-type-status'
+        lastUpdated:
+          operators:
+            - gt
+          schema:
+            $ref: '#/components/schemas/last-updated'
+      examples:
+        FilterByStatus:
+          summary: Filter by status
+          value: status eq "ACTIVE"
+        FilterByLastUpdated:
+          summary: Filter by lastUpdated
+          value: lastUpdated gt "2022-05-24T14:15:22Z"
+        FilterByStatusAndLastUpdated:
+          summary: Filter by status and lastUpdated
+          value: status eq "ACTIVE" AND lastUpdated gt "2022-05-24T14:15:22Z"
+    request-types-list-after:
+      name: after
+      description: The after cursor provided by a prior request.
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/request-type-id'
+    limit:
+      name: limit
+      description: The maximum number of records returned in a response
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 20
+        maximum: 200
+        minimum: 1
+    request-types-list-order-by:
+      name: orderBy
+      description: |
+        Apply an ordering of request types by specifying a supported request type property name with `%20asc` or `%20desc` suffix.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/order-by'
+      x-order-by:
+        attributes:
+          - created
+          - lastUpdated
+      examples:
+        OrderByCreated:
+          summary: Order by created
+          value: created desc
+        OrderByLastUpdated:
+          summary: Order by lastUpdated
+          value: lastUpdated desc
+    request-type-id:
+      name: requestTypeId
+      description: Unique identifier for the request type
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/request-type-id'
+    request-list-filter:
+      name: filter
+      description: |
+        Apply various filters by using supported request filtering properties.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/scim-filter'
+      x-scim-filter:
+        requestStatus:
+          operators:
+            - eq
+          schema:
+            $ref: '#/components/schemas/request-request-status'
+        lastUpdated:
+          operators:
+            - gt
+          schema:
+            $ref: '#/components/schemas/last-updated'
+      examples:
+        FilterByRequestStatus:
+          summary: Filter by requestStatus
+          value: requestStatus eq "RESOLVED"
+        FilterByLastUpdated:
+          summary: Filter by lastUpdated
+          value: lastUpdated gt "2022-05-24T14:15:22Z"
+        FilterByRequestStatusAndLastUpdated:
+          summary: Filter by requestStatus and lastUpdated
+          value: requestStatus eq "RESOLVED" AND lastUpdated gt "2022-05-24T14:15:22Z"
+    request-list-after:
+      name: after
+      description: The after cursor provided by a prior request.
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/request-id'
+    request-list-order-by:
+      name: orderBy
+      description: |
+        Apply an ordering of requests by specifying a supported request property name with `%20asc` or `%20desc` suffix.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/order-by'
+      x-order-by:
+        attributes:
+          - created
+          - lastUpdated
+      examples:
+        OrderByCreated:
+          summary: Order by created
+          value: created desc
+        OrderByLastUpdated:
+          summary: Order by lastUpdated
+          value: lastUpdated desc
+    request-id:
+      name: requestId
+      description: Unique identifier for the request
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/request-id'
+    teams-filter:
+      name: filter
+      description: |
+        Apply various filters by using supported team filtering properties.
+
+        **Note:** Query parameter percent encoding is required. See [Percent-encoding](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding)
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/scim-filter'
+      x-scim-filter:
+        name:
+          operators:
+            - eq
+          schema:
+            $ref: '#/components/schemas/team-name'
+      examples:
+        FilterByName:
+          summary: Filter by name
+          value: name eq "Salesforce admins"
+    teams-after:
+      name: after
+      description: The after cursor provided by a prior request.
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/team-id'
+  headers:
+    link:
+      required: false
+      description: |-
+        A link to `self` and `next`.
+        > **Note:** `next` is only present if there's another page of results.
+      schema:
+        type: string
+    rate-limit-limit:
+      required: true
+      description: The rate-limit ceiling for the current request
+      schema:
+        type: integer
+        minimum: 1
+        example: 60
+    rate-limit-remaining:
+      required: true
+      description: The number of requests left for the current rate-limit window
+      schema:
+        type: integer
+        minimum: 0
+        example: 60
+    rate-limit-reset:
+      required: true
+      description: The time when the rate limit resets, specified in UTC epoch time (in seconds)
+      schema:
+        type: integer
+        minimum: 0
+        example: 1609459200
+  responses:
+    request-types-list-success:
+      description: A successful request type list response
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-types-list'
+    request-types-list-bad-request:
+      description: An invalid request to list request types
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    authentication-error-response:
+      description: Authentication fails error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    authorization-error-response:
+      description: Authorization fails error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            errorCode: E0000004
+            errorSummary: You don't have permission to perform the requested action.
+            errorLink: E0000004
+            errorId: oaeWCGz73hpRCG75VHP6-RRXw
+            errorCauses: []
+    resource-not-found-response:
+      description: The requested resource wasn't found error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            errorCode: E0000007
+            errorSummary: Resource not found exception
+            errorLink: E0000007
+            errorId: oaeWCGz73hpRCG75VHP6-RRXw
+            errorCauses: []
+    rate-limit-exceeded-response:
+      description: The rate limit has been exceeded error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            errorCode: E0000047
+            errorSummary: The API call exceeded the rate limit due to too many requests.
+            errorLink: E0000047
+            errorId: oaeWCGz73hpRCG75VHP6-RRXw
+            errorCauses: []
+    unexpected-error-response:
+      description: Error response when a server fault occurs due to an unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            errorCode: E0000009
+            errorSummary: Internal Server Error
+            errorLink: E0000009
+            errorId: oaeWCGz73hpRCG75VHP6-RRXw
+            errorCauses: []
+    request-types-create-success-response:
+      description: A successful request type create response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-type-full'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+    request-types-create-bad-request-response:
+      description: An invalid request to create a request type
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    request-type-get-success:
+      description: A successful request type get response
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-type-full'
+    request-type-delete-success-response:
+      description: A successful request type delete response
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+    request-type-publish-success-response:
+      description: A successful request type publish response
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-type-full'
+    request-type-publish-conflict-response:
+      description: An invalid request to publish a request type
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    request-type-un-publish-success-response:
+      description: A successful request type unpublish response
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-type-full'
+    request-type-un-publish-conflict-response:
+      description: An invalid request due to status conflict when unpublishing a request type
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    requests-list-success:
+      description: A successful request list response
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-list'
+    requests-list-bad-request:
+      description: An invalid request to list requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    request-create-success-response:
+      description: A successful create request response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-full'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+    request-create-bad-request-response:
+      description: An invalid request to create a request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    request-create-forbidden-response:
+      description: When authorization fails
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    request-create-conflict-response:
+      description: A conflict with the request type prevents the create request operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    request-get-success:
+      description: A successful get request response
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/rate-limit-limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/rate-limit-remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/rate-limit-reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/request-full'
+    teams-list-success:
+      description: A successful teams list response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/teams-list'
+      headers:
+        Link:
+          $ref: '#/components/headers/link'
+    teams-list-bad-request:
+      description: An invalid request to list teams
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
